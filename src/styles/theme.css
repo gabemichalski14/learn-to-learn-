@@ -119,6 +119,41 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .tree--bloom { animation: bloom .5s ease; }
 @keyframes bloom { 0%,100% { transform: scale(1); } 45% { transform: scale(1.07); } }
 
+/* ---- Age-band themes (all teal-family; vary shape, brightness, contrast, motion, type) ---- */
+/* "cool" is the :root default. */
+[data-theme='playful'] {
+  --bg: #e3fdfb;
+  --teal-soft: #c4f8f4;
+  --teal-ring: #62ead0;
+  --teal-deep: #12b3a8;
+  --radius: 28px;
+}
+[data-theme='grownup'] {
+  --bg: #f3f7f7;
+  --ink: #0f2a28;
+  --muted: #5a7470;
+  --teal-soft: #e6f1f0;
+  --teal-ring: #a7cbc8;
+  --teal-deep: #0a6f68;
+  --radius: 9px;
+  font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+}
+/* Grown-up reads as a calm, dignified app — fewer flourishes, no bounce. */
+[data-theme='grownup'] .picture-card:hover { transform: none; box-shadow: 0 6px 14px rgba(15, 151, 143, 0.14); }
+[data-theme='grownup'] .sound-basket--over { transform: none; }
+[data-theme='grownup'] .sound-basket__speaker::after { animation: none; }
+
+/* Theme switcher (tutor control) */
+.app__topbar { display: flex; justify-content: flex-end; min-height: 30px; }
+.theme-switch { display: inline-flex; gap: 2px; background: var(--teal-soft); border-radius: 999px; padding: 3px; }
+.theme-switch__btn {
+  border: none; background: transparent; cursor: pointer; font: inherit; font-size: 12px;
+  font-weight: 700; color: var(--teal-deep); padding: 6px 12px; border-radius: 999px;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.theme-switch__btn.is-active { background: var(--teal-deep); color: #fff; }
+.theme-switch__btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }

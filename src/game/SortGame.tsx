@@ -164,7 +164,7 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="sort-game">
         {clean ? (
-          <WalkProgress className="sort-game__walk" progress={sessionProgress} walking={walking} />
+          <WalkProgress className="sort-game__walk" progress={sessionProgress} walking={walking} finished={roundDone && isLastRound} />
         ) : (
           <BookTree className="sort-game__tree" progress={sessionProgress} bloom={bloom} />
         )}

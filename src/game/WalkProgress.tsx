@@ -3,6 +3,8 @@ interface Props {
   progress: number;
   /** When true, the figure strides (it only walks on a correct answer). */
   walking?: boolean;
+  /** When true (session finished), the figure hops and flies off the screen. */
+  finished?: boolean;
   className?: string;
 }
 
@@ -11,7 +13,7 @@ interface Props {
  * a line toward a checkered finish flag as the session progresses. The figure
  * strides (legs/arms swing, gentle gait bob) and slides to its progress spot.
  */
-export function WalkProgress({ progress, walking = false, className }: Props) {
+export function WalkProgress({ progress, walking = false, finished = false, className }: Props) {
   const p = Math.max(0, Math.min(1, progress));
   const x = 20 + p * 194; // start at 20, reach the flag pole at ~214
 
@@ -33,7 +35,7 @@ export function WalkProgress({ progress, walking = false, className }: Props) {
 
       {/* walker (slides along the line; the body strides in place) */}
       <g
-        className={`walker${walking ? ' walker--walking' : ''}`}
+        className={`walker${walking ? ' walker--walking' : ''}${finished ? ' walker--finish' : ''}`}
         style={{ transform: `translateX(${x}px)` }}
         stroke="var(--ink)"
         strokeWidth="2.4"

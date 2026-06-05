@@ -42,7 +42,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .sort-game { display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 3.2vw, 26px); width: 100%; }
 
 .sort-game__tree { width: clamp(104px, 26vw, 148px); height: auto; margin: 0; }
-.sort-game__walk { width: clamp(200px, 62vw, 320px); height: auto; margin: 0; }
+.sort-game__walk { width: clamp(200px, 62vw, 320px); height: auto; margin: 0; overflow: visible; }
 .walker { transition: transform .5s ease; }
 /* At rest the figure just stands; it only strides while .walker--walking is set
    (i.e. right after a correct answer), then eases back to standing. */
@@ -53,6 +53,16 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .walker--walking .walker__leg--b { animation: stride .72s ease-in-out infinite -.36s; }
 .walker--walking .walker__arm--a { animation: stride-arm .72s ease-in-out infinite -.36s; }
 .walker--walking .walker__arm--b { animation: stride-arm .72s ease-in-out infinite; }
+/* Finish: reach the flag, then hop twice and rocket off the top, spinning. */
+.walker--finish .walker__body { animation: walker-finish 1.4s ease .45s forwards; }
+@keyframes walker-finish {
+  0% { transform: translate(0, 0) rotate(0) scale(1); opacity: 1; }
+  18% { transform: translate(0, -20px) scale(1.12); }
+  34% { transform: translate(0, 0) scale(1); }
+  52% { transform: translate(0, -30px) rotate(-14deg) scale(1.15); }
+  66% { transform: translate(3px, 0) rotate(10deg); }
+  100% { transform: translate(200px, -460px) rotate(420deg) scale(.5); opacity: 0; }
+}
 @keyframes stride { 0%, 100% { transform: rotate(-22deg); } 50% { transform: rotate(22deg); } }
 @keyframes stride-arm { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(-16deg); } }
 @keyframes walk-bob { 0%, 100% { transform: translateY(0); } 25%, 75% { transform: translateY(-1.3px); } 50% { transform: translateY(0); } }

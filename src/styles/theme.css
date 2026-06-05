@@ -268,6 +268,10 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 @keyframes chip-in { from { transform: scale(0); } to { transform: scale(1); } }
 .reward__count { margin: 0; font-size: clamp(11px, 2.8vw, 13px); font-weight: 700; color: var(--teal-deep); opacity: .72; }
 
+/* Elapsed "Finished in M:SS" shown only at the finish (no pressure during play). */
+.finish-time { margin: 0; font-weight: 800; color: var(--teal-deep); font-size: clamp(15px, 3.8vw, 19px); }
+.finish-time__best { color: var(--warn); }
+
 /* On a wrong answer, a leaf drops straight from the tree (gentle, not punishing) */
 .falling-leaves { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 40; }
 .falling-leaf {

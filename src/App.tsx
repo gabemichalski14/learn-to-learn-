@@ -25,6 +25,14 @@ export default function App() {
   const [sessionId, setSessionId] = useState(0);
   const [roundIndex, setRoundIndex] = useState(0);
   const [theme, setTheme] = useState<ThemeId>(loadTheme);
+  // When the current session began — drives the elapsed "Finished in …" clock.
+  // Lives here (not in SortGame) because SortGame remounts on every page.
+  const [sessionStartAt, setSessionStartAt] = useState(() => Date.now());
+
+  // Restart the clock whenever a fresh session starts (initial load + Play again).
+  useEffect(() => {
+    setSessionStartAt(Date.now());
+  }, [sessionId]);
 
   // Apply the theme to the document so it restyles everything, and remember it.
   useEffect(() => {
@@ -86,6 +94,7 @@ export default function App() {
         audio={audio}
         roundIndex={roundIndex}
         totalRounds={TOTAL_ROUNDS}
+        sessionStartAt={sessionStartAt}
         playful={theme === 'playful'}
         clean={theme === 'grownup'}
         onAdvance={() => setRoundIndex((i) => Math.min(i + 1, TOTAL_ROUNDS - 1))}

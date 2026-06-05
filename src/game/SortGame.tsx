@@ -18,6 +18,8 @@ interface Props {
   audio: AudioPlayer;
   roundIndex?: number;
   totalRounds?: number;
+  /** Timestamp (ms) when the current session began — for the elapsed finish clock. */
+  sessionStartAt?: number;
   onAdvance?: () => void;
   onRestart?: () => void;
   /** Playful theme — turns on the mascot, confetti, and extra celebration. */
@@ -71,6 +73,7 @@ function prefersReducedMotion(): boolean {
 /** Stickers a kid collects — one new one is earned each time a session is finished. */
 const STICKERS = ['🌟', '🦄', '🌈', '🚀', '🦋', '🐬', '🌻', '🐢', '🎈', '🐱', '🦉', '🐠'];
 const STICKER_KEY = 'll-stickers';
+const BEST_TIME_KEY = 'll-besttime';
 
 function loadStickers(): string[] {
   try {
@@ -81,7 +84,15 @@ function loadStickers(): string[] {
   }
 }
 
-export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdvance, onRestart, playful = false, clean = false }: Props) {
+/** Milliseconds → "M:SS". */
+function formatTime(ms: number): string {
+  const total = Math.round(ms / 1000);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionStartAt = Date.now(), onAdvance, onRestart, playful = false, clean = false }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -99,25 +110,42 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
   const [catching, setCatching] = useState<string | null>(null);
   const [walking, setWalking] = useState(false);
   const [reward, setReward] = useState<{ sticker: string; collection: string[] } | null>(null);
+  const [finish, setFinish] = useState<{ ms: number; best: boolean } | null>(null);
   const prevWrong = useRef(game.wrongCount);
   const prevCorrect = useRef(0);
-  const awarded = useRef(false);
+  const finishedRef = useRef(false);
   const walkTimer = useRef<number | undefined>(undefined);
 
-  // Finishing a whole session earns one new collectible sticker (persisted).
+  // Finishing a whole session: freeze the elapsed time (every theme) and — for the
+  // kid themes — award one new collectible sticker. Both persist; both fire once.
   useEffect(() => {
-    if (clean || !(roundDone && isLastRound) || awarded.current) return;
-    awarded.current = true;
-    const collected = loadStickers();
-    const sticker = STICKERS[collected.length % STICKERS.length];
-    const collection = [...collected, sticker];
+    if (!(roundDone && isLastRound) || finishedRef.current) return;
+    finishedRef.current = true;
+
+    const ms = Math.max(0, Date.now() - sessionStartAt);
+    let best = false;
     try {
-      localStorage.setItem(STICKER_KEY, JSON.stringify(collection));
+      const prevRaw = localStorage.getItem(BEST_TIME_KEY);
+      const prev = prevRaw ? Number(prevRaw) : null;
+      if (prev == null) localStorage.setItem(BEST_TIME_KEY, String(ms));
+      else if (ms < prev) { best = true; localStorage.setItem(BEST_TIME_KEY, String(ms)); }
     } catch {
       /* ignore */
     }
-    setReward({ sticker, collection });
-  }, [roundDone, isLastRound, clean]);
+    setFinish({ ms, best });
+
+    if (!clean) {
+      const collected = loadStickers();
+      const sticker = STICKERS[collected.length % STICKERS.length];
+      const collection = [...collected, sticker];
+      try {
+        localStorage.setItem(STICKER_KEY, JSON.stringify(collection));
+      } catch {
+        /* ignore */
+      }
+      setReward({ sticker, collection });
+    }
+  }, [roundDone, isLastRound, clean, sessionStartAt]);
 
   // Wrong answer: a leaf drifts down; the buddy gives a sympathetic wobble.
   useEffect(() => {
@@ -239,6 +267,13 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
         >
           {status}
         </p>
+
+        {finish && (
+          <p className="finish-time" aria-live="polite">
+            <span aria-hidden="true">⏱ </span>Finished in {formatTime(finish.ms)}
+            {finish.best && <span className="finish-time__best"> ✨ fastest yet!</span>}
+          </p>
+        )}
 
         {reward && (
           <div className="reward" aria-live="polite">

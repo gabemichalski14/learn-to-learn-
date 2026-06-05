@@ -5,10 +5,11 @@ import type { AudioPlayer } from '../audio/audioPlayer';
 import { useSortGame } from './useSortGame';
 import { PictureCard } from './PictureCard';
 import { SoundBasket } from './SoundBasket';
+import { BookTree } from './BookTree';
 
-interface Props { round: SortRound; audio: AudioPlayer; }
+interface Props { round: SortRound; audio: AudioPlayer; onPlayAgain?: () => void; }
 
-export function SortGame({ round, audio }: Props) {
+export function SortGame({ round, audio, onPlayAgain }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -22,22 +23,41 @@ export function SortGame({ round, audio }: Props) {
     return round.items.filter((i) => game.placements[i.id] === sound);
   }
 
+  const total = round.items.length;
+  const correct = round.items.filter((i) => game.placements[i.id] === i.beginningSound).length;
+  const progress = total ? correct / total : 0;
+
+  // One persistent live region whose text changes (reliable screen-reader announcement).
+  const status = game.isComplete
+    ? 'You grew the whole tree! Great listening.'
+    : (game.message ?? 'Tap a basket to hear its sound, then drag each picture where it belongs.');
+
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="sort-game">
-        {game.isComplete ? (
-          <div className="sort-game__done" role="status">All sorted! Great listening. 🎉</div>
-        ) : (
-          <p className="sort-game__prompt" role="status" aria-live="polite">
-            {game.message ?? 'Drag each picture to the basket with its beginning sound.'}
-          </p>
+        <BookTree className="sort-game__tree" progress={progress} bloom={game.isComplete} />
+
+        <p
+          className={`sort-game__status${game.isComplete ? ' sort-game__status--celebrate' : ''}`}
+          role="status"
+          aria-live="polite"
+        >
+          {status}
+        </p>
+
+        {game.isComplete && onPlayAgain && (
+          <button type="button" className="btn-primary" onClick={onPlayAgain}>
+            Play again 🌱
+          </button>
         )}
 
-        <div className="sort-game__tray">
-          {game.remainingItems.map((item) => (
-            <PictureCard key={item.id} item={item} onActivate={() => game.replayWord(item)} />
-          ))}
-        </div>
+        {!game.isComplete && (
+          <div className="sort-game__tray">
+            {game.remainingItems.map((item) => (
+              <PictureCard key={item.id} item={item} onActivate={() => game.replayWord(item)} />
+            ))}
+          </div>
+        )}
 
         <div className="sort-game__baskets">
           {round.baskets.map((sound) => (

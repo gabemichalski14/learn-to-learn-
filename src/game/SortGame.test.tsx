@@ -14,14 +14,14 @@ const round: SortRound = {
 const audio: AudioPlayer = { playSound: vi.fn().mockResolvedValue(undefined), playWord: vi.fn().mockResolvedValue(undefined) };
 
 describe('SortGame', () => {
-  it('renders a basket per target sound and all unplaced pictures', () => {
+  it('renders a sound basket per target sound and all unplaced pictures', () => {
     render(<SortGame round={round} audio={audio} />);
-    expect(screen.getAllByRole('button', { name: /replay the .* sound/i })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: /hear .* sound/i })).toHaveLength(2);
     expect(screen.getByRole('img', { name: /ball/i })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: /sun/i })).toBeInTheDocument();
   });
 
-  it('plays the word audio when a picture is tapped', async () => {
+  it('plays the word audio when a picture is tapped', () => {
     render(<SortGame round={round} audio={audio} />);
     screen.getByRole('img', { name: /ball/i }).click();
     expect(audio.playWord).toHaveBeenCalled();

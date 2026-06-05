@@ -1,0 +1,43 @@
+:root {
+  --bg: #fff6ec; --surface: #ffffff; --ink: #2b2d42; --accent: #ff8a3d;
+  --accent-soft: #ffe9d6; --good: #6ab04c; --radius: 18px;
+  font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); }
+.app { max-width: 880px; margin: 0 auto; padding: 24px; text-align: center; }
+.app__title { font-size: 28px; margin: 8px 0 20px; }
+
+.sort-game__prompt, .sort-game__done {
+  min-height: 28px; font-size: 18px; margin: 0 0 18px; font-weight: 600;
+}
+.sort-game__done { color: var(--good); }
+
+.sort-game__tray {
+  display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+  min-height: 96px; margin-bottom: 24px;
+}
+.sort-game__baskets { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+
+.picture-card {
+  width: 84px; height: 84px; border: none; border-radius: var(--radius);
+  background: var(--surface); box-shadow: 0 6px 14px rgba(210,120,40,.18);
+  font-size: 42px; cursor: grab; touch-action: none; display: grid; place-items: center;
+}
+.picture-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.sound-basket {
+  min-width: 150px; min-height: 150px; padding: 12px; border-radius: var(--radius);
+  background: var(--accent-soft); border: 3px dashed transparent;
+}
+.sound-basket--over { border-color: var(--accent); }
+.sound-basket__head { display: flex; justify-content: center; margin-bottom: 8px; }
+.sound-basket__items { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 34px; }
+
+.replay-btn {
+  width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--accent); color: #fff; font-size: 20px;
+}
+.replay-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

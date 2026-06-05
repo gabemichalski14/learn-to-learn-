@@ -30,16 +30,17 @@ export default function App() {
     setLearnerId(id);
   }
 
-  // The kid-band themes only apply inside the game; the rest of the site stays
-  // in the default brand look. Remember the chosen theme either way.
+  // The theme applies on the game and the tutor dashboard (both have a theme
+  // switcher); other pages stay in the default brand look. Remember it either way.
+  const themed = route.name === 'play' || route.name === 'tutor';
   useEffect(() => {
-    document.documentElement.dataset.theme = route.name === 'play' ? theme : 'l2l';
+    document.documentElement.dataset.theme = themed ? theme : 'l2l';
     try {
       localStorage.setItem('ll-theme', theme);
     } catch {
       /* ignore */
     }
-  }, [theme, route.name]);
+  }, [theme, themed]);
 
   switch (route.name) {
     case 'play':
@@ -49,7 +50,7 @@ export default function App() {
     case 'leaderboard':
       return <Leaderboard />;
     case 'tutor':
-      return <TutorDashboard />;
+      return <TutorDashboard theme={theme} setTheme={setTheme} />;
     case 'account':
       return <Account />;
     default:

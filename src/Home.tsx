@@ -1,4 +1,3 @@
-import { LogoMark } from './LogoMark';
 import { LEVELS, availableCount } from './games';
 import { navigate } from './router';
 import { loadProgress } from './progress';
@@ -17,7 +16,7 @@ export function Home({ learnerId, onSelectLearner }: Props) {
   return (
     <main className="site">
       <header className="site__header">
-        <LogoMark className="site__logo" />
+        <img className="site__logo" src="/logo.png" alt="Learn to Learn Tutoring Solutions" />
         <div>
           <h1 className="site__title">Learn to Learn</h1>
           <p className="site__tagline">Tutoring Solutions</p>

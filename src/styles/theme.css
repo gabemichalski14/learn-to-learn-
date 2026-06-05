@@ -825,7 +825,8 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .level-page__eyebrow { margin: 0 0 -2px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--teal-deep); }
 
 /* Dashboard (modern) */
-.dash__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.dash__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.dash__controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 10px; margin: 4px 0 18px; }
 .kpi { background: linear-gradient(180deg, var(--teal-soft), var(--surface)); border-radius: 14px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .kpi__icon { font-size: 16px; }

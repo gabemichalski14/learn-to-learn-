@@ -39,6 +39,12 @@ export interface LevelCurriculum {
   book?: string;
   /** Level 1 is oral phonemic awareness (no letters on screen). */
   oral?: boolean;
+  /** One-line goal for the level. */
+  summary?: string;
+  /** The repeating skill flow WITHIN each lesson (drives a lesson's game order). */
+  lessonFlow?: string[];
+  /** Book sections / back-matter (every book ends with a Posttest). */
+  sections?: string[];
   lessons: Lesson[];
 }
 
@@ -51,6 +57,9 @@ export const CURRICULUM: LevelCurriculum[] = [
     focus: 'Hearing the sounds in spoken words (oral, no letters)',
     book: 'Book 1: Phonemic Awareness',
     oral: true,
+    summary: 'Hear and break apart the sounds in spoken words (no letters yet).',
+    lessonFlow: ['Warm-up', 'Break the word into sounds (tiles)', 'Touch & say each sound', 'Blend back together'],
+    sections: ['Scope Chart', 'Lessons (oral)', 'Optional Posttest', 'Student Pages'],
     lessons: [
       { n: 1, title: 'Break Apart VC Words', skills: ['segment'], note: 'Segment 2-sound (vowel-consonant) syllables with tiles.' },
       { n: 2, title: 'Break Apart CVC Words', skills: ['segment'], note: 'Segment 3-sound words.' },
@@ -64,6 +73,9 @@ export const CURRICULUM: LevelCurriculum[] = [
     title: 'Consonants & Short Vowels',
     focus: 'Letter sounds, blending, reading & spelling short-vowel words',
     book: 'Book 2: Consonants & Short Vowels',
+    summary: 'By the end: all 5 short vowels, all 21 consonants, and 5 common digraphs.',
+    lessonFlow: ['Review', 'New Vowel', 'New Consonants', 'Read & Spell Words', 'Read 3 Types of Phrases', 'Read & Mark Sentences', 'Optional Practice'],
+    sections: ['Overview', 'Lessons', 'Games', 'Tips & Error Correction', 'Posttest', 'Student Pages'],
     lessons: [
       // Each lesson adds ONE short vowel + a set of consonants/units; lessons are
       // cumulative, so later games can draw from all sounds taught so far.
@@ -79,6 +91,9 @@ export const CURRICULUM: LevelCurriculum[] = [
     title: 'Closed Syllables',
     focus: 'Blends, digraphs, and closed-syllable spelling rules',
     book: 'Book 3: Closed Syllables',
+    summary: 'Read & spell closed-syllable words with blends and digraphs; learn the core spelling rules.',
+    lessonFlow: ['Review', 'New Concept / Rule', 'Read Words', 'Spell Words', 'Read Phrases', 'Read & Mark Sentences', 'Read a Story'],
+    sections: ['Overview', 'Lessons', 'Games', 'Tips & Error Correction', 'Posttest', 'Student Pages'],
     lessons: [
       { n: 1, title: 'Blends at the End', skills: ['read', 'spell'], note: 'Final consonant blends; tell a blend (2 sounds) from a digraph (1 sound).' },
       { n: 2, title: 'Blends at the Beginning', skills: ['read', 'spell'], note: 'Initial consonant blends.' },

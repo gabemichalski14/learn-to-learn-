@@ -47,3 +47,26 @@ word lists, sentences, or tutor scripts into the app.
   the tile; wrong answers gently retry, never penalize.
 - **Our own content**: build picture/word sets from common decodable words for the
   lesson's sound set; keep dyslexia-friendly type + minimal reading.
+
+## Completeness pass (structure captured from the books)
+Each book follows the same shape (now stored as `sections` per level):
+**Overview → Lessons → Games → Tips & Error Correction → Posttest → Student Pages.**
+
+Per-lesson flow (now stored as `lessonFlow`), e.g. Level 2:
+**Review → New Vowel → New Consonants → Read & Spell Words → Read 3 Types of
+Phrases → Read & Mark Sentences → Optional Practice.** Level goal: all 5 short
+vowels, all 21 consonants, 5 common digraphs. (Level 3 follows: Review → new
+concept/rule → read words → spell words → phrases → sentences → story.)
+
+**Testing → product opportunity.** Every level ends with a **Posttest** (a
+mastery check on that level's skills). This maps directly onto our tutor
+dashboard: a short, no-fail **level check** whose result is logged like a
+session → per-student mastery over time, exactly the data families pay for.
+Build it as another game type that records pass/score, not as a high-stakes test.
+
+**Tips & Error Correction** sections inform game *feedback* (e.g., the b/p
+confusion trick) — useful for gentle, specific retry hints rather than generic
+"try again." We summarize the approach; we don't copy the scripts.
+
+NOTE: we store the factual skeleton (lesson titles, sound/rule inventories, flow,
+sections) and author all words/pictures/sentences ourselves.

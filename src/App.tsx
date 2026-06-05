@@ -70,6 +70,7 @@ export default function App() {
         roundIndex={roundIndex}
         totalRounds={TOTAL_ROUNDS}
         playful={theme === 'playful'}
+        clean={theme === 'grownup'}
         onAdvance={() => setRoundIndex((i) => Math.min(i + 1, TOTAL_ROUNDS - 1))}
         onRestart={() => {
           setSessionId((s) => s + 1);

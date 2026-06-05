@@ -9,6 +9,7 @@ import { useSortGame } from './useSortGame';
 import { PictureCard } from './PictureCard';
 import { SoundBasket } from './SoundBasket';
 import { BookTree } from './BookTree';
+import { WalkProgress } from './WalkProgress';
 import { Mascot, SproutGlyph } from '../Mascot';
 import type { MascotMood } from '../Mascot';
 
@@ -21,6 +22,8 @@ interface Props {
   onRestart?: () => void;
   /** Playful theme — turns on the mascot, confetti, and extra celebration. */
   playful?: boolean;
+  /** Clean theme — swaps the growing tree for a minimal walk-to-the-finish meter. */
+  clean?: boolean;
 }
 
 interface Faller { id: number; x: number; y: number; sway: number; dur: number }
@@ -53,7 +56,7 @@ function prefersReducedMotion(): boolean {
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdvance, onRestart, playful = false }: Props) {
+export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdvance, onRestart, playful = false, clean = false }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -146,14 +149,19 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
     return round.items.filter((i) => game.placements[i.id] === sound);
   }
 
+  const finishLine = clean ? 'You reached the finish! Great listening.' : 'You grew the whole tree! Great listening.';
   const status = roundDone
-    ? (isLastRound ? 'You grew the whole tree! Great listening.' : 'Nice listening! Ready for the next page?')
+    ? (isLastRound ? finishLine : 'Nice listening! Ready for the next page?')
     : (game.message ?? 'Tap a basket to hear its sound, then drag each picture where it belongs.');
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="sort-game">
-        <BookTree className="sort-game__tree" progress={sessionProgress} bloom={bloom} />
+        {clean ? (
+          <WalkProgress className="sort-game__walk" progress={sessionProgress} />
+        ) : (
+          <BookTree className="sort-game__tree" progress={sessionProgress} bloom={bloom} />
+        )}
 
         <p
           className={`sort-game__status${roundDone ? ' sort-game__status--celebrate' : ''}`}

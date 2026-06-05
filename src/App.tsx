@@ -5,6 +5,7 @@ import { Home } from './Home';
 import { Leaderboard } from './Leaderboard';
 import { TutorDashboard } from './TutorDashboard';
 import type { ThemeId } from './ThemeSwitcher';
+import { ensureLearner, setCurrentLearnerId } from './profiles';
 
 function loadTheme(): ThemeId {
   try {
@@ -20,6 +21,12 @@ function loadTheme(): ThemeId {
 export default function App() {
   const route = useRoute();
   const [theme, setTheme] = useState<ThemeId>(loadTheme);
+  const [learnerId, setLearnerId] = useState<string>(() => ensureLearner().id);
+
+  function chooseLearner(id: string) {
+    setCurrentLearnerId(id);
+    setLearnerId(id);
+  }
 
   // The kid-band themes only apply inside the game; the rest of the site stays
   // in the default brand look. Remember the chosen theme either way.
@@ -34,12 +41,12 @@ export default function App() {
 
   switch (route) {
     case 'play':
-      return <GameScreen theme={theme} setTheme={setTheme} />;
+      return <GameScreen theme={theme} setTheme={setTheme} learnerId={learnerId} />;
     case 'leaderboard':
       return <Leaderboard />;
     case 'tutor':
       return <TutorDashboard />;
     default:
-      return <Home />;
+      return <Home learnerId={learnerId} onSelectLearner={chooseLearner} />;
   }
 }

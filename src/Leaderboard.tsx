@@ -1,33 +1,87 @@
 import { navigate } from './router';
 import { loadProgress, formatTime } from './progress';
 import { ACHIEVEMENTS } from './achievements';
+import { loadLearners, initials } from './profiles';
+import type { Learner } from './profiles';
+
+const MEDALS = ['🥇', '🥈', '🥉'];
+
+interface Entry {
+  learner: Learner;
+  value: string;
+  sortKey: number;
+}
+
+function Board({ title, entries }: { title: string; entries: Entry[] }) {
+  return (
+    <div className="board">
+      <h3 className="board__title">{title}</h3>
+      {entries.length === 0 ? (
+        <p className="board__empty">No data yet.</p>
+      ) : (
+        <ol className="board__list">
+          {entries.map((e, i) => (
+            <li key={e.learner.id} className="lb-row">
+              <span className="lb-row__rank">{MEDALS[i] ?? i + 1}</span>
+              <span className="lb-row__avatar" style={{ background: e.learner.color }} aria-hidden="true">
+                {initials(e.learner.name)}
+              </span>
+              <span className="lb-row__name">{e.learner.name}</span>
+              <span className="lb-row__value">{e.value}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  );
+}
 
 /**
- * Placeholder for the eventual tutoring-center-wide leaderboard. For now it
- * shows this device's own stats; once there's a backend + learner identity it
- * becomes the cross-center board (top times / most stickers).
+ * A local leaderboard across the students on this device — a working preview of
+ * the eventual center-wide board (which needs a backend + shared accounts).
  */
 export function Leaderboard() {
-  const { earned, bestMs, sessions } = loadProgress();
+  const learners = loadLearners();
+  const rows = learners.map((l) => ({ learner: l, p: loadProgress(l.id) }));
+
+  const stickers: Entry[] = [...rows]
+    .map((r) => ({ learner: r.learner, sortKey: new Set(r.p.earned).size, value: `${new Set(r.p.earned).size}/${ACHIEVEMENTS.length}` }))
+    .filter((e) => e.sortKey > 0)
+    .sort((a, b) => b.sortKey - a.sortKey)
+    .slice(0, 5);
+
+  const fastest: Entry[] = [...rows]
+    .filter((r) => r.p.bestMs != null)
+    .map((r) => ({ learner: r.learner, sortKey: r.p.bestMs as number, value: formatTime(r.p.bestMs as number) }))
+    .sort((a, b) => a.sortKey - b.sortKey)
+    .slice(0, 5);
+
+  const sessions: Entry[] = [...rows]
+    .map((r) => ({ learner: r.learner, sortKey: r.p.sessions, value: String(r.p.sessions) }))
+    .filter((e) => e.sortKey > 0)
+    .sort((a, b) => b.sortKey - a.sortKey)
+    .slice(0, 5);
 
   return (
     <main className="site site--page">
       <button type="button" className="back-btn" onClick={() => navigate('#/')}>← Home</button>
       <h1 className="site__title">Leaderboard</h1>
       <p className="page__lead">
-        Center-wide leaderboards are coming soon — students will compare best times and stickers
-        across the whole tutoring center.
+        Friendly competition across the players on this device. Center-wide leaderboards (across
+        every student at the center) arrive once accounts are added.
       </p>
 
-      <div className="page__panel">
-        <h2 className="site__h2">Your progress</h2>
-        <div className="book__stats">
-          <span className="book__stat"><strong>{new Set(earned).size}</strong>/{ACHIEVEMENTS.length}<br />stickers</span>
-          <span className="book__stat"><strong>{sessions}</strong><br />sessions</span>
-          <span className="book__stat"><strong>{bestMs != null ? formatTime(bestMs) : '—'}</strong><br />best time</span>
+      {learners.length < 2 ? (
+        <div className="page__panel">
+          <p>Add more players from the home screen to compare stickers and times!</p>
         </div>
-        <p className="page__note">Showing your own progress on this device until center accounts are added.</p>
-      </div>
+      ) : (
+        <div className="board-grid">
+          <Board title="🌟 Most stickers" entries={stickers} />
+          <Board title="⚡ Fastest finish" entries={fastest} />
+          <Board title="🎮 Most games" entries={sessions} />
+        </div>
+      )}
     </main>
   );
 }

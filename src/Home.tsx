@@ -3,10 +3,16 @@ import { GAMES } from './games';
 import { navigate } from './router';
 import { loadProgress } from './progress';
 import { ACHIEVEMENTS } from './achievements';
+import { LearnerBar } from './LearnerBar';
 
-/** Platform home: brand, the game library, and entries to leaderboard + tutor data. */
-export function Home() {
-  const { earned, sessions } = loadProgress();
+interface Props {
+  learnerId: string;
+  onSelectLearner: (id: string) => void;
+}
+
+/** Platform home: who's playing, the game library, and entries to leaderboard + tutor data. */
+export function Home({ learnerId, onSelectLearner }: Props) {
+  const { earned, sessions } = loadProgress(learnerId);
 
   return (
     <main className="site">
@@ -17,6 +23,8 @@ export function Home() {
           <p className="site__tagline">Phonics games built for the Barton Reading &amp; Spelling System</p>
         </div>
       </header>
+
+      <LearnerBar learnerId={learnerId} onSelect={onSelectLearner} />
 
       <section className="site__section" aria-labelledby="games-h">
         <h2 id="games-h" className="site__h2">Games</h2>
@@ -53,7 +61,7 @@ export function Home() {
           <button type="button" className="panel-card" onClick={() => navigate('#/leaderboard')}>
             <span className="panel-card__emoji" aria-hidden="true">🏆</span>
             <span className="panel-card__title">Leaderboard</span>
-            <span className="panel-card__sub">{earned.length} of {ACHIEVEMENTS.length} stickers earned</span>
+            <span className="panel-card__sub">{new Set(earned).size} of {ACHIEVEMENTS.length} stickers earned</span>
           </button>
           <button type="button" className="panel-card" onClick={() => navigate('#/tutor')}>
             <span className="panel-card__emoji" aria-hidden="true">📊</span>

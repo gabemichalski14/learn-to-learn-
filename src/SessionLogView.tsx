@@ -4,10 +4,11 @@ import { SessionLogPanel } from './SessionLogPanel';
 interface Props {
   open: boolean;
   onClose: () => void;
+  learnerId: string;
 }
 
 /** Modal wrapper around the tutor progress log (quick in-game access). */
-export function SessionLog({ open, onClose }: Props) {
+export function SessionLog({ open, onClose, learnerId }: Props) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -25,7 +26,7 @@ export function SessionLog({ open, onClose }: Props) {
         <button type="button" className="book__close" onClick={onClose} aria-label="Close progress log">×</button>
         <h2 className="book__title">Progress Log</h2>
         <p className="log__sub">For the tutor — every finished session</p>
-        <SessionLogPanel />
+        <SessionLogPanel learnerId={learnerId} />
       </div>
     </div>
   );

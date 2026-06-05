@@ -63,18 +63,18 @@ export function evaluateNew(ctx: AchvCtx, alreadyEarned: Set<string>): Achieveme
 }
 
 /**
- * Evaluate + persist achievements for the session that was *just logged*.
- * Call AFTER logSession(). Returns the achievements newly earned (0, 1, or many).
+ * Evaluate + persist achievements for the session that was *just logged* for a
+ * learner. Call AFTER logSession(). Returns the achievements newly earned.
  */
-export function awardForSession(): Achievement[] {
-  const log = loadSessionLog();
+export function awardForSession(learnerId: string): Achievement[] {
+  const log = loadSessionLog(learnerId);
   if (log.length === 0) return [];
   const last = log[log.length - 1];
   const prev = log.length >= 2 ? log[log.length - 2] : undefined;
   const distinctDays = new Set(log.map((r) => r.endedAt.slice(0, 10))).size;
   const ctx: AchvCtx = { log, last, prev, sessions: log.length, distinctDays };
 
-  const newly = evaluateNew(ctx, new Set(loadEarned()));
-  if (newly.length) addEarned(newly.map((a) => a.id));
+  const newly = evaluateNew(ctx, new Set(loadEarned(learnerId)));
+  if (newly.length) addEarned(learnerId, newly.map((a) => a.id));
   return newly;
 }

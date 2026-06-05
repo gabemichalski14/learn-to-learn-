@@ -16,19 +16,20 @@ function isThisWeek(iso: string): boolean {
 }
 
 /**
- * Tutor progress-log content (summary + table + export/clear). Used both by the
- * in-game modal and the Tutor Dashboard page, so the data view stays identical.
+ * Tutor progress-log content (summary + table + export/clear) for one learner.
+ * Used both by the in-game modal and the Tutor Dashboard page, so the data view
+ * stays identical.
  */
-export function SessionLogPanel() {
+export function SessionLogPanel({ learnerId }: { learnerId: string }) {
   const [, bump] = useState(0); // re-read after clearing
 
-  const records = loadSessionLog().slice().reverse(); // newest first
+  const records = loadSessionLog(learnerId).slice().reverse(); // newest first
   const total = records.length;
   const week = records.filter((r) => isThisWeek(r.endedAt)).length;
   const avgAccuracy = total ? Math.round((records.reduce((s, r) => s + r.accuracy, 0) / total) * 100) : 0;
 
   function exportCsv() {
-    const csv = sessionLogCsv(loadSessionLog());
+    const csv = sessionLogCsv(loadSessionLog(learnerId));
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -39,8 +40,8 @@ export function SessionLogPanel() {
   }
 
   function clearAll() {
-    if (window.confirm('Clear the whole session log? This cannot be undone.')) {
-      clearSessionLog();
+    if (window.confirm('Clear this student’s whole session log? This cannot be undone.')) {
+      clearSessionLog(learnerId);
       bump((n) => n + 1);
     }
   }

@@ -84,6 +84,22 @@ scope, plus the final code review of the v1 foundation (2026-06-04).
 - Suggested content model: **Level → Lesson → items**, each item tagged with concept type
   (vowel, digraph, suffix, prefix, etc.) per the scope-and-sequence colour taxonomy.
 
+## Learner profiles & per-learner data (DONE — the data keystone)
+- `src/profiles.ts`: multiple learners on one device (tutor's device), a current
+  learner, add/rename. `ensureLearner()` seeds "Player 1" on first run.
+- **All data is namespaced per learner** (`ll:<learnerId>:earned|best|sessions|log`).
+  `progress.ts`, `sessionLog.ts`, `achievements.awardForSession()` all take a learnerId.
+  The game logs to the current learner (chosen in the Home `LearnerBar`).
+- **Leaderboard** (`Leaderboard.tsx`): real local board across the device's learners —
+  most stickers / fastest finish / most games, with medals. Preview of the center-wide one.
+- **Tutor Dashboard** (`TutorDashboard.tsx`): pick a student → stat tiles (sessions, avg
+  accuracy, best time, stickers), an accuracy trend, the full session log, CSV export, and a
+  Print report (`@media print` strips nav/actions).
+- **Next:** backend + center/class accounts so learners + logs sync across devices and the
+  leaderboard goes center-wide. Privacy: store first-name + initials only, or tutor-managed
+  handles; keep learner ids opaque. `profiles.ts`/`progress.ts`/`sessionLog.ts` are the only
+  write-points a sync layer must hook.
+
 ## Platform / site shell
 - **Routing:** dependency-free hash router (`src/router.ts`) with routes home / play /
   leaderboard / tutor. App.tsx is the route host. Swap for React Router later **without

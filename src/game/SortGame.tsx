@@ -24,6 +24,8 @@ interface Props {
   totalRounds?: number;
   /** Identifies the current session (resets the cross-round accumulator). */
   sessionId?: number;
+  /** Which learner this session belongs to (keys progress / log / stickers). */
+  learnerId?: string;
   /** Timestamp (ms) when the current session began — for the elapsed finish clock. */
   sessionStartAt?: number;
   onAdvance?: () => void;
@@ -78,7 +80,7 @@ function prefersReducedMotion(): boolean {
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionId = 0, sessionStartAt = Date.now(), onAdvance, onRestart, onOpenStickerBook, playful = false, clean = false }: Props) {
+export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionId = 0, learnerId = 'guest', sessionStartAt = Date.now(), onAdvance, onRestart, onOpenStickerBook, playful = false, clean = false }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -113,9 +115,11 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
     if (!isLastRound) return;
 
     const durationMs = Math.max(0, Date.now() - sessionStartAt);
-    const res = recordFinish(durationMs);
-    logSession({
+    const res = recordFinish(learnerId, durationMs);
+    logSession(learnerId, {
       game: 'beginning-sounds',
+      level: 2,
+      lesson: 1,
       startedAt: new Date(sessionStartAt).toISOString(),
       endedAt: new Date().toISOString(),
       durationMs,
@@ -124,9 +128,9 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
       wrongAttempts: totals.wrong,
       accuracy: totals.items > 0 ? totals.items / (totals.items + totals.wrong) : 1,
     });
-    const newly = awardForSession();
+    const newly = awardForSession(learnerId);
     setFinish({ ms: durationMs, best: res.isBest });
-    if (!clean) setReward({ newly, totalEarned: loadEarned().length });
+    if (!clean) setReward({ newly, totalEarned: loadEarned(learnerId).length });
   }, [roundDone]);
 
   // Wrong answer: a leaf drifts down; the buddy gives a sympathetic wobble.

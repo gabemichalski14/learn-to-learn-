@@ -15,10 +15,11 @@ const ITEMS_PER_ROUND = 6;
 interface Props {
   theme: ThemeId;
   setTheme: (t: ThemeId) => void;
+  learnerId: string;
 }
 
 /** The Beginning Sounds Match game screen — one game in the platform. */
-export function GameScreen({ theme, setTheme }: Props) {
+export function GameScreen({ theme, setTheme, learnerId }: Props) {
   const audio = useMemo(() => createStubAudioPlayer(), []);
   const [sessionId, setSessionId] = useState(0);
   const [roundIndex, setRoundIndex] = useState(0);
@@ -90,6 +91,7 @@ export function GameScreen({ theme, setTheme }: Props) {
         roundIndex={roundIndex}
         totalRounds={TOTAL_ROUNDS}
         sessionId={sessionId}
+        learnerId={learnerId}
         sessionStartAt={sessionStartAt}
         playful={theme === 'playful'}
         clean={theme === 'grownup'}
@@ -101,7 +103,7 @@ export function GameScreen({ theme, setTheme }: Props) {
         }}
       />
 
-      <StickerBook open={bookOpen} onClose={() => setBookOpen(false)} />
+      <StickerBook open={bookOpen} onClose={() => setBookOpen(false)} learnerId={learnerId} />
 
       {/* Discreet tutor-only entry to the progress log. */}
       <button
@@ -113,7 +115,7 @@ export function GameScreen({ theme, setTheme }: Props) {
       >
         <span aria-hidden="true">📊</span>
       </button>
-      <SessionLog open={logOpen} onClose={() => setLogOpen(false)} />
+      <SessionLog open={logOpen} onClose={() => setLogOpen(false)} learnerId={learnerId} />
     </main>
   );
 }

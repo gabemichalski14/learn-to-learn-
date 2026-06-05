@@ -754,3 +754,56 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .page__panel { background: var(--surface); border-radius: 18px; padding: clamp(16px, 4vw, 24px); box-shadow: 0 8px 24px rgba(15, 151, 143, 0.10); text-align: center; }
 .page__panel .site__h2 { margin-bottom: 14px; }
 .page__note { margin: 14px 0 0; font-size: 12px; color: var(--teal-deep); opacity: .7; }
+
+/* Learner picker (who's playing) */
+.learnerbar { display: flex; flex-direction: column; gap: 8px; margin-bottom: clamp(20px, 5vw, 30px); }
+.learnerbar__label { font-size: clamp(11px, 2.8vw, 13px); font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--teal-deep); }
+.learnerbar__chips, .student-picker { display: flex; flex-wrap: wrap; gap: 8px; }
+.student-picker { margin-bottom: 16px; }
+.learner-chip {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font: inherit; color: var(--ink);
+  background: var(--surface); border: 2px solid var(--teal-soft); border-radius: 999px; padding: 5px 14px 5px 5px;
+  transition: border-color .12s ease, transform .12s ease;
+}
+.learner-chip:hover { transform: translateY(-1px); }
+.learner-chip--active { border-color: var(--teal-deep); box-shadow: 0 4px 12px rgba(15, 151, 143, .18); }
+.learner-chip:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.learner-chip--add { border-style: dashed; }
+.learner-chip__avatar { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 12px; flex: 0 0 auto; }
+.learner-chip__avatar--add { background: var(--teal-deep); font-size: 18px; }
+.learner-chip__name { font-weight: 700; font-size: clamp(12px, 3vw, 14px); padding-right: 2px; }
+
+/* Leaderboard boards */
+.board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: clamp(12px, 2.6vw, 18px); }
+.board { background: var(--surface); border-radius: 18px; padding: clamp(14px, 3vw, 20px); box-shadow: 0 8px 20px rgba(15, 151, 143, .10); }
+.board__title { margin: 0 0 10px; font-size: clamp(14px, 3.2vw, 16px); color: var(--ink); }
+.board__empty { color: var(--muted); font-size: 13px; margin: 0; }
+.board__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lb-row { display: flex; align-items: center; gap: 10px; }
+.lb-row__rank { width: 24px; text-align: center; font-weight: 800; color: var(--teal-deep); }
+.lb-row__avatar { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 11px; flex: 0 0 auto; }
+.lb-row__name { flex: 1; font-weight: 700; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-row__value { font-weight: 800; color: var(--teal-deep); }
+
+/* Tutor dashboard report */
+.report { text-align: left; }
+.report__head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.report__avatar { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 16px; flex: 0 0 auto; }
+.report__name { margin: 0; font-size: clamp(18px, 4.4vw, 22px); color: var(--ink); }
+.report__since { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+.report__print { margin-left: auto; padding: 6px 12px; }
+.stat-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.stat-tile { background: linear-gradient(180deg, var(--teal-soft), var(--surface)); border-radius: 14px; padding: 12px; text-align: center; }
+.stat-tile strong { display: block; font-size: clamp(18px, 5vw, 24px); color: var(--teal-deep); }
+.stat-tile span { font-size: 11px; font-weight: 700; color: var(--muted); }
+.report__trend { margin-bottom: 16px; }
+.report__trend-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--teal-deep); }
+.trend { display: flex; align-items: flex-end; gap: 4px; height: 56px; margin-top: 6px; }
+.trend__bar { flex: 1; background: linear-gradient(180deg, var(--teal), var(--teal-deep)); border-radius: 4px 4px 0 0; min-width: 6px; }
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  .page__panel { box-shadow: none; }
+  .log__actions { display: none !important; }
+}

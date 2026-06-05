@@ -5,6 +5,7 @@ import { ACHIEVEMENTS } from './achievements';
 interface Props {
   open: boolean;
   onClose: () => void;
+  learnerId: string;
 }
 
 /**
@@ -13,7 +14,7 @@ interface Props {
  * but reveal the goal, so kids always have something to aim for. Also shows
  * best time + sessions finished. Opens on demand (no time pressure).
  */
-export function StickerBook({ open, onClose }: Props) {
+export function StickerBook({ open, onClose, learnerId }: Props) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -25,7 +26,7 @@ export function StickerBook({ open, onClose }: Props) {
 
   if (!open) return null;
 
-  const { earned, bestMs, sessions } = loadProgress();
+  const { earned, bestMs, sessions } = loadProgress(learnerId);
   const got = new Set(earned);
 
   return (

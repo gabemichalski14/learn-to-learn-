@@ -1,20 +1,20 @@
 /**
- * Single source of truth for a learner's local progress: which achievement
- * stickers they've earned, their best finish time, and sessions completed.
- * Kept in one small place so a future tutoring-center leaderboard / dashboard
- * can read/sync from it without touching game code.
+ * Per-learner progress: earned achievement ids, best finish time, sessions
+ * completed. All keys are namespaced by learner id (`ll:<id>:…`) so a tutor's
+ * device cleanly separates students. A future backend syncs this same shape.
  */
 
-const BEST_KEY = 'll-besttime';
-const SESSIONS_KEY = 'll-sessions';
-const EARNED_KEY = 'll-achievements';
+const k = (learnerId: string, suffix: string) => `ll:${learnerId}:${suffix}`;
 
 export interface Progress {
-  /** Ids of earned achievement stickers (see achievements.ts). */
   earned: string[];
-  /** Fastest finish in ms, or null if no session finished yet. */
   bestMs: number | null;
-  /** Total sessions finished (all themes). */
+  sessions: number;
+}
+
+export interface FinishResult {
+  bestMs: number;
+  isBest: boolean;
   sessions: number;
 }
 
@@ -29,41 +29,36 @@ function readNumber(key: string): number | null {
   }
 }
 
-export function loadEarned(): string[] {
+export function loadEarned(learnerId: string): string[] {
   try {
-    const raw = JSON.parse(localStorage.getItem(EARNED_KEY) ?? '[]');
+    const raw = JSON.parse(localStorage.getItem(k(learnerId, 'earned')) ?? '[]');
     return Array.isArray(raw) ? raw.filter((x): x is string => typeof x === 'string') : [];
   } catch {
     return [];
   }
 }
 
-/** Merge newly-earned ids into the stored set; returns the full earned list. */
-export function addEarned(ids: string[]): string[] {
-  const merged = Array.from(new Set([...loadEarned(), ...ids]));
+export function addEarned(learnerId: string, ids: string[]): string[] {
+  const merged = Array.from(new Set([...loadEarned(learnerId), ...ids]));
   try {
-    localStorage.setItem(EARNED_KEY, JSON.stringify(merged));
+    localStorage.setItem(k(learnerId, 'earned'), JSON.stringify(merged));
   } catch {
     /* ignore */
   }
   return merged;
 }
 
-export function loadProgress(): Progress {
-  return { earned: loadEarned(), bestMs: readNumber(BEST_KEY), sessions: readNumber(SESSIONS_KEY) ?? 0 };
+export function loadProgress(learnerId: string): Progress {
+  return {
+    earned: loadEarned(learnerId),
+    bestMs: readNumber(k(learnerId, 'best')),
+    sessions: readNumber(k(learnerId, 'sessions')) ?? 0,
+  };
 }
 
-export interface FinishResult {
-  bestMs: number;
-  /** True only when this run beat a previous best (never on the very first run). */
-  isBest: boolean;
-  sessions: number;
-}
-
-/** Record a finished session's time + count (achievements are handled separately). */
-export function recordFinish(elapsedMs: number): FinishResult {
-  const prevBest = readNumber(BEST_KEY);
-  const prevSessions = readNumber(SESSIONS_KEY) ?? 0;
+export function recordFinish(learnerId: string, elapsedMs: number): FinishResult {
+  const prevBest = readNumber(k(learnerId, 'best'));
+  const prevSessions = readNumber(k(learnerId, 'sessions')) ?? 0;
   const ms = Math.max(0, Math.round(elapsedMs));
 
   const isBest = prevBest != null && ms < prevBest;
@@ -71,8 +66,8 @@ export function recordFinish(elapsedMs: number): FinishResult {
   const sessions = prevSessions + 1;
 
   try {
-    localStorage.setItem(BEST_KEY, String(bestMs));
-    localStorage.setItem(SESSIONS_KEY, String(sessions));
+    localStorage.setItem(k(learnerId, 'best'), String(bestMs));
+    localStorage.setItem(k(learnerId, 'sessions'), String(sessions));
   } catch {
     /* ignore */
   }

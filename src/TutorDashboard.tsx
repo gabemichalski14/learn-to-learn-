@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { navigate } from './router';
 import { SessionLogPanel } from './SessionLogPanel';
-import { loadLearners, getCurrentLearnerId, getLearner, initials } from './profiles';
+import { loadLearners, getCurrentLearnerId, getLearner, initials, renameLearner, removeLearner } from './profiles';
 import { loadProgress, formatTime } from './progress';
 import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
@@ -44,8 +44,28 @@ function TimeChart({ records }: { records: SessionRecord[] }) {
 
 /** Full-page tutor view: pick a student, see KPIs + charts + log + a printable report. */
 export function TutorDashboard() {
+  const [, bump] = useState(0);
   const learners = loadLearners();
   const [sel, setSel] = useState<string>(() => getCurrentLearnerId() ?? learners[0]?.id ?? '');
+
+  function renameStudent() {
+    const learner = getLearner(sel);
+    const name = window.prompt('Rename student:', learner?.name ?? '');
+    if (name && name.trim()) {
+      renameLearner(sel, name);
+      bump((n) => n + 1);
+    }
+  }
+
+  function removeStudent() {
+    const learner = getLearner(sel);
+    if (window.confirm(`Remove ${learner?.name ?? 'this student'} and all of their data? This cannot be undone.`)) {
+      removeLearner(sel);
+      const remaining = loadLearners();
+      setSel(remaining[0]?.id ?? '');
+      bump((n) => n + 1);
+    }
+  }
 
   const learner = getLearner(sel);
   const prog = sel ? loadProgress(sel) : null;
@@ -95,6 +115,10 @@ export function TutorDashboard() {
                   <p className="report__since">
                     {lastPlayed ? `Last played ${lastPlayed.toLocaleDateString()} · ${activeDays} day${activeDays === 1 ? '' : 's'} active` : 'No sessions yet'}
                   </p>
+                </div>
+                <div className="report__manage no-print">
+                  <button type="button" className="link-btn" onClick={renameStudent}>Rename</button>
+                  <button type="button" className="link-btn link-btn--danger" onClick={removeStudent}>Remove</button>
                 </div>
               </div>
 

@@ -842,6 +842,11 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .bars { display: flex; align-items: flex-end; gap: 4px; height: 90px; }
 .bars__bar { flex: 1; min-width: 6px; background: linear-gradient(180deg, var(--teal), var(--teal-deep)); border-radius: 4px 4px 0 0; }
 .report__log { text-align: left; margin-top: 0; }
+.report__manage { margin-left: auto; display: flex; gap: 12px; }
+.link-btn { border: none; background: none; cursor: pointer; font: inherit; font-weight: 700; font-size: 13px; color: var(--teal-deep); padding: 4px 2px; }
+.link-btn:hover { text-decoration: underline; }
+.link-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.link-btn--danger { color: #b3492f; }
 
 @media print {
   .no-print { display: none !important; }

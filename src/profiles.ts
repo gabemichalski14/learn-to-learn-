@@ -81,6 +81,21 @@ export function renameLearner(id: string, name: string): void {
   persist(loadLearners().map((l) => (l.id === id ? { ...l, name: trimmed } : l)));
 }
 
+/** Remove a learner and all of their stored data (progress + session log). */
+export function removeLearner(id: string): void {
+  const list = loadLearners().filter((l) => l.id !== id);
+  persist(list);
+  try {
+    ['earned', 'best', 'sessions', 'log'].forEach((suffix) => localStorage.removeItem(`ll:${id}:${suffix}`));
+    if (localStorage.getItem(CURRENT_KEY) === id) {
+      if (list[0]) setCurrentLearnerId(list[0].id);
+      else localStorage.removeItem(CURRENT_KEY);
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 /** Ensure at least one learner exists; returns the current learner. */
 export function ensureLearner(): Learner {
   const list = loadLearners();

@@ -27,15 +27,11 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
   padding: clamp(12px, 3vw, 26px) clamp(12px, 4vw, 24px) clamp(28px, 5vw, 44px);
 }
 
-.app__header {
-  display: flex; align-items: center; justify-content: center; gap: clamp(8px, 2vw, 14px);
-  margin: 4px 0 8px; flex-wrap: wrap;
+/* Screen-reader-only: present in the accessibility tree, invisible on screen. */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
-.app__logo { width: clamp(42px, 11vw, 58px); height: clamp(42px, 11vw, 58px); flex: 0 0 auto; }
-.app__titles { text-align: left; }
-.app__title { font-size: clamp(20px, 4.6vw, 28px); margin: 0; letter-spacing: -0.01em; }
-.app__brand { margin: 0; font-size: clamp(11px, 2.6vw, 13px); font-weight: 700; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--teal-deep); }
 
 /* Uniform gap keeps a fixed space between every child (tree, status, Play-again
    button, baskets) at any viewport size — no margin collapse, no overlap. */

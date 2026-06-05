@@ -3,7 +3,6 @@ import { generateSortRound } from './domain/engine';
 import { everydayObjects } from './content/packs/everydayObjects';
 import { createStubAudioPlayer } from './audio/stubAudioPlayer';
 import { SortGame } from './game/SortGame';
-import { LogoMark } from './LogoMark';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import type { ThemeId } from './ThemeSwitcher';
 
@@ -77,13 +76,9 @@ export default function App() {
         <ThemeSwitcher value={theme} onSelect={setTheme} />
       </div>
 
-      <header className="app__header">
-        <LogoMark className="app__logo" />
-        <div className="app__titles">
-          <h1 className="app__title">Beginning Sounds Match</h1>
-          <p className="app__brand">Learn to Learn</p>
-        </div>
-      </header>
+      {/* Heading kept for screen readers / document outline, hidden on screen
+          so the page is just the game content. */}
+      <h1 className="sr-only">Beginning Sounds Match — Learn to Learn</h1>
 
       <SortGame
         key={`${sessionId}-${roundIndex}`}

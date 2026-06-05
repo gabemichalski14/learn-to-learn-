@@ -8,7 +8,7 @@ import { useSortGame } from './useSortGame';
 import { PictureCard } from './PictureCard';
 import { SoundBasket } from './SoundBasket';
 import { BookTree } from './BookTree';
-import { Mascot } from '../Mascot';
+import { Mascot, SproutGlyph } from '../Mascot';
 import type { MascotMood } from '../Mascot';
 
 interface Props {
@@ -27,6 +27,14 @@ interface ConfettiPiece { dx: number; dy: number; rot: number; color: string; si
 interface Burst { id: number; pieces: ConfettiPiece[] }
 
 const CONFETTI_COLORS = ['#7ffdf7', '#12b3a8', '#0f978f', '#ffd23f', '#ff8a3d', '#ff6b9d'];
+
+const SPROUT_MOVES = ['spin', 'jump', 'dance', 'flip'] as const;
+type SproutMove = (typeof SPROUT_MOVES)[number];
+const SPROUT_COLORS: [string, string][] = [
+  ['#ffd23f', '#d99e00'], ['#ff8fb0', '#e85c86'], ['#8a6bff', '#6a47e0'],
+  ['#36c5ff', '#1a93d6'], ['#4fe08a', '#23b85f'], ['#ff9a4d', '#e87320'],
+];
+interface CelSprout { id: number; left: number; top: number; move: SproutMove; color: string; edge: string }
 
 function makeConfetti(): ConfettiPiece[] {
   return Array.from({ length: 22 }, () => ({
@@ -58,6 +66,7 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
 
   const [fallers, setFallers] = useState<Faller[]>([]);
   const [bursts, setBursts] = useState<Burst[]>([]);
+  const [sprouts, setSprouts] = useState<CelSprout[]>([]);
   const [mascotMood, setMascotMood] = useState<MascotMood>('idle');
   const prevWrong = useRef(game.wrongCount);
   const prevCorrect = useRef(0);
@@ -99,6 +108,21 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
     setMascotMood('happy');
     if (moodTimer.current) window.clearTimeout(moodTimer.current);
     moodTimer.current = window.setTimeout(() => setMascotMood('idle'), 700);
+
+    // A little crowd of sprouts pops up, each doing its own move, then fades.
+    const party = Array.from({ length: 3 }, () => {
+      const [color, edge] = SPROUT_COLORS[Math.floor(Math.random() * SPROUT_COLORS.length)];
+      return {
+        id: Math.random(),
+        left: 8 + Math.random() * 80,
+        top: 6 + Math.random() * 46,
+        move: SPROUT_MOVES[Math.floor(Math.random() * SPROUT_MOVES.length)],
+        color,
+        edge,
+      };
+    });
+    setSprouts((s) => [...s, ...party]);
+    party.forEach((o) => window.setTimeout(() => setSprouts((s) => s.filter((x) => x.id !== o.id)), 1700));
   }, [correct, playful]);
 
   function handleDragEnd(event: DragEndEvent) {
@@ -207,6 +231,20 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
               />
             )),
           )}
+        </div>
+      )}
+
+      {playful && (
+        <div className="sprout-party" aria-hidden="true">
+          {sprouts.map((s) => (
+            <div
+              key={s.id}
+              className={`cel-sprout cel-sprout--${s.move}`}
+              style={{ left: `${s.left}%`, top: `${s.top}%`, '--teal': s.color, '--teal-deep': s.edge } as CSSProperties}
+            >
+              <SproutGlyph mood="happy" />
+            </div>
+          ))}
         </div>
       )}
 

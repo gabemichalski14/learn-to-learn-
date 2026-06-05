@@ -3,6 +3,19 @@
 Carry-forward items for the next build cycle. Sources: the v1 design spec's deferred
 scope, plus the final code review of the v1 foundation (2026-06-04).
 
+## ✅ Resolved in the teal redesign (2026-06-04)
+- **Learn to Learn brand** (teal #7FFDF7 family + ink + white) is now the default look.
+- **Anti-pattern round generation**: random sounds, unequal hidden counts, shuffled
+  basket order, 2–3 baskets, varied length, larger pool.
+- **Sound-as-basket** layout: central pulsing speaker, tap-anywhere, keyboard-reachable.
+- **Grow-the-tree** engagement: enhanced logo recreated as an SVG progress meter.
+- **A11y-3 (live-region swap)** — fixed: one persistent `role=status` region.
+- **A11y-4 (label names a letter)** — fixed: basket label is "Hear this basket's sound".
+- Pack expanded/curated to ~6 clean single-onset words per sound.
+
+Note: the warm "Soft & Friendly" look was replaced (not kept as a toggle). Bringing it
+back as a selectable theme rides along with the **age-band themes** work below.
+
 ## Planned v1 → v2 features (from the spec)
 - **Mode B — Connect the pairs** (the second play mode).
 - **Age-band themes** (Playful / Cool / Grown-up) — swappable, never babyish.
@@ -23,12 +36,8 @@ scope, plus the final code review of the v1 foundation (2026-06-04).
 - **A11y-2 (`role="img"` vs drag semantics):** `PictureCard` sets `role="img"`, overriding
   dnd-kit's `role="button"`, reducing screen-reader "draggable" semantics. Reconcile so the
   element is both a named picture and an announced draggable (e.g. aria-roledescription).
-- **A11y-3 (live-region swap):** On completion, the prompt `<p role=status aria-live=polite>`
-  is unmounted and a different `<div role=status>` is mounted. Keep a single persistent live
-  region and change its text instead, so all screen readers reliably announce completion.
-- **A11y-4 (button label names a letter):** `SoundBasket` replay label is `Replay the b sound`;
-  screen readers say the letter name "bee", at odds with the letterless principle. Revisit
-  once recorded phoneme audio exists.
+- ~~**A11y-3 (live-region swap)**~~ ✅ done in the teal redesign — one persistent live region.
+- ~~**A11y-4 (button label names a letter)**~~ ✅ done — basket label no longer names a letter.
 
 ## Other review notes
 - **Completion audio:** the spec calls for a gentle celebration on completion; v1 shows the

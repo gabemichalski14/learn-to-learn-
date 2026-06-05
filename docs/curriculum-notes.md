@@ -25,7 +25,28 @@ word lists, sentences, or tutor scripts into the app.
   - Per-lesson skill flow (from the progress-tracking sheet): teach new sound →
     spell sounds on tiles → read real words → spell real words → read phrases →
     read sentences → read story.
-- Levels 3–10: placeholders, filled as their books are captured.
+- **Level 3 — Closed Syllables** (verified): blends → digraphs/3-letter blends →
+  the closed-syllable spelling rules (FLOSS & ALL, C vs K, -ck, -ing/-ink, -tch,
+  contractions, -ind/-old). 11 lessons.
+- **Level 4 — Syllable Division** (verified from the contents page): open
+  syllables → four syllable-division rules for decoding big words → spelling
+  rules (/k/-in-the-middle, doubling, schwa) → long vowels & vowel teams. 14
+  lessons.
+- **Level 5 — Prefixes & Suffixes** (verified from the contents page): plurals
+  (-s/-es) → consonant & vowel suffixes (Doubling & Change rules, -tion/-sion) →
+  prefixes. 10 lessons.
+- **Level 6 — Six Reasons for Silent-E** (partial): the six reasons a silent-E
+  exists → suffix spelling (the Dropping rule, tricky suffixes) → Greek clues
+  (PH, medial Y) → TURE / TION-SION units → Consonant-LE. TOC page 1 gives
+  Lessons 1–11; the book runs through Lesson 14 + Posttest, so titles for
+  Lessons 12–14 await a shot of the contents page's second page.
+- Levels 7–10: placeholders, filled as their books are captured.
+
+Re-shoots that paid off: Level 4's contents page (a single HEIC still) converted
+the Lesson-1-only stub into all 14 lessons. The same one-photo shot of a contents
+page is the fastest, most reliable way to complete a level — far better than
+hunting interior pages, whose running headers carry only "Lesson N", never the
+descriptive title (which lives only on the contents page).
 
 ## Skill → game-type map (drives "most retention / best results")
 | Skill tag | What it trains | Game(s) |

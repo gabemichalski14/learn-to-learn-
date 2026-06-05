@@ -156,9 +156,32 @@ export const CURRICULUM: LevelCurriculum[] = [
       { n: 10, title: 'Prefixes: inter, mid, over, up', skills: ['read', 'spell'] },
     ],
   },
-  // Levels 6–10: titles/lessons pending each book's capture (earlier guesses
-  // were off — e.g. VCe lives inside Level 4, suffixes are Level 5).
-  { level: 6, title: 'Level 6', focus: 'Pending — captured from the book', lessons: [] },
+  {
+    level: 6,
+    title: 'Six Reasons for Silent-E',
+    focus: 'Why a silent-E is there (six reasons), suffix spelling rules, and Consonant-LE',
+    book: 'Book 6: Six Reasons for Silent-E',
+    summary: 'Silent-E is always there for a reason — learn the six reasons, the Dropping rule for vowel suffixes, the seven Silent-E units, a TION/SION shortcut, and the Consonant-LE syllable type.',
+    lessonFlow: ['Review', 'New Teaching (a reason for Silent-E / suffix or spelling rule)', 'Read Words', 'Spell Words', 'Read Nonsense Words on Tiles', 'Spell Nonsense Words with Tiles', 'Read a Story'],
+    sections: ['Overview', 'Lessons', 'Posttest', 'Tips & Error Correction'],
+    partial: true, // TOC page 1 lists Lessons 1-11; the book runs through Lesson 14 (last lesson ends p510) + Posttest — titles for Lessons 12-14 need the contents page's 2nd page.
+    lessons: [
+      { n: 1, title: "Silent-E's in One-Syllable Words", skills: ['read', 'spell'] },
+      { n: 2, title: 'Syllable Division with Silent-E', skills: ['read', 'spell'] },
+      { n: 3, title: "C's and G's with Silent-E's", skills: ['read', 'spell'], note: 'Soft c/g before e — the Silent-E is what makes them soft.' },
+      { n: 4, title: 'Spelling: V at the End', skills: ['spell', 'read'], note: 'English words do not end in v — add a Silent-E (have, give).' },
+      { n: 5, title: 'Spelling: The Huge Bridge Rule', skills: ['spell', 'read'] },
+      { n: 6, title: 'Spelling: The Dropping Rule', skills: ['spell', 'read'], note: 'Drop the Silent-E before adding a vowel suffix.' },
+      { n: 7, title: 'Spelling: Tricky Suffixes', skills: ['spell', 'read'] },
+      { n: 8, title: 'Spelling: PH and Medial Y', skills: ['read', 'spell'], note: 'Greek clues: PH says /f/, and a Y in the middle of a word.' },
+      { n: 9, title: 'Unit: TURE', skills: ['read', 'spell'] },
+      { n: 10, title: 'Spelling: TION and SION', skills: ['spell', 'read'] },
+      { n: 11, title: 'Silent-E Units', skills: ['read', 'spell'], note: 'The seven Silent-E units.' },
+      // Lessons 12-14 confirmed from interior pages (Lesson 13 ≈ pp410-453 works
+      // multisyllable prefix words; Lesson 14 ≈ pp476-510 reviews the four suffix
+      // spelling rules / Consonant-LE). Exact TOC titles pending the contents page 2.
+    ],
+  },
   { level: 7, title: 'Level 7', focus: 'Pending — captured from the book', lessons: [] },
   { level: 8, title: 'Level 8', focus: 'Pending — captured from the book', lessons: [] },
   { level: 9, title: 'Level 9', focus: 'Pending — captured from the book', lessons: [] },

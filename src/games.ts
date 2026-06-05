@@ -83,9 +83,12 @@ export const LEVELS: LevelInfo[] = [
   // (Earlier themed guesses were off — VCe lives in Level 4, suffixes in Level 5.)
   {
     num: 6,
-    title: 'Coming soon',
-    focus: 'Captured from the book next',
-    games: [soon('l6-soon', 'New games', '🧩', 'Lessons and games arrive once this book is filmed.')],
+    title: 'Six Reasons for Silent-E',
+    focus: 'Why silent-E is there, suffix rules, and Consonant-LE',
+    games: [
+      soon('l6-silente', 'Silent Partners', '🤫', 'Spot the reason each word needs a silent-E.'),
+      soon('l6-drop', 'Drop It!', '💧', 'Drop the silent-E before adding -ing or -ed.'),
+    ],
   },
   {
     num: 7,

@@ -92,9 +92,12 @@ export const LEVELS: LevelInfo[] = [
   },
   {
     num: 7,
-    title: 'Coming soon',
-    focus: 'Captured from the book next',
-    games: [soon('l7-soon', 'New games', '🧩', 'Lessons and games arrive once this book is filmed.')],
+    title: 'Vowel-R Syllables',
+    focus: 'R-controlled vowels (ar, or, er, ir, ur) and their spelling rules',
+    games: [
+      soon('l7-bossyr', 'Bossy R', '👑', 'The R bosses the vowel — sort ar, or, er.'),
+      soon('l7-er', 'Three Ways to /er/', '🔀', 'Match er, ir, and ur to the same sound.'),
+    ],
   },
   {
     num: 8,

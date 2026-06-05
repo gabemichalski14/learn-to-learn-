@@ -40,7 +40,11 @@ word lists, sentences, or tutor scripts into the app.
   (PH, medial Y) → TURE / TION-SION units → Consonant-LE. TOC page 1 gives
   Lessons 1–11; the book runs through Lesson 14 + Posttest, so titles for
   Lessons 12–14 await a shot of the contents page's second page.
-- Levels 7–10: placeholders, filled as their books are captured.
+- **Level 7 — Vowel-R Syllables** (verified from the contents page): ar/or →
+  er/ir/ur → vowel-R with silent-E and affixes → spelling rules (Commodore
+  Sailor, Edward the Lizard) → Bossy W, three sounds of EAR, /air/ spellings,
+  ARY/ERY/ORY endings. 11 lessons + Optional Posttest.
+- Levels 8–10: placeholders, filled as their books are captured.
 
 Re-shoots that paid off: Level 4's contents page (a single HEIC still) converted
 the Lesson-1-only stub into all 14 lessons. The same one-photo shot of a contents

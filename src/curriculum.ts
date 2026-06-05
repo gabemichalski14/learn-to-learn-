@@ -1,0 +1,107 @@
+/**
+ * Curriculum model — the single source of truth for what each level/lesson
+ * teaches, distilled from the program's scope & sequence. We store the FACTUAL
+ * skeleton (which sounds a lesson introduces + which skills it practises) and
+ * build our OWN word/picture sets from it — we do not copy any program's
+ * word lists, sentences, or scripts.
+ *
+ * Skill tags drive which game types belong to a lesson:
+ *   'segment'  hear a word, break it into sounds      (oral / tile)
+ *   'blend'    push sounds together into a word
+ *   'first'    identify the first sound
+ *   'last'     identify the last sound
+ *   'sound'    keyword ↔ sound for a new letter
+ *   'read'     decode words/phrases/sentences
+ *   'spell'    encode (build) words from sounds
+ */
+export type Skill = 'segment' | 'blend' | 'first' | 'last' | 'sound' | 'read' | 'spell';
+
+export interface Lesson {
+  n: number;
+  title: string;
+  /** Short vowels introduced this lesson (letter ids). */
+  vowels?: string[];
+  /** Consonants introduced this lesson. */
+  consonants?: string[];
+  /** Digraphs / units introduced (sh, th, ch, wh, ck …). */
+  digraphs?: string[];
+  /** Skills this lesson practises (drive game generation). */
+  skills: Skill[];
+  /** Tutor-facing note; never shown to the learner. */
+  note?: string;
+}
+
+export interface LevelCurriculum {
+  level: number;
+  title: string;
+  focus: string;
+  /** Source book label, e.g. "Book 2: Consonants & Short Vowels". */
+  book?: string;
+  /** Level 1 is oral phonemic awareness (no letters on screen). */
+  oral?: boolean;
+  lessons: Lesson[];
+}
+
+// Verified from the Level 1 + Level 2 books (title/contents + lesson pages) and
+// the tutor's scope & sequence. Levels 3–10 fill in as those books are captured.
+export const CURRICULUM: LevelCurriculum[] = [
+  {
+    level: 1,
+    title: 'Phonemic Awareness',
+    focus: 'Hearing the sounds in spoken words (oral, no letters)',
+    book: 'Book 1: Phonemic Awareness',
+    oral: true,
+    lessons: [
+      { n: 1, title: 'Break Apart VC Words', skills: ['segment'], note: 'Segment 2-sound (vowel-consonant) syllables with tiles.' },
+      { n: 2, title: 'Break Apart CVC Words', skills: ['segment'], note: 'Segment 3-sound words.' },
+      { n: 3, title: 'Break Apart Longer Words', skills: ['segment'], note: 'Segment 4+ sound words (blends).' },
+      { n: 4, title: 'Blend & Manipulate Sounds', skills: ['blend', 'segment'] },
+      { n: 5, title: 'Word Endings & Final Sounds', skills: ['last', 'segment'] },
+    ],
+  },
+  {
+    level: 2,
+    title: 'Consonants & Short Vowels',
+    focus: 'Letter sounds, blending, reading & spelling short-vowel words',
+    book: 'Book 2: Consonants & Short Vowels',
+    lessons: [
+      // Each lesson adds ONE short vowel + a set of consonants/units; lessons are
+      // cumulative, so later games can draw from all sounds taught so far.
+      { n: 1, title: '1 Vowel, 6 Consonants', vowels: ['a'], consonants: ['b', 'f', 'm', 'p', 's', 't'], skills: ['sound', 'first', 'last', 'read', 'spell'], note: 'Keyword Apple for short a; teach consonant keyword only if unknown.' },
+      { n: 2, title: 'Short i + 6 Consonants', vowels: ['i'], consonants: ['c', 'g', 'h', 'l', 'n', 'r'], skills: ['sound', 'first', 'last', 'read', 'spell'] },
+      { n: 3, title: 'Short o + 5 Consonants', vowels: ['o'], consonants: ['d', 'j', 'k', 'v', 'z'], skills: ['sound', 'first', 'last', 'read', 'spell'], note: 'Balloons-Pigs trick for b/p confusion.' },
+      { n: 4, title: 'Short u + w, x, y, qu', vowels: ['u'], consonants: ['w', 'x', 'y', 'qu'], skills: ['sound', 'first', 'last', 'read', 'spell'] },
+      { n: 5, title: 'Short e + Digraphs', vowels: ['e'], digraphs: ['sh', 'th', 'ch', 'wh', 'ck'], skills: ['sound', 'first', 'last', 'read', 'spell'], note: 'Digraphs = two letters, one sound (ship, then, chick, when, sock).' },
+    ],
+  },
+  { level: 3, title: 'Closed Syllables & Spelling Rules', focus: 'Closed syllables, blends, first spelling rules', lessons: [] },
+  { level: 4, title: 'Syllable Division', focus: 'Dividing and reading multisyllable words', lessons: [] },
+  { level: 5, title: 'Vowel-Consonant-e', focus: 'Magic-e and open syllables', lessons: [] },
+  { level: 6, title: 'Suffixes & Spelling Rules', focus: 'Adding endings: doubling, drop-e, change-y', lessons: [] },
+  { level: 7, title: 'Prefixes & Vowel Teams', focus: 'Prefixes and common vowel teams', lessons: [] },
+  { level: 8, title: 'Advanced Vowel Teams', focus: 'Vowel-R and advanced vowel teams', lessons: [] },
+  { level: 9, title: 'Influence of Latin', focus: 'Latin roots and affixes', lessons: [] },
+  { level: 10, title: 'Greek Combining Forms', focus: 'Greek word parts', lessons: [] },
+];
+
+export function levelCurriculum(level: number): LevelCurriculum | undefined {
+  return CURRICULUM.find((l) => l.level === level);
+}
+
+/** All sounds taught up to and including a lesson (lessons are cumulative). */
+export function soundsThrough(level: number, lessonN: number): string[] {
+  const lvl = levelCurriculum(level);
+  if (!lvl) return [];
+  const out: string[] = [];
+  for (const l of lvl.lessons) {
+    if (l.n > lessonN) break;
+    out.push(...(l.vowels ?? []), ...(l.consonants ?? []), ...(l.digraphs ?? []));
+  }
+  return out;
+}
+
+/** Human-readable list of what a lesson introduces (for the tutor / level page). */
+export function lessonSounds(l: Lesson): string {
+  const parts = [...(l.vowels ?? []), ...(l.consonants ?? []), ...(l.digraphs ?? [])];
+  return parts.join(' · ');
+}

@@ -1,9 +1,11 @@
 import { navigate } from './router';
 import { findLevel } from './games';
+import { levelCurriculum, lessonSounds } from './curriculum';
 
-/** Sub-menu for one Barton level: its games (placeholders + any built game). */
+/** Sub-menu for one Barton level: its lessons (the curriculum) + its games. */
 export function LevelPage({ level }: { level: number }) {
   const lvl = findLevel(level);
+  const curriculum = levelCurriculum(level);
 
   if (!lvl) {
     return (
@@ -21,6 +23,26 @@ export function LevelPage({ level }: { level: number }) {
       <h1 className="site__title">{lvl.title}</h1>
       <p className="page__lead">{lvl.focus}</p>
 
+      {curriculum && curriculum.lessons.length > 0 && (
+        <section className="site__section" aria-labelledby="lessons-h">
+          <h2 id="lessons-h" className="site__h2">
+            Lessons{curriculum.oral ? ' (oral)' : ''}
+          </h2>
+          <ol className="lesson-list">
+            {curriculum.lessons.map((les) => (
+              <li key={les.n} className="lesson-row">
+                <span className="lesson-row__n">{les.n}</span>
+                <div className="lesson-row__body">
+                  <span className="lesson-row__title">{les.title}</span>
+                  {lessonSounds(les) && <span className="lesson-row__sounds">{lessonSounds(les)}</span>}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      <h2 className="site__h2">Games</h2>
       <div className="tile-grid">
         {lvl.games.map((g) => {
           const available = g.status === 'available';

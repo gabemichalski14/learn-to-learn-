@@ -848,6 +848,14 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .link-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .link-btn--danger { color: #b3492f; }
 
+/* Auth form (tutor account) */
+.auth-form { display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 4px 0 12px; }
+.auth-input { font: inherit; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--teal-ring); background: var(--surface); color: var(--ink); }
+.auth-input:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.auth-form .btn-primary { align-self: flex-start; }
+.site__footer code { background: var(--teal-soft); padding: 1px 5px; border-radius: 5px; font-size: .92em; }
+.page__panel code { background: var(--teal-soft); padding: 1px 5px; border-radius: 5px; font-size: .92em; }
+
 @media print {
   .no-print { display: none !important; }
   body { background: #fff; }

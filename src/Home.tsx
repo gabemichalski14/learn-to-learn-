@@ -68,7 +68,12 @@ export function Home({ learnerId, onSelectLearner }: Props) {
         </div>
       </section>
 
-      <footer className="site__footer">Learn to Learn Tutoring Solutions</footer>
+      <footer className="site__footer">
+        Learn to Learn Tutoring Solutions
+        <button type="button" className="link-btn" onClick={() => navigate('#/account')} style={{ marginLeft: 10 }}>
+          Tutor sign-in
+        </button>
+      </footer>
     </main>
   );
 }

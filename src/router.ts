@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
  * / tutor. Swap for React Router later without touching pages — they only use
  * navigate().
  */
-export type RouteName = 'home' | 'level' | 'play' | 'leaderboard' | 'tutor';
+export type RouteName = 'home' | 'level' | 'play' | 'leaderboard' | 'tutor' | 'account';
 export interface Route {
   name: RouteName;
   level?: number;
@@ -20,6 +20,7 @@ export function parseHash(hash: string): Route {
   }
   if (h.startsWith('leaderboard')) return { name: 'leaderboard' };
   if (h.startsWith('tutor')) return { name: 'tutor' };
+  if (h.startsWith('account')) return { name: 'account' };
   if (h.startsWith('level/')) {
     const n = parseInt(h.split('/')[1] ?? '', 10);
     return { name: 'level', level: Number.isFinite(n) ? n : 1 };

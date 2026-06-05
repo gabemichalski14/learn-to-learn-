@@ -2,3 +2,8 @@
 node_modules/
 dist/
 .DS_Store
+
+# local env (Supabase keys, etc.) — never commit secrets
+.env
+.env.local
+.env.*.local

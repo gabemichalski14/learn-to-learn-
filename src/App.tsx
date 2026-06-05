@@ -5,6 +5,7 @@ import { Home } from './Home';
 import { LevelPage } from './LevelPage';
 import { Leaderboard } from './Leaderboard';
 import { TutorDashboard } from './TutorDashboard';
+import { Account } from './Account';
 import type { ThemeId } from './ThemeSwitcher';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
 
@@ -49,6 +50,8 @@ export default function App() {
       return <Leaderboard />;
     case 'tutor':
       return <TutorDashboard />;
+    case 'account':
+      return <Account />;
     default:
       return <Home learnerId={learnerId} onSelectLearner={chooseLearner} />;
   }

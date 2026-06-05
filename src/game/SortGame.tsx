@@ -12,6 +12,7 @@ import { BookTree } from './BookTree';
 import { WalkProgress } from './WalkProgress';
 import { ProgressTrail } from './ProgressTrail';
 import { SproutGlyph } from '../Mascot';
+import { recordFinish, formatTime, STICKERS } from '../progress';
 
 interface Props {
   round: SortRound;
@@ -22,6 +23,8 @@ interface Props {
   sessionStartAt?: number;
   onAdvance?: () => void;
   onRestart?: () => void;
+  /** Open the sticker-book overlay (offered on the finish screen). */
+  onOpenStickerBook?: () => void;
   /** Playful theme — turns on the mascot, confetti, and extra celebration. */
   playful?: boolean;
   /** Clean theme — swaps the growing tree for a minimal walk-to-the-finish meter. */
@@ -70,29 +73,7 @@ function prefersReducedMotion(): boolean {
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-/** Stickers a kid collects — one new one is earned each time a session is finished. */
-const STICKERS = ['🌟', '🦄', '🌈', '🚀', '🦋', '🐬', '🌻', '🐢', '🎈', '🐱', '🦉', '🐠'];
-const STICKER_KEY = 'll-stickers';
-const BEST_TIME_KEY = 'll-besttime';
-
-function loadStickers(): string[] {
-  try {
-    const v = JSON.parse(localStorage.getItem(STICKER_KEY) ?? '[]');
-    return Array.isArray(v) ? v.filter((x) => typeof x === 'string') : [];
-  } catch {
-    return [];
-  }
-}
-
-/** Milliseconds → "M:SS". */
-function formatTime(ms: number): string {
-  const total = Math.round(ms / 1000);
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m}:${String(s).padStart(2, '0')}`;
-}
-
-export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionStartAt = Date.now(), onAdvance, onRestart, playful = false, clean = false }: Props) {
+export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionStartAt = Date.now(), onAdvance, onRestart, onOpenStickerBook, playful = false, clean = false }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -123,28 +104,9 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
     finishedRef.current = true;
 
     const ms = Math.max(0, Date.now() - sessionStartAt);
-    let best = false;
-    try {
-      const prevRaw = localStorage.getItem(BEST_TIME_KEY);
-      const prev = prevRaw ? Number(prevRaw) : null;
-      if (prev == null) localStorage.setItem(BEST_TIME_KEY, String(ms));
-      else if (ms < prev) { best = true; localStorage.setItem(BEST_TIME_KEY, String(ms)); }
-    } catch {
-      /* ignore */
-    }
-    setFinish({ ms, best });
-
-    if (!clean) {
-      const collected = loadStickers();
-      const sticker = STICKERS[collected.length % STICKERS.length];
-      const collection = [...collected, sticker];
-      try {
-        localStorage.setItem(STICKER_KEY, JSON.stringify(collection));
-      } catch {
-        /* ignore */
-      }
-      setReward({ sticker, collection });
-    }
+    const res = recordFinish(ms, !clean);
+    setFinish({ ms, best: res.isBest });
+    if (res.sticker) setReward({ sticker: res.sticker, collection: res.collection });
   }, [roundDone, isLastRound, clean, sessionStartAt]);
 
   // Wrong answer: a leaf drifts down; the buddy gives a sympathetic wobble.
@@ -285,8 +247,13 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
               ))}
             </div>
             <p className="reward__count">
-              {reward.collection.length} sticker{reward.collection.length === 1 ? '' : 's'} collected
+              {new Set(reward.collection).size} of {STICKERS.length} stickers collected
             </p>
+            {onOpenStickerBook && (
+              <button type="button" className="btn-ghost" onClick={onOpenStickerBook}>
+                See my sticker book →
+              </button>
+            )}
           </div>
         )}
 

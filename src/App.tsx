@@ -5,6 +5,7 @@ import { createStubAudioPlayer } from './audio/stubAudioPlayer';
 import { SortGame } from './game/SortGame';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import type { ThemeId } from './ThemeSwitcher';
+import { StickerBook } from './StickerBook';
 
 const TOTAL_ROUNDS = 5;
 const ITEMS_PER_ROUND = 6;
@@ -25,6 +26,7 @@ export default function App() {
   const [sessionId, setSessionId] = useState(0);
   const [roundIndex, setRoundIndex] = useState(0);
   const [theme, setTheme] = useState<ThemeId>(loadTheme);
+  const [bookOpen, setBookOpen] = useState(false);
   // When the current session began — drives the elapsed "Finished in …" clock.
   // Lives here (not in SortGame) because SortGame remounts on every page.
   const [sessionStartAt, setSessionStartAt] = useState(() => Date.now());
@@ -81,6 +83,14 @@ export default function App() {
       </div>
 
       <div className="app__topbar">
+        <button
+          type="button"
+          className="book-btn"
+          onClick={() => setBookOpen(true)}
+          aria-label="Open my sticker book"
+        >
+          <span aria-hidden="true">📖</span>
+        </button>
         <ThemeSwitcher value={theme} onSelect={setTheme} />
       </div>
 
@@ -97,12 +107,15 @@ export default function App() {
         sessionStartAt={sessionStartAt}
         playful={theme === 'playful'}
         clean={theme === 'grownup'}
+        onOpenStickerBook={() => setBookOpen(true)}
         onAdvance={() => setRoundIndex((i) => Math.min(i + 1, TOTAL_ROUNDS - 1))}
         onRestart={() => {
           setSessionId((s) => s + 1);
           setRoundIndex(0);
         }}
       />
+
+      <StickerBook open={bookOpen} onClose={() => setBookOpen(false)} />
     </main>
   );
 }

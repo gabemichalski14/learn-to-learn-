@@ -44,3 +44,33 @@ scope, plus the final code review of the v1 foundation (2026-06-04).
   (a `useEffect` in `useSortGame` watching `isComplete`).
 - **Placeholder emojis:** all emojis are temporary stand-ins for the real, inclusive
   illustration set. (v1 corrected two mismatches: `mop`→mouse, `top`→tiger.)
+
+## Progress, rewards & leaderboard
+- **Local progress store** (`src/progress.ts`) is the single source of truth: collected
+  stickers, best finish time, sessions completed. Sticker book (`StickerBook.tsx`) + the
+  finish-screen reward + the elapsed clock all read/write through it.
+- **Tutoring-center-wide leaderboard (eventual).** Needs a backend (shared store) + a
+  learner/center identity — neither exists locally. Path: (1) add a lightweight profile
+  (name + center/class id), (2) on `recordFinish`, POST the result to an API, (3) a
+  leaderboard view reads top times / most stickers per center. Keep `progress.ts` as the
+  client write-point so game code never changes. Decide privacy model (kids' names → use
+  initials/avatars or tutor-managed handles).
+- **Best-time on screen during play?** Deliberately NOT shown (no time pressure, Barton
+  no-anxiety). Best time appears only in the sticker book + at the finish.
+
+## Curriculum alignment (from the tutor's Barton scope & sequence — for our OWN content)
+- Barton materials are copyrighted → use the scope/sequence only as a reference; author our
+  own decodable word/picture sets (individual short words & common sight words aren't
+  protected; the selection/arrangement is — so build a pedagogically-equivalent sequence).
+- **Cumulative letter-sound sequence** (drives lesson-by-lesson packs). Our current
+  b/s/m/t pack maps to Barton **L2 L1** (a, b, f, m, p, s, t):
+  - L2 L1: a(short), b, f, m, p, s, t
+  - L2 L2: i(short), c, g, h, l, n, r
+  - L2 L3: o(short), d, j, k, v, z
+  - L2 L4: u(short), w, x, y, qu
+  - L2 L5: e(short), sh, th, ch, wh, ck
+- **Two skill modes per item: Read vs Spell** — a natural axis for future game types.
+- **Sight words** are tracked per Barton level/lesson with Read & Spell checkboxes
+  (Learn to Learn's own lists) → a future Sight-Word game + a per-item mastery model.
+- Suggested content model: **Level → Lesson → items**, each item tagged with concept type
+  (vowel, digraph, suffix, prefix, etc.) per the scope-and-sequence colour taxonomy.

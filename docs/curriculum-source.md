@@ -185,13 +185,48 @@ spelling cards)** → spell sentences → read a story.
 **Correction made:** title reverted to "Syllable Division & Vowel Teams" (running
 header). Lesson list (14) already verified from the contents still — unchanged.
 
-## Level 5 — Prefixes & Suffixes ⏳ (re-mining)
-_Book 5._
+## Level 5 — Prefixes & Suffixes ✅ (verified)
+_Book 5. © 2000 Susan Barton._
 
-## Level 6 — Six Reasons for Silent-E ⏳ (re-mining)
-_Book 6._
+**Progress Tracking Sheet** (frame l5r/f006) confirms all 10 lesson topics
+exactly as stored: 1 Plurals · 2 Consonant Suffixes · 3 ED/ING & Doubling ·
+4 Other Sounds of ED · 5 Vowel Suffixes · 6 Y-to-I (Change Rule) · 7 TION/SION ·
+8 Prefixes dis/in/un/non · 9 Prefixes mis/sub/re/pre · 10 Prefixes inter/mid/
+over/up. Procedure rows: Review Extra Practice → New Teaching #1/#2 → read &
+spell real/nonsense words on tiles → words on paper → **Sight-Word Reading Deck
++ Spelling Cards** → phrases → sentences → story → optional practice. The
+Overview page carries the reading-hierarchy pyramid (sounds → words → phrases →
+sentences → stories). **No corrections.**
 
-## Level 7 — Vowel-R Syllables ⏳ (re-mining)
-_Book 7._
+## Level 6 — Six Reasons for Silent-E ✅ (verified)
+_Book 6. © 2001 Susan Barton, v1.6._
+
+14 lessons verified from BOTH contents pages (front: 1–11; back: 12 Consonant-LE
+Syllables, 13 Sprinkle Vehicle Rule, 14 ABLE vs IBLE) + Optional Posttest (p513).
+**Overview page** (frame l6/f005) summary, captured verbatim-as-facts: Silent-E is
+always there for a reason → teach the **6 reasons**; when adding a vowel suffix you
+**drop** the Silent-E (Dropping rule) and drop a Y under 2 conditions; **Greek
+clue** = PH or medial Y; there are **7 Silent-E Units**; a **TION/SION** shortcut
+(think of a smaller related word); **Consonant-LE** words also contain a Silent-E
+and follow the Dropping rule. Pronunciation key present (short + long vowels +
+two long-U sounds Few/True). **No corrections.**
+
+## Level 7 — Vowel-R Syllables ✅ (verified + enriched)
+_Book 7. © 2001 Susan Barton, v1.1._
+
+11 lessons verified from the contents page (single page, ends at Optional
+Posttest p429). **Overview page** (frame l7r/f006):
+- **Vowel-R** = a new syllable type: a vowel followed by R makes a unique sound
+  (neither long nor short). R is a "Rotten Letter"; the vowel **and** the R sit on
+  the **same yellow tile**.
+- **AR & OR**: distinctive when **accented**; switch to `/er/` when **unaccented**
+  (dollar, janitor). **ER, IR, UR** all say `/er/`.
+- **EAR** has three sounds — Hear / Earl / Swear; when decoding an unknown word try
+  them in the order `/eer/ → /er/ → /air/`.
+- `/air/` has many spellings (pear, pair, parent…).
+- Spelling strategy: for an ambiguous `/er/`, use a spell-checker, entering a "?"
+  for the vowel (SH?RT). (Real-world tool use baked into the method.)
+- **Vowel-R key:** ar=car · er=her · ir=bird · or=corn · ur=burp · ear=hear/earl/
+  swear. **No corrections.**
 
 ## Levels 8–10 ⏳ (videos pending)

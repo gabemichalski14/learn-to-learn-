@@ -1,5 +1,3 @@
-import type { CSSProperties } from 'react';
-
 interface Props {
   /** How many pages (stones) are in the session. */
   total: number;
@@ -14,11 +12,20 @@ interface Props {
   className?: string;
 }
 
+/** A little stage-based cheer so each page feels like forward motion. */
+function encouragement(current: number, total: number): string {
+  if (current === 0) return "let's go!";
+  if (current >= total - 1) return 'last one!';
+  if (current === total - 2) return 'almost done!';
+  if (Math.abs(current - (total - 1) / 2) < 0.6) return 'halfway there!';
+  return 'keep going!';
+}
+
 /**
  * A kid-readable "journey to the goal": stepping stones (one per page) lead to a
- * star at the end. A marker travels along with every correct answer so the
- * finish always feels in sight; completed stones light up with a check, and the
- * goal star lights up at the end. Shown for the kid themes (Playful / L2L).
+ * trophy at the end. A marker travels along with every correct answer so the
+ * finish always feels in sight; each completed stone bounces + sparkles with a
+ * check, and the trophy lights up at the end. Shown for the kid themes.
  */
 export function ProgressTrail({ total, current, progress, roundDone, finished, className }: Props) {
   const p = Math.max(0, Math.min(1, progress));
@@ -27,8 +34,8 @@ export function ProgressTrail({ total, current, progress, roundDone, finished, c
   const caption = finished
     ? 'You reached the goal! 🎉'
     : roundDone
-      ? 'Page done — tap Next!'
-      : `Page ${current + 1} of ${total}${current === total - 1 ? ' — last one!' : ''}`;
+      ? 'Nice! Tap Next →'
+      : `Page ${current + 1} of ${total} — ${encouragement(current, total)}`;
 
   return (
     <div
@@ -42,23 +49,31 @@ export function ProgressTrail({ total, current, progress, roundDone, finished, c
 
         {stones.map((k) => {
           const done = p >= (k + 1) / total - 1e-6;
+          // The stone that just got completed is the current page's stone — only it
+          // celebrates, so previously-done stones don't re-bounce on the next page.
+          const justDone = done && k === current;
           const state = done ? 'done' : k === current ? 'current' : 'upcoming';
           return (
             <div
               key={k}
-              className={`trail__stone trail__stone--${state}`}
+              className={`trail__stone trail__stone--${state}${justDone ? ' trail__stone--celebrate' : ''}`}
               style={{ left: `${(k / total) * 100}%` }}
             >
               {done && <span className="trail__check">✓</span>}
+              {justDone && (
+                <span className="trail__spark">
+                  <i /><i /><i /><i />
+                </span>
+              )}
             </div>
           );
         })}
 
         <div className={`trail__goal${finished ? ' trail__goal--reached' : ''}`} style={{ left: '100%' }}>
-          ★
+          🏆
         </div>
 
-        <div className="trail__marker" style={{ left: `${p * 100}%` } as CSSProperties} />
+        <div className="trail__marker" style={{ left: `${p * 100}%` }} />
       </div>
 
       <p className="trail__caption">{caption}</p>

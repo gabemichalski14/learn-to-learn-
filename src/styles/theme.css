@@ -197,18 +197,47 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
   animation: stone-pulse 1.5s ease-in-out infinite;
 }
 .trail__stone--done { background: var(--teal-deep); border: 2.5px solid var(--teal-deep); }
-.trail__check { color: #fff; font-size: clamp(11px, 3vw, 15px); font-weight: 900; line-height: 1; animation: stone-pop .45s cubic-bezier(.2,1.5,.4,1); }
+.trail__check { color: #fff; font-size: clamp(11px, 3vw, 15px); font-weight: 900; line-height: 1; }
 @keyframes stone-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(15, 151, 143, 0.45); }
   50% { box-shadow: 0 0 0 8px rgba(15, 151, 143, 0); }
 }
 @keyframes stone-pop { 0% { transform: scale(0); } 70% { transform: scale(1.25); } 100% { transform: scale(1); } }
 
-.trail__goal {
-  font-size: clamp(26px, 7vw, 38px); line-height: 1; color: #cfe4e1;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,.15)); transition: color .3s ease;
+/* The stone that just got completed hops, rings out, and throws a few sparks. */
+.trail__stone--celebrate { animation: stone-hop .6s cubic-bezier(.2,1.4,.4,1); z-index: 2; }
+.trail__stone--celebrate .trail__check { animation: stone-pop .45s cubic-bezier(.2,1.5,.4,1); }
+.trail__stone--celebrate::after {
+  content: ''; position: absolute; inset: -3px; border-radius: 50%; pointer-events: none;
+  border: 2px solid var(--teal-deep); animation: stone-ring .6s ease-out forwards;
 }
-.trail__goal--reached { color: #ffce2e; animation: goal-pop .7s cubic-bezier(.2,1.5,.4,1); filter: drop-shadow(0 0 8px rgba(255,206,46,.8)); }
+@keyframes stone-hop {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  35% { transform: translate(-50%, -86%) scale(1.18); }
+  70% { transform: translate(-50%, -50%) scale(1.05); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes stone-ring { from { transform: scale(.85); opacity: .6; } to { transform: scale(2.2); opacity: 0; } }
+.trail__spark { position: absolute; inset: 0; pointer-events: none; }
+.trail__spark i {
+  position: absolute; top: 50%; left: 50%; width: 5px; height: 5px; border-radius: 50%;
+  background: #ffd23f; box-shadow: 0 0 4px #ffd23f;
+}
+.trail__spark i:nth-child(1) { animation: spark-ne .6s ease-out forwards; }
+.trail__spark i:nth-child(2) { animation: spark-nw .6s ease-out forwards; }
+.trail__spark i:nth-child(3) { animation: spark-se .6s ease-out forwards; }
+.trail__spark i:nth-child(4) { animation: spark-sw .6s ease-out forwards; }
+@keyframes spark-ne { from { transform: translate(-50%, -50%); opacity: 1; } to { transform: translate(360%, -520%); opacity: 0; } }
+@keyframes spark-nw { from { transform: translate(-50%, -50%); opacity: 1; } to { transform: translate(-460%, -520%); opacity: 0; } }
+@keyframes spark-se { from { transform: translate(-50%, -50%); opacity: 1; } to { transform: translate(360%, 420%); opacity: 0; } }
+@keyframes spark-sw { from { transform: translate(-50%, -50%); opacity: 1; } to { transform: translate(-460%, 420%); opacity: 0; } }
+
+/* Goal trophy — greyed/locked until reached, then full-colour with a glow + pop. */
+.trail__goal {
+  font-size: clamp(28px, 7.5vw, 40px); line-height: 1;
+  filter: grayscale(1) opacity(0.45); transition: filter .3s ease;
+}
+.trail__goal--reached { filter: drop-shadow(0 0 9px rgba(255, 206, 46, 0.85)); animation: goal-pop .7s cubic-bezier(.2,1.5,.4,1); }
 @keyframes goal-pop { 0% { transform: translate(-50%,-50%) scale(.6) rotate(-12deg); } 60% { transform: translate(-50%,-50%) scale(1.3) rotate(8deg); } 100% { transform: translate(-50%,-50%) scale(1) rotate(0); } }
 
 .trail__marker {
@@ -224,6 +253,20 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 @keyframes marker-bob { 0%, 100% { top: 9px; } 50% { top: 4px; } }
 
 .trail__caption { margin: 0; font-size: clamp(12px, 3vw, 14px); font-weight: 800; color: var(--teal-deep); letter-spacing: .01em; }
+
+/* Collectible sticker reward, shown when a whole session is finished. */
+.reward { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.reward__label { margin: 0; font-weight: 800; color: var(--teal-deep); font-size: clamp(14px, 3.6vw, 18px); }
+.reward__new {
+  font-size: clamp(44px, 13vw, 68px); line-height: 1;
+  filter: drop-shadow(0 5px 9px rgba(0,0,0,.18)); animation: reward-pop .7s cubic-bezier(.2,1.5,.4,1);
+}
+@keyframes reward-pop { 0% { transform: scale(0) rotate(-22deg); } 60% { transform: scale(1.3) rotate(10deg); } 100% { transform: scale(1) rotate(0); } }
+.reward__shelf { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; max-width: 290px; }
+.reward__chip { font-size: clamp(18px, 5vw, 24px); }
+.reward__chip:last-child { animation: chip-in .5s ease both; }
+@keyframes chip-in { from { transform: scale(0); } to { transform: scale(1); } }
+.reward__count { margin: 0; font-size: clamp(11px, 2.8vw, 13px); font-weight: 700; color: var(--teal-deep); opacity: .72; }
 
 /* On a wrong answer, a leaf drops straight from the tree (gentle, not punishing) */
 .falling-leaves { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 40; }

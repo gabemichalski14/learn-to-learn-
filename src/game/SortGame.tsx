@@ -68,6 +68,19 @@ function prefersReducedMotion(): boolean {
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+/** Stickers a kid collects — one new one is earned each time a session is finished. */
+const STICKERS = ['🌟', '🦄', '🌈', '🚀', '🦋', '🐬', '🌻', '🐢', '🎈', '🐱', '🦉', '🐠'];
+const STICKER_KEY = 'll-stickers';
+
+function loadStickers(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(STICKER_KEY) ?? '[]');
+    return Array.isArray(v) ? v.filter((x) => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
 export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdvance, onRestart, playful = false, clean = false }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
@@ -85,9 +98,26 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
   const [sprouts, setSprouts] = useState<CelSprout[]>([]);
   const [catching, setCatching] = useState<string | null>(null);
   const [walking, setWalking] = useState(false);
+  const [reward, setReward] = useState<{ sticker: string; collection: string[] } | null>(null);
   const prevWrong = useRef(game.wrongCount);
   const prevCorrect = useRef(0);
+  const awarded = useRef(false);
   const walkTimer = useRef<number | undefined>(undefined);
+
+  // Finishing a whole session earns one new collectible sticker (persisted).
+  useEffect(() => {
+    if (clean || !(roundDone && isLastRound) || awarded.current) return;
+    awarded.current = true;
+    const collected = loadStickers();
+    const sticker = STICKERS[collected.length % STICKERS.length];
+    const collection = [...collected, sticker];
+    try {
+      localStorage.setItem(STICKER_KEY, JSON.stringify(collection));
+    } catch {
+      /* ignore */
+    }
+    setReward({ sticker, collection });
+  }, [roundDone, isLastRound, clean]);
 
   // Wrong answer: a leaf drifts down; the buddy gives a sympathetic wobble.
   useEffect(() => {
@@ -209,6 +239,21 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
         >
           {status}
         </p>
+
+        {reward && (
+          <div className="reward" aria-live="polite">
+            <p className="reward__label">You earned a sticker!</p>
+            <span className="reward__new" role="img" aria-label="new sticker">{reward.sticker}</span>
+            <div className="reward__shelf" aria-hidden="true">
+              {reward.collection.slice(-12).map((s, i) => (
+                <span key={i} className="reward__chip">{s}</span>
+              ))}
+            </div>
+            <p className="reward__count">
+              {reward.collection.length} sticker{reward.collection.length === 1 ? '' : 's'} collected
+            </p>
+          </div>
+        )}
 
         {!roundDone && (
           <div className="sort-game__tray">

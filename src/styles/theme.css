@@ -53,20 +53,21 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .walker--walking .walker__leg--b { animation: stride .72s ease-in-out infinite -.36s; }
 .walker--walking .walker__arm--a { animation: stride-arm .72s ease-in-out infinite -.36s; }
 .walker--walking .walker__arm--b { animation: stride-arm .72s ease-in-out infinite; }
-/* Finish: hop, then zoom ALL over the screen for a few seconds, then fly off. */
-.walker--finish .walker__body { animation: walker-finish 5s ease .45s forwards; }
-@keyframes walker-finish {
-  0% { transform: translate(0, 0) rotate(0) scale(1); opacity: 1; }
-  8% { transform: translate(0, -26px) scale(1.15); }
-  15% { transform: translate(0, 0) scale(1); }
-  22% { transform: translate(0, -34px) rotate(-12deg) scale(1.15); }
-  30% { transform: translate(0, 0) rotate(0) scale(1); }
-  42% { transform: translate(-300px, -200px) rotate(240deg) scale(.95); opacity: 1; }
-  54% { transform: translate(310px, -340px) rotate(-200deg) scale(.85); }
-  66% { transform: translate(-280px, 70px) rotate(360deg) scale(1); }
-  78% { transform: translate(330px, -150px) rotate(-320deg) scale(.85); }
-  90% { transform: translate(-140px, -370px) rotate(540deg) scale(.8); opacity: 1; }
-  100% { transform: translate(70px, -580px) rotate(720deg) scale(.45); opacity: 0; }
+/* Finish: the figure grows big and jumps for joy with arms raised at the flag —
+   slow and clearly visible; it stays celebrating until Play again. */
+.walker--finish .walker__body {
+  animation: victory .95s ease-in-out infinite .4s;
+  transform-box: fill-box; transform-origin: bottom center;
+}
+.walker--finish .walker__leg--a { animation: none; transform: rotate(11deg); }
+.walker--finish .walker__leg--b { animation: none; transform: rotate(-11deg); }
+.walker--finish .walker__arm--a { animation: none; transform: rotate(150deg); }
+.walker--finish .walker__arm--b { animation: none; transform: rotate(-150deg); }
+@keyframes victory {
+  0%, 100% { transform: translateY(0) scale(1.9); }
+  30% { transform: translateY(-44px) scale(2) rotate(-4deg); }
+  58% { transform: translateY(-4px) scale(1.9); }
+  80% { transform: translateY(-24px) scale(1.96) rotate(4deg); }
 }
 @keyframes stride { 0%, 100% { transform: rotate(-22deg); } 50% { transform: rotate(22deg); } }
 @keyframes stride-arm { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(-16deg); } }

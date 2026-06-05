@@ -51,15 +51,15 @@ function makeConfetti(): ConfettiPiece[] {
   }));
 }
 
-/** A huge celebratory burst that fills the screen — fired at the finish. */
+/** One wave of a gentle, full confetti shower — several waves fire at the finish. */
 function makeFinishConfetti(): ConfettiPiece[] {
-  return Array.from({ length: 110 }, () => ({
-    dx: Math.round((Math.random() * 2 - 1) * 500),
-    dy: Math.round(-180 + Math.random() * 680),
+  return Array.from({ length: 45 }, () => ({
+    dx: Math.round((Math.random() * 2 - 1) * 440),
+    dy: Math.round(160 + Math.random() * 560), // falls downward, like a shower
     rot: Math.round((Math.random() * 2 - 1) * 360),
     color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-    size: 9 + Math.round(Math.random() * 13),
-    dur: 1500 + Math.round(Math.random() * 1000),
+    size: 9 + Math.round(Math.random() * 11),
+    dur: 2400 + Math.round(Math.random() * 1400),
   }));
 }
 
@@ -121,11 +121,15 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
       return;
     }
     prevCorrect.current = correct;
-    // Big finish confetti from the top — for every theme.
+    // Finish: a full confetti shower in a few gentle waves — for every theme.
     if (roundDone && isLastRound && !prefersReducedMotion()) {
-      const fid = Date.now() + Math.random();
-      setBursts((b) => [...b, { id: fid, pieces: makeFinishConfetti() }]);
-      window.setTimeout(() => setBursts((b) => b.filter((x) => x.id !== fid)), 2800);
+      [0, 400, 800].forEach((delay) => {
+        window.setTimeout(() => {
+          const fid = Math.random();
+          setBursts((b) => [...b, { id: fid, pieces: makeFinishConfetti() }]);
+          window.setTimeout(() => setBursts((b) => b.filter((x) => x.id !== fid)), 4200);
+        }, delay);
+      });
     }
     if (!playful) return;
     if (roundDone && isLastRound) sfx.complete();

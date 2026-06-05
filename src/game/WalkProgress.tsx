@@ -49,14 +49,14 @@ export function WalkProgress({ progress, walking = false, finished = false, clas
             <g className="walker__leg walker__leg--a"><line x1="0" y1="0" x2="0" y2="8" /></g>
             <g className="walker__leg walker__leg--b"><line x1="0" y1="0" x2="0" y2="8" /></g>
           </g>
-          {/* arms (pivot at the shoulder) */}
-          <g transform="translate(0 32.5)">
-            <g className="walker__arm walker__arm--a"><line x1="0" y1="0" x2="0" y2="7" /></g>
-            <g className="walker__arm walker__arm--b"><line x1="0" y1="0" x2="0" y2="7" /></g>
-          </g>
           {/* spine + head */}
           <line x1="0" y1="31" x2="0" y2="40" />
           <circle cx="0" cy="26" r="4.6" fill="var(--ink)" stroke="none" />
+          {/* arms drawn LAST (pivot at the shoulder) so raised arms stay on top of the head */}
+          <g transform="translate(0 32.5)">
+            <g className="walker__arm walker__arm--a"><line x1="0" y1="0" x2="0" y2="8" /></g>
+            <g className="walker__arm walker__arm--b"><line x1="0" y1="0" x2="0" y2="8" /></g>
+          </g>
         </g>
       </g>
     </svg>

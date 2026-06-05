@@ -46,6 +46,9 @@ export default function App() {
   return (
     <main className="app">
       <div className="playful-bg" aria-hidden="true">
+        <span className="pb-cloud pb-cloud--1" />
+        <span className="pb-cloud pb-cloud--2" />
+        <span className="pb-cloud pb-cloud--3" />
         {Array.from({ length: 10 }).map((_, i) => (
           <span key={i} className="bubble" />
         ))}

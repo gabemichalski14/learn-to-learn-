@@ -100,19 +100,22 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
     prevWrong.current = game.wrongCount;
     if (playful) sfx.wrong();
     if (prefersReducedMotion()) return;
-    const id = game.wrongCount * 1000 + Math.floor(Math.random() * 1000);
-    const tree = document.querySelector('.sort-game__tree')?.getBoundingClientRect();
-    const cx = tree ? tree.left + tree.width / 2 : window.innerWidth / 2;
-    const cy = tree ? tree.top + tree.height * 0.5 : 150;
-    const faller: Faller = { id, x: cx + (Math.random() * 24 - 12), y: cy, sway: Math.round(Math.random() * 44 - 22), dur: 1.9 + Math.random() * 0.7 };
-    setFallers((f) => [...f, faller]);
-    window.setTimeout(() => setFallers((f) => f.filter((x) => x.id !== id)), (faller.dur + 0.4) * 1000);
+    // A falling leaf only makes sense where there's a tree — not the Clean walker.
+    if (!clean) {
+      const id = game.wrongCount * 1000 + Math.floor(Math.random() * 1000);
+      const tree = document.querySelector('.sort-game__tree')?.getBoundingClientRect();
+      const cx = tree ? tree.left + tree.width / 2 : window.innerWidth / 2;
+      const cy = tree ? tree.top + tree.height * 0.5 : 150;
+      const faller: Faller = { id, x: cx + (Math.random() * 24 - 12), y: cy, sway: Math.round(Math.random() * 44 - 22), dur: 1.9 + Math.random() * 0.7 };
+      setFallers((f) => [...f, faller]);
+      window.setTimeout(() => setFallers((f) => f.filter((x) => x.id !== id)), (faller.dur + 0.4) * 1000);
+    }
     if (playful) {
       setMascotMood('oops');
       if (moodTimer.current) window.clearTimeout(moodTimer.current);
       moodTimer.current = window.setTimeout(() => setMascotMood('idle'), 600);
     }
-  }, [game.wrongCount, playful]);
+  }, [game.wrongCount, playful, clean]);
 
   // Correct answer (Playful): confetti pops and the buddy hops.
   useEffect(() => {
@@ -241,7 +244,7 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
         )}
         {roundDone && isLastRound && onRestart && (
           <button type="button" className="btn-primary" onClick={onRestart}>
-            Play again 🌱
+            Play again
           </button>
         )}
       </div>

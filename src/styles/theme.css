@@ -61,8 +61,8 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 }
 .walker--finish .walker__leg--a { animation: none; transform: rotate(11deg); }
 .walker--finish .walker__leg--b { animation: none; transform: rotate(-11deg); }
-.walker--finish .walker__arm--a { animation: none; transform: rotate(150deg); }
-.walker--finish .walker__arm--b { animation: none; transform: rotate(-150deg); }
+.walker--finish .walker__arm--a { animation: none; transform: rotate(133deg); }
+.walker--finish .walker__arm--b { animation: none; transform: rotate(-133deg); }
 @keyframes victory {
   0%, 100% { transform: translateY(0) scale(1.9); }
   30% { transform: translateY(-44px) scale(2) rotate(-4deg); }
@@ -229,6 +229,20 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .playful-bg { display: none; }
 [data-theme='playful'] .playful-bg {
   display: block; position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  background: linear-gradient(180deg, #c9f6ff 0%, #e6fffd 50%, #d6fff0 100%);
+}
+/* drifting fluffy clouds */
+.pb-cloud {
+  position: absolute; width: 96px; height: 30px; background: #ffffff; border-radius: 30px; opacity: 0.8;
+  box-shadow: 26px 8px 0 -5px #ffffff, -28px 10px 0 -3px #ffffff, 6px -10px 0 -6px #ffffff;
+  animation: cloud-drift linear infinite;
+}
+.pb-cloud--1 { top: 12%; transform: scale(1); animation-duration: 52s; animation-delay: -4s; }
+.pb-cloud--2 { top: 26%; transform: scale(1.4); animation-duration: 72s; animation-delay: -30s; }
+.pb-cloud--3 { top: 7%; transform: scale(0.8); animation-duration: 60s; animation-delay: -46s; }
+@keyframes cloud-drift {
+  from { left: -160px; }
+  to { left: 104vw; }
 }
 .playful-bg .bubble {
   position: absolute; bottom: -64px; border-radius: 50%;

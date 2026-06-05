@@ -45,6 +45,9 @@ export function LevelPage({ level }: { level: number }) {
           {curriculum.sections?.includes('Posttest') && (
             <p className="lesson-flow lesson-flow--test">✓ Level ends with a posttest (mastery check)</p>
           )}
+          {curriculum.partial && (
+            <p className="lesson-flow">More lessons exist — full list pending a capture of the contents page.</p>
+          )}
         </section>
       )}
 

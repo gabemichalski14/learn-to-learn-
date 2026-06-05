@@ -45,6 +45,8 @@ export interface LevelCurriculum {
   lessonFlow?: string[];
   /** Book sections / back-matter (every book ends with a Posttest). */
   sections?: string[];
+  /** True when the lesson list is incomplete (e.g., the contents page wasn't captured). */
+  partial?: boolean;
   lessons: Lesson[];
 }
 
@@ -108,7 +110,21 @@ export const CURRICULUM: LevelCurriculum[] = [
       { n: 11, title: 'Spelling: -ind / -old Units', skills: ['spell', 'read'], note: 'Glued units: ind, old, ost, olt, ild.' },
     ],
   },
-  { level: 4, title: 'Syllable Division', focus: 'Dividing and reading multisyllable words', lessons: [] },
+  {
+    level: 4,
+    title: 'Syllable Division & Vowel Teams',
+    focus: 'Six syllable types, dividing multisyllable words, vowel teams + per-lesson sight words',
+    book: 'Book 4: Syllable Division & Vowel Teams',
+    summary: '~14 lessons: open & other syllable types → syllable division → vowel teams, with a sight-word reading deck + spelling cards reviewed each lesson.',
+    lessonFlow: ['Review', 'New Teaching (syllable type / vowel team)', 'Read Words', 'Spell Words', 'Sight Word Review (reading deck + spelling cards)', 'Spell Sentences', 'Read a Story'],
+    sections: ['Overview', 'Lessons', 'Games', 'Tips & Error Correction', 'Posttest', 'Student Pages'],
+    partial: true, // contents page wasn't filmed; only confirmed lessons listed below
+    lessons: [
+      { n: 1, title: 'Open Syllables (+ Vowel-Y)', vowels: ['y'], skills: ['read', 'spell'], note: 'Open syllable = one vowel at the end says its long sound; introduce Vowel-Y (long e/i at word end). Watch-Out vowels: E, I, Y.' },
+      // Lessons 2–14 confirmed to exist (Lesson 13 = reading stories) — exact titles
+      // pending a capture of the Table of Contents.
+    ],
+  },
   { level: 5, title: 'Vowel-Consonant-e', focus: 'Magic-e and open syllables', lessons: [] },
   { level: 6, title: 'Suffixes & Spelling Rules', focus: 'Adding endings: doubling, drop-e, change-y', lessons: [] },
   { level: 7, title: 'Prefixes & Vowel Teams', focus: 'Prefixes and common vowel teams', lessons: [] },

@@ -51,6 +51,18 @@ function makeConfetti(): ConfettiPiece[] {
   }));
 }
 
+/** A huge celebratory burst that fills the screen — fired at the finish. */
+function makeFinishConfetti(): ConfettiPiece[] {
+  return Array.from({ length: 110 }, () => ({
+    dx: Math.round((Math.random() * 2 - 1) * 500),
+    dy: Math.round(-180 + Math.random() * 680),
+    rot: Math.round((Math.random() * 2 - 1) * 360),
+    color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+    size: 9 + Math.round(Math.random() * 13),
+    dur: 1500 + Math.round(Math.random() * 1000),
+  }));
+}
+
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && !!window.matchMedia
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -109,6 +121,12 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
       return;
     }
     prevCorrect.current = correct;
+    // Big finish confetti from the top — for every theme.
+    if (roundDone && isLastRound && !prefersReducedMotion()) {
+      const fid = Date.now() + Math.random();
+      setBursts((b) => [...b, { id: fid, pieces: makeFinishConfetti() }]);
+      window.setTimeout(() => setBursts((b) => b.filter((x) => x.id !== fid)), 2800);
+    }
     if (!playful) return;
     if (roundDone && isLastRound) sfx.complete();
     else sfx.correct();
@@ -237,7 +255,7 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
         ))}
       </div>
 
-      {playful && (
+      {bursts.length > 0 && (
         <div className="confetti" aria-hidden="true">
           {bursts.flatMap((burst) =>
             burst.pieces.map((p, i) => (

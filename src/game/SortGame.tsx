@@ -10,8 +10,7 @@ import { PictureCard } from './PictureCard';
 import { SoundBasket } from './SoundBasket';
 import { BookTree } from './BookTree';
 import { WalkProgress } from './WalkProgress';
-import { Mascot, SproutGlyph } from '../Mascot';
-import type { MascotMood } from '../Mascot';
+import { SproutGlyph } from '../Mascot';
 
 interface Props {
   round: SortRound;
@@ -83,12 +82,10 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
   const [fallers, setFallers] = useState<Faller[]>([]);
   const [bursts, setBursts] = useState<Burst[]>([]);
   const [sprouts, setSprouts] = useState<CelSprout[]>([]);
-  const [mascotMood, setMascotMood] = useState<MascotMood>('idle');
   const [catching, setCatching] = useState<string | null>(null);
   const [walking, setWalking] = useState(false);
   const prevWrong = useRef(game.wrongCount);
   const prevCorrect = useRef(0);
-  const moodTimer = useRef<number | undefined>(undefined);
   const walkTimer = useRef<number | undefined>(undefined);
 
   // Wrong answer: a leaf drifts down; the buddy gives a sympathetic wobble.
@@ -109,11 +106,6 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
       const faller: Faller = { id, x: cx + (Math.random() * 24 - 12), y: cy, sway: Math.round(Math.random() * 44 - 22), dur: 1.9 + Math.random() * 0.7 };
       setFallers((f) => [...f, faller]);
       window.setTimeout(() => setFallers((f) => f.filter((x) => x.id !== id)), (faller.dur + 0.4) * 1000);
-    }
-    if (playful) {
-      setMascotMood('oops');
-      if (moodTimer.current) window.clearTimeout(moodTimer.current);
-      moodTimer.current = window.setTimeout(() => setMascotMood('idle'), 600);
     }
   }, [game.wrongCount, playful, clean]);
 
@@ -141,9 +133,6 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
     const id = Date.now() + Math.random();
     setBursts((b) => [...b, { id, pieces: makeConfetti() }]);
     window.setTimeout(() => setBursts((b) => b.filter((x) => x.id !== id)), 1300);
-    setMascotMood('happy');
-    if (moodTimer.current) window.clearTimeout(moodTimer.current);
-    moodTimer.current = window.setTimeout(() => setMascotMood('idle'), 700);
 
     // A little crowd of sprouts pops up, each doing its own move, then fades.
     const party = Array.from({ length: 3 }, () => {
@@ -222,21 +211,6 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
           ))}
         </div>
 
-        {totalRounds > 1 && (
-          <div className="session-dots" role="img" aria-label={`Page ${roundIndex + 1} of ${totalRounds}`}>
-            {Array.from({ length: totalRounds }).map((_, i) => {
-              const done = i < roundIndex || (i === roundIndex && roundDone);
-              const current = i === roundIndex && !roundDone;
-              return (
-                <span
-                  key={i}
-                  className={`session-dot${done ? ' session-dot--done' : ''}${current ? ' session-dot--current' : ''}`}
-                />
-              );
-            })}
-          </div>
-        )}
-
         {roundDone && !isLastRound && onAdvance && (
           <button type="button" className="btn-primary" onClick={onAdvance}>
             Next page →
@@ -297,8 +271,6 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
           ))}
         </div>
       )}
-
-      {playful && <Mascot mood={mascotMood} />}
     </DndContext>
   );
 }

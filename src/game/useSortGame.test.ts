@@ -46,4 +46,13 @@ describe('useSortGame', () => {
     act(() => { result.current.attemptPlace('ball', 'b'); });
     expect(result.current.remainingItems.map((i) => i.id)).toEqual(['sun']);
   });
+
+  it('counts wrong attempts but not correct ones', () => {
+    const { result } = renderHook(() => useSortGame({ round, audio: fakeAudio() }));
+    expect(result.current.wrongCount).toBe(0);
+    act(() => { result.current.attemptPlace('ball', 's'); }); // wrong
+    expect(result.current.wrongCount).toBe(1);
+    act(() => { result.current.attemptPlace('ball', 'b'); }); // correct
+    expect(result.current.wrongCount).toBe(1);
+  });
 });

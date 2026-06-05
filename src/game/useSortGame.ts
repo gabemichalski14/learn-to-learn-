@@ -8,6 +8,8 @@ export interface UseSortGame {
   message: string | null;
   isComplete: boolean;
   remainingItems: WordItem[];
+  /** Increments on each wrong attempt — drives the falling-leaf feedback. */
+  wrongCount: number;
   attemptPlace: (wordId: string, basketSound: string) => boolean;
   replaySound: (soundId: string) => void;
   replayWord: (item: WordItem) => void;
@@ -17,6 +19,7 @@ export function useSortGame(opts: { round: SortRound; audio: AudioPlayer }): Use
   const { round, audio } = opts;
   const [placements, setPlacements] = useState<Placements>({});
   const [message, setMessage] = useState<string | null>(null);
+  const [wrongCount, setWrongCount] = useState(0);
 
   const byId = useMemo(() => {
     const m: Record<string, WordItem> = {};
@@ -35,6 +38,7 @@ export function useSortGame(opts: { round: SortRound; audio: AudioPlayer }): Use
     }
     // No-anxiety: do not record, replay the basket sound, gently invite a retry.
     setMessage('Not quite — listen again and try another basket.');
+    setWrongCount((c) => c + 1);
     void audio.playSound(basketSound);
     return false;
   }
@@ -46,6 +50,7 @@ export function useSortGame(opts: { round: SortRound; audio: AudioPlayer }): Use
     message,
     isComplete: isRoundComplete(round, placements),
     remainingItems,
+    wrongCount,
     attemptPlace,
     replaySound: (soundId) => void audio.playSound(soundId),
     replayWord: (item) => void audio.playWord(item),

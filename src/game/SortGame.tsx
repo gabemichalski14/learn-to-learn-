@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { DndContext, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
 import type { SortRound, WordItem } from '../domain/types';
@@ -20,9 +21,32 @@ interface Props {
   onRestart?: () => void;
 }
 
+interface Faller { id: number; left: number; dur: number }
+
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined' && !!window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdvance, onRestart }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
+
+  // A leaf drifts down on each wrong attempt — gentle, on-brand, never punishing.
+  const [fallers, setFallers] = useState<Faller[]>([]);
+  const prevWrong = useRef(game.wrongCount);
+  useEffect(() => {
+    if (game.wrongCount <= prevWrong.current) {
+      prevWrong.current = game.wrongCount;
+      return;
+    }
+    prevWrong.current = game.wrongCount;
+    if (prefersReducedMotion()) return;
+    const id = game.wrongCount * 1000 + Math.floor(Math.random() * 1000);
+    const faller: Faller = { id, left: 10 + Math.random() * 78, dur: 1.7 + Math.random() * 0.7 };
+    setFallers((f) => [...f, faller]);
+    window.setTimeout(() => setFallers((f) => f.filter((x) => x.id !== id)), (faller.dur + 0.3) * 1000);
+  }, [game.wrongCount]);
 
   function handleDragEnd(event: DragEndEvent) {
     const wordId = String(event.active.id);
@@ -107,6 +131,24 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
             Play again 🌱
           </button>
         )}
+      </div>
+
+      <div className="falling-leaves" aria-hidden="true">
+        {fallers.map((f) => (
+          <svg
+            key={f.id}
+            className="falling-leaf"
+            viewBox="-10 -24 20 26"
+            style={{ left: `${f.left}%`, animationDuration: `${f.dur}s` }}
+          >
+            <path
+              d="M0,0 C 8,-4 9,-18 0,-24 C -9,-18 -8,-4 0,0 Z"
+              fill="var(--teal)"
+              stroke="var(--teal-deep)"
+              strokeWidth="1.5"
+            />
+          </svg>
+        ))}
       </div>
     </DndContext>
   );

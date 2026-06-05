@@ -13,11 +13,12 @@ const ITEMS_PER_ROUND = 6;
 function loadTheme(): ThemeId {
   try {
     const t = localStorage.getItem('ll-theme');
-    if (t === 'playful' || t === 'cool' || t === 'grownup') return t;
+    if (t === 'playful' || t === 'l2l' || t === 'grownup') return t;
+    if (t === 'cool') return 'l2l'; // migrate the old label
   } catch {
     /* ignore */
   }
-  return 'cool';
+  return 'l2l';
 }
 
 export default function App() {

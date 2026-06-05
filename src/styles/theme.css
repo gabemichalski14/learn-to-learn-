@@ -119,6 +119,19 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .tree--bloom { animation: bloom .5s ease; }
 @keyframes bloom { 0%,100% { transform: scale(1); } 45% { transform: scale(1.07); } }
 
+/* A leaf drifts down the screen on a wrong answer (gentle, not punishing) */
+.falling-leaves { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 40; }
+.falling-leaf {
+  position: absolute; top: -32px; width: 30px; height: 32px;
+  animation-name: leaf-fall; animation-timing-function: ease-in; animation-fill-mode: forwards;
+}
+@keyframes leaf-fall {
+  0% { transform: translateY(-32px) rotate(0deg); opacity: 0; }
+  12% { opacity: 1; }
+  85% { opacity: 0.95; }
+  100% { transform: translateY(104vh) rotate(400deg); opacity: 0; }
+}
+
 /* ---- Age-band themes (all teal-family; vary shape, brightness, contrast, motion, type) ---- */
 /* "cool" is the :root default. */
 [data-theme='playful'] {

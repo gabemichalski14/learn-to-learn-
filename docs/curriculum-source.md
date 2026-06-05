@@ -107,8 +107,37 @@ Barton expression):
 Manipulate", "Word Endings") were approximations — replaced with the real TOC
 titles + the A/B/C procedure flow. Added `manipulate` and `compare` skill tags.
 
-## Level 2 — Consonants & Short Vowels ⏳ (re-mining)
-_Book 2._
+## Level 2 — Consonants & Short Vowels ✅ (verified)
+_Book 2. © 2000 Susan Barton, v2.0._
+
+**Per-lesson sounds — verified** against Lesson 1's "Materials Needed: Letter
+Tiles A, B, F, M, P, S, T" (frame l2d/f024): matches stored data exactly.
+L1 `a`+`b f m p s t` · L2 `i`+`c g h l n r` · L3 `o`+`d j k v z` ·
+L4 `u`+`w x y qu` · L5 `e`+digraphs `sh th ch wh ck`.
+
+**Full per-lesson procedure list** (Progress Tracking Sheet, frame l2d/f024 left
+— rows A–P, columns Lessons 1–5):
+A Review Known Letters & Sounds · B Review Extra Practice Page · C Phonemic-
+Awareness Warm-up · D Teach New Vowel · E Teach New Consonants/Digraphs ·
+(F) Teach New Consonants · G Spell Sounds on Tiles · H Read Sounds on Tiles ·
+I Read Real Words on Tiles · J Spell Real Words on Tiles · K Read Nonsense Words
+on Tiles · L Spell Nonsense Words on Tiles · M Read Words through Word Frame ·
+N Spell Words on Paper · O Read Phrases · P Read Sentences · Read Longer Words
+Together · Optional Extra Practice Sheets · Date Lesson Completed.
+
+**Key teaching facts** (Lesson 1 overview, frame l2d/f024 right):
+- **Tapping**: tap each sound in a word on the fingers; keyword *Apple* anchors
+  short `a`. Teach a consonant's keyword **only if the sound is unknown**.
+- **Word Frame** tool + letter tiles + "nonsense word" reading/spelling are core.
+- **b–p confusion** → the *Balloons-Pigs* hand trick ("balloons go up, pigs go
+  down in the mud"), reused in Lesson 3.
+- **Mastery gate**: "do not go on to the next lesson until the letters taught in
+  this one can be accurately and easily read and spelled." → our no-fail
+  level-check / advancement logic.
+- "For A Repeat Lesson" word sets let a lesson be repeated with fresh words.
+
+**Corrections made:** none — stored titles/sounds verified correct. Enriched
+`lessonFlow` to the real A–P sequence and added the mastery-gate note.
 
 ## Level 3 — Closed Syllables ⏳ (re-mining)
 _Book 3._

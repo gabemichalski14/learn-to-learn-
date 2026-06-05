@@ -87,8 +87,8 @@ export const CURRICULUM: LevelCurriculum[] = [
     title: 'Consonants & Short Vowels',
     focus: 'Letter sounds, blending, reading & spelling short-vowel words',
     book: 'Book 2: Consonants & Short Vowels',
-    summary: 'By the end: all 5 short vowels, all 21 consonants, and 5 common digraphs.',
-    lessonFlow: ['Review', 'New Vowel', 'New Consonants', 'Read & Spell Words', 'Read 3 Types of Phrases', 'Read & Mark Sentences', 'Optional Practice'],
+    summary: 'By the end: all 5 short vowels, all 21 consonants, and 5 common digraphs. Mastery-gated — a lesson is not finished until its letters can be read AND spelled accurately and easily.',
+    lessonFlow: ['Review known letters & sounds', 'Phonemic-awareness warm-up', 'Teach the new vowel & consonants (tap the keyword)', 'Read & spell sounds on tiles', 'Read & spell real + nonsense words on tiles', 'Read words through the Word Frame', 'Read phrases', 'Read & mark sentences', 'Optional extra practice'],
     sections: ['Overview', 'Lessons', 'Games', 'Tips & Error Correction', 'Posttest', 'Student Pages'],
     lessons: [
       // Each lesson adds ONE short vowel + a set of consonants/units; lessons are

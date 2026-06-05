@@ -225,6 +225,13 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .theme-switch__btn.is-active { background: var(--teal-deep); color: #fff; }
 .theme-switch__btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
+/* Narrow screens: the header is centered and wide, so a corner-pinned menu
+   collides with the title. Drop the menu into normal flow as its own centered
+   row at the very top — it stacks cleanly above the header, no overlap. */
+@media (max-width: 640px) {
+  .app__topbar { position: static; justify-content: center; margin-bottom: 4px; }
+}
+
 /* ---- Playful theme extras (mascot, confetti, floating bubbles, livelier motion) ---- */
 
 /* Floating bubble background — only in the Playful theme */

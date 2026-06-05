@@ -22,20 +22,20 @@ interface Props {
   playful?: boolean;
 }
 
-interface Faller { id: number; left: number; dur: number }
+interface Faller { id: number; x: number; y: number; sway: number; dur: number }
 interface ConfettiPiece { dx: number; dy: number; rot: number; color: string; size: number; dur: number }
 interface Burst { id: number; pieces: ConfettiPiece[] }
 
 const CONFETTI_COLORS = ['#7ffdf7', '#12b3a8', '#0f978f', '#ffd23f', '#ff8a3d', '#ff6b9d'];
 
 function makeConfetti(): ConfettiPiece[] {
-  return Array.from({ length: 14 }, () => ({
-    dx: Math.round((Math.random() * 2 - 1) * 170),
-    dy: Math.round(-110 + Math.random() * 320),
-    rot: Math.round((Math.random() * 2 - 1) * 220),
+  return Array.from({ length: 22 }, () => ({
+    dx: Math.round((Math.random() * 2 - 1) * 220),
+    dy: Math.round(-150 + Math.random() * 380),
+    rot: Math.round((Math.random() * 2 - 1) * 300),
     color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-    size: 8 + Math.round(Math.random() * 6),
-    dur: 750 + Math.round(Math.random() * 450),
+    size: 10 + Math.round(Math.random() * 9),
+    dur: 800 + Math.round(Math.random() * 500),
   }));
 }
 
@@ -72,9 +72,12 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
     prevWrong.current = game.wrongCount;
     if (prefersReducedMotion()) return;
     const id = game.wrongCount * 1000 + Math.floor(Math.random() * 1000);
-    const faller: Faller = { id, left: 10 + Math.random() * 78, dur: 1.7 + Math.random() * 0.7 };
+    const tree = document.querySelector('.sort-game__tree')?.getBoundingClientRect();
+    const cx = tree ? tree.left + tree.width / 2 : window.innerWidth / 2;
+    const cy = tree ? tree.top + tree.height * 0.5 : 150;
+    const faller: Faller = { id, x: cx + (Math.random() * 24 - 12), y: cy, sway: Math.round(Math.random() * 44 - 22), dur: 1.9 + Math.random() * 0.7 };
     setFallers((f) => [...f, faller]);
-    window.setTimeout(() => setFallers((f) => f.filter((x) => x.id !== id)), (faller.dur + 0.3) * 1000);
+    window.setTimeout(() => setFallers((f) => f.filter((x) => x.id !== id)), (faller.dur + 0.4) * 1000);
     if (playful) {
       setMascotMood('oops');
       if (moodTimer.current) window.clearTimeout(moodTimer.current);
@@ -178,9 +181,9 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
             key={f.id}
             className="falling-leaf"
             viewBox="-10 -24 20 26"
-            style={{ left: `${f.left}%`, animationDuration: `${f.dur}s` }}
+            style={{ left: `${f.x}px`, top: `${f.y}px`, animationDuration: `${f.dur}s`, '--sway': `${f.sway}px` } as CSSProperties}
           >
-            <path d="M0,0 C 8,-4 9,-18 0,-24 C -9,-18 -8,-4 0,0 Z" fill="var(--teal)" stroke="var(--teal-deep)" strokeWidth="1.5" />
+            <path d="M0,0 C 8,-4 9,-18 0,-24 C -9,-18 -8,-4 0,0 Z" fill="var(--tree-canopy)" stroke="var(--tree-canopy-edge)" strokeWidth="1.5" />
           </svg>
         ))}
       </div>

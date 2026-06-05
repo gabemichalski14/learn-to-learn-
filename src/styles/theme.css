@@ -12,6 +12,10 @@
   --good: #0f978f;
   --warn: #e08a2f;
   --radius: 20px;
+  /* tree colors (re-themed per age band) */
+  --tree-trunk: var(--teal-deep);
+  --tree-canopy: var(--teal);
+  --tree-canopy-edge: var(--teal-deep);
   font-family: 'Trebuchet MS', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
@@ -116,32 +120,38 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 }
 
 /* Growing tree */
-.tree__stem { transition: stroke-dashoffset .6s ease; }
-.tree__leaf { transform-box: fill-box; transform-origin: center bottom; transition: transform .45s cubic-bezier(.2,1.3,.4,1), opacity .35s ease; }
+.tree__trunk { transform-box: fill-box; transform-origin: bottom; transition: transform .5s ease; }
+.tree__fruit { display: none; }
+[data-theme='playful'] .tree__fruit { display: block; }
+.tree__leaf { transform-box: fill-box; transform-origin: center; transition: transform .45s cubic-bezier(.2,1.3,.4,1), opacity .35s ease; }
 .tree--bloom { animation: bloom .5s ease; }
 @keyframes bloom { 0%,100% { transform: scale(1); } 45% { transform: scale(1.07); } }
 
-/* A leaf drifts down the screen on a wrong answer (gentle, not punishing) */
+/* On a wrong answer, a leaf drops straight from the tree (gentle, not punishing) */
 .falling-leaves { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 40; }
 .falling-leaf {
-  position: absolute; top: -32px; width: 30px; height: 32px;
-  animation-name: leaf-fall; animation-timing-function: ease-in; animation-fill-mode: forwards;
+  position: fixed; width: 30px; height: 32px; margin: -16px 0 0 -15px;
+  animation-name: leaf-drop; animation-timing-function: cubic-bezier(.35,.05,.5,1); animation-fill-mode: forwards;
 }
-@keyframes leaf-fall {
-  0% { transform: translateY(-32px) rotate(0deg); opacity: 0; }
-  12% { opacity: 1; }
-  85% { opacity: 0.95; }
-  100% { transform: translateY(104vh) rotate(400deg); opacity: 0; }
+@keyframes leaf-drop {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translate(var(--sway, 0px), 72vh) rotate(300deg); opacity: 0; }
 }
 
 /* ---- Age-band themes (all teal-family; vary shape, brightness, contrast, motion, type) ---- */
 /* "cool" is the :root default. */
 [data-theme='playful'] {
-  --bg: #e3fdfb;
-  --teal-soft: #c4f8f4;
-  --teal-ring: #62ead0;
-  --teal-deep: #12b3a8;
-  --radius: 28px;
+  --bg: #d6fbff;
+  --teal: #1fe3d6;
+  --teal-soft: #b4f6ff;
+  --teal-ring: #57f0d8;
+  --teal-deep: #07b3c0;
+  --teal-deeper: #058f9c;
+  --radius: 30px;
+  --tree-trunk: #b5713c;
+  --tree-canopy: #46d977;
+  --tree-canopy-edge: #1fae5c;
 }
 [data-theme='grownup'] {
   --bg: #f3f7f7;
@@ -224,14 +234,33 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 @keyframes mascot-wobble { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-7deg); } 75% { transform: rotate(7deg); } }
 @keyframes mascot-blink { 0%,93%,100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
 
-/* Livelier motion for Playful (none of these touch the draggable card's transform) */
-[data-theme='playful'] .sort-game__tree { animation: sway 4.5s ease-in-out infinite; transform-origin: 50% 92%; }
-[data-theme='playful'] .picture-card__emoji,
+/* ---- Playful = MAX vibrance + motion (none of these touch the draggable card's transform) ---- */
+/* multi-color floating bubbles */
+[data-theme='playful'] .playful-bg .bubble { opacity: 0.5; }
+[data-theme='playful'] .playful-bg .bubble:nth-child(4n+1) { background: radial-gradient(circle at 32% 30%, #fff, #ffd23f); }
+[data-theme='playful'] .playful-bg .bubble:nth-child(4n+2) { background: radial-gradient(circle at 32% 30%, #fff, #ff8fb0); }
+[data-theme='playful'] .playful-bg .bubble:nth-child(4n+3) { background: radial-gradient(circle at 32% 30%, #fff, #8a6bff); }
+[data-theme='playful'] .playful-bg .bubble:nth-child(4n)   { background: radial-gradient(circle at 32% 30%, #fff, #36c5ff); }
+
+/* vibrant surfaces */
+[data-theme='playful'] .picture-card { box-shadow: 0 10px 0 rgba(7,179,192,.16), 0 16px 26px rgba(7,179,192,.30); }
+[data-theme='playful'] .sound-basket { background: linear-gradient(180deg, var(--teal-soft), #ecfeff); border-color: var(--teal-ring); }
+
+/* big, bouncy, over-the-top motion */
+[data-theme='playful'] .sort-game__tree { animation: tree-dance 4s ease-in-out infinite; transform-origin: 50% 92%; }
+[data-theme='playful'] .picture-card__emoji { animation: pop-bounce .42s cubic-bezier(.18,1.5,.4,1) both, wiggle 2.6s ease-in-out .42s infinite; }
 [data-theme='playful'] .placed { animation: pop-bounce .42s cubic-bezier(.18,1.5,.4,1) both; }
+[data-theme='playful'] .sound-basket__speaker { animation: bob 2.4s ease-in-out infinite; }
+[data-theme='playful'] .btn-primary { animation: bob 1.8s ease-in-out infinite; }
+[data-theme='playful'] .sort-game__status { animation: tada 3.6s ease-in-out infinite; }
 [data-theme='playful'] .tree--bloom { animation: bloom-big .7s ease; }
-@keyframes sway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-@keyframes pop-bounce { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
-@keyframes bloom-big { 0%,100% { transform: scale(1); } 40% { transform: scale(1.14); } }
+
+@keyframes pop-bounce { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.14); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes bloom-big { 0%,100% { transform: scale(1); } 40% { transform: scale(1.16); } }
+@keyframes wiggle { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes tree-dance { 0%,100% { transform: rotate(-3deg) scale(1); } 50% { transform: rotate(3deg) scale(1.05); } }
+@keyframes tada { 0%,90%,100% { transform: scale(1); } 95% { transform: scale(1.06); } }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }

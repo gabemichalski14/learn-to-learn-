@@ -62,51 +62,54 @@ export const LEVELS: LevelInfo[] = [
   },
   {
     num: 4,
-    title: 'Syllable Division',
-    focus: 'Dividing and reading multisyllable words',
+    title: 'Syllable Division & Vowel Teams',
+    focus: 'Six syllable types, dividing big words, and vowel teams',
     games: [
       soon('l4-split', 'The Great Divide', '✂️', 'Split big words into parts.'),
+      soon('l4-magic', 'Name Change', '✨', 'Silent-e makes the vowel say its name.'),
       soon('l4-read', 'Word Giants', '🦕', 'Read longer words part by part.'),
     ],
   },
   {
     num: 5,
-    title: 'Vowel-Consonant-e',
-    focus: 'Magic-e and open syllables',
-    games: [soon('l5-magic', 'Name Change', '✨', 'Magic-e makes the vowel say its name.')],
+    title: 'Prefixes & Suffixes',
+    focus: 'Plurals, suffixes (-s, -ed, -ing), spelling rules, and prefixes',
+    games: [
+      soon('l5-suffix', 'Happy Endings', '➕', 'Add the right ending: -s, -ed, -ing.'),
+      soon('l5-prefix', 'Front Loaders', '🚜', 'Match the prefix to its meaning.'),
+    ],
   },
+  // Levels 6–10: titles and games fill in as each book is captured.
+  // (Earlier themed guesses were off — VCe lives in Level 4, suffixes in Level 5.)
   {
     num: 6,
-    title: 'Suffixes & Spelling Rules',
-    focus: 'Adding endings: doubling, drop-e, change-y',
-    games: [soon('l6-suffix', 'Happy Endings', '➕', 'Add the ending the right way.')],
+    title: 'Coming soon',
+    focus: 'Captured from the book next',
+    games: [soon('l6-soon', 'New games', '🧩', 'Lessons and games arrive once this book is filmed.')],
   },
   {
     num: 7,
-    title: 'Prefixes & Vowel Teams',
-    focus: 'Prefixes and common vowel teams',
-    games: [
-      soon('l7-prefix', 'Front Loaders', '🚜', 'Match the prefix to its meaning.'),
-      soon('l7-team', 'Tag Team', '👥', 'Two vowels team up — sort them.'),
-    ],
+    title: 'Coming soon',
+    focus: 'Captured from the book next',
+    games: [soon('l7-soon', 'New games', '🧩', 'Lessons and games arrive once this book is filmed.')],
   },
   {
     num: 8,
-    title: 'Advanced Vowel Teams',
-    focus: 'Vowel-R and advanced vowel teams',
-    games: [soon('l8-vr', 'Pirate Talk', '🏴‍☠️', 'Sort the arr, or, er sounds.')],
+    title: 'Coming soon',
+    focus: 'Captured from the book next',
+    games: [soon('l8-soon', 'New games', '🧩', 'Lessons and games arrive once this book is filmed.')],
   },
   {
     num: 9,
-    title: 'Influence of Latin',
-    focus: 'Latin roots and affixes',
-    games: [soon('l9-latin', 'Root Awakening', '🏛️', 'Build words from Latin roots.')],
+    title: 'Coming soon',
+    focus: 'Captured from the book next',
+    games: [soon('l9-soon', 'New games', '🧩', 'Lessons and games arrive once this book is filmed.')],
   },
   {
     num: 10,
-    title: 'Greek Combining Forms',
-    focus: 'Greek word parts',
-    games: [soon('l10-greek', "It's All Greek", '🔱', 'Combine Greek word parts.')],
+    title: 'Coming soon',
+    focus: 'Captured from the book next',
+    games: [soon('l10-soon', 'New games', '🧩', 'Lessons and games arrive once this book is filmed.')],
   },
 ];
 

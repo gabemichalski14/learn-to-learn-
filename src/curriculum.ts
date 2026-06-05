@@ -125,12 +125,34 @@ export const CURRICULUM: LevelCurriculum[] = [
       // pending a capture of the Table of Contents.
     ],
   },
-  { level: 5, title: 'Vowel-Consonant-e', focus: 'Magic-e and open syllables', lessons: [] },
-  { level: 6, title: 'Suffixes & Spelling Rules', focus: 'Adding endings: doubling, drop-e, change-y', lessons: [] },
-  { level: 7, title: 'Prefixes & Vowel Teams', focus: 'Prefixes and common vowel teams', lessons: [] },
-  { level: 8, title: 'Advanced Vowel Teams', focus: 'Vowel-R and advanced vowel teams', lessons: [] },
-  { level: 9, title: 'Influence of Latin', focus: 'Latin roots and affixes', lessons: [] },
-  { level: 10, title: 'Greek Combining Forms', focus: 'Greek word parts', lessons: [] },
+  {
+    level: 5,
+    title: 'Prefixes & Suffixes',
+    focus: 'Plurals, suffixes (-s/-es, -ed, -ing), spelling rules, and prefixes',
+    book: 'Book 5: Prefixes & Suffixes',
+    summary: '10 lessons: plurals + consonant/vowel suffixes (with the Doubling & Change rules and -tion/-sion), then prefixes.',
+    lessonFlow: ['Review', 'New Suffix / Prefix or Rule', 'Read Words', 'Spell Words', 'Sight Word Review', 'Spell Sentences', 'Read a Story'],
+    sections: ['Overview', 'Lessons', 'Posttest', 'Tips & Error Correction'],
+    lessons: [
+      { n: 1, title: 'Plurals: -s vs -es', skills: ['spell', 'read'] },
+      { n: 2, title: 'Consonant Suffixes', skills: ['spell', 'read'] },
+      { n: 3, title: '-ed and -ing: The Doubling Rule', skills: ['spell', 'read'], note: 'Double the final consonant before a vowel suffix in 1-1-1 words.' },
+      { n: 4, title: 'Other Sounds of -ed', skills: ['read', 'spell'], note: '-ed says /t/, /d/, or /ed/.' },
+      { n: 5, title: 'Vowel Suffixes', skills: ['spell', 'read'] },
+      { n: 6, title: 'Spelling: The Change Rule', skills: ['spell', 'read'], note: 'Change y to i; drop silent-e before a vowel suffix.' },
+      { n: 7, title: 'Spelling: -tion vs -sion', skills: ['spell', 'read'] },
+      { n: 8, title: 'Prefixes: dis, in, un, non', skills: ['read', 'spell'] },
+      { n: 9, title: 'Prefixes: mis, sub, re, pre', skills: ['read', 'spell'] },
+      { n: 10, title: 'Prefixes: inter, mid, over, up', skills: ['read', 'spell'] },
+    ],
+  },
+  // Levels 6–10: titles/lessons pending each book's capture (earlier guesses
+  // were off — e.g. VCe lives inside Level 4, suffixes are Level 5).
+  { level: 6, title: 'Level 6', focus: 'Pending — captured from the book', lessons: [] },
+  { level: 7, title: 'Level 7', focus: 'Pending — captured from the book', lessons: [] },
+  { level: 8, title: 'Level 8', focus: 'Pending — captured from the book', lessons: [] },
+  { level: 9, title: 'Level 9', focus: 'Pending — captured from the book', lessons: [] },
+  { level: 10, title: 'Level 10', focus: 'Pending — captured from the book', lessons: [] },
 ];
 
 export function levelCurriculum(level: number): LevelCurriculum | undefined {

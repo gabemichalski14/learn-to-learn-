@@ -246,26 +246,151 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
   from { left: -160px; }
   to { left: 104vw; }
 }
+.pb-bubbles { position: absolute; inset: 0; }
 .playful-bg .bubble {
   position: absolute; bottom: -64px; border-radius: 50%;
   background: radial-gradient(circle at 32% 30%, #ffffff, var(--teal-ring));
   opacity: 0.45; animation: bubble-rise linear infinite;
 }
-.playful-bg .bubble:nth-child(1) { left: 6%;  width: 34px; height: 34px; animation-duration: 14s; animation-delay: 0s; }
-.playful-bg .bubble:nth-child(2) { left: 18%; width: 52px; height: 52px; animation-duration: 19s; animation-delay: 3s; }
-.playful-bg .bubble:nth-child(3) { left: 30%; width: 26px; height: 26px; animation-duration: 12s; animation-delay: 6s; }
-.playful-bg .bubble:nth-child(4) { left: 42%; width: 46px; height: 46px; animation-duration: 17s; animation-delay: 1s; }
-.playful-bg .bubble:nth-child(5) { left: 55%; width: 30px; height: 30px; animation-duration: 15s; animation-delay: 8s; }
-.playful-bg .bubble:nth-child(6) { left: 66%; width: 56px; height: 56px; animation-duration: 21s; animation-delay: 4s; }
-.playful-bg .bubble:nth-child(7) { left: 76%; width: 28px; height: 28px; animation-duration: 13s; animation-delay: 2s; }
-.playful-bg .bubble:nth-child(8) { left: 86%; width: 44px; height: 44px; animation-duration: 18s; animation-delay: 7s; }
-.playful-bg .bubble:nth-child(9) { left: 92%; width: 32px; height: 32px; animation-duration: 16s; animation-delay: 5s; }
-.playful-bg .bubble:nth-child(10){ left: 48%; width: 22px; height: 22px; animation-duration: 11s; animation-delay: 9s; }
+/* tiny glint on each bubble so they read as shiny, not flat dots */
+.playful-bg .bubble::after {
+  content: ''; position: absolute; top: 16%; left: 22%; width: 26%; height: 26%;
+  background: #ffffff; border-radius: 50%; opacity: 0.85;
+}
+.pb-bubbles .bubble:nth-child(1)  { left: 4%;  width: 34px; height: 34px; animation-duration: 14s; animation-delay: 0s;  }
+.pb-bubbles .bubble:nth-child(2)  { left: 12%; width: 52px; height: 52px; animation-duration: 19s; animation-delay: 3s;  }
+.pb-bubbles .bubble:nth-child(3)  { left: 19%; width: 26px; height: 26px; animation-duration: 12s; animation-delay: 6s;  }
+.pb-bubbles .bubble:nth-child(4)  { left: 26%; width: 46px; height: 46px; animation-duration: 17s; animation-delay: 1s;  }
+.pb-bubbles .bubble:nth-child(5)  { left: 33%; width: 30px; height: 30px; animation-duration: 15s; animation-delay: 8s;  }
+.pb-bubbles .bubble:nth-child(6)  { left: 40%; width: 56px; height: 56px; animation-duration: 21s; animation-delay: 4s;  }
+.pb-bubbles .bubble:nth-child(7)  { left: 47%; width: 22px; height: 22px; animation-duration: 11s; animation-delay: 9s;  }
+.pb-bubbles .bubble:nth-child(8)  { left: 53%; width: 40px; height: 40px; animation-duration: 18s; animation-delay: 2s;  }
+.pb-bubbles .bubble:nth-child(9)  { left: 60%; width: 28px; height: 28px; animation-duration: 13s; animation-delay: 6s;  }
+.pb-bubbles .bubble:nth-child(10) { left: 66%; width: 50px; height: 50px; animation-duration: 20s; animation-delay: 1s;  }
+.pb-bubbles .bubble:nth-child(11) { left: 72%; width: 24px; height: 24px; animation-duration: 12s; animation-delay: 5s;  }
+.pb-bubbles .bubble:nth-child(12) { left: 78%; width: 44px; height: 44px; animation-duration: 18s; animation-delay: 7s;  }
+.pb-bubbles .bubble:nth-child(13) { left: 84%; width: 30px; height: 30px; animation-duration: 15s; animation-delay: 3s;  }
+.pb-bubbles .bubble:nth-child(14) { left: 89%; width: 56px; height: 56px; animation-duration: 22s; animation-delay: 10s; }
+.pb-bubbles .bubble:nth-child(15) { left: 94%; width: 26px; height: 26px; animation-duration: 13s; animation-delay: 2s;  }
+.pb-bubbles .bubble:nth-child(16) { left: 9%;  width: 20px; height: 20px; animation-duration: 10s; animation-delay: 7s;  }
+.pb-bubbles .bubble:nth-child(17) { left: 50%; width: 18px; height: 18px; animation-duration: 9s;  animation-delay: 11s; }
+.pb-bubbles .bubble:nth-child(18) { left: 36%; width: 24px; height: 24px; animation-duration: 13s; animation-delay: 13s; }
 @keyframes bubble-rise {
   0% { transform: translateY(0) scale(0.8); opacity: 0; }
   12% { opacity: 0.5; }
   85% { opacity: 0.5; }
   100% { transform: translateY(-112vh) scale(1.1); opacity: 0; }
+}
+
+/* ---- Playful background "easter eggs" — small surprises to discover ---- */
+
+/* A warm sun in the corner with slowly turning rays + a gentle breathing pulse */
+.pb-sun {
+  position: absolute; top: 4%; right: 5%; width: 58px; height: 58px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #fff7cf, #ffd23f 58%, #ffb627);
+  box-shadow: 0 0 26px 8px rgba(255, 210, 63, 0.45);
+  animation: sun-pulse 5.5s ease-in-out infinite;
+}
+.pb-sun::after {
+  content: ''; position: absolute; inset: -16px; border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 200, 60, 0.55) 0 7deg, transparent 7deg 24deg);
+  -webkit-mask: radial-gradient(circle, transparent 58%, #000 60%);
+  mask: radial-gradient(circle, transparent 58%, #000 60%);
+  animation: sun-rays 30s linear infinite;
+}
+@keyframes sun-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+@keyframes sun-rays { to { transform: rotate(360deg); } }
+
+/* A hot-air balloon drifting up and gently across — a classic happy motif */
+.pb-balloon {
+  position: absolute; left: 14%; bottom: -130px; width: 38px; height: 46px; opacity: 0.85;
+  background: radial-gradient(circle at 34% 28%, #b9fff9, #12b3a8 78%);
+  border-radius: 50% 50% 48% 48% / 62% 62% 40% 40%;
+  animation: balloon-float 38s linear infinite; animation-delay: -7s;
+}
+.pb-balloon::after {
+  content: ''; position: absolute; left: 50%; bottom: -11px; width: 9px; height: 8px; transform: translateX(-50%);
+  background: #b97a33; border-radius: 0 0 2px 2px; box-shadow: 0 -5px 0 -1px rgba(15, 151, 143, 0.7);
+}
+@keyframes balloon-float {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(34px, -58vh); }
+  100% { transform: translate(-6px, -118vh); }
+}
+
+/* Little birds gliding across, wings flapping */
+.pb-bird { position: absolute; width: 18px; height: 9px; opacity: 0.55; }
+.pb-bird::before, .pb-bird::after {
+  content: ''; position: absolute; top: 0; width: 10px; height: 10px;
+  border-top: 2.4px solid var(--tree-canopy-edge, #0f978f); border-radius: 50%;
+}
+.pb-bird::before { left: 0; transform-origin: right center; animation: flap-l 0.5s ease-in-out infinite; }
+.pb-bird::after { right: 0; transform-origin: left center; animation: flap-r 0.5s ease-in-out infinite; }
+@keyframes flap-l { 0%, 100% { transform: rotate(10deg); } 50% { transform: rotate(-16deg); } }
+@keyframes flap-r { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(16deg); } }
+.pb-bird--1 { top: 15%; animation: bird-fly-1 27s linear infinite; }
+.pb-bird--2 { top: 22%; transform: scale(0.8); animation: bird-fly-2 34s linear infinite; animation-delay: -12s; }
+.pb-bird--3 { top: 11%; transform: scale(0.65); animation: bird-fly-2 30s linear infinite; animation-delay: -22s; }
+@keyframes bird-fly-1 {
+  0% { left: -28px; transform: translateY(0); } 50% { transform: translateY(-14px); }
+  100% { left: 106vw; transform: translateY(0); }
+}
+@keyframes bird-fly-2 {
+  0% { left: -28px; transform: translateY(0) scale(0.78); } 50% { transform: translateY(10px) scale(0.78); }
+  100% { left: 106vw; transform: translateY(0) scale(0.78); }
+}
+
+/* Butterflies on a wavy path, wings fluttering in 3D */
+.pb-butterfly { position: absolute; width: 16px; height: 14px; }
+.pb-butterfly i { position: absolute; top: 0; width: 8px; height: 14px; border-radius: 60% 60% 50% 50%; }
+.pb-butterfly i:first-child {
+  left: 0; transform-origin: right center;
+  background: radial-gradient(circle at 60% 38%, #ffb3c8, #e85c86);
+  animation: flutter-l 0.22s ease-in-out infinite;
+}
+.pb-butterfly i:last-child {
+  right: 0; transform-origin: left center;
+  background: radial-gradient(circle at 40% 38%, #b9a6ff, #6a47e0);
+  animation: flutter-r 0.22s ease-in-out infinite;
+}
+@keyframes flutter-l { 0%, 100% { transform: rotateY(0) rotate(-12deg); } 50% { transform: rotateY(62deg) rotate(-12deg); } }
+@keyframes flutter-r { 0%, 100% { transform: rotateY(0) rotate(12deg); } 50% { transform: rotateY(62deg) rotate(12deg); } }
+.pb-butterfly--1 { animation: bf-fly-1 26s linear infinite; }
+.pb-butterfly--2 { animation: bf-fly-2 31s linear infinite; animation-delay: -14s; }
+@keyframes bf-fly-1 {
+  0% { left: -22px; top: 64%; } 25% { top: 50%; } 50% { top: 66%; } 75% { top: 52%; } 100% { left: 106vw; top: 60%; }
+}
+@keyframes bf-fly-2 {
+  0% { left: 104vw; top: 38%; } 25% { top: 52%; } 50% { top: 36%; } 75% { top: 50%; } 100% { left: -22px; top: 40%; }
+}
+
+/* Twinkling sparkles scattered across the sky */
+.pb-twinkle {
+  position: absolute; width: 12px; height: 12px; background: #fffefb; opacity: 0;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  filter: drop-shadow(0 0 3px #fff6c4); animation: twinkle 4.5s ease-in-out infinite;
+}
+@keyframes twinkle { 0%, 100% { transform: scale(0.2) rotate(0); opacity: 0; } 50% { transform: scale(1) rotate(45deg); opacity: 0.95; } }
+.pb-twinkle--1 { top: 18%; left: 24%; animation-delay: 0s;   }
+.pb-twinkle--2 { top: 32%; left: 70%; animation-delay: 1.4s; transform: scale(0.8); }
+.pb-twinkle--3 { top: 12%; left: 52%; animation-delay: 2.6s; transform: scale(0.6); }
+.pb-twinkle--4 { top: 44%; left: 14%; animation-delay: 3.5s; }
+.pb-twinkle--5 { top: 26%; left: 88%; animation-delay: 0.8s; transform: scale(0.7); }
+.pb-twinkle--6 { top: 40%; left: 60%; animation-delay: 2.0s; transform: scale(0.5); }
+
+/* The rare one: a shooting star that only streaks across once in a while */
+.pb-shooting-star {
+  position: absolute; top: -4%; left: -8%; width: 92px; height: 2.5px; opacity: 0; border-radius: 3px;
+  background: linear-gradient(90deg, transparent, #eafcff 70%, #ffffff);
+  filter: drop-shadow(0 0 5px #bdf6ff);
+  animation: shoot 17s ease-in infinite;
+}
+@keyframes shoot {
+  0% { opacity: 0; transform: translate(0, 0) rotate(26deg); }
+  1% { opacity: 0.95; }
+  9% { opacity: 0.95; }
+  12% { opacity: 0; transform: translate(88vw, 56vh) rotate(26deg); }
+  100% { opacity: 0; transform: translate(88vw, 56vh) rotate(26deg); }
 }
 
 /* Confetti burst on a correct answer */
@@ -298,11 +423,11 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 
 /* ---- Playful = MAX vibrance + motion (none of these touch the draggable card's transform) ---- */
 /* multi-color floating bubbles */
-[data-theme='playful'] .playful-bg .bubble { opacity: 0.5; }
-[data-theme='playful'] .playful-bg .bubble:nth-child(4n+1) { background: radial-gradient(circle at 32% 30%, #fff, #ffd23f); }
-[data-theme='playful'] .playful-bg .bubble:nth-child(4n+2) { background: radial-gradient(circle at 32% 30%, #fff, #ff8fb0); }
-[data-theme='playful'] .playful-bg .bubble:nth-child(4n+3) { background: radial-gradient(circle at 32% 30%, #fff, #8a6bff); }
-[data-theme='playful'] .playful-bg .bubble:nth-child(4n)   { background: radial-gradient(circle at 32% 30%, #fff, #36c5ff); }
+[data-theme='playful'] .pb-bubbles .bubble { opacity: 0.5; }
+[data-theme='playful'] .pb-bubbles .bubble:nth-child(4n+1) { background: radial-gradient(circle at 32% 30%, #fff, #ffd23f); }
+[data-theme='playful'] .pb-bubbles .bubble:nth-child(4n+2) { background: radial-gradient(circle at 32% 30%, #fff, #ff8fb0); }
+[data-theme='playful'] .pb-bubbles .bubble:nth-child(4n+3) { background: radial-gradient(circle at 32% 30%, #fff, #8a6bff); }
+[data-theme='playful'] .pb-bubbles .bubble:nth-child(4n)   { background: radial-gradient(circle at 32% 30%, #fff, #36c5ff); }
 
 /* vibrant surfaces */
 [data-theme='playful'] .picture-card { box-shadow: 0 10px 0 rgba(7,179,192,.16), 0 16px 26px rgba(7,179,192,.30); }

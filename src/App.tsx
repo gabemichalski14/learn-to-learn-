@@ -46,12 +46,31 @@ export default function App() {
   return (
     <main className="app">
       <div className="playful-bg" aria-hidden="true">
+        {/* sky */}
+        <span className="pb-sun" />
         <span className="pb-cloud pb-cloud--1" />
         <span className="pb-cloud pb-cloud--2" />
         <span className="pb-cloud pb-cloud--3" />
-        {Array.from({ length: 10 }).map((_, i) => (
-          <span key={i} className="bubble" />
+
+        {/* little surprises — easter eggs to discover while you listen */}
+        <span className="pb-balloon" />
+        <span className="pb-bird pb-bird--1" />
+        <span className="pb-bird pb-bird--2" />
+        <span className="pb-bird pb-bird--3" />
+        <span className="pb-butterfly pb-butterfly--1"><i /><i /></span>
+        <span className="pb-butterfly pb-butterfly--2"><i /><i /></span>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <span key={`tw${i}`} className={`pb-twinkle pb-twinkle--${i + 1}`} />
         ))}
+        {/* the rare one: only streaks across once in a while */}
+        <span className="pb-shooting-star" />
+
+        {/* rising bubbles (own wrapper so nth-child positions stay clean) */}
+        <div className="pb-bubbles">
+          {Array.from({ length: 18 }).map((_, i) => (
+            <span key={i} className="bubble" />
+          ))}
+        </div>
       </div>
 
       <div className="app__topbar">

@@ -119,3 +119,29 @@ scope, plus the final code review of the v1 foundation (2026-06-04).
   logs); real routes per game (`#/play/<id>`); a games-by-level browse view; a tutor
   "select student" switcher; then the backend that turns local progress/log into shared,
   center-wide data.
+
+## Reference research (use the best, scrutinize the rest)
+- **Wordwall** — 30+ activity templates; the ones we should mirror as future games:
+  Group sort (= our sort engine), Match up, Find the match / Matching pairs (memory),
+  Unjumble / Anagram (build-a-word, spelling), Quiz / Flash cards (listen-and-choose),
+  Spin the wheel / Open the box (reward/randomizers). A good roadmap of proven mechanics.
+- **Barton (official)** — Orton-Gillingham-influenced, *simultaneously multisensory,
+  explicit, systematic, sequential, mastery-based*, 1:1, 10 levels (start at L1 regardless
+  of age; completion ≈ 9th-grade reading). Design implications we should honor: practice
+  matches the instructional sequence, multisensory (hear + see + drag), **mastery not
+  advancement**, and **no-anxiety / confidence-building**. (We already do audio-first,
+  no-fail, anti-pattern generation.)
+- **Dyslexia simulation (geon.github.io)** — letters "jump around"; reading is high-effort
+  even when comprehension is fine. Confirms our **audio-first, minimal-text** design.
+  Best practice for any learner-facing text: dyslexia-friendly type (Lexend / OpenDyslexic
+  as an optional toggle), generous letter/line spacing, short left-aligned lines, no time
+  pressure. (Our finish clock is deliberately no-pressure; brand body font is Poppins — add
+  a dyslexia-font accessibility toggle for in-game text later.)
+- **Dyslexia Tutoring Toolkit (Sue Bridgman, Teachable)** — a DIRECT analog: Barton-aligned
+  digital games organized by level 1–10. BUT it's a curated list of *third-party* embeds
+  (Wordwall / BookWidgets), not an owned platform, and has no tutor data/leaderboards. Our
+  edge = one branded, modern platform with our OWN engine + per-student data + dashboards.
+- **IP / "scrutinize bad info"** — Barton materials are copyrighted and "Barton" is
+  trademarked; the Toolkit's games are others' content. So: reference methodology + sequence
+  only, **author all our own words/pictures/games**, brand as "Learn to Learn", and never
+  reproduce Barton word lists or re-host anyone's games.

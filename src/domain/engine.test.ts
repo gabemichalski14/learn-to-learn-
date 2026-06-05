@@ -80,6 +80,40 @@ describe('generateSortRound', () => {
   });
 });
 
+describe('generateSortRound with totalItems (fixed-size pages)', () => {
+  it('always produces exactly totalItems pictures', () => {
+    for (let seed = 0; seed < 30; seed++) {
+      const r = generateSortRound({ pack: everydayObjects, totalItems: 6, rng: seeded(seed) });
+      expect(r.items).toHaveLength(6);
+    }
+  });
+
+  it('gives every basket at least one picture', () => {
+    for (let seed = 0; seed < 30; seed++) {
+      const r = generateSortRound({ pack: everydayObjects, totalItems: 6, rng: seeded(seed) });
+      for (const s of r.baskets) {
+        expect(r.items.filter((i) => i.beginningSound === s).length).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+
+  it('keeps every picture matched to one of the baskets', () => {
+    const r = generateSortRound({ pack: everydayObjects, totalItems: 6, rng: seeded(5) });
+    for (const i of r.items) expect(r.baskets).toContain(i.beginningSound);
+  });
+
+  it('sometimes splits unevenly across two baskets (not a fixed even split)', () => {
+    let sawUneven = false;
+    for (let seed = 0; seed < 30 && !sawUneven; seed++) {
+      const r = generateSortRound({ pack: everydayObjects, totalItems: 6, basketCount: 2, rng: seeded(seed) });
+      const a = r.items.filter((i) => i.beginningSound === r.baskets[0]).length;
+      const b = r.items.filter((i) => i.beginningSound === r.baskets[1]).length;
+      if (a !== b) sawUneven = true;
+    }
+    expect(sawUneven).toBe(true);
+  });
+});
+
 describe('canBuildSortRound', () => {
   it('is true when every sound has enough words', () => {
     expect(canBuildSortRound(everydayObjects, ['b', 's'], 4)).toBe(true);

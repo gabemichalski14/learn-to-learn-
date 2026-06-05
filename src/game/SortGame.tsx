@@ -7,9 +7,20 @@ import { PictureCard } from './PictureCard';
 import { SoundBasket } from './SoundBasket';
 import { BookTree } from './BookTree';
 
-interface Props { round: SortRound; audio: AudioPlayer; onPlayAgain?: () => void; }
+interface Props {
+  round: SortRound;
+  audio: AudioPlayer;
+  /** 0-based index of this page within the session. */
+  roundIndex?: number;
+  /** How many pages are in the session. */
+  totalRounds?: number;
+  /** Advance to the next page (shown when a non-final page is done). */
+  onAdvance?: () => void;
+  /** Start a fresh session (shown when the final page is done). */
+  onRestart?: () => void;
+}
 
-export function SortGame({ round, audio, onPlayAgain }: Props) {
+export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdvance, onRestart }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -25,33 +36,59 @@ export function SortGame({ round, audio, onPlayAgain }: Props) {
 
   const total = round.items.length;
   const correct = round.items.filter((i) => game.placements[i.id] === i.beginningSound).length;
-  const progress = total ? correct / total : 0;
+  const withinRound = total ? correct / total : 0;
+  const roundDone = game.isComplete;
+  const isLastRound = roundIndex >= totalRounds - 1;
+
+  // The tree grows across the WHOLE session, blooming only when the last page is done.
+  const sessionProgress = (roundIndex + withinRound) / totalRounds;
+  const bloom = roundDone && isLastRound;
 
   // One persistent live region whose text changes (reliable screen-reader announcement).
-  const status = game.isComplete
-    ? 'You grew the whole tree! Great listening.'
+  const status = roundDone
+    ? (isLastRound ? 'You grew the whole tree! Great listening.' : 'Nice listening! Ready for the next page?')
     : (game.message ?? 'Tap a basket to hear its sound, then drag each picture where it belongs.');
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="sort-game">
-        <BookTree className="sort-game__tree" progress={progress} bloom={game.isComplete} />
+        <BookTree className="sort-game__tree" progress={sessionProgress} bloom={bloom} />
+
+        {totalRounds > 1 && (
+          <div className="session-dots" role="img" aria-label={`Page ${roundIndex + 1} of ${totalRounds}`}>
+            {Array.from({ length: totalRounds }).map((_, i) => {
+              const done = i < roundIndex || (i === roundIndex && roundDone);
+              const current = i === roundIndex && !roundDone;
+              return (
+                <span
+                  key={i}
+                  className={`session-dot${done ? ' session-dot--done' : ''}${current ? ' session-dot--current' : ''}`}
+                />
+              );
+            })}
+          </div>
+        )}
 
         <p
-          className={`sort-game__status${game.isComplete ? ' sort-game__status--celebrate' : ''}`}
+          className={`sort-game__status${roundDone ? ' sort-game__status--celebrate' : ''}`}
           role="status"
           aria-live="polite"
         >
           {status}
         </p>
 
-        {game.isComplete && onPlayAgain && (
-          <button type="button" className="btn-primary" onClick={onPlayAgain}>
+        {roundDone && !isLastRound && onAdvance && (
+          <button type="button" className="btn-primary" onClick={onAdvance}>
+            Next page →
+          </button>
+        )}
+        {roundDone && isLastRound && onRestart && (
+          <button type="button" className="btn-primary" onClick={onRestart}>
             Play again 🌱
           </button>
         )}
 
-        {!game.isComplete && (
+        {!roundDone && (
           <div className="sort-game__tray">
             {game.remainingItems.map((item) => (
               <PictureCard key={item.id} item={item} onActivate={() => game.replayWord(item)} />

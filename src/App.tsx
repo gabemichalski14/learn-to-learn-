@@ -5,12 +5,19 @@ import { createStubAudioPlayer } from './audio/stubAudioPlayer';
 import { SortGame } from './game/SortGame';
 import { BookTree } from './game/BookTree';
 
+const TOTAL_ROUNDS = 5;
+const ITEMS_PER_ROUND = 6;
+
 export default function App() {
   const audio = useMemo(() => createStubAudioPlayer(), []);
-  const [roundNo, setRoundNo] = useState(0);
+  const [sessionId, setSessionId] = useState(0);
+  const [roundIndex, setRoundIndex] = useState(0);
 
-  // A fresh random round each time roundNo changes; keyed remount resets game state.
-  const round = useMemo(() => generateSortRound({ pack: everydayObjects }), [roundNo]);
+  // Fresh random page whenever the session restarts or we advance a page.
+  const round = useMemo(
+    () => generateSortRound({ pack: everydayObjects, totalItems: ITEMS_PER_ROUND }),
+    [sessionId, roundIndex],
+  );
 
   return (
     <main className="app">
@@ -23,10 +30,16 @@ export default function App() {
       </header>
 
       <SortGame
-        key={roundNo}
+        key={`${sessionId}-${roundIndex}`}
         round={round}
         audio={audio}
-        onPlayAgain={() => setRoundNo((n) => n + 1)}
+        roundIndex={roundIndex}
+        totalRounds={TOTAL_ROUNDS}
+        onAdvance={() => setRoundIndex((i) => Math.min(i + 1, TOTAL_ROUNDS - 1))}
+        onRestart={() => {
+          setSessionId((s) => s + 1);
+          setRoundIndex(0);
+        }}
       />
     </main>
   );

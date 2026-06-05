@@ -30,16 +30,39 @@ export function canBuildSortRound(pack: Pack, sounds: string[], minPerSound: num
   return sounds.every((s) => wordsFor(pack, s).length >= minPerSound);
 }
 
+/**
+ * Spread `total` items across baskets, each getting at least 1 (capacity & total
+ * permitting), then scatter the remainder at random so splits come out uneven
+ * (e.g. 2+4, 1+2+3) rather than a predictable even split. Respects per-basket caps.
+ */
+function distribute(total: number, caps: number[], rng: () => number): number[] {
+  const n = caps.length;
+  const counts = caps.map(() => 0);
+  let left = total;
+  for (let i = 0; i < n && left > 0; i++) {
+    if (caps[i] > 0) { counts[i] = 1; left -= 1; }
+  }
+  let guard = 0;
+  while (left > 0 && guard++ < 10000) {
+    if (counts.every((c, i) => c >= caps[i])) break;
+    const i = Math.floor(rng() * n);
+    if (counts[i] < caps[i]) { counts[i] += 1; left -= 1; }
+  }
+  return counts;
+}
+
 export interface GenerateSortRoundParams {
   pack: Pack;
   /** Explicit target sounds. If omitted, chosen at random from the pack. */
   sounds?: string[];
   /** How many baskets. If omitted, a random 2 or 3 (capped by the pack). */
   basketCount?: number;
-  /** Fewest pictures drawn for a sound (default 2). */
+  /** Fewest pictures drawn for a sound (default 2, or 1 when totalItems is set). */
   minPerSound?: number;
-  /** Most pictures drawn for a sound (default 4). */
+  /** Most pictures drawn for a sound (default 4). Ignored when totalItems is set. */
   maxPerSound?: number;
+  /** Exact number of pictures in the round, spread unevenly across the baskets. */
+  totalItems?: number;
   rng?: () => number;
 }
 
@@ -51,11 +74,12 @@ export interface GenerateSortRoundParams {
  *  - basket display order is shuffled (so position is never a cue),
  *  - pictures are drawn from a larger pool (so the same picture isn't always
  *    in the same basket).
- * The child has to actually listen.
+ * Pass `totalItems` to fix the picture count per round (e.g. 6 per page).
  */
 export function generateSortRound(params: GenerateSortRoundParams): SortRound {
   const { pack, rng = Math.random } = params;
-  const minPerSound = params.minPerSound ?? 2;
+  const usingTotal = params.totalItems != null;
+  const minPerSound = params.minPerSound ?? (usingTotal ? 1 : 2);
   const maxPerSound = params.maxPerSound ?? 4;
 
   const pool = availableSounds(pack, minPerSound);
@@ -72,15 +96,21 @@ export function generateSortRound(params: GenerateSortRoundParams): SortRound {
     throw new Error('a round needs at least 2 target sounds');
   }
 
-  const items: WordItem[] = [];
-  for (const sound of chosen) {
-    const poolForSound = wordsFor(pack, sound);
-    if (poolForSound.length < minPerSound) {
-      throw new Error(`not enough words for sound "${sound}": need ${minPerSound}, have ${poolForSound.length}`);
+  const caps = chosen.map((s) => wordsFor(pack, s).length);
+  caps.forEach((cap, i) => {
+    if (cap < minPerSound) {
+      throw new Error(`not enough words for sound "${chosen[i]}": need ${minPerSound}, have ${cap}`);
     }
-    const want = randInt(rng, minPerSound, Math.min(maxPerSound, poolForSound.length));
-    items.push(...shuffle(poolForSound, rng).slice(0, want));
-  }
+  });
+
+  const counts = usingTotal
+    ? distribute(Math.min(params.totalItems as number, caps.reduce((a, b) => a + b, 0)), caps, rng)
+    : chosen.map((_, i) => randInt(rng, minPerSound, Math.min(maxPerSound, caps[i])));
+
+  const items: WordItem[] = [];
+  chosen.forEach((sound, i) => {
+    items.push(...shuffle(wordsFor(pack, sound), rng).slice(0, counts[i]));
+  });
 
   return { baskets: shuffle([...chosen], rng), items: shuffle(items, rng) };
 }

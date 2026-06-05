@@ -6,15 +6,26 @@
  * word lists, sentences, or scripts.
  *
  * Skill tags drive which game types belong to a lesson:
- *   'segment'  hear a word, break it into sounds      (oral / tile)
- *   'blend'    push sounds together into a word
- *   'first'    identify the first sound
- *   'last'     identify the last sound
- *   'sound'    keyword ↔ sound for a new letter
- *   'read'     decode words/phrases/sentences
- *   'spell'    encode (build) words from sounds
+ *   'segment'    hear a word, break it into sounds      (oral / tile)
+ *   'blend'      push sounds together into a word
+ *   'manipulate' break, replace, or remove a sound (Level 1 procedure B)
+ *   'compare'    decide if two spoken words are the same or different (L1 proc. C)
+ *   'first'      identify the first sound
+ *   'last'       identify the last sound
+ *   'sound'      keyword ↔ sound for a new letter
+ *   'read'       decode words/phrases/sentences
+ *   'spell'      encode (build) words from sounds
  */
-export type Skill = 'segment' | 'blend' | 'first' | 'last' | 'sound' | 'read' | 'spell';
+export type Skill =
+  | 'segment'
+  | 'blend'
+  | 'manipulate'
+  | 'compare'
+  | 'first'
+  | 'last'
+  | 'sound'
+  | 'read'
+  | 'spell';
 
 export interface Lesson {
   n: number;
@@ -59,15 +70,16 @@ export const CURRICULUM: LevelCurriculum[] = [
     focus: 'Hearing the sounds in spoken words (oral, no letters)',
     book: 'Book 1: Phonemic Awareness',
     oral: true,
-    summary: 'Hear and break apart the sounds in spoken words (no letters yet).',
-    lessonFlow: ['Warm-up', 'Break the word into sounds (tiles)', 'Touch & say each sound', 'Blend back together'],
-    sections: ['Scope Chart', 'Lessons (oral)', 'Optional Posttest', 'Student Pages'],
+    summary: 'Break spoken words into individual sounds on blank tiles (no letters), then replace/remove sounds and compare words — building from 2-sound words up to real words.',
+    // Per-lesson procedures from the Progress Tracking Sheet (A/B/C + games).
+    lessonFlow: ['Break Apart (segment the word on blank tiles)', 'Break, Replace, Remove (manipulate sounds)', 'Compare Two Words', 'Optional Games'],
+    sections: ['Sound Chart', 'Lessons', 'Optional Posttest', 'Games', 'Tips & Error Correction'],
     lessons: [
-      { n: 1, title: 'Break Apart VC Words', skills: ['segment'], note: 'Segment 2-sound (vowel-consonant) syllables with tiles.' },
-      { n: 2, title: 'Break Apart CVC Words', skills: ['segment'], note: 'Segment 3-sound words.' },
-      { n: 3, title: 'Break Apart Longer Words', skills: ['segment'], note: 'Segment 4+ sound words (blends).' },
-      { n: 4, title: 'Blend & Manipulate Sounds', skills: ['blend', 'segment'] },
-      { n: 5, title: 'Word Endings & Final Sounds', skills: ['last', 'segment'] },
+      { n: 1, title: 'Breaking 2 Sounds Apart', skills: ['segment', 'manipulate', 'compare'], note: 'VC & CV words (2 phonemes) on blank tiles.' },
+      { n: 2, title: 'Breaking CVC Words', skills: ['segment', 'manipulate', 'compare'], note: '3-sound consonant-vowel-consonant words.' },
+      { n: 3, title: 'Breaking VCC Words', skills: ['segment', 'manipulate', 'compare'], note: 'Vowel + final consonant blend (e.g. /a/·/s/·/k/).' },
+      { n: 4, title: 'Breaking CCV Words', skills: ['segment', 'manipulate', 'compare'], note: 'Initial consonant blend + vowel.' },
+      { n: 5, title: 'Working with Real Words', skills: ['segment', 'manipulate', 'compare', 'blend'], note: 'Apply all three procedures to real words.' },
     ],
   },
   {

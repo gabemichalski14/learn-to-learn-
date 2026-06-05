@@ -33,11 +33,11 @@ export const LEVELS: LevelInfo[] = [
   {
     num: 1,
     title: 'Phonemic Awareness',
-    focus: 'Hearing the sounds in spoken words (oral)',
+    focus: 'Hearing and changing the sounds in spoken words (oral, no letters)',
     games: [
-      soon('l1-rhyme', 'Rhyme Time', '🎵', 'Find the pictures that rhyme.'),
-      soon('l1-first', 'First Things First', '👂', 'Tap the picture that starts the same.'),
-      soon('l1-blend', 'Sound Smoosh', '🫨', 'Squish the sounds together into a word.'),
+      soon('l1-tap', 'Tap It Out', '👏', 'Tap a tile for each sound you hear.'),
+      soon('l1-switch', 'Switch It', '🔁', 'Change or drop one sound to make a new word.'),
+      soon('l1-same', 'Same or Different?', '👂', 'Decide if two spoken words match.'),
     ],
   },
   {

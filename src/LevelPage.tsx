@@ -42,7 +42,7 @@ export function LevelPage({ level }: { level: number }) {
           {curriculum.lessonFlow && (
             <p className="lesson-flow">Each lesson: {curriculum.lessonFlow.join(' → ')}</p>
           )}
-          {curriculum.sections?.includes('Posttest') && (
+          {curriculum.sections?.some((s) => s.includes('Posttest')) && (
             <p className="lesson-flow lesson-flow--test">✓ Level ends with a posttest (mastery check)</p>
           )}
           {curriculum.partial && (

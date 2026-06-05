@@ -35,11 +35,12 @@ word lists, sentences, or tutor scripts into the app.
 - **Level 5 — Prefixes & Suffixes** (verified from the contents page): plurals
   (-s/-es) → consonant & vowel suffixes (Doubling & Change rules, -tion/-sion) →
   prefixes. 10 lessons.
-- **Level 6 — Six Reasons for Silent-E** (partial): the six reasons a silent-E
+- **Level 6 — Six Reasons for Silent-E** (verified): the six reasons a silent-E
   exists → suffix spelling (the Dropping rule, tricky suffixes) → Greek clues
-  (PH, medial Y) → TURE / TION-SION units → Consonant-LE. TOC page 1 gives
-  Lessons 1–11; the book runs through Lesson 14 + Posttest, so titles for
-  Lessons 12–14 await a shot of the contents page's second page.
+  (PH, medial Y) → TURE / TION-SION units → Consonant-LE syllables, the Sprinkle
+  Vehicle rule, and ABLE vs IBLE. 14 lessons + Optional Posttest. (Completed from
+  the contents page's *second* page — its reverse side never faces the camera on a
+  read-through, so it needed a dedicated flip-and-shoot, not a video pass.)
 - **Level 7 — Vowel-R Syllables** (verified from the contents page): ar/or →
   er/ir/ur → vowel-R with silent-E and affixes → spelling rules (Commodore
   Sailor, Edward the Lizard) → Bossy W, three sounds of EAR, /air/ spellings,

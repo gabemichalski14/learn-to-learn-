@@ -62,8 +62,8 @@ export const LEVELS: LevelInfo[] = [
   },
   {
     num: 4,
-    title: 'Syllable Division & Vowel Teams',
-    focus: 'Six syllable types, dividing big words, and vowel teams',
+    title: 'Syllable Division',
+    focus: 'Open syllables, dividing big words, and long-vowel spelling',
     games: [
       soon('l4-split', 'The Great Divide', '✂️', 'Split big words into parts.'),
       soon('l4-magic', 'Name Change', '✨', 'Silent-e makes the vowel say its name.'),

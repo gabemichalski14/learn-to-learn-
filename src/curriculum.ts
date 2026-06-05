@@ -112,17 +112,27 @@ export const CURRICULUM: LevelCurriculum[] = [
   },
   {
     level: 4,
-    title: 'Syllable Division & Vowel Teams',
-    focus: 'Six syllable types, dividing multisyllable words, vowel teams + per-lesson sight words',
-    book: 'Book 4: Syllable Division & Vowel Teams',
-    summary: '~14 lessons: open & other syllable types → syllable division → vowel teams, with a sight-word reading deck + spelling cards reviewed each lesson.',
-    lessonFlow: ['Review', 'New Teaching (syllable type / vowel team)', 'Read Words', 'Spell Words', 'Sight Word Review (reading deck + spelling cards)', 'Spell Sentences', 'Read a Story'],
+    title: 'Syllable Division',
+    focus: 'Open syllables, the four syllable-division rules, schwa, and long-vowel spelling',
+    book: 'Book 4: Syllable Division',
+    summary: '14 lessons: open syllables → four syllable-division rules for decoding big words → spelling rules (/k/-in-the-middle, doubling, schwa) → long vowels & vowel teams at the end/middle of a syllable.',
+    lessonFlow: ['Review', 'New Teaching (syllable type / division or spelling rule)', 'Read Words', 'Spell Words', 'Sight Word Review (reading deck + spelling cards)', 'Spell Sentences', 'Read a Story'],
     sections: ['Overview', 'Lessons', 'Games', 'Tips & Error Correction', 'Posttest', 'Student Pages'],
-    partial: true, // contents page wasn't filmed; only confirmed lessons listed below
     lessons: [
-      { n: 1, title: 'Open Syllables (+ Vowel-Y)', vowels: ['y'], skills: ['read', 'spell'], note: 'Open syllable = one vowel at the end says its long sound; introduce Vowel-Y (long e/i at word end). Watch-Out vowels: E, I, Y.' },
-      // Lessons 2–14 confirmed to exist (Lesson 13 = reading stories) — exact titles
-      // pending a capture of the Table of Contents.
+      { n: 1, title: 'Open Syllables', vowels: ['y'], skills: ['read', 'spell'], note: 'Open syllable = one vowel at the end of a syllable says its long sound; introduce Vowel-Y (long e/i at word end).' },
+      { n: 2, title: 'Syllable Division Rule #1', skills: ['read', 'spell'], note: 'First rule for splitting a multisyllable word so it can be decoded.' },
+      { n: 3, title: 'Syllable Division Rule #2', skills: ['read', 'spell'] },
+      { n: 4, title: 'Spelling: /k/ in the Middle', skills: ['spell', 'read'], note: 'Choosing c / k / ck for the /k/ sound inside a longer word.' },
+      { n: 5, title: 'Spelling: Double Letters', skills: ['spell', 'read'], note: 'When a consonant doubles in the middle of a word.' },
+      { n: 6, title: 'Spelling: Schwa', skills: ['spell', 'read'], note: 'The unstressed "uh" vowel in a multisyllable word.' },
+      { n: 7, title: 'Syllable Division Rule #3', skills: ['read', 'spell'] },
+      { n: 8, title: 'Syllable Division Rule #4', skills: ['read', 'spell'] },
+      { n: 9, title: 'Three-Syllable Words', skills: ['read', 'spell'] },
+      { n: 10, title: 'Spelling: The Banana Rule', skills: ['spell', 'read'] },
+      { n: 11, title: 'Spelling: The Confident Rule', skills: ['spell', 'read'] },
+      { n: 12, title: 'Spelling: Long A, E, I at the End', skills: ['spell', 'read'] },
+      { n: 13, title: 'Spelling: Long O, U at the End', skills: ['spell', 'read'] },
+      { n: 14, title: 'Spelling: Vowel Teams in the Middle', skills: ['spell', 'read'] },
     ],
   },
   {

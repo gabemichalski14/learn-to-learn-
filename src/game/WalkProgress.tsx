@@ -6,8 +6,8 @@ interface Props {
 
 /**
  * Minimal progress indicator for the "Clean" theme: a small figure walks along
- * a line toward a checkered finish flag as the session progresses. Quiet and
- * dignified — no growing tree, no flourishes.
+ * a line toward a checkered finish flag as the session progresses. The figure
+ * strides (legs/arms swing, gentle gait bob) and slides to its progress spot.
  */
 export function WalkProgress({ progress, className }: Props) {
   const p = Math.max(0, Math.min(1, progress));
@@ -29,7 +29,7 @@ export function WalkProgress({ progress, className }: Props) {
         <rect x="214" y="13" width="16" height="12" fill="none" stroke="var(--ink)" strokeWidth="1" />
       </g>
 
-      {/* walker (slides along the line) */}
+      {/* walker (slides along the line; the body strides in place) */}
       <g
         className="walker"
         style={{ transform: `translateX(${x}px)` }}
@@ -39,11 +39,21 @@ export function WalkProgress({ progress, className }: Props) {
         strokeLinejoin="round"
         fill="none"
       >
-        <circle cx="0" cy="26" r="4.6" fill="var(--ink)" stroke="none" />
-        <line x1="0" y1="31" x2="0" y2="40" />
-        <line x1="-5" y1="33" x2="5" y2="35" />
-        <line x1="0" y1="40" x2="5.5" y2="48" />
-        <line x1="0" y1="40" x2="-5.5" y2="48" />
+        <g className="walker__body">
+          {/* legs (pivot at the hip) */}
+          <g transform="translate(0 40)">
+            <g className="walker__leg walker__leg--a"><line x1="0" y1="0" x2="0" y2="8" /></g>
+            <g className="walker__leg walker__leg--b"><line x1="0" y1="0" x2="0" y2="8" /></g>
+          </g>
+          {/* arms (pivot at the shoulder) */}
+          <g transform="translate(0 32.5)">
+            <g className="walker__arm walker__arm--a"><line x1="0" y1="0" x2="0" y2="7" /></g>
+            <g className="walker__arm walker__arm--b"><line x1="0" y1="0" x2="0" y2="7" /></g>
+          </g>
+          {/* spine + head */}
+          <line x1="0" y1="31" x2="0" y2="40" />
+          <circle cx="0" cy="26" r="4.6" fill="var(--ink)" stroke="none" />
+        </g>
       </g>
     </svg>
   );

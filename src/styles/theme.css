@@ -44,6 +44,15 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .sort-game__tree { width: clamp(104px, 26vw, 148px); height: auto; margin: 0; }
 .sort-game__walk { width: clamp(200px, 62vw, 320px); height: auto; margin: 0; }
 .walker { transition: transform .5s ease; }
+.walker__body { animation: walk-bob .72s ease-in-out infinite; }
+.walker__leg, .walker__arm { transform-box: fill-box; transform-origin: top center; }
+.walker__leg--a { animation: stride .72s ease-in-out infinite; }
+.walker__leg--b { animation: stride .72s ease-in-out infinite -.36s; }
+.walker__arm--a { animation: stride-arm .72s ease-in-out infinite -.36s; }
+.walker__arm--b { animation: stride-arm .72s ease-in-out infinite; }
+@keyframes stride { 0%, 100% { transform: rotate(-22deg); } 50% { transform: rotate(22deg); } }
+@keyframes stride-arm { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(-16deg); } }
+@keyframes walk-bob { 0%, 100% { transform: translateY(0); } 25%, 75% { transform: translateY(-1.3px); } 50% { transform: translateY(0); } }
 
 .sort-game__status {
   min-height: 26px; font-size: clamp(15px, 3.6vw, 19px); font-weight: 600; margin: 0; color: var(--ink);

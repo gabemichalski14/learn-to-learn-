@@ -8,5 +8,10 @@ if (!('speechSynthesis' in globalThis)) {
     getVoices: () => [],
   };
   (globalThis as unknown as { SpeechSynthesisUtterance: unknown }).SpeechSynthesisUtterance =
-    class { constructor(public text: string) {} };
+    class {
+      text: string;
+      constructor(text: string) {
+        this.text = text;
+      }
+    };
 }

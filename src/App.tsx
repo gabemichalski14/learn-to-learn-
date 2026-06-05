@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRoute } from './router';
 import { GameScreen } from './GameScreen';
 import { Home } from './Home';
+import { LevelPage } from './LevelPage';
 import { Leaderboard } from './Leaderboard';
 import { TutorDashboard } from './TutorDashboard';
 import type { ThemeId } from './ThemeSwitcher';
@@ -31,17 +32,19 @@ export default function App() {
   // The kid-band themes only apply inside the game; the rest of the site stays
   // in the default brand look. Remember the chosen theme either way.
   useEffect(() => {
-    document.documentElement.dataset.theme = route === 'play' ? theme : 'l2l';
+    document.documentElement.dataset.theme = route.name === 'play' ? theme : 'l2l';
     try {
       localStorage.setItem('ll-theme', theme);
     } catch {
       /* ignore */
     }
-  }, [theme, route]);
+  }, [theme, route.name]);
 
-  switch (route) {
+  switch (route.name) {
     case 'play':
       return <GameScreen theme={theme} setTheme={setTheme} learnerId={learnerId} />;
+    case 'level':
+      return <LevelPage level={route.level ?? 1} />;
     case 'leaderboard':
       return <Leaderboard />;
     case 'tutor':

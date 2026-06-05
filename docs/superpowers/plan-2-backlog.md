@@ -104,9 +104,15 @@ scope, plus the final code review of the v1 foundation (2026-06-04).
 - **Routing:** dependency-free hash router (`src/router.ts`) with routes home / play /
   leaderboard / tutor. App.tsx is the route host. Swap for React Router later **without
   touching page components** — they only call `navigate()`.
-- **Pages:** `Home.tsx` (brand + data-driven game grid from `games.ts` + progress cards),
-  `GameScreen.tsx` (the game, extracted from App; has a 🏠 Home button), `Leaderboard.tsx`
-  (placeholder + local-stats teaser), `TutorDashboard.tsx` (full-page session log).
+- **Pages:** `Home.tsx` (brand + LearnerBar + the 10-level curriculum grid + progress cards),
+  `LevelPage.tsx` (`#/level/<n>` — a level's game sub-menu), `GameScreen.tsx` (the game; 🏠
+  Home button), `Leaderboard.tsx`, `TutorDashboard.tsx`.
+- **Curriculum structure:** `games.ts` exports `LEVELS` (1–10), each with title/focus and a
+  games sub-menu. PLACEHOLDER lineup — finalise titles/focus + per-level games against the
+  scanned Barton scope & sequence. Beginning Sounds Match sits under Level 2.
+- **Dashboard (modernised):** per-student KPI cards + SVG charts (accuracy-over-time area,
+  time-per-session bars) + session-history table + CSV/print. `SessionLogPanel` has a
+  `showSummary` toggle so the dashboard hides its duplicate stat row.
 - **Theme scoping:** kid-band themes apply only inside the game (`data-theme`); the rest of
   the site stays in the default brand look.
 - **Next for the platform:** learner/center profile (keys the leaderboard + per-student

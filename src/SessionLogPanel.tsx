@@ -20,7 +20,7 @@ function isThisWeek(iso: string): boolean {
  * Used both by the in-game modal and the Tutor Dashboard page, so the data view
  * stays identical.
  */
-export function SessionLogPanel({ learnerId }: { learnerId: string }) {
+export function SessionLogPanel({ learnerId, showSummary = true }: { learnerId: string; showSummary?: boolean }) {
   const [, bump] = useState(0); // re-read after clearing
 
   const records = loadSessionLog(learnerId).slice().reverse(); // newest first
@@ -48,11 +48,13 @@ export function SessionLogPanel({ learnerId }: { learnerId: string }) {
 
   return (
     <>
-      <div className="book__stats">
-        <span className="book__stat"><strong>{total}</strong><br />sessions</span>
-        <span className="book__stat"><strong>{week}</strong><br />this week</span>
-        <span className="book__stat"><strong>{avgAccuracy}%</strong><br />avg accuracy</span>
-      </div>
+      {showSummary && (
+        <div className="book__stats">
+          <span className="book__stat"><strong>{total}</strong><br />sessions</span>
+          <span className="book__stat"><strong>{week}</strong><br />this week</span>
+          <span className="book__stat"><strong>{avgAccuracy}%</strong><br />avg accuracy</span>
+        </div>
+      )}
 
       {total === 0 ? (
         <p className="log__empty">No sessions yet. Finished games will show up here.</p>

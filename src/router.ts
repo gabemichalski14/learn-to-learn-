@@ -1,23 +1,31 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Tiny dependency-free hash router. Enough to give the platform a "home" that
- * can host many games, a leaderboard, and the tutor dashboard. Swap for React
- * Router later without touching page components — they only use navigate().
+ * Tiny dependency-free hash router. Routes: home / level/<n> / play / leaderboard
+ * / tutor. Swap for React Router later without touching pages — they only use
+ * navigate().
  */
-export type RouteName = 'home' | 'play' | 'leaderboard' | 'tutor';
-
-export function parseHash(hash: string): RouteName {
-  const h = hash.replace(/^#\/?/, '');
-  if (h.startsWith('play')) return 'play';
-  if (h.startsWith('leaderboard')) return 'leaderboard';
-  if (h.startsWith('tutor')) return 'tutor';
-  return 'home';
+export type RouteName = 'home' | 'level' | 'play' | 'leaderboard' | 'tutor';
+export interface Route {
+  name: RouteName;
+  level?: number;
 }
 
-export function useRoute(): RouteName {
-  const [route, setRoute] = useState<RouteName>(() =>
-    typeof window === 'undefined' ? 'home' : parseHash(window.location.hash),
+export function parseHash(hash: string): Route {
+  const h = hash.replace(/^#\/?/, '');
+  if (h.startsWith('play')) return { name: 'play' };
+  if (h.startsWith('leaderboard')) return { name: 'leaderboard' };
+  if (h.startsWith('tutor')) return { name: 'tutor' };
+  if (h.startsWith('level/')) {
+    const n = parseInt(h.split('/')[1] ?? '', 10);
+    return { name: 'level', level: Number.isFinite(n) ? n : 1 };
+  }
+  return { name: 'home' };
+}
+
+export function useRoute(): Route {
+  const [route, setRoute] = useState<Route>(() =>
+    typeof window === 'undefined' ? { name: 'home' } : parseHash(window.location.hash),
   );
   useEffect(() => {
     const onChange = () => setRoute(parseHash(window.location.hash));

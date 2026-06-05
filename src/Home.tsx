@@ -1,5 +1,5 @@
 import { LogoMark } from './LogoMark';
-import { GAMES } from './games';
+import { LEVELS, availableCount } from './games';
 import { navigate } from './router';
 import { loadProgress } from './progress';
 import { ACHIEVEMENTS } from './achievements';
@@ -10,7 +10,7 @@ interface Props {
   onSelectLearner: (id: string) => void;
 }
 
-/** Platform home: who's playing, the game library, and entries to leaderboard + tutor data. */
+/** Platform home: who's playing, the 10-level curriculum, and progress entries. */
 export function Home({ learnerId, onSelectLearner }: Props) {
   const { earned, sessions } = loadProgress(learnerId);
 
@@ -26,33 +26,30 @@ export function Home({ learnerId, onSelectLearner }: Props) {
 
       <LearnerBar learnerId={learnerId} onSelect={onSelectLearner} />
 
-      <section className="site__section" aria-labelledby="games-h">
-        <h2 id="games-h" className="site__h2">Games</h2>
-        <div className="tile-grid">
-          {GAMES.map((g) => {
-            const available = g.status === 'available';
+      <section className="site__section" aria-labelledby="levels-h">
+        <h2 id="levels-h" className="site__h2">Curriculum · Levels 1–10</h2>
+        <div className="level-grid">
+          {LEVELS.map((lvl) => {
+            const ready = availableCount(lvl);
             return (
               <button
-                key={g.id}
+                key={lvl.num}
                 type="button"
-                className={`tile${available ? '' : ' tile--soon'}`}
-                onClick={() => available && g.route && navigate(g.route)}
-                disabled={!available}
-                aria-label={available ? `Play ${g.title}` : `${g.title} — coming soon`}
+                className={`level-card${ready ? ' level-card--ready' : ''}`}
+                onClick={() => navigate(`#/level/${lvl.num}`)}
+                aria-label={`Level ${lvl.num}: ${lvl.title}`}
               >
-                <span className="tile__emoji" aria-hidden="true">{g.emoji}</span>
-                <span className="tile__title">{g.title}</span>
-                <span className="tile__tagline">{g.tagline}</span>
-                <span className="tile__foot">
-                  <span className="tile__ref">{g.bartonRef}</span>
-                  <span className={`tile__badge${available ? ' tile__badge--go' : ''}`}>
-                    {available ? 'Play ▸' : 'Soon'}
-                  </span>
+                <span className="level-card__num">Level {lvl.num}</span>
+                <span className="level-card__title">{lvl.title}</span>
+                <span className="level-card__focus">{lvl.focus}</span>
+                <span className="level-card__foot">
+                  {ready ? `${ready} game${ready === 1 ? '' : 's'} ▸` : 'Coming soon'}
                 </span>
               </button>
             );
           })}
         </div>
+        <p className="page__note">Level focus and games are placeholders — the final lineup follows the Barton scope &amp; sequence.</p>
       </section>
 
       <section className="site__section" aria-labelledby="more-h">

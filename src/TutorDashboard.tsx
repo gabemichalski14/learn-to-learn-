@@ -4,21 +4,45 @@ import { SessionLogPanel } from './SessionLogPanel';
 import { loadLearners, getCurrentLearnerId, getLearner, initials } from './profiles';
 import { loadProgress, formatTime } from './progress';
 import { loadSessionLog } from './sessionLog';
+import type { SessionRecord } from './sessionLog';
 import { ACHIEVEMENTS } from './achievements';
 
-/** Accuracy of the last up-to-10 sessions as tiny bars. */
-function Trend({ values }: { values: number[] }) {
-  if (values.length < 2) return null;
+const CW = 280;
+const CH = 90;
+const PAD = 8;
+
+/** Accuracy (0..1) over recent sessions as a smooth area + line. */
+function AccuracyChart({ values }: { values: number[] }) {
+  const n = values.length;
+  if (n < 2) return <p className="chart__empty">Two finished sessions needed for a trend.</p>;
+  const x = (i: number) => PAD + (i / (n - 1)) * (CW - 2 * PAD);
+  const y = (v: number) => PAD + (1 - v) * (CH - 2 * PAD);
+  const line = values.map((v, i) => `${x(i)},${y(v)}`).join(' ');
+  const area = `M ${x(0)},${CH - PAD} L ${line.split(' ').join(' L ')} L ${x(n - 1)},${CH - PAD} Z`;
   return (
-    <div className="trend" aria-hidden="true">
-      {values.map((v, i) => (
-        <span key={i} className="trend__bar" style={{ height: `${Math.max(6, Math.round(v * 100))}%` }} />
+    <svg className="chart" viewBox={`0 0 ${CW} ${CH}`} preserveAspectRatio="none" role="img" aria-label="Accuracy trend">
+      <line className="chart__grid" x1={PAD} y1={y(0.9)} x2={CW - PAD} y2={y(0.9)} />
+      <path className="chart__area" d={area} />
+      <polyline className="chart__line" points={line} fill="none" />
+    </svg>
+  );
+}
+
+/** Time per session as bars (shorter is better). */
+function TimeChart({ records }: { records: SessionRecord[] }) {
+  const n = records.length;
+  if (n < 1) return <p className="chart__empty">No sessions yet.</p>;
+  const max = Math.max(...records.map((r) => r.durationMs), 1);
+  return (
+    <div className="bars" aria-hidden="true">
+      {records.map((r) => (
+        <span key={r.id} className="bars__bar" style={{ height: `${Math.max(8, Math.round((r.durationMs / max) * 100))}%` }} />
       ))}
     </div>
   );
 }
 
-/** Full-page tutor view: pick a student, see their progress, log, and a printable report. */
+/** Full-page tutor view: pick a student, see KPIs + charts + log + a printable report. */
 export function TutorDashboard() {
   const learners = loadLearners();
   const [sel, setSel] = useState<string>(() => getCurrentLearnerId() ?? learners[0]?.id ?? '');
@@ -26,15 +50,22 @@ export function TutorDashboard() {
   const learner = getLearner(sel);
   const prog = sel ? loadProgress(sel) : null;
   const log = sel ? loadSessionLog(sel) : [];
+  const recent = log.slice(-12);
   const avgAccuracy = log.length ? Math.round((log.reduce((s, r) => s + r.accuracy, 0) / log.length) * 100) : 0;
   const lastPlayed = log.length ? new Date(log[log.length - 1].endedAt) : null;
-  const trend = log.slice(-10).map((r) => r.accuracy);
+  const activeDays = new Set(log.map((r) => r.endedAt.slice(0, 10))).size;
+  const week = log.filter((r) => Date.now() - new Date(r.endedAt).getTime() <= 7 * 864e5).length;
 
   return (
-    <main className="site site--page">
+    <main className="site site--page dash">
       <button type="button" className="back-btn no-print" onClick={() => navigate('#/')}>← Home</button>
-      <h1 className="site__title">Tutor Dashboard</h1>
-      <p className="page__lead">Track a student's progress over time. Every finished session is recorded automatically.</p>
+      <div className="dash__top">
+        <div>
+          <h1 className="site__title">Tutor Dashboard</h1>
+          <p className="page__lead">Track each student's progress over time — recorded automatically.</p>
+        </div>
+        {learner && <button type="button" className="btn-ghost no-print" onClick={() => window.print()}>Print report</button>}
+      </div>
 
       {learners.length === 0 ? (
         <div className="page__panel"><p>No students yet — add one from the home screen.</p></div>
@@ -56,33 +87,40 @@ export function TutorDashboard() {
           </div>
 
           {learner && prog && (
-            <div className="page__panel report">
+            <div className="report">
               <div className="report__head">
                 <span className="report__avatar" style={{ background: learner.color }} aria-hidden="true">{initials(learner.name)}</span>
                 <div>
                   <h2 className="report__name">{learner.name}</h2>
                   <p className="report__since">
-                    {lastPlayed ? `Last played ${lastPlayed.toLocaleDateString()}` : 'No sessions yet'}
+                    {lastPlayed ? `Last played ${lastPlayed.toLocaleDateString()} · ${activeDays} day${activeDays === 1 ? '' : 's'} active` : 'No sessions yet'}
                   </p>
                 </div>
-                <button type="button" className="btn-ghost no-print report__print" onClick={() => window.print()}>Print report</button>
               </div>
 
-              <div className="stat-tiles">
-                <div className="stat-tile"><strong>{prog.sessions}</strong><span>sessions</span></div>
-                <div className="stat-tile"><strong>{avgAccuracy}%</strong><span>avg accuracy</span></div>
-                <div className="stat-tile"><strong>{prog.bestMs != null ? formatTime(prog.bestMs) : '—'}</strong><span>best time</span></div>
-                <div className="stat-tile"><strong>{new Set(prog.earned).size}/{ACHIEVEMENTS.length}</strong><span>stickers</span></div>
+              <div className="kpi-grid">
+                <div className="kpi"><span className="kpi__icon">🎮</span><strong>{prog.sessions}</strong><span className="kpi__label">sessions</span></div>
+                <div className="kpi"><span className="kpi__icon">🎯</span><strong>{avgAccuracy}%</strong><span className="kpi__label">avg accuracy</span></div>
+                <div className="kpi"><span className="kpi__icon">⏱</span><strong>{prog.bestMs != null ? formatTime(prog.bestMs) : '—'}</strong><span className="kpi__label">best time</span></div>
+                <div className="kpi"><span className="kpi__icon">⭐</span><strong>{new Set(prog.earned).size}/{ACHIEVEMENTS.length}</strong><span className="kpi__label">stickers</span></div>
+                <div className="kpi"><span className="kpi__icon">📅</span><strong>{week}</strong><span className="kpi__label">this week</span></div>
               </div>
 
-              {trend.length >= 2 && (
-                <div className="report__trend">
-                  <span className="report__trend-label">Accuracy — recent sessions</span>
-                  <Trend values={trend} />
+              <div className="chart-grid">
+                <div className="chart-card">
+                  <h3 className="chart-card__title">Accuracy over time</h3>
+                  <AccuracyChart values={recent.map((r) => r.accuracy)} />
                 </div>
-              )}
+                <div className="chart-card">
+                  <h3 className="chart-card__title">Time per session</h3>
+                  <TimeChart records={recent} />
+                </div>
+              </div>
 
-              <SessionLogPanel learnerId={sel} />
+              <div className="page__panel report__log">
+                <h3 className="chart-card__title">Session history</h3>
+                <SessionLogPanel learnerId={sel} showSummary={false} />
+              </div>
             </div>
           )}
         </>

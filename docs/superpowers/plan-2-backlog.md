@@ -12,13 +12,12 @@ scope, plus the final code review of the v1 foundation (2026-06-04).
 - **A11y-3 (live-region swap)** — fixed: one persistent `role=status` region.
 - **A11y-4 (label names a letter)** — fixed: basket label is "Hear this basket's sound".
 - Pack expanded/curated to ~6 clean single-onset words per sound.
-
-Note: the warm "Soft & Friendly" look was replaced (not kept as a toggle). Bringing it
-back as a selectable theme rides along with the **age-band themes** work below.
+- **5-page sessions** of 6 pictures each; tree grows across the whole session; page dots.
+- **Age-band themes** (Playful / Cool / Grown-up) — swappable via [data-theme], tutor
+  switcher top-right, persisted in localStorage. All teal-family.
 
 ## Planned v1 → v2 features (from the spec)
 - **Mode B — Connect the pairs** (the second play mode).
-- **Age-band themes** (Playful / Cool / Grown-up) — swappable, never babyish.
 - **Interest-pack switching** UI (more packs beyond "Everyday Objects").
 - **Reward-style toggle** (playful stars/confetti ↔ calm/minimal).
 - **Recorded human audio** — replace the TTS stub via the existing `AudioPlayer` interface

@@ -157,8 +157,33 @@ mnemonic rule names — **Kiss the Cat** (c/k), **Milk Truck** (-ck), **Catch
 Lunch** (-tch), **Kind Old** (-ind/-old), **FLOSS Rule & ALL**, **ING INK
 Units** — keeping the plain rule in each note.
 
-## Level 4 — Syllable Division ⏳ (re-mining)
-_Book 4._
+## Level 4 — Syllable Division & Vowel Teams ✅ (verified + retitled)
+_Book 4. © 2000 Susan Barton, v1.7. **Running header on every interior page:**
+"Book #4: Syllable Division & Vowel Teams" — the TOC's centered title used the
+short form "Syllable Division" (which is why it was briefly trimmed; reverted to
+the fuller running-header title). 14 lessons verified from the contents-page
+still._
+
+**Lesson 1 "Open Syllables" — Materials & Overview** (frame l4r/f002):
+- New tiles: **Vowel Y (yellow)** + a 2nd full A–Z set. Letter tiles A–Z plus
+  digraphs CH TH CK SH WH TCH. **Unit tiles:** ALL, ANG, ING, ONG, UNG, ANK,
+  INK, ONK, UNK, OLL, OLD, OLT, OST, ILD, IND (the glued units from Book 3).
+- **Six syllable types framing:** by Book 4 the student knows **Closed** + **Unit**;
+  this book adds **Open** (then later Vowel-Team etc.). Sprinkle the two diagnostic
+  questions every lesson: *"What kind of syllable — Open, Closed, or Unit?"* and
+  *"What sound is the vowel making — Long or Short?"*
+- **Open syllable** = one vowel at the end → says its **name** (long sound).
+- **Long-U → two sounds:** Few `/ē-oo/` vs Flu `/oo/`.
+- **Vowel-Y:** long **I** at end of 1-syllable words (sky); long **E** at end of
+  longer words; American words don't end in I, so spell final long-I with Y.
+- **No finger-spelling** is used anywhere in Book 4.
+
+**Per-lesson routine** (Progress Tracking Sheet, l4r/f002 left): Review →
+new teaching → read words → spell words → **sight-word review (reading deck +
+spelling cards)** → spell sentences → read a story.
+
+**Correction made:** title reverted to "Syllable Division & Vowel Teams" (running
+header). Lesson list (14) already verified from the contents still — unchanged.
 
 ## Level 5 — Prefixes & Suffixes ⏳ (re-mining)
 _Book 5._

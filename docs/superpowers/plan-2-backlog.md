@@ -46,9 +46,18 @@ scope, plus the final code review of the v1 foundation (2026-06-04).
   illustration set. (v1 corrected two mismatches: `mop`→mouse, `top`→tiger.)
 
 ## Progress, rewards & leaderboard
-- **Local progress store** (`src/progress.ts`) is the single source of truth: collected
-  stickers, best finish time, sessions completed. Sticker book (`StickerBook.tsx`) + the
-  finish-screen reward + the elapsed clock all read/write through it.
+- **Local progress store** (`src/progress.ts`): earned achievement ids, best finish time,
+  sessions completed. Sticker book + finish reward + elapsed clock read/write through it.
+- **Goal-based stickers** (`src/achievements.ts`): each sticker is a distinct, program-wide
+  goal (perfect run, speedy, 90%+ accuracy, N sessions, multi-day streak, …). Evaluated +
+  awarded once per finished session via `awardForSession()`. New goals = add to the array.
+- **Tutor session log** (`src/sessionLog.ts` + `SessionLogView.tsx`): one record per
+  completed session (date, duration, items, wrongAttempts, accuracy) + CSV export. **This
+  is the paid-value data layer — EVERY game we build MUST log through `logSession()`** with
+  the same record shape. Standard pattern: each game screen calls `noteRound(sessionId,
+  wrong, items)` per round (survives the per-page remount), and on the final round calls
+  `logSession(...)` + `recordFinish(...)` + `awardForSession()`. Add `game`/`level`/`lesson`
+  fields so the log is filterable per game and per Barton placement.
 - **Tutoring-center-wide leaderboard (eventual).** Needs a backend (shared store) + a
   learner/center identity — neither exists locally. Path: (1) add a lightweight profile
   (name + center/class id), (2) on `recordFinish`, POST the result to an API, (3) a

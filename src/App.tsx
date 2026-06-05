@@ -6,6 +6,7 @@ import { SortGame } from './game/SortGame';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import type { ThemeId } from './ThemeSwitcher';
 import { StickerBook } from './StickerBook';
+import { SessionLog } from './SessionLogView';
 
 const TOTAL_ROUNDS = 5;
 const ITEMS_PER_ROUND = 6;
@@ -27,6 +28,7 @@ export default function App() {
   const [roundIndex, setRoundIndex] = useState(0);
   const [theme, setTheme] = useState<ThemeId>(loadTheme);
   const [bookOpen, setBookOpen] = useState(false);
+  const [logOpen, setLogOpen] = useState(false);
   // When the current session began — drives the elapsed "Finished in …" clock.
   // Lives here (not in SortGame) because SortGame remounts on every page.
   const [sessionStartAt, setSessionStartAt] = useState(() => Date.now());
@@ -104,6 +106,7 @@ export default function App() {
         audio={audio}
         roundIndex={roundIndex}
         totalRounds={TOTAL_ROUNDS}
+        sessionId={sessionId}
         sessionStartAt={sessionStartAt}
         playful={theme === 'playful'}
         clean={theme === 'grownup'}
@@ -116,6 +119,18 @@ export default function App() {
       />
 
       <StickerBook open={bookOpen} onClose={() => setBookOpen(false)} />
+
+      {/* Discreet tutor-only entry to the progress log. */}
+      <button
+        type="button"
+        className="tutor-btn"
+        onClick={() => setLogOpen(true)}
+        aria-label="Tutor: open progress log"
+        title="Tutor: progress log"
+      >
+        <span aria-hidden="true">📊</span>
+      </button>
+      <SessionLog open={logOpen} onClose={() => setLogOpen(false)} />
     </main>
   );
 }

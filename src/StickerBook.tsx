@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { STICKERS, loadProgress, formatTime } from './progress';
+import { loadProgress, formatTime } from './progress';
+import { ACHIEVEMENTS } from './achievements';
 
 interface Props {
   open: boolean;
@@ -7,9 +8,10 @@ interface Props {
 }
 
 /**
- * A "collect them all" sticker book: every sticker shows as a colourful earned
- * one or a mystery locked slot, alongside the learner's best time and how many
- * sessions they've finished. Opens on demand (no time pressure during play).
+ * A "collect them all" sticker book where every sticker is a distinct goal.
+ * Earned stickers show in colour with their title; locked ones stay a mystery
+ * but reveal the goal, so kids always have something to aim for. Also shows
+ * best time + sessions finished. Opens on demand (no time pressure).
  */
 export function StickerBook({ open, onClose }: Props) {
   useEffect(() => {
@@ -23,8 +25,8 @@ export function StickerBook({ open, onClose }: Props) {
 
   if (!open) return null;
 
-  const { stickers, bestMs, sessions } = loadProgress();
-  const earned = new Set(stickers);
+  const { earned, bestMs, sessions } = loadProgress();
+  const got = new Set(earned);
 
   return (
     <div className="book-overlay" role="dialog" aria-modal="true" aria-label="My sticker book" onClick={onClose}>
@@ -34,7 +36,7 @@ export function StickerBook({ open, onClose }: Props) {
 
         <div className="book__stats">
           <span className="book__stat">
-            <strong>{earned.size}</strong>/{STICKERS.length}<br />stickers
+            <strong>{got.size}</strong>/{ACHIEVEMENTS.length}<br />stickers
           </span>
           <span className="book__stat">
             <strong>{sessions}</strong><br />finished
@@ -47,21 +49,21 @@ export function StickerBook({ open, onClose }: Props) {
         </div>
 
         <div className="book__grid">
-          {STICKERS.map((s, i) => {
-            const got = earned.has(s);
+          {ACHIEVEMENTS.map((a) => {
+            const have = got.has(a.id);
             return (
-              <div key={i} className={`book__slot${got ? ' book__slot--got' : ''}`}>
-                <span aria-hidden="true">{got ? s : '?'}</span>
+              <div key={a.id} className={`book__card${have ? ' book__card--got' : ''}`}>
+                <span className="book__emoji" aria-hidden="true">{have ? a.emoji : '?'}</span>
+                <span className="book__name">{a.title}</span>
+                <span className="book__goal">{a.desc}</span>
               </div>
             );
           })}
         </div>
 
-        {earned.size < STICKERS.length ? (
-          <p className="book__hint">Finish a game to earn the next one!</p>
-        ) : (
-          <p className="book__hint">You collected them all! 🎉</p>
-        )}
+        <p className="book__hint">
+          {got.size < ACHIEVEMENTS.length ? 'Reach a goal to earn its sticker!' : 'You collected them all! 🎉'}
+        </p>
       </div>
     </div>
   );

@@ -1,32 +1,20 @@
 /**
- * Single source of truth for a learner's local progress: collected stickers,
- * best finish time, and sessions completed. Kept in one place (and in a small,
- * explicit shape) so a future tutoring-center leaderboard can read/sync from it
- * without touching game code.
+ * Single source of truth for a learner's local progress: which achievement
+ * stickers they've earned, their best finish time, and sessions completed.
+ * Kept in one small place so a future tutoring-center leaderboard / dashboard
+ * can read/sync from it without touching game code.
  */
 
-export const STICKERS = ['🌟', '🦄', '🌈', '🚀', '🦋', '🐬', '🌻', '🐢', '🎈', '🐱', '🦉', '🐠'];
-
-const STICKER_KEY = 'll-stickers';
 const BEST_KEY = 'll-besttime';
 const SESSIONS_KEY = 'll-sessions';
+const EARNED_KEY = 'll-achievements';
 
 export interface Progress {
-  /** Every sticker ever awarded, in order (may repeat once all uniques are earned). */
-  stickers: string[];
+  /** Ids of earned achievement stickers (see achievements.ts). */
+  earned: string[];
   /** Fastest finish in ms, or null if no session finished yet. */
   bestMs: number | null;
   /** Total sessions finished (all themes). */
-  sessions: number;
-}
-
-export interface FinishResult {
-  /** The sticker just awarded (null when not awarding, e.g. the Clean theme). */
-  sticker: string | null;
-  collection: string[];
-  bestMs: number;
-  /** True only when this run beat a previous best (never on the very first run). */
-  isBest: boolean;
   sessions: number;
 }
 
@@ -41,43 +29,55 @@ function readNumber(key: string): number | null {
   }
 }
 
-export function loadProgress(): Progress {
-  let stickers: string[] = [];
+export function loadEarned(): string[] {
   try {
-    const raw = JSON.parse(localStorage.getItem(STICKER_KEY) ?? '[]');
-    if (Array.isArray(raw)) stickers = raw.filter((x): x is string => typeof x === 'string');
+    const raw = JSON.parse(localStorage.getItem(EARNED_KEY) ?? '[]');
+    return Array.isArray(raw) ? raw.filter((x): x is string => typeof x === 'string') : [];
   } catch {
-    stickers = [];
+    return [];
   }
-  return { stickers, bestMs: readNumber(BEST_KEY), sessions: readNumber(SESSIONS_KEY) ?? 0 };
 }
 
-/** Record a finished session: updates best time + session count, optionally awards a sticker. */
-export function recordFinish(elapsedMs: number, awardSticker: boolean): FinishResult {
-  const cur = loadProgress();
+/** Merge newly-earned ids into the stored set; returns the full earned list. */
+export function addEarned(ids: string[]): string[] {
+  const merged = Array.from(new Set([...loadEarned(), ...ids]));
+  try {
+    localStorage.setItem(EARNED_KEY, JSON.stringify(merged));
+  } catch {
+    /* ignore */
+  }
+  return merged;
+}
+
+export function loadProgress(): Progress {
+  return { earned: loadEarned(), bestMs: readNumber(BEST_KEY), sessions: readNumber(SESSIONS_KEY) ?? 0 };
+}
+
+export interface FinishResult {
+  bestMs: number;
+  /** True only when this run beat a previous best (never on the very first run). */
+  isBest: boolean;
+  sessions: number;
+}
+
+/** Record a finished session's time + count (achievements are handled separately). */
+export function recordFinish(elapsedMs: number): FinishResult {
+  const prevBest = readNumber(BEST_KEY);
+  const prevSessions = readNumber(SESSIONS_KEY) ?? 0;
   const ms = Math.max(0, Math.round(elapsedMs));
 
-  const isBest = cur.bestMs != null && ms < cur.bestMs;
-  const bestMs = cur.bestMs == null ? ms : Math.min(cur.bestMs, ms);
-
-  let sticker: string | null = null;
-  let collection = cur.stickers;
-  if (awardSticker) {
-    sticker = STICKERS[cur.stickers.length % STICKERS.length];
-    collection = [...cur.stickers, sticker];
-  }
-
-  const sessions = cur.sessions + 1;
+  const isBest = prevBest != null && ms < prevBest;
+  const bestMs = prevBest == null ? ms : Math.min(prevBest, ms);
+  const sessions = prevSessions + 1;
 
   try {
     localStorage.setItem(BEST_KEY, String(bestMs));
     localStorage.setItem(SESSIONS_KEY, String(sessions));
-    if (awardSticker) localStorage.setItem(STICKER_KEY, JSON.stringify(collection));
   } catch {
     /* ignore */
   }
 
-  return { sticker, collection, bestMs, isBest, sessions };
+  return { bestMs, isBest, sessions };
 }
 
 /** Milliseconds → "M:SS". */

@@ -12,13 +12,18 @@ import { BookTree } from './BookTree';
 import { WalkProgress } from './WalkProgress';
 import { ProgressTrail } from './ProgressTrail';
 import { SproutGlyph } from '../Mascot';
-import { recordFinish, formatTime, STICKERS } from '../progress';
+import { recordFinish, formatTime, loadEarned } from '../progress';
+import { logSession, noteRound } from '../sessionLog';
+import { awardForSession, ACHIEVEMENTS } from '../achievements';
+import type { Achievement } from '../achievements';
 
 interface Props {
   round: SortRound;
   audio: AudioPlayer;
   roundIndex?: number;
   totalRounds?: number;
+  /** Identifies the current session (resets the cross-round accumulator). */
+  sessionId?: number;
   /** Timestamp (ms) when the current session began — for the elapsed finish clock. */
   sessionStartAt?: number;
   onAdvance?: () => void;
@@ -73,7 +78,7 @@ function prefersReducedMotion(): boolean {
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionStartAt = Date.now(), onAdvance, onRestart, onOpenStickerBook, playful = false, clean = false }: Props) {
+export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionId = 0, sessionStartAt = Date.now(), onAdvance, onRestart, onOpenStickerBook, playful = false, clean = false }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -90,24 +95,39 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
   const [sprouts, setSprouts] = useState<CelSprout[]>([]);
   const [catching, setCatching] = useState<string | null>(null);
   const [walking, setWalking] = useState(false);
-  const [reward, setReward] = useState<{ sticker: string; collection: string[] } | null>(null);
+  const [reward, setReward] = useState<{ newly: Achievement[]; totalEarned: number } | null>(null);
   const [finish, setFinish] = useState<{ ms: number; best: boolean } | null>(null);
   const prevWrong = useRef(game.wrongCount);
   const prevCorrect = useRef(0);
-  const finishedRef = useRef(false);
+  const roundHandledRef = useRef(false);
   const walkTimer = useRef<number | undefined>(undefined);
 
-  // Finishing a whole session: freeze the elapsed time (every theme) and — for the
-  // kid themes — award one new collectible sticker. Both persist; both fire once.
+  // Each finished page reports its tally to the cross-round accumulator. On the
+  // LAST page this also: records best time + session count, writes the tutor
+  // session log, and evaluates which goal-based stickers were newly earned.
   useEffect(() => {
-    if (!(roundDone && isLastRound) || finishedRef.current) return;
-    finishedRef.current = true;
+    if (!roundDone || roundHandledRef.current) return;
+    roundHandledRef.current = true;
 
-    const ms = Math.max(0, Date.now() - sessionStartAt);
-    const res = recordFinish(ms, !clean);
-    setFinish({ ms, best: res.isBest });
-    if (res.sticker) setReward({ sticker: res.sticker, collection: res.collection });
-  }, [roundDone, isLastRound, clean, sessionStartAt]);
+    const totals = noteRound(sessionId, game.wrongCount, total);
+    if (!isLastRound) return;
+
+    const durationMs = Math.max(0, Date.now() - sessionStartAt);
+    const res = recordFinish(durationMs);
+    logSession({
+      game: 'beginning-sounds',
+      startedAt: new Date(sessionStartAt).toISOString(),
+      endedAt: new Date().toISOString(),
+      durationMs,
+      rounds: totalRounds,
+      items: totals.items,
+      wrongAttempts: totals.wrong,
+      accuracy: totals.items > 0 ? totals.items / (totals.items + totals.wrong) : 1,
+    });
+    const newly = awardForSession();
+    setFinish({ ms: durationMs, best: res.isBest });
+    if (!clean) setReward({ newly, totalEarned: loadEarned().length });
+  }, [roundDone]);
 
   // Wrong answer: a leaf drifts down; the buddy gives a sympathetic wobble.
   useEffect(() => {
@@ -239,16 +259,23 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
 
         {reward && (
           <div className="reward" aria-live="polite">
-            <p className="reward__label">You earned a sticker!</p>
-            <span className="reward__new" role="img" aria-label="new sticker">{reward.sticker}</span>
-            <div className="reward__shelf" aria-hidden="true">
-              {reward.collection.slice(-12).map((s, i) => (
-                <span key={i} className="reward__chip">{s}</span>
-              ))}
-            </div>
-            <p className="reward__count">
-              {new Set(reward.collection).size} of {STICKERS.length} stickers collected
-            </p>
+            {reward.newly.length > 0 ? (
+              <>
+                <p className="reward__label">{reward.newly.length > 1 ? 'New stickers!' : 'New sticker!'}</p>
+                <div className="reward__new-row">
+                  {reward.newly.map((a) => (
+                    <div key={a.id} className="reward__new-item">
+                      <span className="reward__new" role="img" aria-label={a.title}>{a.emoji}</span>
+                      <span className="reward__new-title">{a.title}</span>
+                      <span className="reward__new-desc">{a.desc}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="reward__label">Great job! Play again to chase the next sticker.</p>
+            )}
+            <p className="reward__count">{reward.totalEarned} of {ACHIEVEMENTS.length} stickers collected</p>
             {onOpenStickerBook && (
               <button type="button" className="btn-ghost" onClick={onOpenStickerBook}>
                 See my sticker book →

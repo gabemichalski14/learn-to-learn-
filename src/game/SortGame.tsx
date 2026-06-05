@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { DndContext, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
 import type { SortRound, WordItem } from '../domain/types';
@@ -7,34 +8,62 @@ import { useSortGame } from './useSortGame';
 import { PictureCard } from './PictureCard';
 import { SoundBasket } from './SoundBasket';
 import { BookTree } from './BookTree';
+import { Mascot } from '../Mascot';
+import type { MascotMood } from '../Mascot';
 
 interface Props {
   round: SortRound;
   audio: AudioPlayer;
-  /** 0-based index of this page within the session. */
   roundIndex?: number;
-  /** How many pages are in the session. */
   totalRounds?: number;
-  /** Advance to the next page (shown when a non-final page is done). */
   onAdvance?: () => void;
-  /** Start a fresh session (shown when the final page is done). */
   onRestart?: () => void;
+  /** Playful theme — turns on the mascot, confetti, and extra celebration. */
+  playful?: boolean;
 }
 
 interface Faller { id: number; left: number; dur: number }
+interface ConfettiPiece { dx: number; dy: number; rot: number; color: string; size: number; dur: number }
+interface Burst { id: number; pieces: ConfettiPiece[] }
+
+const CONFETTI_COLORS = ['#7ffdf7', '#12b3a8', '#0f978f', '#ffd23f', '#ff8a3d', '#ff6b9d'];
+
+function makeConfetti(): ConfettiPiece[] {
+  return Array.from({ length: 14 }, () => ({
+    dx: Math.round((Math.random() * 2 - 1) * 170),
+    dy: Math.round(-110 + Math.random() * 320),
+    rot: Math.round((Math.random() * 2 - 1) * 220),
+    color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+    size: 8 + Math.round(Math.random() * 6),
+    dur: 750 + Math.round(Math.random() * 450),
+  }));
+}
 
 function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && !!window.matchMedia
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdvance, onRestart }: Props) {
+export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdvance, onRestart, playful = false }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
-  // A leaf drifts down on each wrong attempt — gentle, on-brand, never punishing.
+  const total = round.items.length;
+  const correct = round.items.filter((i) => game.placements[i.id] === i.beginningSound).length;
+  const withinRound = total ? correct / total : 0;
+  const roundDone = game.isComplete;
+  const isLastRound = roundIndex >= totalRounds - 1;
+  const sessionProgress = (roundIndex + withinRound) / totalRounds;
+  const bloom = roundDone && isLastRound;
+
   const [fallers, setFallers] = useState<Faller[]>([]);
+  const [bursts, setBursts] = useState<Burst[]>([]);
+  const [mascotMood, setMascotMood] = useState<MascotMood>('idle');
   const prevWrong = useRef(game.wrongCount);
+  const prevCorrect = useRef(0);
+  const moodTimer = useRef<number | undefined>(undefined);
+
+  // Wrong answer: a leaf drifts down; the buddy gives a sympathetic wobble.
   useEffect(() => {
     if (game.wrongCount <= prevWrong.current) {
       prevWrong.current = game.wrongCount;
@@ -46,7 +75,28 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
     const faller: Faller = { id, left: 10 + Math.random() * 78, dur: 1.7 + Math.random() * 0.7 };
     setFallers((f) => [...f, faller]);
     window.setTimeout(() => setFallers((f) => f.filter((x) => x.id !== id)), (faller.dur + 0.3) * 1000);
-  }, [game.wrongCount]);
+    if (playful) {
+      setMascotMood('oops');
+      if (moodTimer.current) window.clearTimeout(moodTimer.current);
+      moodTimer.current = window.setTimeout(() => setMascotMood('idle'), 600);
+    }
+  }, [game.wrongCount, playful]);
+
+  // Correct answer (Playful): confetti pops and the buddy hops.
+  useEffect(() => {
+    if (correct <= prevCorrect.current) {
+      prevCorrect.current = correct;
+      return;
+    }
+    prevCorrect.current = correct;
+    if (!playful || prefersReducedMotion()) return;
+    const id = Date.now() + Math.random();
+    setBursts((b) => [...b, { id, pieces: makeConfetti() }]);
+    window.setTimeout(() => setBursts((b) => b.filter((x) => x.id !== id)), 1300);
+    setMascotMood('happy');
+    if (moodTimer.current) window.clearTimeout(moodTimer.current);
+    moodTimer.current = window.setTimeout(() => setMascotMood('idle'), 700);
+  }, [correct, playful]);
 
   function handleDragEnd(event: DragEndEvent) {
     const wordId = String(event.active.id);
@@ -58,17 +108,6 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
     return round.items.filter((i) => game.placements[i.id] === sound);
   }
 
-  const total = round.items.length;
-  const correct = round.items.filter((i) => game.placements[i.id] === i.beginningSound).length;
-  const withinRound = total ? correct / total : 0;
-  const roundDone = game.isComplete;
-  const isLastRound = roundIndex >= totalRounds - 1;
-
-  // The tree grows across the WHOLE session, blooming only when the last page is done.
-  const sessionProgress = (roundIndex + withinRound) / totalRounds;
-  const bloom = roundDone && isLastRound;
-
-  // One persistent live region whose text changes (reliable screen-reader announcement).
   const status = roundDone
     ? (isLastRound ? 'You grew the whole tree! Great listening.' : 'Nice listening! Ready for the next page?')
     : (game.message ?? 'Tap a basket to hear its sound, then drag each picture where it belongs.');
@@ -141,15 +180,34 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
             viewBox="-10 -24 20 26"
             style={{ left: `${f.left}%`, animationDuration: `${f.dur}s` }}
           >
-            <path
-              d="M0,0 C 8,-4 9,-18 0,-24 C -9,-18 -8,-4 0,0 Z"
-              fill="var(--teal)"
-              stroke="var(--teal-deep)"
-              strokeWidth="1.5"
-            />
+            <path d="M0,0 C 8,-4 9,-18 0,-24 C -9,-18 -8,-4 0,0 Z" fill="var(--teal)" stroke="var(--teal-deep)" strokeWidth="1.5" />
           </svg>
         ))}
       </div>
+
+      {playful && (
+        <div className="confetti" aria-hidden="true">
+          {bursts.flatMap((burst) =>
+            burst.pieces.map((p, i) => (
+              <span
+                key={`${burst.id}-${i}`}
+                className="confetti-piece"
+                style={{
+                  width: p.size,
+                  height: p.size,
+                  background: p.color,
+                  animationDuration: `${p.dur}ms`,
+                  '--dx': `${p.dx}px`,
+                  '--dy': `${p.dy}px`,
+                  '--rot': `${p.rot}deg`,
+                } as CSSProperties}
+              />
+            )),
+          )}
+        </div>
+      )}
+
+      {playful && <Mascot mood={mascotMood} />}
     </DndContext>
   );
 }

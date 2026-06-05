@@ -45,6 +45,12 @@ export default function App() {
 
   return (
     <main className="app">
+      <div className="playful-bg" aria-hidden="true">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <span key={i} className="bubble" />
+        ))}
+      </div>
+
       <div className="app__topbar">
         <ThemeSwitcher value={theme} onSelect={setTheme} />
       </div>
@@ -63,6 +69,7 @@ export default function App() {
         audio={audio}
         roundIndex={roundIndex}
         totalRounds={TOTAL_ROUNDS}
+        playful={theme === 'playful'}
         onAdvance={() => setRoundIndex((i) => Math.min(i + 1, TOTAL_ROUNDS - 1))}
         onRestart={() => {
           setSessionId((s) => s + 1);

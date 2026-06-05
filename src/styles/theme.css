@@ -68,9 +68,11 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
   width: 88px; height: 88px; border: none; border-radius: var(--radius);
   background: var(--surface); box-shadow: 0 8px 18px rgba(15,151,143,.18);
   font-size: 44px; cursor: grab; touch-action: none; display: grid; place-items: center;
-  transition: transform .12s ease, box-shadow .12s ease; animation: pop .22s ease both;
+  transition: transform .12s ease, box-shadow .12s ease;
 }
 .picture-card:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(15,151,143,.26); }
+/* entrance pop lives on the emoji, NOT the button, so it never fights the drag transform */
+.picture-card__emoji { display: inline-block; animation: pop .26s ease both; }
 .picture-card:active { cursor: grabbing; }
 .picture-card:focus-visible { outline: 3px solid var(--teal-deep); outline-offset: 3px; }
 
@@ -167,6 +169,71 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .theme-switch__btn.is-active { background: var(--teal-deep); color: #fff; }
 .theme-switch__btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
+/* ---- Playful theme extras (mascot, confetti, floating bubbles, livelier motion) ---- */
+.app { position: relative; z-index: 1; }
+
+/* Floating bubble background — only in the Playful theme */
+.playful-bg { display: none; }
+[data-theme='playful'] .playful-bg {
+  display: block; position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+}
+.playful-bg .bubble {
+  position: absolute; bottom: -64px; border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #ffffff, var(--teal-ring));
+  opacity: 0.45; animation: bubble-rise linear infinite;
+}
+.playful-bg .bubble:nth-child(1) { left: 6%;  width: 34px; height: 34px; animation-duration: 14s; animation-delay: 0s; }
+.playful-bg .bubble:nth-child(2) { left: 18%; width: 52px; height: 52px; animation-duration: 19s; animation-delay: 3s; }
+.playful-bg .bubble:nth-child(3) { left: 30%; width: 26px; height: 26px; animation-duration: 12s; animation-delay: 6s; }
+.playful-bg .bubble:nth-child(4) { left: 42%; width: 46px; height: 46px; animation-duration: 17s; animation-delay: 1s; }
+.playful-bg .bubble:nth-child(5) { left: 55%; width: 30px; height: 30px; animation-duration: 15s; animation-delay: 8s; }
+.playful-bg .bubble:nth-child(6) { left: 66%; width: 56px; height: 56px; animation-duration: 21s; animation-delay: 4s; }
+.playful-bg .bubble:nth-child(7) { left: 76%; width: 28px; height: 28px; animation-duration: 13s; animation-delay: 2s; }
+.playful-bg .bubble:nth-child(8) { left: 86%; width: 44px; height: 44px; animation-duration: 18s; animation-delay: 7s; }
+.playful-bg .bubble:nth-child(9) { left: 92%; width: 32px; height: 32px; animation-duration: 16s; animation-delay: 5s; }
+.playful-bg .bubble:nth-child(10){ left: 48%; width: 22px; height: 22px; animation-duration: 11s; animation-delay: 9s; }
+@keyframes bubble-rise {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  12% { opacity: 0.5; }
+  85% { opacity: 0.5; }
+  100% { transform: translateY(-112vh) scale(1.1); opacity: 0; }
+}
+
+/* Confetti burst on a correct answer */
+.confetti { position: fixed; top: 120px; left: 50%; width: 0; height: 0; pointer-events: none; z-index: 45; }
+.confetti-piece {
+  position: absolute; left: 0; top: 0; border-radius: 2px;
+  animation-name: confetti-fly; animation-timing-function: cubic-bezier(.2,.7,.3,1); animation-fill-mode: forwards;
+}
+@keyframes confetti-fly {
+  0% { transform: translate(0,0) rotate(0); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; }
+}
+
+/* Sprout buddy */
+.mascot { position: fixed; left: 16px; bottom: 14px; width: 88px; height: 98px; z-index: 25; pointer-events: none; }
+.mascot--idle { animation: mascot-bob 2.6s ease-in-out infinite; }
+.mascot--happy { animation: mascot-hop .65s ease; }
+.mascot--oops { animation: mascot-wobble .55s ease; }
+.mascot__eyes { transform-box: fill-box; transform-origin: center; animation: mascot-blink 4.5s infinite; }
+@keyframes mascot-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes mascot-hop {
+  0% { transform: translateY(0) scale(1); } 30% { transform: translateY(-20px) scale(1.06); }
+  55% { transform: translateY(0) scale(1); } 75% { transform: translateY(-7px); } 100% { transform: translateY(0); }
+}
+@keyframes mascot-wobble { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-7deg); } 75% { transform: rotate(7deg); } }
+@keyframes mascot-blink { 0%,93%,100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+
+/* Livelier motion for Playful (none of these touch the draggable card's transform) */
+[data-theme='playful'] .sort-game__tree { animation: sway 4.5s ease-in-out infinite; transform-origin: 50% 92%; }
+[data-theme='playful'] .picture-card__emoji,
+[data-theme='playful'] .placed { animation: pop-bounce .42s cubic-bezier(.18,1.5,.4,1) both; }
+[data-theme='playful'] .tree--bloom { animation: bloom-big .7s ease; }
+@keyframes sway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@keyframes pop-bounce { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes bloom-big { 0%,100% { transform: scale(1); } 40% { transform: scale(1.14); } }
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
+  .playful-bg { display: none; }
 }

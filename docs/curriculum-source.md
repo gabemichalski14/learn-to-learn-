@@ -139,8 +139,23 @@ Together · Optional Extra Practice Sheets · Date Lesson Completed.
 **Corrections made:** none — stored titles/sounds verified correct. Enriched
 `lessonFlow` to the real A–P sequence and added the mastery-gate note.
 
-## Level 3 — Closed Syllables ⏳ (re-mining)
-_Book 3._
+## Level 3 — Closed Syllables ✅ (corrected)
+_Book 3. © Susan Barton, v1.81._
+
+**Table of Contents (verified, frame l3d/f010):**
+1 Blends at the End (p3) · 2 Blends at the Beginning (35) · 3 Blends at Both Ends
+(65) · 4 Digraph & 3-Letter Blends (97) · 5 Spelling—**FLOSS Rule & ALL** (131) ·
+6 Spelling—**Kiss the Cat Rule** (167) · 7 Spelling—**Milk Truck Rule** (203) ·
+8 Spelling—**ING INK Units** (237) · 9 Spelling—**Catch Lunch Rule** (273) ·
+10 Spelling—Contractions (307) · 11 Spelling—**Kind Old Units** (349).
+Then: Games (385) · Tips and Error Correction (391) · Posttest (405) · Student
+pages (separate item).
+
+**Correction made:** lessons 5–11 were stored with *generic* descriptions
+("C vs K", "-ck", "-tch", "-ind/-old Units"). Replaced with Barton's actual
+mnemonic rule names — **Kiss the Cat** (c/k), **Milk Truck** (-ck), **Catch
+Lunch** (-tch), **Kind Old** (-ind/-old), **FLOSS Rule & ALL**, **ING INK
+Units** — keeping the plain rule in each note.
 
 ## Level 4 — Syllable Division ⏳ (re-mining)
 _Book 4._

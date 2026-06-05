@@ -19,28 +19,33 @@
   font-family: 'Trebuchet MS', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
 body { margin: 0; background: var(--bg); color: var(--ink); }
 
-.app { max-width: 920px; margin: 0 auto; padding: 20px 24px 40px; text-align: center; }
+.app {
+  max-width: 980px; margin: 0 auto; text-align: center; position: relative; z-index: 1;
+  padding: clamp(12px, 3vw, 26px) clamp(12px, 4vw, 24px) clamp(28px, 5vw, 44px);
+}
 
 .app__header {
-  display: flex; align-items: center; justify-content: center; gap: 12px; margin: 4px 0 8px;
+  display: flex; align-items: center; justify-content: center; gap: clamp(8px, 2vw, 14px);
+  margin: 4px 0 8px; flex-wrap: wrap;
 }
-.app__logo { width: 54px; height: 54px; flex: 0 0 auto; }
+.app__logo { width: clamp(42px, 11vw, 58px); height: clamp(42px, 11vw, 58px); flex: 0 0 auto; }
 .app__titles { text-align: left; }
-.app__title { font-size: 26px; margin: 0; letter-spacing: -0.01em; }
-.app__brand { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.14em;
+.app__title { font-size: clamp(20px, 4.6vw, 28px); margin: 0; letter-spacing: -0.01em; }
+.app__brand { margin: 0; font-size: clamp(11px, 2.6vw, 13px); font-weight: 700; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--teal-deep); }
 
 /* Uniform gap keeps a fixed space between every child (tree, status, Play-again
    button, baskets) at any viewport size — no margin collapse, no overlap. */
-.sort-game { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%; }
+.sort-game { display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 3.2vw, 26px); width: 100%; }
 
-.sort-game__tree { width: 132px; height: 132px; margin: 0; }
+.sort-game__tree { width: clamp(104px, 26vw, 148px); height: auto; margin: 0; }
 
 .sort-game__status {
-  min-height: 26px; font-size: 18px; font-weight: 600; margin: 0; color: var(--ink);
-  max-width: 30ch; line-height: 1.35;
+  min-height: 26px; font-size: clamp(15px, 3.6vw, 19px); font-weight: 600; margin: 0; color: var(--ink);
+  max-width: min(34ch, 92vw); line-height: 1.35; padding: 0 8px;
 }
 .sort-game__status--celebrate { color: var(--teal-deep); }
 
@@ -55,7 +60,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .session-dot--current { background: var(--teal); border-color: var(--teal-deep); transform: scale(1.4); }
 
 .btn-primary {
-  border: none; cursor: pointer; font: inherit; font-weight: 700; font-size: 16px;
+  border: none; cursor: pointer; font: inherit; font-weight: 700; font-size: clamp(15px, 3.4vw, 16px);
   color: #fff; background: var(--teal-deep); padding: 12px 24px; border-radius: 999px;
   box-shadow: 0 8px 18px rgba(15,151,143,.32); transition: transform .12s ease, background .12s ease;
 }
@@ -65,34 +70,37 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 
 /* Pictures to sort */
 .sort-game__tray {
-  display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
-  min-height: 96px; margin: 0; max-width: 760px;
+  display: flex; flex-wrap: wrap; gap: clamp(8px, 2.2vw, 16px); justify-content: center;
+  min-height: clamp(72px, 18vw, 100px); margin: 0; max-width: 760px;
 }
 .picture-card {
-  width: 88px; height: 88px; border: none; border-radius: var(--radius);
+  width: clamp(60px, 16vw, 92px); height: clamp(60px, 16vw, 92px); border: none; border-radius: var(--radius);
   background: var(--surface); box-shadow: 0 8px 18px rgba(15,151,143,.18);
-  font-size: 44px; cursor: grab; touch-action: none; display: grid; place-items: center;
+  font-size: clamp(32px, 8.6vw, 46px); cursor: grab; touch-action: none; display: grid; place-items: center;
   transition: transform .12s ease, box-shadow .12s ease;
 }
 .picture-card:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(15,151,143,.26); }
+.picture-card.is-dragging { box-shadow: 0 18px 30px rgba(15,151,143,.4); z-index: 50; cursor: grabbing; }
 /* entrance pop lives on the emoji, NOT the button, so it never fights the drag transform */
 .picture-card__emoji { display: inline-block; animation: pop .26s ease both; }
 .picture-card:active { cursor: grabbing; }
 .picture-card:focus-visible { outline: 3px solid var(--teal-deep); outline-offset: 3px; }
 
 /* Baskets — the sound IS the basket */
-.sort-game__baskets { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; }
+.sort-game__baskets { display: flex; gap: clamp(10px, 3vw, 22px); justify-content: center; flex-wrap: wrap; width: 100%; }
 .sound-basket {
-  position: relative; width: 200px; min-height: 200px; padding: 16px 14px 14px;
-  border-radius: 26px; background: var(--teal-soft); border: 3px dashed transparent;
+  position: relative; width: clamp(132px, 40vw, 220px); min-height: clamp(140px, 40vw, 220px);
+  padding: clamp(10px, 2.5vw, 16px) 14px 14px;
+  border-radius: clamp(16px, 4vw, 26px); background: var(--teal-soft); border: 3px dashed transparent;
   display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer;
   transition: border-color .12s ease, background .12s ease, transform .12s ease;
 }
-.sound-basket--over { border-color: var(--teal-deep); background: #c7f7f4; transform: scale(1.02); }
+.sound-basket--over { border-color: var(--teal-deep); background: #c7f7f4; transform: scale(1.04); }
+.sound-basket.is-catching { animation: basket-catch .45s ease; }
 
 .sound-basket__speaker {
-  position: relative; width: 76px; height: 76px; border-radius: 50%; border: none; cursor: pointer;
-  background: var(--teal-deep); color: #fff; font-size: 30px; display: grid; place-items: center;
+  position: relative; width: clamp(56px, 16vw, 80px); height: clamp(56px, 16vw, 80px); border-radius: 50%; border: none; cursor: pointer;
+  background: var(--teal-deep); color: #fff; font-size: clamp(24px, 7vw, 32px); display: grid; place-items: center;
   box-shadow: 0 8px 18px rgba(15,151,143,.4); transition: transform .12s ease;
 }
 .sound-basket__speaker:hover { transform: scale(1.05); }
@@ -102,10 +110,10 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
   content: ''; position: absolute; inset: 0; border-radius: 50%;
   box-shadow: 0 0 0 0 rgba(15,151,143,.45); animation: pulse 2.4s ease-out infinite;
 }
-.sound-basket__hint { font-size: 12px; font-weight: 700; letter-spacing: .08em;
+.sound-basket__hint { font-size: clamp(10px, 2.4vw, 12px); font-weight: 700; letter-spacing: .08em;
   text-transform: uppercase; color: var(--teal-deep); opacity: .85; }
 .sound-basket__items {
-  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: 34px; margin-top: 2px;
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; font-size: clamp(26px, 7vw, 36px); margin-top: 2px;
 }
 .placed { animation: pop .25s ease both; }
 
@@ -117,6 +125,11 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 @keyframes pop {
   0% { transform: scale(.5); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
+}
+@keyframes basket-catch {
+  0%,100% { transform: scale(1); }
+  35% { transform: scale(1.07); }
+  60% { transform: scale(.98); }
 }
 
 /* Growing tree */
@@ -140,7 +153,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 }
 
 /* ---- Age-band themes (all teal-family; vary shape, brightness, contrast, motion, type) ---- */
-/* "cool" is the :root default. */
+/* "l2l" is the :root default. */
 [data-theme='playful'] {
   --bg: #d6fbff;
   --teal: #1fe3d6;
@@ -166,6 +179,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 /* Grown-up reads as a calm, dignified app — fewer flourishes, no bounce. */
 [data-theme='grownup'] .picture-card:hover { transform: none; box-shadow: 0 6px 14px rgba(15, 151, 143, 0.14); }
 [data-theme='grownup'] .sound-basket--over { transform: none; }
+[data-theme='grownup'] .sound-basket.is-catching { animation: none; }
 [data-theme='grownup'] .sound-basket__speaker::after { animation: none; }
 
 /* Theme switcher (tutor control) */
@@ -180,7 +194,6 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .theme-switch__btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 /* ---- Playful theme extras (mascot, confetti, floating bubbles, livelier motion) ---- */
-.app { position: relative; z-index: 1; }
 
 /* Floating bubble background — only in the Playful theme */
 .playful-bg { display: none; }
@@ -221,7 +234,10 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 }
 
 /* Sprout buddy */
-.mascot { position: fixed; left: 16px; bottom: 14px; width: 88px; height: 98px; z-index: 25; pointer-events: none; }
+.mascot {
+  position: fixed; left: clamp(8px, 2vw, 18px); bottom: clamp(8px, 2vw, 16px);
+  width: clamp(58px, 14vw, 92px); height: auto; aspect-ratio: 100 / 112; z-index: 25; pointer-events: none;
+}
 .mascot--idle { animation: mascot-bob 2.6s ease-in-out infinite; }
 .mascot--happy { animation: mascot-hop .65s ease; }
 .mascot--oops { animation: mascot-wobble .55s ease; }
@@ -298,6 +314,12 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
   62% { transform: scale(1.04) rotateY(360deg); }
   84% { opacity: 1; }
   100% { transform: scale(.85) rotateY(540deg); opacity: 0; }
+}
+
+/* Small phones: tuck the buddy out of the way so it never overlaps the play area */
+@media (max-width: 460px) {
+  .confetti { top: 96px; }
+  .mascot { width: 52px; opacity: 0.92; }
 }
 
 @media (prefers-reduced-motion: reduce) {

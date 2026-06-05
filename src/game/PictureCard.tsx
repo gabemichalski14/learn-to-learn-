@@ -6,12 +6,17 @@ interface Props { item: WordItem; onActivate?: () => void; }
 
 export function PictureCard({ item, onActivate }: Props) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: item.id });
-  const style = { transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.5 : 1 };
+  const base = CSS.Translate.toString(transform) ?? '';
+  // While dragging the card "picks up": scale + tilt, layered onto dnd-kit's translate.
+  const style = {
+    transform: isDragging ? `${base} scale(1.1) rotate(-4deg)` : base || undefined,
+    opacity: isDragging ? 0.96 : 1,
+  };
   return (
     <button
       ref={setNodeRef}
       style={style}
-      className="picture-card"
+      className={`picture-card${isDragging ? ' is-dragging' : ''}`}
       aria-label={item.label}
       {...listeners}
       {...attributes}

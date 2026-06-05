@@ -4,6 +4,7 @@ import { DndContext, PointerSensor, KeyboardSensor, useSensor, useSensors } from
 import type { DragEndEvent } from '@dnd-kit/core';
 import type { SortRound, WordItem } from '../domain/types';
 import type { AudioPlayer } from '../audio/audioPlayer';
+import { sfx } from '../audio/sfx';
 import { useSortGame } from './useSortGame';
 import { PictureCard } from './PictureCard';
 import { SoundBasket } from './SoundBasket';
@@ -68,6 +69,7 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
   const [bursts, setBursts] = useState<Burst[]>([]);
   const [sprouts, setSprouts] = useState<CelSprout[]>([]);
   const [mascotMood, setMascotMood] = useState<MascotMood>('idle');
+  const [catching, setCatching] = useState<string | null>(null);
   const prevWrong = useRef(game.wrongCount);
   const prevCorrect = useRef(0);
   const moodTimer = useRef<number | undefined>(undefined);
@@ -79,6 +81,7 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
       return;
     }
     prevWrong.current = game.wrongCount;
+    if (playful) sfx.wrong();
     if (prefersReducedMotion()) return;
     const id = game.wrongCount * 1000 + Math.floor(Math.random() * 1000);
     const tree = document.querySelector('.sort-game__tree')?.getBoundingClientRect();
@@ -101,7 +104,10 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
       return;
     }
     prevCorrect.current = correct;
-    if (!playful || prefersReducedMotion()) return;
+    if (!playful) return;
+    if (roundDone && isLastRound) sfx.complete();
+    else sfx.correct();
+    if (prefersReducedMotion()) return;
     const id = Date.now() + Math.random();
     setBursts((b) => [...b, { id, pieces: makeConfetti() }]);
     window.setTimeout(() => setBursts((b) => b.filter((x) => x.id !== id)), 1300);
@@ -128,7 +134,12 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
   function handleDragEnd(event: DragEndEvent) {
     const wordId = String(event.active.id);
     const basketSound = event.over ? String(event.over.id) : null;
-    if (basketSound) game.attemptPlace(wordId, basketSound);
+    if (!basketSound) return;
+    const ok = game.attemptPlace(wordId, basketSound);
+    if (ok) {
+      setCatching(basketSound);
+      window.setTimeout(() => setCatching((c) => (c === basketSound ? null : c)), 450);
+    }
   }
 
   function placedIn(sound: string): WordItem[] {
@@ -162,7 +173,7 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
 
         <div className="sort-game__baskets">
           {round.baskets.map((sound) => (
-            <SoundBasket key={sound} sound={sound} onReplay={() => game.replaySound(sound)}>
+            <SoundBasket key={sound} sound={sound} catching={catching === sound} onReplay={() => game.replaySound(sound)}>
               {placedIn(sound).map((item) => (
                 <span key={item.id} className="placed" aria-label={item.label} role="img">
                   <span aria-hidden="true">{item.emoji}</span>

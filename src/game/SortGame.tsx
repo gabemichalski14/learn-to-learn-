@@ -73,9 +73,11 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
   const [sprouts, setSprouts] = useState<CelSprout[]>([]);
   const [mascotMood, setMascotMood] = useState<MascotMood>('idle');
   const [catching, setCatching] = useState<string | null>(null);
+  const [walking, setWalking] = useState(false);
   const prevWrong = useRef(game.wrongCount);
   const prevCorrect = useRef(0);
   const moodTimer = useRef<number | undefined>(undefined);
+  const walkTimer = useRef<number | undefined>(undefined);
 
   // Wrong answer: a leaf drifts down; the buddy gives a sympathetic wobble.
   useEffect(() => {
@@ -142,6 +144,10 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
     if (ok) {
       setCatching(basketSound);
       window.setTimeout(() => setCatching((c) => (c === basketSound ? null : c)), 450);
+      // Clean theme: the figure takes a few steps only when the answer is right.
+      setWalking(true);
+      if (walkTimer.current) window.clearTimeout(walkTimer.current);
+      walkTimer.current = window.setTimeout(() => setWalking(false), 1000);
     }
   }
 
@@ -158,7 +164,7 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="sort-game">
         {clean ? (
-          <WalkProgress className="sort-game__walk" progress={sessionProgress} />
+          <WalkProgress className="sort-game__walk" progress={sessionProgress} walking={walking} />
         ) : (
           <BookTree className="sort-game__tree" progress={sessionProgress} bloom={bloom} />
         )}

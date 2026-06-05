@@ -10,6 +10,7 @@ import { PictureCard } from './PictureCard';
 import { SoundBasket } from './SoundBasket';
 import { BookTree } from './BookTree';
 import { WalkProgress } from './WalkProgress';
+import { ProgressTrail } from './ProgressTrail';
 import { SproutGlyph } from '../Mascot';
 
 interface Props {
@@ -126,8 +127,15 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
         }, delay);
       });
     }
+    // Page milestone (a page finished, but not the last): a quick confetti cheer
+    // for L2L too — Playful gets its own burst just below. (SFX stays Playful-only.)
+    if (roundDone && !isLastRound && !clean && !playful && !prefersReducedMotion()) {
+      const mid = Math.random();
+      setBursts((b) => [...b, { id: mid, pieces: makeConfetti() }]);
+      window.setTimeout(() => setBursts((b) => b.filter((x) => x.id !== mid)), 1500);
+    }
     if (!playful) return;
-    if (roundDone && isLastRound) sfx.complete();
+    if (roundDone) sfx.complete();
     else sfx.correct();
     if (prefersReducedMotion()) return;
     const id = Date.now() + Math.random();
@@ -181,6 +189,17 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
           <WalkProgress className="sort-game__walk" progress={sessionProgress} walking={walking} finished={roundDone && isLastRound} />
         ) : (
           <BookTree className="sort-game__tree" progress={sessionProgress} bloom={bloom} />
+        )}
+
+        {!clean && totalRounds > 1 && (
+          <ProgressTrail
+            className="sort-game__trail"
+            total={totalRounds}
+            current={roundIndex}
+            progress={sessionProgress}
+            roundDone={roundDone}
+            finished={roundDone && isLastRound}
+          />
         )}
 
         <p

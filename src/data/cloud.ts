@@ -21,8 +21,12 @@ export async function signIn(email: string, password: string) {
   return client().auth.signInWithPassword({ email, password });
 }
 
-export async function signUp(email: string, password: string) {
-  return client().auth.signUp({ email, password });
+export async function signUp(email: string, password: string, centerName?: string) {
+  return client().auth.signUp({
+    email,
+    password,
+    options: centerName ? { data: { center_name: centerName } } : undefined,
+  });
 }
 
 export async function signOut() {
@@ -42,23 +46,8 @@ export function onAuthChange(cb: (signedIn: boolean) => void): () => void {
 }
 
 // ---------- onboarding ----------
-/** Ensure the signed-in user has a center + tutor row; returns the center id. */
-export async function ensureCenter(centerName: string): Promise<string> {
-  const c = client();
-  const { data: user } = await c.auth.getUser();
-  const uid = user.user?.id;
-  if (!uid) throw new Error('not signed in');
-
-  const { data: existing } = await c.from('tutors').select('center_id').eq('id', uid).maybeSingle();
-  if (existing?.center_id) return existing.center_id as string;
-
-  const { data: center, error: ce } = await c.from('centers').insert({ name: centerName }).select('id').single();
-  if (ce) throw ce;
-  const { error: te } = await c.from('tutors').insert({ id: uid, center_id: center.id, role: 'owner' });
-  if (te) throw te;
-  return center.id as string;
-}
-
+// A signup trigger (schema.sql) auto-creates the center + owner tutor, so the
+// client just reads the center id.
 export async function currentCenterId(): Promise<string | null> {
   if (!supabase) return null;
   const { data: user } = await supabase.auth.getUser();

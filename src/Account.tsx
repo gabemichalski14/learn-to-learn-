@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
-import { signIn, signUp, signOut, getCurrentUser, onAuthChange, ensureCenter } from './data/cloud';
+import { signIn, signUp, signOut, getCurrentUser, onAuthChange } from './data/cloud';
 
 type Mode = 'in' | 'up';
 
@@ -31,14 +31,9 @@ export function Account() {
     setMsg(null);
     try {
       if (mode === 'up') {
-        const { error } = await signUp(email, password);
+        const { error } = await signUp(email, password, centerName || undefined);
         if (error) throw error;
-        try {
-          await ensureCenter(centerName || 'My Center');
-        } catch {
-          /* center is created on first authed load if email confirmation is on */
-        }
-        setMsg('Account created. Check your email if confirmation is required, then sign in.');
+        setMsg('Account created — your center is set up. If email confirmation is on, confirm first, then sign in.');
       } else {
         const { error } = await signIn(email, password);
         if (error) throw error;

@@ -67,8 +67,10 @@ export function syncSession(localLearnerId: string, rec: Omit<SessionRecord, 'id
         wrong_attempts: rec.wrongAttempts,
         accuracy: rec.accuracy,
       });
-    } catch {
-      /* local already saved; cloud sync is best-effort */
+      console.info('[cloud] session synced');
+    } catch (e) {
+      // local already saved; cloud sync is best-effort. Logged to aid setup.
+      console.warn('[cloud] session sync failed:', e);
     }
   })();
 }

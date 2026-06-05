@@ -96,6 +96,24 @@ create or replace view learner_stats as
   where l.archived = false
   group by l.id;
 
--- NOTE (onboarding): on a tutor's first sign-in the app creates a `centers`
--- row + a `tutors` row (center_id = new center, role = 'owner'). Additional
--- tutors are invited into an existing center. Keep service-role keys server-side.
+-- ---------- onboarding trigger ----------
+-- Auto-provision a center + owner tutor for each new auth user (runs as definer,
+-- so it isn't blocked by RLS). Uses the `center_name` passed at sign-up, else
+-- derives one from the email.
+create or replace function public.handle_new_user() returns trigger
+  language plpgsql security definer set search_path = public as $$
+declare new_center uuid;
+begin
+  insert into public.centers (name)
+    values (coalesce(nullif(new.raw_user_meta_data->>'center_name', ''),
+                     split_part(new.email, '@', 1) || '''s Center'))
+    returning id into new_center;
+  insert into public.tutors (id, center_id, role) values (new.id, new_center, 'owner');
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();

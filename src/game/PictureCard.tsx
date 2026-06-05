@@ -2,9 +2,9 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import type { WordItem } from '../domain/types';
 
-interface Props { item: WordItem; }
+interface Props { item: WordItem; onActivate?: () => void; }
 
-export function PictureCard({ item }: Props) {
+export function PictureCard({ item, onActivate }: Props) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: item.id });
   const style = { transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.5 : 1 };
   return (
@@ -16,6 +16,7 @@ export function PictureCard({ item }: Props) {
       {...listeners}
       {...attributes}
       role="img"
+      onClick={onActivate}
     >
       <span aria-hidden="true" className="picture-card__emoji">{item.emoji}</span>
     </button>

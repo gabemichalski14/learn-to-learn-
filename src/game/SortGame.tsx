@@ -35,9 +35,7 @@ export function SortGame({ round, audio }: Props) {
 
         <div className="sort-game__tray">
           {game.remainingItems.map((item) => (
-            <span key={item.id} onClick={() => game.replayWord(item)}>
-              <PictureCard item={item} />
-            </span>
+            <PictureCard key={item.id} item={item} onActivate={() => game.replayWord(item)} />
           ))}
         </div>
 

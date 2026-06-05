@@ -3,7 +3,7 @@ import { generateSortRound } from './domain/engine';
 import { everydayObjects } from './content/packs/everydayObjects';
 import { createStubAudioPlayer } from './audio/stubAudioPlayer';
 import { SortGame } from './game/SortGame';
-import { BookTree } from './game/BookTree';
+import { LogoMark } from './LogoMark';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import type { ThemeId } from './ThemeSwitcher';
 
@@ -56,7 +56,7 @@ export default function App() {
       </div>
 
       <header className="app__header">
-        <BookTree className="app__logo" progress={1} />
+        <LogoMark className="app__logo" />
         <div className="app__titles">
           <h1 className="app__title">Beginning Sounds Match</h1>
           <p className="app__brand">Learn to Learn</p>

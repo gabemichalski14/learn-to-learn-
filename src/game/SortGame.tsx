@@ -54,21 +54,6 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
       <div className="sort-game">
         <BookTree className="sort-game__tree" progress={sessionProgress} bloom={bloom} />
 
-        {totalRounds > 1 && (
-          <div className="session-dots" role="img" aria-label={`Page ${roundIndex + 1} of ${totalRounds}`}>
-            {Array.from({ length: totalRounds }).map((_, i) => {
-              const done = i < roundIndex || (i === roundIndex && roundDone);
-              const current = i === roundIndex && !roundDone;
-              return (
-                <span
-                  key={i}
-                  className={`session-dot${done ? ' session-dot--done' : ''}${current ? ' session-dot--current' : ''}`}
-                />
-              );
-            })}
-          </div>
-        )}
-
         <p
           className={`sort-game__status${roundDone ? ' sort-game__status--celebrate' : ''}`}
           role="status"
@@ -76,17 +61,6 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
         >
           {status}
         </p>
-
-        {roundDone && !isLastRound && onAdvance && (
-          <button type="button" className="btn-primary" onClick={onAdvance}>
-            Next page →
-          </button>
-        )}
-        {roundDone && isLastRound && onRestart && (
-          <button type="button" className="btn-primary" onClick={onRestart}>
-            Play again 🌱
-          </button>
-        )}
 
         {!roundDone && (
           <div className="sort-game__tray">
@@ -107,6 +81,32 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, onAdva
             </SoundBasket>
           ))}
         </div>
+
+        {totalRounds > 1 && (
+          <div className="session-dots" role="img" aria-label={`Page ${roundIndex + 1} of ${totalRounds}`}>
+            {Array.from({ length: totalRounds }).map((_, i) => {
+              const done = i < roundIndex || (i === roundIndex && roundDone);
+              const current = i === roundIndex && !roundDone;
+              return (
+                <span
+                  key={i}
+                  className={`session-dot${done ? ' session-dot--done' : ''}${current ? ' session-dot--current' : ''}`}
+                />
+              );
+            })}
+          </div>
+        )}
+
+        {roundDone && !isLastRound && onAdvance && (
+          <button type="button" className="btn-primary" onClick={onAdvance}>
+            Next page →
+          </button>
+        )}
+        {roundDone && isLastRound && onRestart && (
+          <button type="button" className="btn-primary" onClick={onRestart}>
+            Play again 🌱
+          </button>
+        )}
       </div>
     </DndContext>
   );

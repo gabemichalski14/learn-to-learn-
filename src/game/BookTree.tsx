@@ -1,25 +1,39 @@
 interface Puff { cx: number; cy: number; r: number; t: number }
 interface Fruit { cx: number; cy: number; t: number; color: string }
 
-/** Canopy puffs pop in to build a round, bushy crown as progress grows. */
+/**
+ * Canopy blobs that build a full, rounded crown. The first three (t = 0) are
+ * always present so it reads as a real little tree from the very start; the
+ * rest pop in as progress grows, filling the crown out lush.
+ */
 const CANOPY: Puff[] = [
-  { cx: 60, cy: 48, r: 21, t: 0.24 },
-  { cx: 44, cy: 54, r: 15, t: 0.34 },
-  { cx: 76, cy: 54, r: 15, t: 0.44 },
-  { cx: 50, cy: 37, r: 14, t: 0.56 },
-  { cx: 70, cy: 37, r: 14, t: 0.66 },
-  { cx: 60, cy: 30, r: 13, t: 0.76 },
-  { cx: 47, cy: 62, r: 12, t: 0.84 },
-  { cx: 73, cy: 62, r: 12, t: 0.88 },
+  { cx: 60, cy: 50, r: 22, t: 0 },     // core
+  { cx: 44, cy: 56, r: 15, t: 0 },     // lower-left
+  { cx: 76, cy: 56, r: 15, t: 0 },     // lower-right
+  { cx: 49, cy: 38, r: 16, t: 0.16 },  // upper-left
+  { cx: 71, cy: 38, r: 16, t: 0.30 },  // upper-right
+  { cx: 60, cy: 31, r: 15, t: 0.44 },  // top
+  { cx: 37, cy: 60, r: 12, t: 0.54 },  // far lower-left
+  { cx: 83, cy: 60, r: 12, t: 0.62 },  // far lower-right
+  { cx: 52, cy: 63, r: 12, t: 0.72 },  // bottom fill
+  { cx: 68, cy: 63, r: 12, t: 0.80 },  // bottom fill
+  { cx: 46, cy: 28, r: 10, t: 0.88 },  // top-left tuft
+  { cx: 74, cy: 28, r: 10, t: 0.94 },  // top-right tuft
+];
+
+/** Soft sunlit highlights on the upper-left of the crown for depth. */
+const HIGHLIGHTS: Puff[] = [
+  { cx: 52, cy: 43, r: 7, t: 0 },
+  { cx: 45, cy: 50, r: 5, t: 0.16 },
 ];
 
 /** Fruit appears in the final stretch (shown only in the Playful theme via CSS). */
 const FRUIT: Fruit[] = [
-  { cx: 52, cy: 46, t: 0.86, color: '#ff5d8f' },
-  { cx: 68, cy: 50, t: 0.90, color: '#ffd23f' },
-  { cx: 60, cy: 38, t: 0.94, color: '#ff8a3d' },
-  { cx: 46, cy: 57, t: 0.97, color: '#8a6bff' },
-  { cx: 74, cy: 45, t: 0.99, color: '#36c5ff' },
+  { cx: 50, cy: 48, t: 0.86, color: '#ff5d8f' },
+  { cx: 68, cy: 46, t: 0.90, color: '#ffd23f' },
+  { cx: 60, cy: 36, t: 0.94, color: '#ff8a3d' },
+  { cx: 44, cy: 54, t: 0.97, color: '#8a6bff' },
+  { cx: 74, cy: 52, t: 0.99, color: '#36c5ff' },
 ];
 
 interface Props {
@@ -32,22 +46,24 @@ interface Props {
 
 /**
  * The Learn to Learn mark — a tree growing out of an open book — that doubles as
- * the game's progress meter: the trunk rises, a leafy canopy fills in, and (in
- * the Playful theme) colorful fruit pops near the end. Colors come from CSS vars
- * so each age-band theme restyles it; at progress=1 it's the full brand logo.
+ * the game's progress meter. The trunk and branches are always there, and the
+ * leafy crown fills out (then, in the Playful theme, fruits up) as progress
+ * grows. Colors come from CSS vars so each age-band theme restyles it.
  */
 export function BookTree({ progress, bloom = false, className }: Props) {
   const p = Math.max(0, Math.min(1, progress));
-  const trunkScale = Math.min(1, 0.12 + p / 0.22); // small stub at the start, full by ~22%
 
   return (
     <svg className={className} viewBox="0 0 120 140" role="img" aria-label="A tree growing from a book">
       <g className={bloom ? 'tree--bloom' : undefined} style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
         {/* trunk + branches grow up from the book */}
-        <g className="tree__trunk" style={{ transform: `scaleY(${trunkScale})` }}>
-          <path d="M55,114 C 54,98 54,84 57,70 L63,70 C 66,84 66,98 65,114 Z" fill="var(--tree-trunk)" />
-          <path d="M60,86 L48,74" stroke="var(--tree-trunk)" strokeWidth="4" strokeLinecap="round" fill="none" />
-          <path d="M60,80 L72,68" stroke="var(--tree-trunk)" strokeWidth="4" strokeLinecap="round" fill="none" />
+        <g className="tree__trunk">
+          <path
+            d="M53,118 C 53,103 53,90 57,72 L63,72 C 67,90 67,103 67,118 Z"
+            fill="var(--tree-trunk)"
+          />
+          <path d="M59,90 C 53,86 49,81 46,75" stroke="var(--tree-trunk)" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+          <path d="M61,84 C 67,80 71,76 74,71" stroke="var(--tree-trunk)" strokeWidth="4.5" strokeLinecap="round" fill="none" />
         </g>
 
         {/* leafy canopy */}
@@ -63,6 +79,22 @@ export function BookTree({ progress, bloom = false, className }: Props) {
               fill="var(--tree-canopy)"
               stroke="var(--tree-canopy-edge)"
               strokeWidth="2"
+              style={{ transformBox: 'fill-box', transformOrigin: 'center', opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.01)' }}
+            />
+          );
+        })}
+
+        {/* sunlit highlights */}
+        {HIGHLIGHTS.map((h, i) => {
+          const shown = p >= h.t;
+          return (
+            <circle
+              key={`h${i}`}
+              className="tree__leaf"
+              cx={h.cx}
+              cy={h.cy}
+              r={h.r}
+              fill="rgba(255,255,255,0.28)"
               style={{ transformBox: 'fill-box', transformOrigin: 'center', opacity: shown ? 1 : 0, transform: shown ? 'scale(1)' : 'scale(0.01)' }}
             />
           );
@@ -86,9 +118,9 @@ export function BookTree({ progress, bloom = false, className }: Props) {
 
         {/* open book at the base */}
         <g stroke="var(--teal-deep)" strokeWidth="2" strokeLinejoin="round">
-          <path d="M60,112 C 46,108 30,110 20,116 L20,127 C 32,122 47,120 60,124 Z" fill="#ffffff" />
-          <path d="M60,112 C 74,108 90,110 100,116 L100,127 C 88,122 73,120 60,124 Z" fill="#ffffff" />
-          <line x1="60" y1="112" x2="60" y2="124" />
+          <path d="M60,116 C 49,112 36,114 30,119 L30,128 C 39,124 50,122 60,125 Z" fill="#ffffff" />
+          <path d="M60,116 C 71,112 84,114 90,119 L90,128 C 81,124 70,122 60,125 Z" fill="#ffffff" />
+          <line x1="60" y1="116" x2="60" y2="125" />
         </g>
       </g>
     </svg>

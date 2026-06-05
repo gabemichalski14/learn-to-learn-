@@ -12,10 +12,11 @@
   --good: #0f978f;
   --warn: #e08a2f;
   --radius: 20px;
-  /* tree colors (re-themed per age band) */
-  --tree-trunk: var(--teal-deep);
-  --tree-canopy: var(--teal);
-  --tree-canopy-edge: var(--teal-deep);
+  /* tree colors (re-themed per age band) — natural brown trunk + teal-green
+     foliage so it reads as a real tree while staying on-brand. */
+  --tree-trunk: #9c6b43;
+  --tree-canopy: #34d1b0;
+  --tree-canopy-edge: #12a98d;
   font-family: 'Trebuchet MS', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
 }
 * { box-sizing: border-box; }

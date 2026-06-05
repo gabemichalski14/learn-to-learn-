@@ -1,4 +1,9 @@
-import type { Pack, WordItem, SortRound, Placements } from './types';
+import type { Pack, WordItem, SortRound, Placements, SoundTarget } from './types';
+
+/** The sound a word contributes for the given target (first vs last sound). */
+export function soundOf(item: WordItem, target: SoundTarget = 'beginning'): string | undefined {
+  return target === 'ending' ? item.endingSound : item.beginningSound;
+}
 
 /** In-place Fisher–Yates copy using an injectable rng (default Math.random). */
 function shuffle<T>(arr: T[], rng: () => number): T[] {
@@ -15,19 +20,22 @@ function randInt(rng: () => number, lo: number, hi: number): number {
   return lo + Math.floor(rng() * (hi - lo + 1));
 }
 
-function wordsFor(pack: Pack, sound: string): WordItem[] {
-  return pack.words.filter((w) => w.beginningSound === sound);
+function wordsFor(pack: Pack, sound: string, target: SoundTarget = 'beginning'): WordItem[] {
+  return pack.words.filter((w) => soundOf(w, target) === sound);
 }
 
 /** Sounds in the pack that have at least `minWords` words available. */
-export function availableSounds(pack: Pack, minWords = 1): string[] {
+export function availableSounds(pack: Pack, minWords = 1, target: SoundTarget = 'beginning'): string[] {
   const counts = new Map<string, number>();
-  for (const w of pack.words) counts.set(w.beginningSound, (counts.get(w.beginningSound) ?? 0) + 1);
+  for (const w of pack.words) {
+    const s = soundOf(w, target);
+    if (s) counts.set(s, (counts.get(s) ?? 0) + 1);
+  }
   return [...counts.entries()].filter(([, n]) => n >= minWords).map(([s]) => s);
 }
 
-export function canBuildSortRound(pack: Pack, sounds: string[], minPerSound: number): boolean {
-  return sounds.every((s) => wordsFor(pack, s).length >= minPerSound);
+export function canBuildSortRound(pack: Pack, sounds: string[], minPerSound: number, target: SoundTarget = 'beginning'): boolean {
+  return sounds.every((s) => wordsFor(pack, s, target).length >= minPerSound);
 }
 
 /**
@@ -63,6 +71,8 @@ export interface GenerateSortRoundParams {
   maxPerSound?: number;
   /** Exact number of pictures in the round, spread unevenly across the baskets. */
   totalItems?: number;
+  /** Sort by the word's first sound (default) or last sound. */
+  target?: SoundTarget;
   rng?: () => number;
 }
 
@@ -77,12 +87,12 @@ export interface GenerateSortRoundParams {
  * Pass `totalItems` to fix the picture count per round (e.g. 6 per page).
  */
 export function generateSortRound(params: GenerateSortRoundParams): SortRound {
-  const { pack, rng = Math.random } = params;
+  const { pack, rng = Math.random, target = 'beginning' } = params;
   const usingTotal = params.totalItems != null;
   const minPerSound = params.minPerSound ?? (usingTotal ? 1 : 2);
   const maxPerSound = params.maxPerSound ?? 4;
 
-  const pool = availableSounds(pack, minPerSound);
+  const pool = availableSounds(pack, minPerSound, target);
   if (pool.length < 2) {
     throw new Error(`pack needs at least 2 sounds with >= ${minPerSound} words; has ${pool.length}`);
   }
@@ -96,7 +106,7 @@ export function generateSortRound(params: GenerateSortRoundParams): SortRound {
     throw new Error('a round needs at least 2 target sounds');
   }
 
-  const caps = chosen.map((s) => wordsFor(pack, s).length);
+  const caps = chosen.map((s) => wordsFor(pack, s, target).length);
   caps.forEach((cap, i) => {
     if (cap < minPerSound) {
       throw new Error(`not enough words for sound "${chosen[i]}": need ${minPerSound}, have ${cap}`);
@@ -109,16 +119,17 @@ export function generateSortRound(params: GenerateSortRoundParams): SortRound {
 
   const items: WordItem[] = [];
   chosen.forEach((sound, i) => {
-    items.push(...shuffle(wordsFor(pack, sound), rng).slice(0, counts[i]));
+    items.push(...shuffle(wordsFor(pack, sound, target), rng).slice(0, counts[i]));
   });
 
-  return { baskets: shuffle([...chosen], rng), items: shuffle(items, rng) };
+  return { baskets: shuffle([...chosen], rng), items: shuffle(items, rng), target };
 }
 
-export function isCorrectPlacement(item: WordItem, basketSound: string): boolean {
-  return item.beginningSound === basketSound;
+export function isCorrectPlacement(item: WordItem, basketSound: string, target: SoundTarget = 'beginning'): boolean {
+  return soundOf(item, target) === basketSound;
 }
 
 export function isRoundComplete(round: SortRound, placements: Placements): boolean {
-  return round.items.every((item) => placements[item.id] === item.beginningSound);
+  const target = round.target ?? 'beginning';
+  return round.items.every((item) => placements[item.id] === soundOf(item, target));
 }

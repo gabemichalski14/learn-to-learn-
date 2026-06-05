@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { SortRound, Placements, WordItem } from '../domain/types';
 import type { AudioPlayer } from '../audio/audioPlayer';
-import { isCorrectPlacement, isRoundComplete } from '../domain/engine';
+import { isCorrectPlacement, isRoundComplete, soundOf } from '../domain/engine';
 
 export interface UseSortGame {
   placements: Placements;
@@ -30,7 +30,7 @@ export function useSortGame(opts: { round: SortRound; audio: AudioPlayer }): Use
   function attemptPlace(wordId: string, basketSound: string): boolean {
     const item = byId[wordId];
     if (!item) return false;
-    if (isCorrectPlacement(item, basketSound)) {
+    if (isCorrectPlacement(item, basketSound, round.target ?? 'beginning')) {
       setPlacements((prev) => ({ ...prev, [wordId]: basketSound }));
       setMessage(null);
       void audio.playWord(item);
@@ -43,7 +43,8 @@ export function useSortGame(opts: { round: SortRound; audio: AudioPlayer }): Use
     return false;
   }
 
-  const remainingItems = round.items.filter((i) => placements[i.id] !== i.beginningSound);
+  const target = round.target ?? 'beginning';
+  const remainingItems = round.items.filter((i) => placements[i.id] !== soundOf(i, target));
 
   return {
     placements,

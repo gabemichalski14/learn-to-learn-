@@ -12,6 +12,7 @@ import { BookTree } from './BookTree';
 import { WalkProgress } from './WalkProgress';
 import { ProgressTrail } from './ProgressTrail';
 import { SproutGlyph } from '../Mascot';
+import { soundOf } from '../domain/engine';
 import { recordFinish, formatTime, loadEarned } from '../progress';
 import { logSession, noteRound } from '../sessionLog';
 import { awardForSession, ACHIEVEMENTS } from '../achievements';
@@ -26,6 +27,8 @@ interface Props {
   sessionId?: number;
   /** Which learner this session belongs to (keys progress / log / stickers). */
   learnerId?: string;
+  /** Which game this is, for the session log (e.g. 'beginning-sounds'). */
+  gameId?: string;
   /** Timestamp (ms) when the current session began — for the elapsed finish clock. */
   sessionStartAt?: number;
   onAdvance?: () => void;
@@ -80,12 +83,13 @@ function prefersReducedMotion(): boolean {
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionId = 0, learnerId = 'guest', sessionStartAt = Date.now(), onAdvance, onRestart, onOpenStickerBook, playful = false, clean = false }: Props) {
+export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionId = 0, learnerId = 'guest', gameId = 'beginning-sounds', sessionStartAt = Date.now(), onAdvance, onRestart, onOpenStickerBook, playful = false, clean = false }: Props) {
   const game = useSortGame({ round, audio });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
   const total = round.items.length;
-  const correct = round.items.filter((i) => game.placements[i.id] === i.beginningSound).length;
+  const roundTarget = round.target ?? 'beginning';
+  const correct = round.items.filter((i) => game.placements[i.id] === soundOf(i, roundTarget)).length;
   const withinRound = total ? correct / total : 0;
   const roundDone = game.isComplete;
   const isLastRound = roundIndex >= totalRounds - 1;
@@ -117,9 +121,8 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
     const durationMs = Math.max(0, Date.now() - sessionStartAt);
     const res = recordFinish(learnerId, durationMs);
     logSession(learnerId, {
-      game: 'beginning-sounds',
+      game: gameId,
       level: 2,
-      lesson: 1,
       startedAt: new Date(sessionStartAt).toISOString(),
       endedAt: new Date().toISOString(),
       durationMs,

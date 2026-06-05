@@ -42,7 +42,7 @@ export default function App() {
 
   switch (route.name) {
     case 'play':
-      return <GameScreen theme={theme} setTheme={setTheme} learnerId={learnerId} />;
+      return <GameScreen theme={theme} setTheme={setTheme} learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} />;
     case 'level':
       return <LevelPage level={route.level ?? 1} />;
     case 'leaderboard':

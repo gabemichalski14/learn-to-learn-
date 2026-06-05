@@ -20,7 +20,7 @@ export function Home({ learnerId, onSelectLearner }: Props) {
         <LogoMark className="site__logo" />
         <div>
           <h1 className="site__title">Learn to Learn</h1>
-          <p className="site__tagline">Phonics games built for the Barton Reading &amp; Spelling System</p>
+          <p className="site__tagline">Tutoring Solutions</p>
         </div>
       </header>
 

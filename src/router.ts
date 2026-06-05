@@ -9,11 +9,15 @@ export type RouteName = 'home' | 'level' | 'play' | 'leaderboard' | 'tutor';
 export interface Route {
   name: RouteName;
   level?: number;
+  game?: string;
 }
 
 export function parseHash(hash: string): Route {
   const h = hash.replace(/^#\/?/, '');
-  if (h.startsWith('play')) return { name: 'play' };
+  if (h.startsWith('play')) {
+    const game = h.split('/')[1];
+    return { name: 'play', game: game || 'beginning-sounds' };
+  }
   if (h.startsWith('leaderboard')) return { name: 'leaderboard' };
   if (h.startsWith('tutor')) return { name: 'tutor' };
   if (h.startsWith('level/')) {

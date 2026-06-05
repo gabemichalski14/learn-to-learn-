@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { generateSortRound } from './domain/engine';
+import type { Pack, SoundTarget } from './domain/types';
 import { everydayObjects } from './content/packs/everydayObjects';
+import { everydayEndings } from './content/packs/everydayEndings';
 import { createStubAudioPlayer } from './audio/stubAudioPlayer';
 import { SortGame } from './game/SortGame';
 import { ThemeSwitcher } from './ThemeSwitcher';
@@ -12,14 +14,27 @@ import { navigate } from './router';
 const TOTAL_ROUNDS = 5;
 const ITEMS_PER_ROUND = 6;
 
+interface GameConfig {
+  pack: Pack;
+  target: SoundTarget;
+  title: string;
+}
+
+const GAMES: Record<string, GameConfig> = {
+  'beginning-sounds': { pack: everydayObjects, target: 'beginning', title: 'Sound Safari' },
+  'ending-sounds': { pack: everydayEndings, target: 'ending', title: 'Last Sound Standing' },
+};
+
 interface Props {
   theme: ThemeId;
   setTheme: (t: ThemeId) => void;
   learnerId: string;
+  gameId: string;
 }
 
-/** The Beginning Sounds Match game screen — one game in the platform. */
-export function GameScreen({ theme, setTheme, learnerId }: Props) {
+/** A sound-sorting game screen — driven by which game id is in the route. */
+export function GameScreen({ theme, setTheme, learnerId, gameId }: Props) {
+  const config = GAMES[gameId] ?? GAMES['beginning-sounds'];
   const audio = useMemo(() => createStubAudioPlayer(), []);
   const [sessionId, setSessionId] = useState(0);
   const [roundIndex, setRoundIndex] = useState(0);
@@ -34,10 +49,16 @@ export function GameScreen({ theme, setTheme, learnerId }: Props) {
     setSessionStartAt(Date.now());
   }, [sessionId]);
 
+  // A fresh session whenever the game changes.
+  useEffect(() => {
+    setSessionId((s) => s + 1);
+    setRoundIndex(0);
+  }, [gameId]);
+
   // Fresh random page whenever the session restarts or we advance a page.
   const round = useMemo(
-    () => generateSortRound({ pack: everydayObjects, totalItems: ITEMS_PER_ROUND }),
-    [sessionId, roundIndex],
+    () => generateSortRound({ pack: config.pack, totalItems: ITEMS_PER_ROUND, target: config.target }),
+    [sessionId, roundIndex, config],
   );
 
   return (
@@ -82,7 +103,7 @@ export function GameScreen({ theme, setTheme, learnerId }: Props) {
 
       {/* Heading kept for screen readers / document outline, hidden on screen
           so the page is just the game content. */}
-      <h1 className="sr-only">Beginning Sounds Match — Learn to Learn</h1>
+      <h1 className="sr-only">{config.title} — Learn to Learn</h1>
 
       <SortGame
         key={`${sessionId}-${roundIndex}`}
@@ -92,6 +113,7 @@ export function GameScreen({ theme, setTheme, learnerId }: Props) {
         totalRounds={TOTAL_ROUNDS}
         sessionId={sessionId}
         learnerId={learnerId}
+        gameId={gameId}
         sessionStartAt={sessionStartAt}
         playful={theme === 'playful'}
         clean={theme === 'grownup'}

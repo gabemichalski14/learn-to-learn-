@@ -14,11 +14,15 @@ export interface Phoneme {
  */
 export interface WordItem {
   id: string;
-  label: string;        // for tutors / alt-text / audio, not shown as text in play
-  beginningSound: string; // a Phoneme id
-  emoji: string;        // placeholder picture
-  image?: string;       // future: path to real illustration
+  label: string;           // for tutors / alt-text / audio, not shown as text in play
+  beginningSound?: string; // Phoneme id — the word's first sound
+  endingSound?: string;    // Phoneme id — the word's last sound
+  emoji: string;           // placeholder picture
+  image?: string;          // future: path to real illustration
 }
+
+/** Which sound a game sorts by. */
+export type SoundTarget = 'beginning' | 'ending';
 
 export interface Pack {
   id: string;
@@ -28,8 +32,9 @@ export interface Pack {
 
 /** Mode A round: which baskets (target sounds) and which pictures to sort. */
 export interface SortRound {
-  baskets: string[];     // Phoneme ids, in display order
-  items: WordItem[];     // pictures to sort, shuffled
+  baskets: string[];      // Phoneme ids, in display order
+  items: WordItem[];      // pictures to sort, shuffled
+  target?: SoundTarget;   // which sound to sort by (default 'beginning')
 }
 
 /** Map of wordId -> the basket sound it has been correctly placed in. */

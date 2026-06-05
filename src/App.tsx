@@ -6,6 +6,10 @@ import { LevelPage } from './LevelPage';
 import { Leaderboard } from './Leaderboard';
 import { TutorDashboard } from './TutorDashboard';
 import { Account } from './Account';
+import { LevelsPage } from './LevelsPage';
+import { GamesPage } from './GamesPage';
+import { ProfilePage } from './ProfilePage';
+import { NavDrawer } from './NavDrawer';
 import type { ThemeId } from './ThemeSwitcher';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
 
@@ -42,18 +46,43 @@ export default function App() {
     }
   }, [theme, themed]);
 
-  switch (route.name) {
-    case 'play':
-      return <GameScreen theme={theme} setTheme={setTheme} learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} />;
-    case 'level':
-      return <LevelPage level={route.level ?? 1} />;
-    case 'leaderboard':
-      return <Leaderboard />;
-    case 'tutor':
-      return <TutorDashboard theme={theme} setTheme={setTheme} />;
-    case 'account':
-      return <Account />;
-    default:
-      return <Home learnerId={learnerId} onSelectLearner={chooseLearner} />;
+  // The game screen stays immersive (its own back button); every other page
+  // gets the left-side burger menu.
+  if (route.name === 'play') {
+    return <GameScreen theme={theme} setTheme={setTheme} learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} />;
   }
+
+  let page;
+  switch (route.name) {
+    case 'level':
+      page = <LevelPage level={route.level ?? 1} />;
+      break;
+    case 'levels':
+      page = <LevelsPage />;
+      break;
+    case 'games':
+      page = <GamesPage />;
+      break;
+    case 'leaderboard':
+      page = <Leaderboard />;
+      break;
+    case 'tutor':
+      page = <TutorDashboard theme={theme} setTheme={setTheme} />;
+      break;
+    case 'profile':
+      page = <ProfilePage learnerId={learnerId} onSelectLearner={chooseLearner} />;
+      break;
+    case 'account':
+      page = <Account />;
+      break;
+    default:
+      page = <Home learnerId={learnerId} onSelectLearner={chooseLearner} />;
+  }
+
+  return (
+    <>
+      <NavDrawer route={route.name} />
+      {page}
+    </>
+  );
 }

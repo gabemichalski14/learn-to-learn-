@@ -76,7 +76,7 @@ export default function App() {
       page = <Account />;
       break;
     default:
-      page = <Home learnerId={learnerId} />;
+      page = <Home learnerId={learnerId} onChooseLearner={chooseLearner} />;
   }
 
   return (

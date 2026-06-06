@@ -2,17 +2,20 @@ import { LEVELS, availableCount } from './games';
 import { navigate } from './router';
 import { loadProgress } from './progress';
 import { ACHIEVEMENTS } from './achievements';
+import { NowPlaying } from './NowPlaying';
 
 interface Props {
   learnerId: string;
+  onChooseLearner?: (id: string) => void;
 }
 
 /** Platform home: the 10-level curriculum + progress entries. */
-export function Home({ learnerId }: Props) {
+export function Home({ learnerId, onChooseLearner }: Props) {
   const { earned, sessions } = loadProgress(learnerId);
 
   return (
     <main className="site">
+      <NowPlaying onChange={onChooseLearner} />
       <section className="site__section" aria-labelledby="levels-h">
         <h2 id="levels-h" className="site__h2">Curriculum · Levels 1–10</h2>
         <div className="level-grid">

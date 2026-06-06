@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { navigate } from './router';
 import { SessionLogPanel } from './SessionLogPanel';
 import { loadLearners, getCurrentLearnerId, getLearner, initials, renameLearner, removeLearner } from './profiles';
 import { loadProgress, formatTime } from './progress';
 import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
+import { getSessions } from './data/dataSource';
 import { ACHIEVEMENTS } from './achievements';
 
 const CW = 280;
@@ -70,9 +71,21 @@ export function TutorDashboard() {
     }
   }
 
+  // Local sessions are read in render (instantly correct for the selected
+  // student). Cloud sessions overlay once they resolve — keyed by `sel` so
+  // switching students never shows the previous student's data.
+  const [cloudLog, setCloudLog] = useState<{ id: string; rows: SessionRecord[] } | null>(null);
+  useEffect(() => {
+    let live = true;
+    const learner = sel ? getLearner(sel) : undefined;
+    if (!learner) return;
+    void getSessions(learner).then((rows) => { if (live) setCloudLog({ id: sel, rows }); });
+    return () => { live = false; };
+  }, [sel]);
+  const log = cloudLog && cloudLog.id === sel ? cloudLog.rows : (sel ? loadSessionLog(sel) : []);
+
   const learner = getLearner(sel);
   const prog = sel ? loadProgress(sel) : null;
-  const log = sel ? loadSessionLog(sel) : [];
   const recent = log.slice(-12);
   const avgAccuracy = log.length ? Math.round((log.reduce((s, r) => s + r.accuracy, 0) / log.length) * 100) : 0;
   const lastPlayed = log.length ? new Date(log[log.length - 1].endedAt) : null;

@@ -67,7 +67,18 @@ export function masteryScore(learnerId: string, skillKey: SkillKey): number {
   return scoreOf(loadMastery(learnerId)[skillKey]);
 }
 
-/** Rated, weak skills (weakest first). */
+/**
+ * Rated, weak skills (weakest first), drawn from whatever the learner has
+ * actually practiced.
+ *
+ * NOTE (Phase 1, intentional deviation from the design spec §4): the spec calls
+ * for restricting this to skills introduced at/below the learner's *current
+ * lesson* (via `soundsThrough`). We defer that scoping until placement is
+ * tutor-settable (Phase 3): placement defaults to Level 1 / Lesson 1, Level 1 is
+ * oral (no letter sounds), and the only live games train Level-2 sounds — so
+ * lesson-scoping now would always blank the list. Ranking by what's actually
+ * been practiced is the meaningful behavior for Phase 1.
+ */
 export function areasToImprove(learnerId: string, n = 3): FocusArea[] {
   const map = loadMastery(learnerId);
   return Object.entries(map)

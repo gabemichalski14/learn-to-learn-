@@ -61,12 +61,8 @@
 @keyframes sg-beat{ 0%,100%{box-shadow:0 0 24px rgba(94,240,200,.45)} 50%{box-shadow:0 0 42px rgba(94,240,200,.9)} }
 .sg-planet--catch{ animation:sg-catch .5s ease; }
 @keyframes sg-catch{ 0%{transform:scale(1)} 40%{transform:scale(1.22)} 100%{transform:scale(1)} }
-/* distinct planet hues per vowel */
-.sg-planet.v-a{ background:radial-gradient(circle at 34% 28%, #3aa0b4, #0e3340); }
-.sg-planet.v-e{ background:radial-gradient(circle at 34% 28%, #6f8ad6, #1d2a5a); }
-.sg-planet.v-i{ background:radial-gradient(circle at 34% 28%, #57f0c8, #0c6675); }
-.sg-planet.v-o{ background:radial-gradient(circle at 34% 28%, #d98a5a, #5e2f18); }
-.sg-planet.v-u{ background:radial-gradient(circle at 34% 28%, #b07cff, #3d1f6e); }
+/* Planet hues are assigned at random per round in SpaceSortGame (inline style),
+   so colour never predicts the vowel — the letter/sound is the only cue. */
 
 /* creatures (draggable) in the cargo tray */
 .sg-tray{ position:relative; z-index:3; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;

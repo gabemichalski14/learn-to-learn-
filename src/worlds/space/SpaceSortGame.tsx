@@ -26,14 +26,25 @@ interface Props {
   onRestart?: () => void;
 }
 
+/** Planet surface gradients — assigned RANDOMLY to vowels each round so colour is
+ *  never a shortcut; the vowel letter (and its sound) is the only reliable cue. */
+const PLANET_GRADIENTS = [
+  'radial-gradient(circle at 34% 28%, #3aa0b4, #0e3340)',
+  'radial-gradient(circle at 34% 28%, #6f8ad6, #1d2a5a)',
+  'radial-gradient(circle at 34% 28%, #57f0c8, #0c6675)',
+  'radial-gradient(circle at 34% 28%, #d98a5a, #5e2f18)',
+  'radial-gradient(circle at 34% 28%, #b07cff, #3d1f6e)',
+];
+
 /** A vowel "planet" — a droppable basket. Tapping it replays its sound. */
-function Planet({ vowel, catching, onReplay }: { vowel: string; catching: boolean; onReplay: () => void }) {
+function Planet({ vowel, color, catching, onReplay }: { vowel: string; color: string; catching: boolean; onReplay: () => void }) {
   const { setNodeRef, isOver } = useDroppable({ id: vowel });
   return (
     <button
       ref={setNodeRef}
       type="button"
-      className={`sg-planet v-${vowel}${isOver ? ' sg-planet--over' : ''}${catching ? ' sg-planet--catch' : ''}`}
+      style={{ background: color }}
+      className={`sg-planet${isOver ? ' sg-planet--over' : ''}${catching ? ' sg-planet--catch' : ''}`}
       onClick={onReplay}
       aria-label={`Planet for the ${vowel} sound — tap to hear it`}
     >
@@ -74,6 +85,19 @@ export function SpaceSortGame({
   const [startAt] = useState(() => sessionStartAt ?? Date.now());
   const [catching, setCatching] = useState<string | null>(null);
   const [finish, setFinish] = useState<{ ms: number; best: boolean } | null>(null);
+  // Shuffle the palette across THIS round's planets so colour never predicts the
+  // vowel. Lazy init (runs once per mount; the screen remounts each round) keeps
+  // colours stable mid-round and re-rolls them every new sector — no pattern.
+  const [planetColors] = useState<Record<string, string>>(() => {
+    const pal = [...PLANET_GRADIENTS];
+    for (let i = pal.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pal[i], pal[j]] = [pal[j], pal[i]];
+    }
+    const map: Record<string, string> = {};
+    round.baskets.forEach((v, i) => { map[v] = pal[i % pal.length]; });
+    return map;
+  });
   const handledRef = useRef(false);
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -143,7 +167,7 @@ export function SpaceSortGame({
 
         <div className="sg-planets">
           {round.baskets.map((v) => (
-            <Planet key={v} vowel={v} catching={catching === v} onReplay={() => game.replaySound(v)} />
+            <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} onReplay={() => game.replaySound(v)} />
           ))}
         </div>
 

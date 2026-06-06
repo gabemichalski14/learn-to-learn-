@@ -1,15 +1,18 @@
+import { useState } from 'react';
+
 /** Space Patrol world art — backdrop + mascot. Stand-ins for a richer illustrated
  *  set; built as SVG/CSS so they animate and stay fully ours. */
 
-// [left%, top%, big?] — `big` stars get a brighter glow + sparkle.
-const STAR_POS: [number, number, boolean][] = [
-  [6, 10, true], [16, 22, false], [27, 14, false], [34, 30, false], [42, 9, true],
-  [52, 20, false], [60, 12, false], [68, 26, false], [76, 8, false], [84, 20, true],
-  [90, 36, false], [11, 40, false], [22, 52, false], [9, 64, true], [18, 78, false],
-  [30, 70, false], [40, 84, false], [50, 60, false], [58, 88, false], [66, 72, false],
-  [74, 84, true], [82, 60, false], [92, 76, false], [4, 30, false], [48, 44, false],
-  [70, 50, false], [88, 50, true], [36, 58, false],
-];
+/** A fresh random starfield each time the backdrop mounts — no repeating
+ *  constellation. `big` stars get a brighter glow + sparkle. */
+function makeStars(n = 32) {
+  return Array.from({ length: n }, (_, i) => ({
+    left: +(Math.random() * 96 + 2).toFixed(1),
+    top: +(Math.random() * 90 + 4).toFixed(1),
+    big: Math.random() < 0.18,
+    delay: +((i % 7) * 0.45).toFixed(2),
+  }));
+}
 
 /** A rocket that cruises horizontally across the cosmos, nose-first. The flight
  *  (translateX) is on the outer span; the bob is on the inner ship, so the bob
@@ -42,6 +45,7 @@ function Rocket() {
 }
 
 export function SpaceBackdrop() {
+  const [stars] = useState(makeStars);
   return (
     <div aria-hidden="true">
       {/* slowly hue-shifting, drifting nebula */}
@@ -59,8 +63,8 @@ export function SpaceBackdrop() {
       </span>
       {/* twinkling + shining starfield */}
       <div className="sg-stars">
-        {STAR_POS.map(([l, t, big], i) => (
-          <i key={i} className={big ? 'big' : undefined} style={{ left: `${l}%`, top: `${t}%`, animationDelay: `${(i % 7) * 0.45}s` }} />
+        {stars.map((s, i) => (
+          <i key={i} className={s.big ? 'big' : undefined} style={{ left: `${s.left}%`, top: `${s.top}%`, animationDelay: `${s.delay}s` }} />
         ))}
       </div>
       <span className="sg-shoot" />

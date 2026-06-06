@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 
 /** Space Patrol world art — backdrop + mascot. Stand-ins for a richer illustrated
  *  set; built as SVG/CSS so they animate and stay fully ours. */
@@ -14,13 +14,30 @@ function makeStars(n = 32) {
   }));
 }
 
+/** Random flight params for the rocket + shooting star, re-rolled each mount.
+ *  A negative delay starts the animation part-way through its cycle, so each
+ *  appears from a different spot/phase rather than the same fixed launch. */
+function makeFlight() {
+  const rocketDur = +(Math.random() * 7 + 13).toFixed(1); // 13–20s
+  const shootDur = +(Math.random() * 5 + 9).toFixed(1); // 9–14s
+  return {
+    rocketTop: +(Math.random() * 24 + 6).toFixed(1), // 6–30vh lane
+    rocketDur,
+    rocketDelay: +(-Math.random() * rocketDur).toFixed(1),
+    shootTop: +(Math.random() * 30 + 5).toFixed(1), // 5–35%
+    shootLeft: +(Math.random() * 55 + 35).toFixed(1), // 35–90%
+    shootDur,
+    shootDelay: +(-Math.random() * shootDur).toFixed(1),
+  };
+}
+
 /** A rocket that cruises horizontally across the cosmos, nose-first. The flight
  *  (translateX) is on the outer span; the bob is on the inner ship, so the bob
  *  never knocks the rocket off its flight line. SVG points RIGHT = direction of
  *  travel, so it never looks like it's crabbing sideways. */
-function Rocket() {
+function Rocket({ style }: { style?: CSSProperties }) {
   return (
-    <span className="sg-rocket">
+    <span className="sg-rocket" style={style}>
       <span className="sg-rocket__ship">
         <svg width="72" height="36" viewBox="0 0 72 36" role="img" aria-label="rocket">
           {/* trailing flame (left) */}
@@ -46,6 +63,18 @@ function Rocket() {
 
 export function SpaceBackdrop() {
   const [stars] = useState(makeStars);
+  const [flight] = useState(makeFlight);
+  const rocketStyle = {
+    '--rocket-top': `${flight.rocketTop}vh`,
+    '--rocket-dur': `${flight.rocketDur}s`,
+    '--rocket-delay': `${flight.rocketDelay}s`,
+  } as CSSProperties;
+  const shootStyle = {
+    '--shoot-top': `${flight.shootTop}%`,
+    '--shoot-left': `${flight.shootLeft}%`,
+    '--shoot-dur': `${flight.shootDur}s`,
+    '--shoot-delay': `${flight.shootDelay}s`,
+  } as CSSProperties;
   return (
     <div aria-hidden="true">
       {/* slowly hue-shifting, drifting nebula */}
@@ -67,8 +96,8 @@ export function SpaceBackdrop() {
           <i key={i} className={s.big ? 'big' : undefined} style={{ left: `${s.left}%`, top: `${s.top}%`, animationDelay: `${s.delay}s` }} />
         ))}
       </div>
-      <span className="sg-shoot" />
-      <Rocket />
+      <span className="sg-shoot" style={shootStyle} />
+      <Rocket style={rocketStyle} />
       <div className="sg-vig" />
     </div>
   );

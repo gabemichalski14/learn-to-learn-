@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
 import { signIn, signUp, signOut, getCurrentUser, onAuthChange } from './data/cloud';
+import { reconcileRoster } from './data/identity';
+import { flushOutbox } from './data/cloudSync';
 
 type Mode = 'in' | 'up';
 
@@ -21,8 +23,16 @@ export function Account() {
 
   useEffect(() => {
     if (!configured) return;
-    getCurrentUser().then((u) => setUser(u?.email ?? null));
-    return onAuthChange(() => getCurrentUser().then((u) => setUser(u?.email ?? null)));
+    getCurrentUser().then((u) => {
+      setUser(u?.email ?? null);
+      if (u) void reconcileRoster().then(() => flushOutbox());
+    });
+    return onAuthChange(() =>
+      getCurrentUser().then((u) => {
+        setUser(u?.email ?? null);
+        if (u) void reconcileRoster().then(() => flushOutbox());
+      }),
+    );
   }, [configured]);
 
   async function submit(e: React.FormEvent) {

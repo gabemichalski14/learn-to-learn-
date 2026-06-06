@@ -193,14 +193,6 @@ export function SpaceSortGame({
         </p>
 
         <div className="sg-scout">
-          {guideOpen && (
-            <div className="sg-bubble" role="status">
-              <button type="button" className="sg-bubble__x" onClick={() => setGuideOpen(false)} aria-label="Close directions">✕</button>
-              <p className="sg-bubble__hi">Scout here, Captain! 🛰️</p>
-              <p>Tap a space critter to <b>hear its word</b>, then drag it to the planet with the <b>same middle sound</b>.</p>
-              <p className="sg-bubble__hint">Tap a planet to hear its sound, too.</p>
-            </div>
-          )}
           <button
             type="button"
             className={`sg-scout__btn${guideOpen ? '' : ' nudge'}`}
@@ -209,6 +201,14 @@ export function SpaceSortGame({
           >
             <ScoutDrone />
           </button>
+          {guideOpen && (
+            <div className="sg-bubble" role="status">
+              <button type="button" className="sg-bubble__x" onClick={() => setGuideOpen(false)} aria-label="Close directions">✕</button>
+              <p className="sg-bubble__hi">Scout here, Captain! 🛰️</p>
+              <p>Tap a space critter to <b>hear its word</b>, then drag it to the planet with the <b>same middle sound</b>.</p>
+              <p className="sg-bubble__hint">Tap a planet to hear its sound, too.</p>
+            </div>
+          )}
         </div>
 
         {roundDone && !isLast && !finish && (

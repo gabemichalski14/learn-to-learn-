@@ -104,9 +104,12 @@
 .sg-bubble{ position:relative; background:linear-gradient(160deg,rgba(22,64,80,.97),rgba(12,36,48,.97));
   border:1px solid rgba(120,220,230,.5); border-radius:16px; padding:12px 14px; color:#eafcff;
   font-size:13px; line-height:1.4; max-width:232px; box-shadow:0 12px 30px rgba(0,0,0,.5);
-  animation:sg-pop .32s cubic-bezier(.2,1.4,.4,1) both; }
-.sg-bubble::after{ content:''; position:absolute; left:-9px; bottom:18px; width:0; height:0;
-  border:7px solid transparent; border-right-color:rgba(20,60,76,.97); }
+  transform-origin:left bottom; animation:sg-pop .32s cubic-bezier(.2,1.4,.4,1) both; }
+/* tail on the bubble's lower-left, pointing back toward Scout (who sits left) */
+.sg-bubble::before{ content:''; position:absolute; left:-9px; bottom:21px; width:0; height:0;
+  border:8px solid transparent; border-right-color:rgba(120,220,230,.5); }
+.sg-bubble::after{ content:''; position:absolute; left:-7px; bottom:22px; width:0; height:0;
+  border:7px solid transparent; border-right-color:rgba(20,60,76,.99); }
 .sg-bubble p{ margin:0; }
 .sg-bubble b{ color:#bff7e6; }
 .sg-bubble__hi{ font-weight:800; color:#5ef0c8; margin-bottom:4px !important; }

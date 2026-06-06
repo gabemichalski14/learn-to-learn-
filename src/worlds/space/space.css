@@ -2,9 +2,17 @@
    Space Patrol world — Level 2 (Frontier, age-neutral)
    The visual language piloted from the approved hero mockup.
    ============================================================ */
-.sg{ position:relative; min-height:100vh; overflow:hidden; color:#eafcff;
+.sg{ position:relative; min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; color:#eafcff;
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   background:radial-gradient(135% 110% at 72% -8%, #16455a 0%, #0c2a39 38%, #071821 68%, #050f15 100%); }
+/* decorative layer: clips the rocket/nebulae/stars that fly off-screen, so the
+   .sg itself never needs overflow:hidden — gameplay can grow + the page scrolls
+   on short/landscape screens instead of being cut off. */
+.sg-bg{ position:absolute; inset:0; overflow:hidden; z-index:0; }
+/* the play area — centred vertically between HUD and footer; on a short screen
+   it simply grows and the page scrolls (no clipping). */
+.sg-stage{ position:relative; z-index:1; flex:1 1 auto; min-height:0; width:100%;
+  display:flex; flex-direction:column; justify-content:center; align-items:center; }
 
 /* backdrop */
 .sg-neb{ position:absolute; border-radius:50%; filter:blur(46px); opacity:.5; mix-blend-mode:screen; pointer-events:none; }

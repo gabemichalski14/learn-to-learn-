@@ -76,7 +76,7 @@ export function SpaceBackdrop() {
     '--shoot-delay': `${flight.shootDelay}s`,
   } as CSSProperties;
   return (
-    <div aria-hidden="true">
+    <div className="sg-bg" aria-hidden="true">
       {/* slowly hue-shifting, drifting nebula */}
       <div className="sg-cosmos">
         <span className="sg-neb sg-neb--1" />

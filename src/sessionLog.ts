@@ -52,6 +52,20 @@ export function clearSessionLog(learnerId: string): void {
   }
 }
 
+/**
+ * Escape one CSV cell: quote when it contains a comma/quote/newline, and
+ * neutralise spreadsheet formula injection — a leading = + - @ (or tab/CR) is
+ * prefixed with a single quote so Excel/Sheets treat it as text, never a
+ * formula. Defence-in-depth: today's columns are app-controlled values, but
+ * this keeps exports safe if free-text columns (e.g. names) are added later.
+ */
+function csvCell(value: string | number): string {
+  let s = String(value ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+  if (/[",\n\r]/.test(s)) s = `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
 /** CSV of a learner's log (for the tutor to export/save). */
 export function sessionLogCsv(records: SessionRecord[]): string {
   const head = ['date', 'game', 'level', 'lesson', 'duration_sec', 'rounds', 'items', 'wrong', 'accuracy_pct'];
@@ -66,7 +80,7 @@ export function sessionLogCsv(records: SessionRecord[]): string {
     r.wrongAttempts,
     Math.round(r.accuracy * 100),
   ]);
-  return [head, ...rows].map((cols) => cols.join(',')).join('\n');
+  return [head, ...rows].map((cols) => cols.map(csvCell).join(',')).join('\n');
 }
 
 /**

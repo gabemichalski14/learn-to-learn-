@@ -176,21 +176,23 @@ export function SpaceSortGame({
           </span>
         </div>
 
-        <div className="sg-planets">
-          {round.baskets.map((v) => (
-            <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} onReplay={() => game.replaySound(v)} />
-          ))}
-        </div>
+        <div className="sg-stage">
+          <div className="sg-planets">
+            {round.baskets.map((v) => (
+              <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} onReplay={() => game.replaySound(v)} />
+            ))}
+          </div>
 
-        <div className="sg-tray">
-          {game.remainingItems.map((it) => (
-            <Creature key={it.id} item={it} onReplay={() => game.replayWord(it)} />
-          ))}
-        </div>
+          <div className="sg-tray">
+            {game.remainingItems.map((it) => (
+              <Creature key={it.id} item={it} onReplay={() => game.replayWord(it)} />
+            ))}
+          </div>
 
-        <p className="sg-status" role="status">
-          {game.message ?? (placed > 0 ? `${placed} of ${total} routed — keep going!` : '')}
-        </p>
+          <p className="sg-status" role="status">
+            {game.message ?? (placed > 0 ? `${placed} of ${total} routed — keep going!` : '')}
+          </p>
+        </div>
 
         <div className="sg-scout">
           <button

@@ -247,4 +247,39 @@ spellings — TI, CI, SI say /sh/ (Russia), TIAN says /shun/ (Musician), NIA say
 vowels. **No corrections.** (Clip two = interior lesson pages; not mined — the
 factual skeleton is fully in the TOC, and we author our own practice content.)
 
-## Levels 9–10 ⏳ (videos pending)
+## Level 9 — Influence of Foreign Languages 🟡 (structure verified)
+_Book 9. © 2003 Susan Barton, v1.07. Filmed in two clips._
+
+From the **Overview page** (frame l9a/f004) — authoritative structure:
+- L1 Greek words (CH = /k/; three Greek silent-letter pairs)
+- L2 Silent-letter pairs that mark very old English words
+- L3 "Borrowed words" — the four clues a word came from another language
+- L4–L9 French words (reading & spelling) — six lessons
+- Strategy: look words up with standard American spelling, enter only the sounds
+  you hear (spell-checker). Pronunciation key present.
+
+The **Progress Tracking Sheet** (frame l10a-style, l9a/f006) lists the six French
+lessons by pattern: OUS/CH/suffixes · QUE/IC/ACE · silent S & GN · accented É ·
+T/EAU · G/GU/GUE — read from rotated column headers (moderate confidence). The
+TOC page itself was flipped too fast to read crisply. **A clean photo of the L9
+contents page would let me finalize the exact French lesson titles.**
+
+## Level 10 — Greek Words & Latin Roots 🟡 (structure verified)
+_Book 10. © 2004 Susan Barton, v1.04. Filmed in two clips. "Morphology."_
+
+From the **Overview page** (frame l10a/f004) + **Lesson 1 page** (l10a/f006):
+- L1 confirmed: **Chameleon Prefix: IN** (IN → IM/IL/IR; Latin roots on beige
+  cards, accented → Doubling rule when the root ends CVC; prefixes on lavender
+  tiles).
+- L1–L5: Latin Roots + the **seven Chameleon (assimilating) prefix families**
+  (taught 1–2 families per lesson; all 7 done by end of L5) + the spelling rules
+  that explain double letters; uses all known suffix rules.
+- L6–L10: **Greek Combining Forms** for vocabulary — meaning-bearing parts that
+  unlock science, math, medicine, and social-studies words (electrocardiogram,
+  ethnomusicology).
+- Exact per-lesson titles for L2–L10 (which prefix family / which domain) come
+  from the overview + tracking-sheet headers; the TOC was filmed too fast to read
+  crisply. **A clean photo of the L10 contents page would finalize them.**
+
+(For both L9 and L10, clip two is interior lesson pages — not mined; the factual
+skeleton is in the front matter and we author our own practice content.)

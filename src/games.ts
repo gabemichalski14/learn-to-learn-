@@ -110,15 +110,21 @@ export const LEVELS: LevelInfo[] = [
   },
   {
     num: 9,
-    title: 'Coming soon',
-    focus: 'Captured from the book next',
-    games: [soon('l9-soon', 'New games', '🧩', 'Lessons and games arrive once this book is filmed.')],
+    title: 'Influence of Foreign Languages',
+    focus: 'Greek and French spelling patterns in borrowed words',
+    games: [
+      soon('l9-borrowed', 'Word Detective', '🕵️', 'Spot the clues that a word is borrowed.'),
+      soon('l9-french', 'French Connection', '🥐', 'Read French patterns: que, eau, ch, é…'),
+    ],
   },
   {
     num: 10,
-    title: 'Coming soon',
-    focus: 'Captured from the book next',
-    games: [soon('l10-soon', 'New games', '🧩', 'Lessons and games arrive once this book is filmed.')],
+    title: 'Greek Words & Latin Roots',
+    focus: 'Latin roots, Chameleon prefixes, and Greek combining forms',
+    games: [
+      soon('l10-roots', 'Root Lab', '🧬', 'Build big words from Latin roots + prefixes.'),
+      soon('l10-greek', 'Word Architect', '🏛️', 'Combine Greek forms to spell huge words.'),
+    ],
   },
 ];
 

@@ -49,7 +49,17 @@ word lists, sentences, or tutor scripts into the app.
   consonant+I /sh/ spellings (TI/CI/SI → /sh/, TIAN → /shun/, NIA → /nyuh/) then
   the vowel teams IE, OI/OY/EY, AU/AW, OO, OU/OW, EA, IGH/AUGH/EIGH/EI, EU/TU, and
   split vowels. 13 lessons + Optional Posttest.
-- Levels 9–10: placeholders, filled as their books are captured.
+- **Level 9 — Influence of Foreign Languages** (structure verified): Greek (CH=/k/,
+  silent-letter pairs), silent-letter pairs in old English words, spotting
+  "borrowed" words, then six French-pattern lessons. 9 lessons.
+- **Level 10 — Greek Words & Latin Roots** (structure verified): Latin roots +
+  the 7 Chameleon (assimilating) prefix families + spelling rules (L1–5), then
+  Greek combining forms for science/math/medicine/social-studies vocabulary
+  (L6–10). 10 lessons. Morphology.
+- L9 & L10 themed per-lesson titles are best-effort from the overview/tracking
+  sheet (the TOC pages were filmed too fast); a clean contents-page photo of each
+  would finalize the exact wording.
+- **All 10 Barton levels are now captured.**
 
 Re-shoots that paid off: Level 4's contents page (a single HEIC still) converted
 the Lesson-1-only stub into all 14 lessons. The same one-photo shot of a contents

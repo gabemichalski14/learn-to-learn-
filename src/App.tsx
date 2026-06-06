@@ -49,7 +49,7 @@ export default function App() {
   // The game screen stays immersive (its own back button); every other page
   // gets the left-side burger menu.
   if (route.name === 'play') {
-    return <GameScreen theme={theme} setTheme={setTheme} learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} />;
+    return <GameScreen theme={theme} setTheme={setTheme} learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} focus={route.focus} />;
   }
 
   let page;

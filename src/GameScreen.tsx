@@ -10,6 +10,7 @@ import type { ThemeId } from './ThemeSwitcher';
 import { StickerBook } from './StickerBook';
 import { SessionLog } from './SessionLogView';
 import { navigate } from './router';
+import { parseSkillKey } from './mastery/skills';
 
 const TOTAL_ROUNDS = 5;
 const ITEMS_PER_ROUND = 6;
@@ -30,10 +31,11 @@ interface Props {
   setTheme: (t: ThemeId) => void;
   learnerId: string;
   gameId: string;
+  focus?: string;
 }
 
 /** A sound-sorting game screen — driven by which game id is in the route. */
-export function GameScreen({ theme, setTheme, learnerId, gameId }: Props) {
+export function GameScreen({ theme, setTheme, learnerId, gameId, focus }: Props) {
   const config = GAMES[gameId] ?? GAMES['beginning-sounds'];
   const audio = useMemo(() => createStubAudioPlayer(), []);
   const [sessionId, setSessionId] = useState(0);
@@ -56,9 +58,14 @@ export function GameScreen({ theme, setTheme, learnerId, gameId }: Props) {
   }, [gameId]);
 
   // Fresh random page whenever the session restarts or we advance a page.
+  const focusSound = useMemo(() => {
+    const p = focus ? parseSkillKey(focus) : null;
+    return p && p.target === config.target ? p.soundId : undefined;
+  }, [focus, config]);
+
   const round = useMemo(
-    () => generateSortRound({ pack: config.pack, totalItems: ITEMS_PER_ROUND, target: config.target }),
-    [sessionId, roundIndex, config],
+    () => generateSortRound({ pack: config.pack, totalItems: ITEMS_PER_ROUND, target: config.target, focusSound }),
+    [sessionId, roundIndex, config, focusSound],
   );
 
   return (

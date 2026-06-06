@@ -19,13 +19,16 @@ export interface Route {
   name: RouteName;
   level?: number;
   game?: string;
+  focus?: string;
 }
 
 export function parseHash(hash: string): Route {
   const h = hash.replace(/^#\/?/, '');
   if (h.startsWith('play')) {
-    const game = h.split('/')[1];
-    return { name: 'play', game: game || 'beginning-sounds' };
+    const rest = h.slice('play'.length).replace(/^\//, ''); // "beginning-sounds?focus=..."
+    const [gamePart, query] = rest.split('?');
+    const focus = new URLSearchParams(query ?? '').get('focus') ?? undefined;
+    return { name: 'play', game: gamePart || 'beginning-sounds', focus };
   }
   if (h.startsWith('leaderboard')) return { name: 'leaderboard' };
   if (h.startsWith('tutor')) return { name: 'tutor' };

@@ -4,8 +4,10 @@ import type { Pack, SoundTarget, SortRound } from './domain/types';
 import type { AudioPlayer } from './audio/audioPlayer';
 import { everydayObjects } from './content/packs/everydayObjects';
 import { everydayEndings } from './content/packs/everydayEndings';
+import { shortVowelWords } from './content/packs/shortVowelWords';
 import { createStubAudioPlayer } from './audio/stubAudioPlayer';
 import { SortGame } from './game/SortGame';
+import { SpaceSortGame } from './worlds/space/SpaceSortGame';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import type { ThemeId } from './themes';
 import { StickerBook } from './StickerBook';
@@ -20,11 +22,14 @@ interface GameConfig {
   pack: Pack;
   target: SoundTarget;
   title: string;
+  /** Renders in a themed per-level "world" shell instead of the legacy themes. */
+  space?: boolean;
 }
 
 const GAMES: Record<string, GameConfig> = {
   'beginning-sounds': { pack: everydayObjects, target: 'beginning', title: 'Sound Safari' },
   'ending-sounds': { pack: everydayEndings, target: 'ending', title: 'Last Sound Standing' },
+  'middle-sounds': { pack: shortVowelWords, target: 'medial', title: 'Vowel Patrol', space: true },
 };
 
 interface Props {
@@ -77,6 +82,30 @@ function PlaySession({ round, audio, roundIndex, sessionId, learnerId, gameId, p
   );
 }
 
+/** Owns the per-session clock for a themed-world game (survives page changes,
+ *  resets on a new session); inner game remounts per page to reset its state. */
+function SpacePlaySession({ round, audio, roundIndex, sessionId, learnerId, gameId, onAdvance, onRestart }: {
+  round: SortRound; audio: AudioPlayer; roundIndex: number; sessionId: number; learnerId: string; gameId: string;
+  onAdvance: () => void; onRestart: () => void;
+}) {
+  const [sessionStartAt] = useState(() => Date.now());
+  return (
+    <SpaceSortGame
+      key={`${sessionId}-${roundIndex}`}
+      round={round}
+      audio={audio}
+      roundIndex={roundIndex}
+      totalRounds={TOTAL_ROUNDS}
+      sessionId={sessionId}
+      learnerId={learnerId}
+      gameId={gameId}
+      sessionStartAt={sessionStartAt}
+      onAdvance={onAdvance}
+      onRestart={onRestart}
+    />
+  );
+}
+
 /** A sound-sorting game screen — driven by which game id is in the route. */
 export function GameScreen({ theme, setTheme, learnerId, gameId, focus }: Props) {
   const config = GAMES[gameId] ?? GAMES['beginning-sounds'];
@@ -111,6 +140,24 @@ export function GameScreen({ theme, setTheme, learnerId, gameId, focus }: Props)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [sessionId, roundIndex, config, focusSound],
   );
+
+  // Themed-world games (e.g. Space Patrol) render in their own full-screen shell,
+  // bypassing the legacy theme chrome.
+  if (config.space) {
+    return (
+      <SpacePlaySession
+        key={sessionId}
+        round={round}
+        audio={audio}
+        roundIndex={roundIndex}
+        sessionId={sessionId}
+        learnerId={learnerId}
+        gameId={gameId}
+        onAdvance={() => setRoundIndex((i) => Math.min(i + 1, TOTAL_ROUNDS - 1))}
+        onRestart={() => { setSessionId((s) => s + 1); setRoundIndex(0); }}
+      />
+    );
+  }
 
   return (
     <main className="app">

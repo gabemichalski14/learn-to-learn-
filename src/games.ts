@@ -47,7 +47,7 @@ export const LEVELS: LevelInfo[] = [
     games: [
       { id: 'beginning-sounds', title: 'Sound Safari', emoji: '🔊', tagline: 'Sort each picture by its first sound.', status: 'available', route: '#/play/beginning-sounds' },
       { id: 'ending-sounds', title: 'Last Sound Standing', emoji: '🏁', tagline: 'Sort each picture by its last sound.', status: 'available', route: '#/play/ending-sounds' },
-      soon('l2-vowel', 'Vowel Patrol', '🚓', 'Catch the short vowel in the middle.'),
+      { id: 'middle-sounds', title: 'Vowel Patrol', emoji: '🚀', tagline: 'Sort space creatures by their middle vowel.', status: 'available', route: '#/play/middle-sounds' },
       soon('l2-build', 'Brick by Brick', '🧱', 'Spell the word you hear.'),
     ],
   },

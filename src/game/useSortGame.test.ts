@@ -4,6 +4,19 @@ import { useSortGame } from './useSortGame';
 import type { SortRound } from '../domain/types';
 import type { AudioPlayer } from '../audio/audioPlayer';
 
+const stubAudio = { playWord: () => Promise.resolve(), playSound: () => Promise.resolve() } as any;
+
+function roundOf(): SortRound {
+  return {
+    baskets: ['m', 's'],
+    target: 'beginning',
+    items: [
+      { id: 'moon', label: 'moon', beginningSound: 'm', emoji: '🌙' },
+      { id: 'sun', label: 'sun', beginningSound: 's', emoji: '☀️' },
+    ],
+  };
+}
+
 const round: SortRound = {
   baskets: ['b', 's'],
   items: [
@@ -54,5 +67,22 @@ describe('useSortGame', () => {
     expect(result.current.wrongCount).toBe(1);
     act(() => { result.current.attemptPlace('ball', 'b'); }); // correct
     expect(result.current.wrongCount).toBe(1);
+  });
+});
+
+describe('useSortGame onItemResult', () => {
+  it('emits one result per item on the FIRST attempt only', () => {
+    const results: Array<{ skillKey: string; correct: boolean }> = [];
+    const { result } = renderHook(() =>
+      useSortGame({ round: roundOf(), audio: stubAudio, onItemResult: (r) => results.push(r) }),
+    );
+    act(() => { result.current.attemptPlace('moon', 's'); }); // wrong first attempt
+    act(() => { result.current.attemptPlace('moon', 'm'); }); // retry — must NOT emit again
+    act(() => { result.current.attemptPlace('sun', 's'); });  // correct first attempt
+
+    expect(results).toEqual([
+      { skillKey: 'sound:first:m', correct: false },
+      { skillKey: 'sound:first:s', correct: true },
+    ]);
   });
 });

@@ -10,6 +10,7 @@ import { LevelsPage } from './LevelsPage';
 import { GamesPage } from './GamesPage';
 import { ProfilePage } from './ProfilePage';
 import { NavDrawer } from './NavDrawer';
+import { SpaceLevelHub } from './worlds/space/SpaceLevelHub';
 import type { ThemeId } from './themes';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
 
@@ -50,6 +51,10 @@ export default function App() {
   // gets the left-side burger menu.
   if (route.name === 'play') {
     return <GameScreen theme={theme} setTheme={setTheme} learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} focus={route.focus} />;
+  }
+
+  if (route.name === 'level' && (route.level ?? 1) === 2) {
+    return <SpaceLevelHub level={2} />;
   }
 
   let page;

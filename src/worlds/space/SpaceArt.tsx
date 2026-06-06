@@ -11,23 +11,32 @@ const STAR_POS: [number, number, boolean][] = [
   [70, 50, false], [88, 50, true], [36, 58, false],
 ];
 
-/** A rocket that flies across the cosmos (CSS aims it along its flight path). */
+/** A rocket that cruises horizontally across the cosmos, nose-first. The flight
+ *  (translateX) is on the outer span; the bob is on the inner ship, so the bob
+ *  never knocks the rocket off its flight line. SVG points RIGHT = direction of
+ *  travel, so it never looks like it's crabbing sideways. */
 function Rocket() {
   return (
     <span className="sg-rocket">
-      <svg width="34" height="64" viewBox="0 0 34 64" role="img" aria-label="rocket">
-        <g className="sg-rocket__flame">
-          <path d="M17 50 q-7 8 0 14 q7 -6 0 -14Z" fill="#ffb24a" />
-          <path d="M17 52 q-4 5 0 9 q4 -4 0 -9Z" fill="#ffe27a" />
-        </g>
-        <path d="M17 2 Q27 16 26 40 L8 40 Q7 16 17 2Z" fill="#dfeef2" />
-        <path d="M17 2 Q27 16 26 40 L17 40 Z" fill="#b9d3da" />
-        <circle cx="17" cy="22" r="5" fill="#0a2230" />
-        <circle cx="17" cy="22" r="5" fill="none" stroke="#5ef0c8" strokeWidth="1.5" />
-        <circle cx="15.6" cy="20.6" r="1.4" fill="#9fe9f0" />
-        <path d="M8 34 L2 46 L8 42 Z" fill="#22c1d6" />
-        <path d="M26 34 L32 46 L26 42 Z" fill="#22c1d6" />
-      </svg>
+      <span className="sg-rocket__ship">
+        <svg width="72" height="36" viewBox="0 0 72 36" role="img" aria-label="rocket">
+          {/* trailing flame (left) */}
+          <g className="sg-rocket__flame">
+            <path d="M15 18 q-9 -7 -15 0 q9 7 15 0Z" fill="#ffb24a" />
+            <path d="M13 18 q-6 -4 -10 0 q6 4 10 0Z" fill="#ffe27a" />
+          </g>
+          {/* tail fins */}
+          <path d="M24 9 L15 2 L27 11 Z" fill="#22c1d6" />
+          <path d="M24 27 L15 34 L27 25 Z" fill="#22c1d6" />
+          {/* body + nose cone (right) */}
+          <path d="M20 8 L46 8 Q66 9 70 18 Q66 27 46 28 L20 28 Q14 24 14 18 Q14 12 20 8Z" fill="#dfeef2" />
+          <path d="M46 8 Q66 9 70 18 Q66 27 46 28 Z" fill="#b9d3da" />
+          {/* window */}
+          <circle cx="34" cy="18" r="5.2" fill="#0a2230" />
+          <circle cx="34" cy="18" r="5.2" fill="none" stroke="#5ef0c8" strokeWidth="1.6" />
+          <circle cx="32.4" cy="16.4" r="1.4" fill="#9fe9f0" />
+        </svg>
+      </span>
     </span>
   );
 }

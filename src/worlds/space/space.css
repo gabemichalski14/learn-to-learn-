@@ -129,15 +129,18 @@
 .sg-far__body::after{ content:''; position:absolute; inset:-20% -8%; border-radius:50%;
   border:1px solid rgba(150,230,235,.22); transform:rotate(-22deg); }
 
-/* a rocket flies across now and then, flame flickering */
-.sg-rocket{ position:absolute; z-index:1; left:0; top:0; pointer-events:none; will-change:transform,opacity;
-  animation:sg-rocketfly 18s linear infinite; }
+/* a rocket cruises smoothly across — nose points along travel, gently bobbing */
+.sg-rocket{ position:absolute; z-index:1; left:0; top:13vh; pointer-events:none; will-change:transform;
+  animation:sg-rocketfly 15s linear infinite; }
 @keyframes sg-rocketfly{
-  0%{ transform:translate(-16vw,74vh) rotate(34deg); opacity:0 }
-  7%{ opacity:.95 } 90%{ opacity:.95 }
-  100%{ transform:translate(118vw,-14vh) rotate(34deg); opacity:0 } }
-.sg-rocket__flame{ transform-origin:50% 0%; animation:sg-flame .12s ease-in-out infinite alternate; }
-@keyframes sg-flame{ from{ transform:scaleY(.8); opacity:.85 } to{ transform:scaleY(1.2); opacity:1 } }
+  0%{ transform:translateX(-16vw); opacity:0 }
+  5%{ opacity:.95 } 93%{ opacity:.95 }
+  100%{ transform:translateX(116vw); opacity:0 } }
+/* bob lives on an inner wrapper so it never tilts the rocket off its flight line */
+.sg-rocket__ship{ display:block; animation:sg-rocketbob 3.2s ease-in-out infinite alternate; }
+@keyframes sg-rocketbob{ from{ transform:translateY(0) rotate(-2deg) } to{ transform:translateY(-10px) rotate(2deg) } }
+.sg-rocket__flame{ transform-origin:15px 18px; animation:sg-flame .14s ease-in-out infinite alternate; }
+@keyframes sg-flame{ from{ transform:scaleX(.7) } to{ transform:scaleX(1.18) } }
 
 /* an occasional shooting star streak */
 .sg-shoot{ position:absolute; z-index:1; top:12%; left:72%; width:3px; height:3px; border-radius:50%;
@@ -148,5 +151,5 @@
   100%{ opacity:0; transform:translate(-180px,128px) } }
 
 @media (prefers-reduced-motion: reduce){
-  .sg-cosmos,.sg-neb--1,.sg-neb--2,.sg-neb--3,.sg-stars,.sg-far--1,.sg-far--2,.sg-rocket,.sg-rocket__flame,.sg-shoot{ animation:none; }
+  .sg-cosmos,.sg-neb--1,.sg-neb--2,.sg-neb--3,.sg-stars,.sg-far--1,.sg-far--2,.sg-rocket,.sg-rocket__ship,.sg-rocket__flame,.sg-shoot{ animation:none; }
 }

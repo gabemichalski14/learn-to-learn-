@@ -10,7 +10,7 @@ import { LevelsPage } from './LevelsPage';
 import { GamesPage } from './GamesPage';
 import { ProfilePage } from './ProfilePage';
 import { NavDrawer } from './NavDrawer';
-import type { ThemeId } from './ThemeSwitcher';
+import type { ThemeId } from './themes';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
 
 function loadTheme(): ThemeId {

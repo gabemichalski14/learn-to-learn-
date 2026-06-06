@@ -20,8 +20,12 @@ export function useSortGame(opts: {
   round: SortRound;
   audio: AudioPlayer;
   onItemResult?: (r: { skillKey: string; correct: boolean }) => void;
+  /** Fired on each correct placement; `complete` is true when it finishes the round. */
+  onCorrect?: (r: { complete: boolean }) => void;
+  /** Fired on each wrong attempt (including retries). */
+  onWrong?: () => void;
 }): UseSortGame {
-  const { round, audio, onItemResult } = opts;
+  const { round, audio, onItemResult, onCorrect, onWrong } = opts;
   const [placements, setPlacements] = useState<Placements>({});
   const [message, setMessage] = useState<string | null>(null);
   const [wrongCount, setWrongCount] = useState(0);
@@ -43,16 +47,21 @@ export function useSortGame(opts: {
       const correct = isCorrectPlacement(item, basketSound, target);
       if (sound) onItemResult?.({ skillKey: skillKeyForSound(sound, target), correct });
     }
-    if (isCorrectPlacement(item, basketSound, round.target ?? 'beginning')) {
-      setPlacements((prev) => ({ ...prev, [wordId]: basketSound }));
+    if (isCorrectPlacement(item, basketSound, target)) {
+      const next = { ...placements, [wordId]: basketSound };
+      setPlacements(next);
       setMessage(null);
       void audio.playWord(item);
+      // Spawn celebration from the event path (not an effect) so callers don't
+      // need a state-watching effect to react to the placement.
+      onCorrect?.({ complete: isRoundComplete(round, next) });
       return true;
     }
     // No-anxiety: do not record, replay the basket sound, gently invite a retry.
     setMessage('Not quite — listen again and try another basket.');
     setWrongCount((c) => c + 1);
     void audio.playSound(basketSound);
+    onWrong?.();
     return false;
   }
 

@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { generateSortRound } from './domain/engine';
-import type { Pack, SoundTarget } from './domain/types';
+import type { Pack, SoundTarget, SortRound } from './domain/types';
+import type { AudioPlayer } from './audio/audioPlayer';
 import { everydayObjects } from './content/packs/everydayObjects';
 import { everydayEndings } from './content/packs/everydayEndings';
 import { createStubAudioPlayer } from './audio/stubAudioPlayer';
 import { SortGame } from './game/SortGame';
 import { ThemeSwitcher } from './ThemeSwitcher';
-import type { ThemeId } from './ThemeSwitcher';
+import type { ThemeId } from './themes';
 import { StickerBook } from './StickerBook';
 import { SessionLog } from './SessionLogView';
 import { navigate } from './router';
@@ -34,6 +35,48 @@ interface Props {
   focus?: string;
 }
 
+interface PlaySessionProps {
+  round: SortRound;
+  audio: AudioPlayer;
+  roundIndex: number;
+  sessionId: number;
+  learnerId: string;
+  gameId: string;
+  playful: boolean;
+  clean: boolean;
+  onOpenStickerBook: () => void;
+  onAdvance: () => void;
+  onRestart: () => void;
+}
+
+/**
+ * Owns the session clock. The parent keys this on sessionId, so every new session
+ * (initial load, Play again, game change) remounts it and the lazy initializer
+ * captures a fresh start time — no effect required. The clock survives page
+ * changes (roundIndex) because those don't change the key.
+ */
+function PlaySession({ round, audio, roundIndex, sessionId, learnerId, gameId, playful, clean, onOpenStickerBook, onAdvance, onRestart }: PlaySessionProps) {
+  const [sessionStartAt] = useState(() => Date.now());
+  return (
+    <SortGame
+      key={`${sessionId}-${roundIndex}`}
+      round={round}
+      audio={audio}
+      roundIndex={roundIndex}
+      totalRounds={TOTAL_ROUNDS}
+      sessionId={sessionId}
+      learnerId={learnerId}
+      gameId={gameId}
+      sessionStartAt={sessionStartAt}
+      playful={playful}
+      clean={clean}
+      onOpenStickerBook={onOpenStickerBook}
+      onAdvance={onAdvance}
+      onRestart={onRestart}
+    />
+  );
+}
+
 /** A sound-sorting game screen — driven by which game id is in the route. */
 export function GameScreen({ theme, setTheme, learnerId, gameId, focus }: Props) {
   const config = GAMES[gameId] ?? GAMES['beginning-sounds'];
@@ -42,20 +85,17 @@ export function GameScreen({ theme, setTheme, learnerId, gameId, focus }: Props)
   const [roundIndex, setRoundIndex] = useState(0);
   const [bookOpen, setBookOpen] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
-  // When the current session began — drives the elapsed "Finished in …" clock.
-  // Lives here (not in SortGame) because SortGame remounts on every page.
-  const [sessionStartAt, setSessionStartAt] = useState(() => Date.now());
 
-  // Restart the clock whenever a fresh session starts (initial load + Play again).
-  useEffect(() => {
-    setSessionStartAt(Date.now());
-  }, [sessionId]);
-
-  // A fresh session whenever the game changes.
-  useEffect(() => {
+  // A fresh session whenever the game changes. Done during render (the sanctioned
+  // "adjust state when a prop changes" pattern) instead of in an effect, so we
+  // never call setState synchronously inside an effect. Bumping sessionId remounts
+  // <PlaySession>, which resets the round page and restarts the session clock.
+  const [prevGameId, setPrevGameId] = useState(gameId);
+  if (gameId !== prevGameId) {
+    setPrevGameId(gameId);
     setSessionId((s) => s + 1);
     setRoundIndex(0);
-  }, [gameId]);
+  }
 
   // Fresh random page whenever the session restarts or we advance a page.
   const focusSound = useMemo(() => {
@@ -65,6 +105,10 @@ export function GameScreen({ theme, setTheme, learnerId, gameId, focus }: Props)
 
   const round = useMemo(
     () => generateSortRound({ pack: config.pack, totalItems: ITEMS_PER_ROUND, target: config.target, focusSound }),
+    // sessionId + roundIndex are intentional regeneration triggers: every new
+    // session and every page must draw a fresh random round even when the pack /
+    // target / focus are unchanged.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [sessionId, roundIndex, config, focusSound],
   );
 
@@ -112,16 +156,14 @@ export function GameScreen({ theme, setTheme, learnerId, gameId, focus }: Props)
           so the page is just the game content. */}
       <h1 className="sr-only">{config.title} — Learn to Learn</h1>
 
-      <SortGame
-        key={`${sessionId}-${roundIndex}`}
+      <PlaySession
+        key={sessionId}
         round={round}
         audio={audio}
         roundIndex={roundIndex}
-        totalRounds={TOTAL_ROUNDS}
         sessionId={sessionId}
         learnerId={learnerId}
         gameId={gameId}
-        sessionStartAt={sessionStartAt}
         playful={theme === 'playful'}
         clean={theme === 'grownup'}
         onOpenStickerBook={() => setBookOpen(true)}

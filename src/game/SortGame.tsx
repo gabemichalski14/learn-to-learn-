@@ -15,6 +15,7 @@ import { SproutGlyph } from '../Mascot';
 import { soundOf } from '../domain/engine';
 import { recordFinish, formatTime, loadEarned } from '../progress';
 import { logSession, noteRound } from '../sessionLog';
+import { recordItem } from '../mastery/mastery';
 import { awardForSession, ACHIEVEMENTS } from '../achievements';
 import type { Achievement } from '../achievements';
 
@@ -84,7 +85,11 @@ function prefersReducedMotion(): boolean {
 }
 
 export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionId = 0, learnerId = 'guest', gameId = 'beginning-sounds', sessionStartAt = Date.now(), onAdvance, onRestart, onOpenStickerBook, playful = false, clean = false }: Props) {
-  const game = useSortGame({ round, audio });
+  const game = useSortGame({
+    round,
+    audio,
+    onItemResult: ({ skillKey, correct }) => recordItem(learnerId, skillKey, correct),
+  });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
   const total = round.items.length;

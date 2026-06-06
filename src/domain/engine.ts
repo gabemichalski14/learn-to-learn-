@@ -1,8 +1,10 @@
 import type { Pack, WordItem, SortRound, Placements, SoundTarget } from './types';
 
-/** The sound a word contributes for the given target (first vs last sound). */
+/** The sound a word contributes for the given target (first / last / middle-vowel). */
 export function soundOf(item: WordItem, target: SoundTarget = 'beginning'): string | undefined {
-  return target === 'ending' ? item.endingSound : item.beginningSound;
+  if (target === 'ending') return item.endingSound;
+  if (target === 'medial') return item.medialVowel;
+  return item.beginningSound;
 }
 
 /** In-place Fisher–Yates copy using an injectable rng (default Math.random). */

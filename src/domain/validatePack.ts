@@ -14,14 +14,17 @@ export function validatePack(pack: Pack): string[] {
     if (seen.has(w.id)) problems.push(`duplicate word id "${w.id}"`);
     seen.add(w.id);
 
-    if (!w.beginningSound && !w.endingSound) {
-      problems.push(`word "${w.id}": needs a beginningSound and/or endingSound`);
+    if (!w.beginningSound && !w.endingSound && !w.medialVowel) {
+      problems.push(`word "${w.id}": needs a beginningSound, endingSound, or medialVowel`);
     }
     if (w.beginningSound && !PHONEMES[w.beginningSound]) {
       problems.push(`word "${w.id}": unknown beginningSound "${w.beginningSound}"`);
     }
     if (w.endingSound && !PHONEMES[w.endingSound]) {
       problems.push(`word "${w.id}": unknown endingSound "${w.endingSound}"`);
+    }
+    if (w.medialVowel && !PHONEMES[w.medialVowel]) {
+      problems.push(`word "${w.id}": unknown medialVowel "${w.medialVowel}"`);
     }
     if (!w.emoji || w.emoji.trim() === '') {
       problems.push(`word "${w.id}": missing picture (emoji)`);

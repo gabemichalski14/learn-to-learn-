@@ -5,6 +5,6 @@ import type { SkillKey } from './skills';
 export function practiceRouteForSkill(skillKey: SkillKey): string | null {
   const p = parseSkillKey(skillKey);
   if (!p) return null;
-  const game = p.target === 'ending' ? 'ending-sounds' : 'beginning-sounds';
+  const game = p.target === 'ending' ? 'ending-sounds' : p.target === 'medial' ? 'middle-sounds' : 'beginning-sounds';
   return `#/play/${game}?focus=${skillKey}`;
 }

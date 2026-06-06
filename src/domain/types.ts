@@ -17,12 +17,13 @@ export interface WordItem {
   label: string;           // for tutors / alt-text / audio, not shown as text in play
   beginningSound?: string; // Phoneme id — the word's first sound
   endingSound?: string;    // Phoneme id — the word's last sound
+  medialVowel?: string;    // Phoneme id — the word's middle (short) vowel
   emoji: string;           // placeholder picture
   image?: string;          // future: path to real illustration
 }
 
 /** Which sound a game sorts by. */
-export type SoundTarget = 'beginning' | 'ending';
+export type SoundTarget = 'beginning' | 'ending' | 'medial';
 
 export interface Pack {
   id: string;

@@ -34,9 +34,9 @@ export default function App() {
     setLearnerId(id);
   }
 
-  // The theme applies on the game and the tutor dashboard (both have a theme
-  // switcher); other pages stay in the default brand look. Remember it either way.
-  const themed = route.name === 'play' || route.name === 'tutor';
+  // The theme applies on the game screen (the only place with a theme switcher);
+  // every other page stays in the default brand look. Remember it either way.
+  const themed = route.name === 'play';
   useEffect(() => {
     document.documentElement.dataset.theme = themed ? theme : 'l2l';
     try {
@@ -67,7 +67,7 @@ export default function App() {
       page = <Leaderboard />;
       break;
     case 'tutor':
-      page = <TutorDashboard theme={theme} setTheme={setTheme} />;
+      page = <TutorDashboard />;
       break;
     case 'profile':
       page = <ProfilePage learnerId={learnerId} onSelectLearner={chooseLearner} />;
@@ -76,7 +76,7 @@ export default function App() {
       page = <Account />;
       break;
     default:
-      page = <Home learnerId={learnerId} onSelectLearner={chooseLearner} />;
+      page = <Home learnerId={learnerId} />;
   }
 
   return (

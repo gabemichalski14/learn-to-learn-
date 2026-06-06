@@ -1,31 +1,18 @@
-import { LogoMark } from './LogoMark';
 import { LEVELS, availableCount } from './games';
 import { navigate } from './router';
 import { loadProgress } from './progress';
 import { ACHIEVEMENTS } from './achievements';
-import { LearnerBar } from './LearnerBar';
 
 interface Props {
   learnerId: string;
-  onSelectLearner: (id: string) => void;
 }
 
-/** Platform home: who's playing, the 10-level curriculum, and progress entries. */
-export function Home({ learnerId, onSelectLearner }: Props) {
+/** Platform home: the 10-level curriculum + progress entries. */
+export function Home({ learnerId }: Props) {
   const { earned, sessions } = loadProgress(learnerId);
 
   return (
     <main className="site">
-      <header className="site__header">
-        <LogoMark className="site__logo" />
-        <div>
-          <h1 className="site__title">Learn to Learn</h1>
-          <p className="site__tagline">Tutoring Solutions</p>
-        </div>
-      </header>
-
-      <LearnerBar learnerId={learnerId} onSelect={onSelectLearner} />
-
       <section className="site__section" aria-labelledby="levels-h">
         <h2 id="levels-h" className="site__h2">Curriculum · Levels 1–10</h2>
         <div className="level-grid">

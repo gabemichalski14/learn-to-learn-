@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { navigate } from './router';
-import { ThemeSwitcher } from './ThemeSwitcher';
-import type { ThemeId } from './ThemeSwitcher';
 import { SessionLogPanel } from './SessionLogPanel';
 import { loadLearners, getCurrentLearnerId, getLearner, initials, renameLearner, removeLearner } from './profiles';
 import { loadProgress, formatTime } from './progress';
@@ -44,13 +42,8 @@ function TimeChart({ records }: { records: SessionRecord[] }) {
   );
 }
 
-interface Props {
-  theme: ThemeId;
-  setTheme: (t: ThemeId) => void;
-}
-
 /** Full-page tutor view: pick a student, see KPIs + charts + log + a printable report. */
-export function TutorDashboard({ theme, setTheme }: Props) {
+export function TutorDashboard() {
   const [, bump] = useState(0);
   const learners = loadLearners();
   const [sel, setSel] = useState<string>(() => getCurrentLearnerId() ?? learners[0]?.id ?? '');
@@ -92,7 +85,6 @@ export function TutorDashboard({ theme, setTheme }: Props) {
           <p className="page__lead">Track each student's progress over time — recorded automatically.</p>
         </div>
         <div className="dash__controls no-print">
-          <ThemeSwitcher value={theme} onSelect={setTheme} />
           {learner && <button type="button" className="btn-ghost" onClick={() => window.print()}>Print report</button>}
         </div>
       </div>

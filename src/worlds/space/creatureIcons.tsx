@@ -667,18 +667,18 @@ const CREATURE_ICONS: Record<string, ReactElement> = {
   ),
   kite: (
     <g>
-      {/* diamond kite body */}
-      <path d="M24 6 L38 22 L24 38 L10 22 Z" fill="#e0473b" />
+      {/* diamond kite body (sized to keep the tail within the 48 viewBox) */}
+      <path d="M24 5 L37 21 L24 33 L11 21 Z" fill="#e0473b" />
       {/* kite cross */}
-      <line x1="24" y1="6" x2="24" y2="38" stroke="#c03028" strokeWidth="1.4" />
-      <line x1="10" y1="22" x2="38" y2="22" stroke="#c03028" strokeWidth="1.4" />
+      <line x1="24" y1="5" x2="24" y2="33" stroke="#c03028" strokeWidth="1.4" />
+      <line x1="11" y1="21" x2="37" y2="21" stroke="#c03028" strokeWidth="1.4" />
       {/* quarter colour */}
-      <path d="M24 6 L38 22 L24 22 Z" fill="#f2a83a" />
-      <path d="M24 38 L10 22 L24 22 Z" fill="#f2a83a" />
+      <path d="M24 5 L37 21 L24 21 Z" fill="#f2a83a" />
+      <path d="M24 33 L11 21 L24 21 Z" fill="#f2a83a" />
       {/* tail */}
-      <path d="M24 38 q4 3 2 6 q-4 2-2 6 q4 2 2 5" fill="none" stroke="#e0473b" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M24 33 q3 2.5 1 5 q-3 2.5 1 5 q3 2 1 4" fill="none" stroke="#e0473b" strokeWidth="1.7" strokeLinecap="round" />
       {/* bows on tail */}
-      <path d="M26 41 l3 2 -3 2 M24 49 l3 2 -3 2" fill="none" stroke="#f2a83a" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M24.5 37 l2.6 1.6 -2.6 1.6 M25 44 l2.6 1.6 -2.6 1.6" fill="none" stroke="#f2a83a" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
     </g>
   ),
   foot: (

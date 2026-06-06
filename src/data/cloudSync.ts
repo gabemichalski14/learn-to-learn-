@@ -2,6 +2,8 @@ import { getSupabase } from './supabase';
 import * as cloud from './cloud';
 import { getLearner } from '../profiles';
 import type { SessionRecord } from '../sessionLog';
+import { enqueue, flush, type OutboxItem } from './outbox';
+import type { SkillEvent } from '../mastery/events';
 
 /**
  * Offline-first cloud sync. The local store is always the source of truth for
@@ -45,33 +47,50 @@ async function ensureCloudLearner(localId: string, centerId: string): Promise<st
   return cloudId;
 }
 
-/** Push one finished session to the cloud (no-op unless signed in). */
-export function syncSession(localLearnerId: string, rec: Omit<SessionRecord, 'id'>): void {
-  void (async () => {
+/** Enqueue one answer-event for cloud sync. Flushed on the next trigger
+ *  (session finish / sign-in / startup) — no per-answer network call. */
+export function logSkillEvent(localLearnerId: string, ev: SkillEvent): void {
+  enqueue({ kind: 'skill_event', localLearnerId, payload: ev });
+}
+
+/** Enqueue a finished session and try to flush immediately. */
+export function enqueueSession(localLearnerId: string, rec: Omit<SessionRecord, 'id'>): void {
+  enqueue({ kind: 'session', localLearnerId, payload: rec });
+  void flushOutbox();
+}
+
+let flushing = false;
+/** Drain the outbox to Supabase. No-op unless signed in + a center exists.
+ *  Guarded so overlapping triggers never double-process the queue. */
+export function flushOutbox(): Promise<void> {
+  return (async () => {
+    if (flushing) return;
+    flushing = true;
     try {
       if (!(await signedIn())) return;
       const centerId = await cloud.currentCenterId();
       if (!centerId) return;
-      const learnerId = await ensureCloudLearner(localLearnerId, centerId);
-      if (!learnerId) return;
-      await cloud.insertSession({
-        learner_id: learnerId,
-        center_id: centerId,
-        game: rec.game,
-        level: rec.level,
-        lesson: rec.lesson,
-        started_at: rec.startedAt,
-        ended_at: rec.endedAt,
-        duration_ms: rec.durationMs,
-        rounds: rec.rounds,
-        items: rec.items,
-        wrong_attempts: rec.wrongAttempts,
-        accuracy: rec.accuracy,
+      await flush(async (item: OutboxItem) => {
+        const learnerId = await ensureCloudLearner(item.localLearnerId, centerId);
+        if (!learnerId) return false;
+        if (item.kind === 'skill_event') {
+          const ev = item.payload as SkillEvent;
+          await cloud.insertSkillEvents([{ learner_id: learnerId, skill_key: ev.skillKey, correct: ev.correct, at: new Date(ev.at).toISOString() }]);
+          return true;
+        }
+        if (item.kind === 'session') {
+          const r = item.payload as Omit<SessionRecord, 'id'>;
+          await cloud.insertSession({
+            learner_id: learnerId, center_id: centerId, game: r.game, level: r.level, lesson: r.lesson,
+            started_at: r.startedAt, ended_at: r.endedAt, duration_ms: r.durationMs, rounds: r.rounds,
+            items: r.items, wrong_attempts: r.wrongAttempts, accuracy: r.accuracy,
+          });
+          return true;
+        }
+        return true; // unknown kind: drop
       });
-      console.info('[cloud] session synced');
-    } catch (e) {
-      // local already saved; cloud sync is best-effort. Logged to aid setup.
-      console.warn('[cloud] session sync failed:', e);
+    } finally {
+      flushing = false;
     }
-  })();
+  })().catch((e) => { console.warn('[cloud] flush failed:', e); });
 }

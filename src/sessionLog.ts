@@ -39,8 +39,8 @@ export function logSession(learnerId: string, rec: Omit<SessionRecord, 'id'>): S
   } catch {
     /* ignore */
   }
-  // Best-effort cloud push (no-op unless a tutor is signed in).
-  void import('./data/cloudSync').then((m) => m.syncSession(learnerId, rec));
+  // Queue for cloud sync (durable; no-op effect until flushed when signed in).
+  void import('./data/cloudSync').then((m) => m.enqueueSession(learnerId, rec));
   return full;
 }
 

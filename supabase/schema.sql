@@ -102,6 +102,39 @@ create or replace view learner_stats with (security_invoker = on) as
   where l.archived = false
   group by l.id;
 
+-- ---------- per-answer event log (append-only; powers cross-device mastery) ----------
+create table if not exists skill_events (
+  id         uuid primary key default gen_random_uuid(),
+  learner_id uuid not null references learners (id) on delete cascade,
+  center_id  uuid not null references centers (id) on delete cascade,
+  skill_key  text not null,
+  correct    boolean not null,
+  game       text,
+  at         timestamptz not null default now()
+);
+create index if not exists skill_events_learner_idx on skill_events (learner_id, at desc);
+
+-- integrity: stamp center_id from the learner row so a client can never spoof it
+create or replace function stamp_center_from_learner() returns trigger
+  language plpgsql security definer set search_path = public as $$
+begin
+  select center_id into new.center_id from learners where id = new.learner_id;
+  return new;
+end;
+$$;
+drop trigger if exists sessions_stamp_center on sessions;
+create trigger sessions_stamp_center before insert on sessions
+  for each row execute function stamp_center_from_learner();
+drop trigger if exists skill_events_stamp_center on skill_events;
+create trigger skill_events_stamp_center before insert on skill_events
+  for each row execute function stamp_center_from_learner();
+
+alter table skill_events enable row level security;
+-- SP1: center-scoped. SP2 broadens these to "or is_guardian_of(learner_id)".
+create policy "skill_events read"   on skill_events for select using (center_id = current_center_id());
+create policy "skill_events insert" on skill_events for insert with check (
+  exists (select 1 from learners l where l.id = learner_id and l.center_id = current_center_id()));
+
 -- ---------- onboarding trigger ----------
 -- Auto-provision a center + owner tutor for each new auth user (runs as definer,
 -- so it isn't blocked by RLS). Uses the `center_name` passed at sign-up, else

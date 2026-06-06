@@ -9,6 +9,7 @@ export interface Learner {
   name: string;
   color: string;
   createdAt: string;
+  cloudId?: string;
 }
 
 const LEARNERS_KEY = 'll-learners';
@@ -37,6 +38,34 @@ function persist(list: Learner[]): void {
   }
 }
 
+/** Set the cloud learner uuid for a local profile (idempotent). */
+export function setCloudId(localId: string, cloudId: string): void {
+  const list = loadLearners();
+  const l = list.find((x) => x.id === localId);
+  if (l && l.cloudId !== cloudId) {
+    l.cloudId = cloudId;
+    persist(list);
+  }
+}
+
+const RECENT_KEY = 'll-recent';
+function readRecent(): Record<string, number> {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '{}'); } catch { return {}; }
+}
+/** Stamp a learner as just-active (drives the picker's sort order). */
+export function markRecentlyActive(localId: string): void {
+  try {
+    const m = readRecent();
+    m[localId] = Date.now();
+    localStorage.setItem(RECENT_KEY, JSON.stringify(m));
+  } catch { /* ignore */ }
+}
+/** Learners sorted most-recently-active first (for the student picker). */
+export function recentlyActiveOrder(list: Learner[]): Learner[] {
+  const m = readRecent();
+  return [...list].sort((a, b) => (m[b.id] ?? 0) - (m[a.id] ?? 0));
+}
+
 export function setCurrentLearnerId(id: string): void {
   try {
     localStorage.setItem(CURRENT_KEY, id);
@@ -62,16 +91,16 @@ export function getLearner(id: string | null): Learner | undefined {
   return loadLearners().find((l) => l.id === id);
 }
 
-export function addLearner(name: string): Learner {
+export function addLearner(name: string, opts?: { color?: string; setCurrent?: boolean }): Learner {
   const list = loadLearners();
   const learner: Learner = {
     id: 'L' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
     name: name.trim() || `Player ${list.length + 1}`,
-    color: COLORS[list.length % COLORS.length],
+    color: opts?.color ?? COLORS[list.length % COLORS.length],
     createdAt: new Date().toISOString(),
   };
   persist([...list, learner]);
-  setCurrentLearnerId(learner.id);
+  if (opts?.setCurrent !== false) setCurrentLearnerId(learner.id);
   return learner;
 }
 

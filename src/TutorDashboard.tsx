@@ -45,6 +45,9 @@ function TimeChart({ records }: { records: SessionRecord[] }) {
 /** Full-page tutor view: pick a student, see KPIs + charts + log + a printable report. */
 export function TutorDashboard() {
   const [, bump] = useState(0);
+  // Capture "now" once at mount rather than calling Date.now() during render
+  // (keeps render pure; the week window is a snapshot, same as before).
+  const [now] = useState(() => Date.now());
   const learners = loadLearners();
   const [sel, setSel] = useState<string>(() => getCurrentLearnerId() ?? learners[0]?.id ?? '');
 
@@ -74,7 +77,7 @@ export function TutorDashboard() {
   const avgAccuracy = log.length ? Math.round((log.reduce((s, r) => s + r.accuracy, 0) / log.length) * 100) : 0;
   const lastPlayed = log.length ? new Date(log[log.length - 1].endedAt) : null;
   const activeDays = new Set(log.map((r) => r.endedAt.slice(0, 10))).size;
-  const week = log.filter((r) => Date.now() - new Date(r.endedAt).getTime() <= 7 * 864e5).length;
+  const week = log.filter((r) => now - new Date(r.endedAt).getTime() <= 7 * 864e5).length;
 
   return (
     <main className="site site--page dash">

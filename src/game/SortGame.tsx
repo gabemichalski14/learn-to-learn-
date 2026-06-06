@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { DndContext, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
@@ -84,11 +84,17 @@ function prefersReducedMotion(): boolean {
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionId = 0, learnerId = 'guest', gameId = 'beginning-sounds', sessionStartAt = Date.now(), onAdvance, onRestart, onOpenStickerBook, playful = false, clean = false }: Props) {
+export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessionId = 0, learnerId = 'guest', gameId = 'beginning-sounds', sessionStartAt, onAdvance, onRestart, onOpenStickerBook, playful = false, clean = false }: Props) {
+  // The session clock comes from the parent (stable across this game's pages);
+  // the Date.now() fallback is only for standalone use. Resolved via a lazy
+  // initializer so render stays pure.
+  const [startAt] = useState(() => sessionStartAt ?? Date.now());
   const game = useSortGame({
     round,
     audio,
     onItemResult: ({ skillKey, correct }) => recordItem(learnerId, skillKey, correct),
+    onCorrect: ({ complete }) => spawnCorrectFeedback(complete),
+    onWrong: () => spawnWrongFeedback(),
   });
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
@@ -108,46 +114,13 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
   const [walking, setWalking] = useState(false);
   const [reward, setReward] = useState<{ newly: Achievement[]; totalEarned: number } | null>(null);
   const [finish, setFinish] = useState<{ ms: number; best: boolean } | null>(null);
-  const prevWrong = useRef(game.wrongCount);
-  const prevCorrect = useRef(0);
   const roundHandledRef = useRef(false);
   const walkTimer = useRef<number | undefined>(undefined);
 
-  // Each finished page reports its tally to the cross-round accumulator. On the
-  // LAST page this also: records best time + session count, writes the tutor
-  // session log, and evaluates which goal-based stickers were newly earned.
-  useEffect(() => {
-    if (!roundDone || roundHandledRef.current) return;
-    roundHandledRef.current = true;
-
-    const totals = noteRound(sessionId, game.wrongCount, total);
-    if (!isLastRound) return;
-
-    const durationMs = Math.max(0, Date.now() - sessionStartAt);
-    const res = recordFinish(learnerId, durationMs);
-    logSession(learnerId, {
-      game: gameId,
-      level: 2,
-      startedAt: new Date(sessionStartAt).toISOString(),
-      endedAt: new Date().toISOString(),
-      durationMs,
-      rounds: totalRounds,
-      items: totals.items,
-      wrongAttempts: totals.wrong,
-      accuracy: totals.items > 0 ? totals.items / (totals.items + totals.wrong) : 1,
-    });
-    const newly = awardForSession(learnerId);
-    setFinish({ ms: durationMs, best: res.isBest });
-    if (!clean) setReward({ newly, totalEarned: loadEarned(learnerId).length });
-  }, [roundDone]);
-
   // Wrong answer: a leaf drifts down; the buddy gives a sympathetic wobble.
-  useEffect(() => {
-    if (game.wrongCount <= prevWrong.current) {
-      prevWrong.current = game.wrongCount;
-      return;
-    }
-    prevWrong.current = game.wrongCount;
+  // Fired straight from the placement event (useSortGame.onWrong), so there's no
+  // state-watching effect calling setState synchronously after render.
+  function spawnWrongFeedback() {
     if (playful) sfx.wrong();
     if (prefersReducedMotion()) return;
     // A falling leaf only makes sense where there's a tree — not the Clean walker.
@@ -160,17 +133,39 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
       setFallers((f) => [...f, faller]);
       window.setTimeout(() => setFallers((f) => f.filter((x) => x.id !== id)), (faller.dur + 0.4) * 1000);
     }
-  }, [game.wrongCount, playful, clean]);
+  }
 
-  // Correct answer (Playful): confetti pops and the buddy hops.
-  useEffect(() => {
-    if (correct <= prevCorrect.current) {
-      prevCorrect.current = correct;
-      return;
+  // Correct answer: confetti / sprouts. When the placement finishes the page,
+  // this also reports the tally to the cross-round accumulator and — on the LAST
+  // page — records best time + session count, writes the tutor session log, and
+  // evaluates which goal-based stickers were newly earned. Fired from the
+  // placement event (useSortGame.onCorrect); `complete` is the old `roundDone`.
+  function spawnCorrectFeedback(complete: boolean) {
+    if (complete && !roundHandledRef.current) {
+      roundHandledRef.current = true;
+      const totals = noteRound(sessionId, game.wrongCount, total);
+      if (isLastRound) {
+        const durationMs = Math.max(0, Date.now() - startAt);
+        const res = recordFinish(learnerId, durationMs);
+        logSession(learnerId, {
+          game: gameId,
+          level: 2,
+          startedAt: new Date(startAt).toISOString(),
+          endedAt: new Date().toISOString(),
+          durationMs,
+          rounds: totalRounds,
+          items: totals.items,
+          wrongAttempts: totals.wrong,
+          accuracy: totals.items > 0 ? totals.items / (totals.items + totals.wrong) : 1,
+        });
+        const newly = awardForSession(learnerId);
+        setFinish({ ms: durationMs, best: res.isBest });
+        if (!clean) setReward({ newly, totalEarned: loadEarned(learnerId).length });
+      }
     }
-    prevCorrect.current = correct;
+
     // Finish: a full confetti shower in a few gentle waves — for every theme.
-    if (roundDone && isLastRound && !prefersReducedMotion()) {
+    if (complete && isLastRound && !prefersReducedMotion()) {
       [0, 400, 800].forEach((delay) => {
         window.setTimeout(() => {
           const fid = Math.random();
@@ -181,13 +176,13 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
     }
     // Page milestone (a page finished, but not the last): a quick confetti cheer
     // for L2L too — Playful gets its own burst just below. (SFX stays Playful-only.)
-    if (roundDone && !isLastRound && !clean && !playful && !prefersReducedMotion()) {
+    if (complete && !isLastRound && !clean && !playful && !prefersReducedMotion()) {
       const mid = Math.random();
       setBursts((b) => [...b, { id: mid, pieces: makeConfetti() }]);
       window.setTimeout(() => setBursts((b) => b.filter((x) => x.id !== mid)), 1500);
     }
     if (!playful) return;
-    if (roundDone) sfx.complete();
+    if (complete) sfx.complete();
     else sfx.correct();
     if (prefersReducedMotion()) return;
     const id = Date.now() + Math.random();
@@ -208,7 +203,7 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
     });
     setSprouts((s) => [...s, ...party]);
     party.forEach((o) => window.setTimeout(() => setSprouts((s) => s.filter((x) => x.id !== o.id)), 1700));
-  }, [correct, playful]);
+  }
 
   function handleDragEnd(event: DragEndEvent) {
     const wordId = String(event.active.id);

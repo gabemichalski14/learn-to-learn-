@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 import * as cloud from './cloud';
 import { getLearner } from '../profiles';
 import type { SessionRecord } from '../sessionLog';
@@ -27,6 +27,7 @@ function saveMap(m: Record<string, string>) {
 }
 
 async function signedIn(): Promise<boolean> {
+  const supabase = await getSupabase();
   if (!supabase) return false;
   const { data } = await supabase.auth.getSession();
   return !!data.session;

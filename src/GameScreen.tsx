@@ -14,6 +14,7 @@ import { StickerBook } from './StickerBook';
 import { SessionLog } from './SessionLogView';
 import { navigate } from './router';
 import { parseSkillKey } from './mastery/skills';
+import { getLearner } from './profiles';
 
 const TOTAL_ROUNDS = 5;
 const ITEMS_PER_ROUND = 6;
@@ -27,8 +28,8 @@ interface GameConfig {
 }
 
 const GAMES: Record<string, GameConfig> = {
-  'beginning-sounds': { pack: everydayObjects, target: 'beginning', title: 'Sound Safari' },
-  'ending-sounds': { pack: everydayEndings, target: 'ending', title: 'Last Sound Standing' },
+  'beginning-sounds': { pack: everydayObjects, target: 'beginning', title: 'Sound Safari', space: true },
+  'ending-sounds': { pack: everydayEndings, target: 'ending', title: 'Last Sound Standing', space: true },
   'middle-sounds': { pack: shortVowelWords, target: 'medial', title: 'Vowel Patrol', space: true },
 };
 
@@ -84,8 +85,9 @@ function PlaySession({ round, audio, roundIndex, sessionId, learnerId, gameId, p
 
 /** Owns the per-session clock for a themed-world game (survives page changes,
  *  resets on a new session); inner game remounts per page to reset its state. */
-function SpacePlaySession({ round, audio, roundIndex, sessionId, learnerId, gameId, onAdvance, onRestart }: {
+function SpacePlaySession({ round, audio, roundIndex, sessionId, learnerId, gameId, target, title, learnerName, onAdvance, onRestart }: {
   round: SortRound; audio: AudioPlayer; roundIndex: number; sessionId: number; learnerId: string; gameId: string;
+  target: SoundTarget; title: string; learnerName?: string;
   onAdvance: () => void; onRestart: () => void;
 }) {
   const [sessionStartAt] = useState(() => Date.now());
@@ -100,6 +102,9 @@ function SpacePlaySession({ round, audio, roundIndex, sessionId, learnerId, game
       learnerId={learnerId}
       gameId={gameId}
       sessionStartAt={sessionStartAt}
+      target={target}
+      title={title}
+      learnerName={learnerName}
       onAdvance={onAdvance}
       onRestart={onRestart}
     />
@@ -153,6 +158,9 @@ export function GameScreen({ theme, setTheme, learnerId, gameId, focus }: Props)
         sessionId={sessionId}
         learnerId={learnerId}
         gameId={gameId}
+        target={config.target}
+        title={config.title}
+        learnerName={getLearner(learnerId)?.name}
         onAdvance={() => setRoundIndex((i) => Math.min(i + 1, TOTAL_ROUNDS - 1))}
         onRestart={() => { setSessionId((s) => s + 1); setRoundIndex(0); }}
       />

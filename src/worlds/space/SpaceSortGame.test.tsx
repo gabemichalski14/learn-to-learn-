@@ -31,4 +31,14 @@ describe('SpaceSortGame (Vowel Patrol)', () => {
     expect(screen.getByLabelText('cat')).toBeTruthy();
     expect(screen.getByLabelText('pig')).toBeTruthy();
   });
+
+  it('shows a custom title when provided (Sound Safari)', () => {
+    render(<SpaceSortGame round={round} audio={fakeAudio()} totalRounds={1} title="Sound Safari" target="beginning" />);
+    expect(screen.getByText(/Sound Safari/i)).toBeTruthy();
+  });
+
+  it('shows the learner name chip when learnerName is provided', () => {
+    render(<SpaceSortGame round={round} audio={fakeAudio()} totalRounds={1} learnerName="Mia" />);
+    expect(screen.getByText(/Mia/i)).toBeTruthy();
+  });
 });

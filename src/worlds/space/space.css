@@ -26,7 +26,7 @@
 
 /* HUD */
 .sg-hud{ position:relative; z-index:3; display:flex; align-items:center; justify-content:space-between; gap:12px;
-  padding:14px 16px; max-width:760px; margin:0 auto; }
+  padding:14px 16px; max-width:760px; margin:0 auto; flex-wrap:wrap; }
 .sg-badge{ display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; letter-spacing:.16em;
   text-transform:uppercase; color:#9fe9f0; }
 .sg-badge .dot{ width:7px; height:7px; border-radius:50%; background:#5ef0c8; box-shadow:0 0 10px #5ef0c8; }
@@ -36,6 +36,8 @@
 .sg-back{ border:none; background:rgba(120,200,210,.14); color:#bfeef2; font:inherit; font-weight:800; font-size:13px;
   border-radius:999px; padding:6px 14px; cursor:pointer; }
 .sg-back:focus-visible{ outline:2px solid #eafcff; outline-offset:2px; }
+.sg-who{ position:relative; z-index:3; font-size:12px; font-weight:700; color:#bfe9ef;
+  background:rgba(10,34,46,.6); border:1px solid rgba(120,220,230,.35); border-radius:999px; padding:3px 10px; white-space:nowrap; }
 
 /* prompt creature card */
 .sg-prompt{ position:relative; z-index:3; text-align:center; margin-top:4px; }

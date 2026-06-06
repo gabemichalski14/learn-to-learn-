@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { DndContext, PointerSensor, KeyboardSensor, useSensor, useSensors, useDraggable, useDroppable } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import type { SortRound, WordItem } from '../../domain/types';
+import type { SortRound, WordItem, SoundTarget } from '../../domain/types';
 import type { AudioPlayer } from '../../audio/audioPlayer';
 import { useSortGame } from '../../game/useSortGame';
 import { recordItem } from '../../mastery/mastery';
@@ -25,6 +25,10 @@ interface Props {
   learnerId?: string;
   gameId?: string;
   sessionStartAt?: number;
+  target?: SoundTarget;
+  title?: string;
+  level?: number;
+  learnerName?: string;
   onAdvance?: () => void;
   onRestart?: () => void;
 }
@@ -41,6 +45,9 @@ const PLANET_GRADIENTS = [
 
 /** Over-the-top hero ranks — one picked at random when a patrol is completed. */
 const HERO_TITLES = ['GALACTIC LEGEND', 'COSMIC CHAMPION', 'STARFLEET HERO', 'NEBULA MASTER', 'SUPERNOVA STAR', 'INTERSTELLAR ACE'];
+
+/** Human word for the sound position, used in the instructions + labels. */
+const POS_WORD: Record<SoundTarget, string> = { beginning: 'first', ending: 'last', medial: 'middle' };
 
 /** A vowel "planet" — a droppable basket. Tapping it replays its sound. */
 function Planet({ vowel, color, catching, onReplay }: { vowel: string; color: string; catching: boolean; onReplay: () => void }) {
@@ -86,8 +93,11 @@ function Creature({ item, onReplay }: { item: WordItem; onReplay: () => void }) 
  *  middle vowel. Drop-in for the platform's sort screen; reuses useSortGame. */
 export function SpaceSortGame({
   round, audio, roundIndex = 0, totalRounds = 1, sessionId = 0,
-  learnerId = 'guest', gameId = 'middle-sounds', sessionStartAt, onAdvance, onRestart,
+  learnerId = 'guest', gameId = 'middle-sounds', sessionStartAt,
+  target = 'medial', title = 'Vowel Patrol', level = 2, learnerName,
+  onAdvance, onRestart,
 }: Props) {
+  const posWord = POS_WORD[target];
   const [startAt] = useState(() => sessionStartAt ?? Date.now());
   const [catching, setCatching] = useState<string | null>(null);
   const [finish, setFinish] = useState<{ ms: number; best: boolean; stars: number; title: string } | null>(null);
@@ -140,7 +150,7 @@ export function SpaceSortGame({
     const res = recordFinish(learnerId, durationMs);
     logSession(learnerId, {
       game: gameId,
-      level: 2,
+      level,
       startedAt: new Date(startAt).toISOString(),
       endedAt: new Date().toISOString(),
       durationMs,
@@ -171,13 +181,14 @@ export function SpaceSortGame({
         <SpaceBackdrop />
 
         <div className="sg-hud">
-          <button type="button" className="sg-back" onClick={() => navigate('#/level/2')}>← Back</button>
-          <span className="sg-badge"><span className="dot" /> Vowel Patrol · Sector {roundIndex + 1}</span>
+          <button type="button" className="sg-back" onClick={() => navigate(`#/level/${level}`)}>← Back</button>
+          <span className="sg-badge"><span className="dot" /> {title} · Sector {roundIndex + 1}</span>
           <span className="sg-seg" aria-label={`Sector ${roundIndex + 1} of ${totalRounds}`}>
             {Array.from({ length: totalRounds }).map((_, i) => (
               <i key={i} className={i <= roundIndex ? 'on' : ''} />
             ))}
           </span>
+          {learnerName && <span className="sg-who" aria-label={`Playing as ${learnerName}`}>👤 {learnerName}</span>}
         </div>
 
         <div className="sg-stage">
@@ -211,7 +222,7 @@ export function SpaceSortGame({
             <div className="sg-bubble" role="status">
               <button type="button" className="sg-bubble__x" onClick={() => setGuideOpen(false)} aria-label="Close directions">✕</button>
               <p className="sg-bubble__hi">Scout here, Captain! 🛰️</p>
-              <p>Tap a space critter to <b>hear its word</b>, then drag it to the planet with the <b>same middle sound</b>.</p>
+              <p>Tap a space critter to <b>hear its word</b>, then drag it to the planet with the <b>same {posWord} sound</b>.</p>
               <p className="sg-bubble__hint">Tap a planet to hear its sound, too.</p>
             </div>
           )}
@@ -234,7 +245,7 @@ export function SpaceSortGame({
             stars={finish.stars}
             title={finish.title}
             onRestart={() => onRestart?.()}
-            onBack={() => navigate('#/level/2')}
+            onBack={() => navigate(`#/level/${level}`)}
           />
         )}
       </main>

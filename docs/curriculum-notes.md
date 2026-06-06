@@ -45,7 +45,11 @@ word lists, sentences, or tutor scripts into the app.
   er/ir/ur → vowel-R with silent-E and affixes → spelling rules (Commodore
   Sailor, Edward the Lizard) → Bossy W, three sounds of EAR, /air/ spellings,
   ARY/ERY/ORY endings. 11 lessons + Optional Posttest.
-- Levels 8–10: placeholders, filled as their books are captured.
+- **Level 8 — Advanced Vowel Teams** (verified from the contents page): the
+  consonant+I /sh/ spellings (TI/CI/SI → /sh/, TIAN → /shun/, NIA → /nyuh/) then
+  the vowel teams IE, OI/OY/EY, AU/AW, OO, OU/OW, EA, IGH/AUGH/EIGH/EI, EU/TU, and
+  split vowels. 13 lessons + Optional Posttest.
+- Levels 9–10: placeholders, filled as their books are captured.
 
 Re-shoots that paid off: Level 4's contents page (a single HEIC still) converted
 the Lesson-1-only stub into all 14 lessons. The same one-photo shot of a contents

@@ -101,9 +101,12 @@ export const LEVELS: LevelInfo[] = [
   },
   {
     num: 8,
-    title: 'Coming soon',
-    focus: 'Captured from the book next',
-    games: [soon('l8-soon', 'New games', '🧩', 'Lessons and games arrive once this book is filmed.')],
+    title: 'Advanced Vowel Teams',
+    focus: 'The remaining vowel teams and the consonant-I /sh/ spellings',
+    games: [
+      soon('l8-teamup', 'Vowel Team-Up', '🧩', 'Sort words by their vowel team.'),
+      soon('l8-manysounds', 'One Team, Many Sounds', '🎚️', 'Pick the sound the team makes (oo, ea…).'),
+    ],
   },
   {
     num: 9,

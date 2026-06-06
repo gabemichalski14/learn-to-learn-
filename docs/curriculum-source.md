@@ -229,4 +229,22 @@ Posttest p429). **Overview page** (frame l7r/f006):
 - **Vowel-R key:** ar=car · er=her · ir=bird · or=corn · ur=burp · ear=hear/earl/
   swear. **No corrections.**
 
-## Levels 8–10 ⏳ (videos pending)
+## Level 8 — Advanced Vowel Teams ✅ (verified)
+_Book 8. © 2002 Susan Barton, v1.1. Filmed in two clips; the contents page is in
+clip one and lists the full set (no second TOC page needed)._
+
+13 lessons + Optional Posttest (p509), verified from the contents page
+(frame l8a/f004):
+1 Spelling: India, Indian, Musician · 2 Obvious, Spacious, Religious ·
+3 Radio, Union, Million, Region · 4 Industrial, Special, Dial · 5 IE (Piece of
+Pie) · 6 OI, OY, EY · 7 AU, AW · 8 OO · 9 OU, OW · 10 EA · 11 IGH, AUGH, EIGH, EI ·
+12 EU, TU · 13 Split Vowels.
+
+**Overview gist** (frame l8a/f006, partly mid-flip): students already know 9 vowel
+teams from earlier books; this book teaches the rest plus the consonant+I
+spellings — TI, CI, SI say /sh/ (Russia), TIAN says /shun/ (Musician), NIA says
+/nyuh/ (California). Lessons 1–4 cover those; 5–13 are the vowel teams + split
+vowels. **No corrections.** (Clip two = interior lesson pages; not mined — the
+factual skeleton is fully in the TOC, and we author our own practice content.)
+
+## Levels 9–10 ⏳ (videos pending)

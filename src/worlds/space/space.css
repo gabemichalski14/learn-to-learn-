@@ -67,12 +67,31 @@
 /* creatures (draggable) in the cargo tray */
 .sg-tray{ position:relative; z-index:3; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
   padding:10px 14px 30px; max-width:560px; margin:6px auto 0; }
-.sg-creature{ width:clamp(52px,14vw,64px); height:clamp(52px,14vw,64px); border-radius:15px; cursor:grab;
-  display:flex; align-items:center; justify-content:center; font-size:clamp(26px,7vw,32px); border:none;
-  background:rgba(10,34,46,.72); border:1px solid rgba(120,220,230,.3); color:#eafcff;
-  box-shadow:0 8px 18px rgba(0,0,0,.45); touch-action:none; }
-.sg-creature.is-dragging{ box-shadow:0 18px 40px rgba(0,0,0,.6), 0 0 22px rgba(94,240,200,.35); z-index:50; }
-.sg-creature:focus-visible{ outline:2px solid #eafcff; outline-offset:2px; }
+.sg-creature{ width:clamp(56px,15vw,68px); height:clamp(56px,15vw,68px); cursor:grab;
+  display:flex; align-items:center; justify-content:center; border:none; background:none; padding:0;
+  color:#eafcff; touch-action:none; -webkit-tap-highlight-color:transparent; }
+.sg-creature.is-dragging{ z-index:50; }
+.sg-creature:focus-visible{ outline:none; }
+.sg-creature:focus-visible .sg-spec{ outline:2px solid #eafcff; outline-offset:3px; }
+
+/* holo-capsule: a glowing specimen orb that houses the object icon */
+.sg-spec{ position:relative; width:100%; height:100%; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 38% 30%, rgba(150,235,245,.32), rgba(12,40,52,.96) 72%);
+  border:1px solid rgba(120,220,230,.5);
+  box-shadow:inset 0 2px 9px rgba(190,245,255,.3), inset 0 -9px 16px rgba(0,0,0,.5),
+    0 8px 18px rgba(0,0,0,.45), 0 0 14px rgba(94,240,200,.18);
+  animation:sg-specbob 3s ease-in-out infinite alternate; }
+.sg-spec::after{ content:''; position:absolute; top:13%; left:21%; width:30%; height:18%; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,.65), transparent 70%); }
+.sg-spec__orbit{ position:absolute; inset:-4px; border-radius:50%; border:1px dashed rgba(150,230,235,.4);
+  transform:rotateX(62deg); }
+.sg-spec__art{ width:64%; height:64%; position:relative; z-index:1; filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
+.sg-spec__emoji{ font-size:clamp(26px,7vw,32px); position:relative; z-index:1; }
+@keyframes sg-specbob{ from{transform:translateY(0)} to{transform:translateY(-4px)} }
+.sg-creature.is-dragging .sg-spec{ animation:none;
+  box-shadow:inset 0 2px 9px rgba(190,245,255,.35), 0 18px 40px rgba(0,0,0,.6), 0 0 26px rgba(94,240,200,.5);
+  border-color:rgba(94,240,200,.8); }
 
 /* scout drone */
 .sg-drone{ position:absolute; z-index:3; left:14px; bottom:24px; animation:sg-hover 3.4s ease-in-out infinite alternate; }
@@ -147,5 +166,5 @@
   100%{ opacity:0; transform:translate(-180px,128px) } }
 
 @media (prefers-reduced-motion: reduce){
-  .sg-cosmos,.sg-neb--1,.sg-neb--2,.sg-neb--3,.sg-stars,.sg-far--1,.sg-far--2,.sg-rocket,.sg-rocket__ship,.sg-rocket__flame,.sg-shoot{ animation:none; }
+  .sg-cosmos,.sg-neb--1,.sg-neb--2,.sg-neb--3,.sg-stars,.sg-far--1,.sg-far--2,.sg-rocket,.sg-rocket__ship,.sg-rocket__flame,.sg-shoot,.sg-spec{ animation:none; }
 }

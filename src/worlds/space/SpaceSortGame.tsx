@@ -11,6 +11,7 @@ import { logSession, noteRound } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { navigate } from '../../router';
 import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
+import { SpaceSpecimen } from './creatureIcons';
 import './space.css';
 
 interface Props {
@@ -71,7 +72,7 @@ function Creature({ item, onReplay }: { item: WordItem; onReplay: () => void }) 
       {...listeners}
       {...attributes}
     >
-      <span aria-hidden="true">{item.emoji}</span>
+      <SpaceSpecimen id={item.id} emoji={item.emoji} />
     </button>
   );
 }

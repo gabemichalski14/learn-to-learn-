@@ -68,7 +68,10 @@ alter table achievements enable row level security;
 
 create policy "center read"   on centers for select using (id = current_center_id());
 create policy "self tutor"    on tutors  for select using (id = auth.uid());
-create policy "self tutor upd" on tutors for update using (id = auth.uid());
+-- NOTE: no tutor self-UPDATE policy on purpose. The app never edits a tutor's own
+-- row, and an unguarded UPDATE would let a tutor change their center_id to point at
+-- another center and read its data. If tutor profile editing is added later, scope
+-- it to safe columns and lock center_id (e.g. a BEFORE UPDATE trigger).
 
 create policy "learners by center" on learners for all
   using (center_id = current_center_id()) with check (center_id = current_center_id());
@@ -81,7 +84,10 @@ create policy "achievements by center" on achievements for all
   with check (exists (select 1 from learners l where l.id = learner_id and l.center_id = current_center_id()));
 
 -- ---------- stats view (leaderboard + dashboard) ----------
-create or replace view learner_stats as
+-- security_invoker makes the view run with the QUERYING user's privileges so it
+-- respects RLS on learners/sessions — without it the view runs as its owner and
+-- would expose every center's stats (cross-center leak).
+create or replace view learner_stats with (security_invoker = on) as
   select
     l.id as learner_id,
     l.center_id,

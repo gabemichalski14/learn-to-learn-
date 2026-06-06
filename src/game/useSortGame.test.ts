@@ -4,8 +4,6 @@ import { useSortGame } from './useSortGame';
 import type { SortRound } from '../domain/types';
 import type { AudioPlayer } from '../audio/audioPlayer';
 
-const stubAudio = { playWord: () => Promise.resolve(), playSound: () => Promise.resolve() } as any;
-
 function roundOf(): SortRound {
   return {
     baskets: ['m', 's'],
@@ -74,7 +72,7 @@ describe('useSortGame onItemResult', () => {
   it('emits one result per item on the FIRST attempt only', () => {
     const results: Array<{ skillKey: string; correct: boolean }> = [];
     const { result } = renderHook(() =>
-      useSortGame({ round: roundOf(), audio: stubAudio, onItemResult: (r) => results.push(r) }),
+      useSortGame({ round: roundOf(), audio: fakeAudio(), onItemResult: (r) => results.push(r) }),
     );
     act(() => { result.current.attemptPlace('moon', 's'); }); // wrong first attempt
     act(() => { result.current.attemptPlace('moon', 'm'); }); // retry — must NOT emit again

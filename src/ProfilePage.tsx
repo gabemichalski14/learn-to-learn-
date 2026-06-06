@@ -19,14 +19,18 @@ export function ProfilePage({ learnerId, onSelectLearner }: Props) {
   const learner = getLearner(learnerId);
   const { earned, sessions } = loadProgress(learnerId);
 
-  const [focus, setFocus] = useState<FocusArea[]>(() => areasToImprove(learnerId));
+  // Local areas are computed in render (correct for the active learner the instant
+  // it changes). Cloud mastery overlays once it resolves — keyed by learnerId so
+  // switching students never briefly shows the previous child's data.
+  const [cloudFocus, setCloudFocus] = useState<{ id: string; focus: FocusArea[] } | null>(null);
   useEffect(() => {
     let live = true;
     const foundLearner = getLearner(learnerId);
     if (!foundLearner) return;
-    void getMastery(foundLearner).then((map) => { if (live) setFocus(rankAreas(map)); });
+    void getMastery(foundLearner).then((map) => { if (live) setCloudFocus({ id: learnerId, focus: rankAreas(map) }); });
     return () => { live = false; };
   }, [learnerId]);
+  const focus = cloudFocus && cloudFocus.id === learnerId ? cloudFocus.focus : areasToImprove(learnerId);
   const stickers = new Set(earned).size;
 
   return (

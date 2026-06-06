@@ -15,7 +15,7 @@ export interface FocusArea {
   attempts: number;
 }
 
-const K = 10;              // rolling window
+export const K = 10; // rolling window (also used by masteryFromEvents)
 const RATED_MIN = 5;       // attempts before a skill is rated
 const IMPROVE_BELOW = 0.8; // score under this = needs work
 const key = (learnerId: string) => `ll:${learnerId}:mastery`;

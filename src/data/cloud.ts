@@ -118,6 +118,29 @@ export async function listSessions(learnerId: string) {
   return data ?? [];
 }
 
+// ---------- skill events (append-only per-answer log) ----------
+export interface CloudSkillEvent {
+  learner_id: string;
+  skill_key: string;
+  correct: boolean;
+  game?: string;
+  at: string; // ISO
+}
+
+export async function insertSkillEvents(rows: CloudSkillEvent[]) {
+  if (rows.length === 0) return;
+  const { error } = await (await client()).from('skill_events').insert(rows);
+  if (error) throw error;
+}
+
+export async function listSkillEvents(learnerId: string, sinceISO?: string) {
+  let q = (await client()).from('skill_events').select('skill_key, correct, at').eq('learner_id', learnerId);
+  if (sinceISO) q = q.gte('at', sinceISO);
+  const { data, error } = await q.order('at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as { skill_key: string; correct: boolean; at: string }[];
+}
+
 // ---------- leaderboard / stats ----------
 export async function leaderboard() {
   const { data, error } = await (await client()).from('learner_stats').select('*');

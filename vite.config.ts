@@ -6,6 +6,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    pool: 'vmForks',
     setupFiles: ['./src/test/setupTests.ts'],
   },
 });

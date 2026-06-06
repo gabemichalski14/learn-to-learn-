@@ -122,3 +122,16 @@ describe('canBuildSortRound', () => {
     expect(canBuildSortRound(everydayObjects, ['b'], 99)).toBe(false);
   });
 });
+
+describe('generateSortRound focusSound', () => {
+  it('always includes the focus sound among the baskets', () => {
+    for (let i = 0; i < 20; i++) {
+      const round = generateSortRound({ pack: everydayObjects, totalItems: 6, target: 'beginning', focusSound: 'm' });
+      expect(round.baskets).toContain('m');
+    }
+  });
+  it('ignores a focus sound that is not in the pack', () => {
+    const round = generateSortRound({ pack: everydayObjects, totalItems: 6, target: 'beginning', focusSound: 'zzz' });
+    expect(round.baskets.length).toBeGreaterThanOrEqual(2);
+  });
+});

@@ -73,6 +73,8 @@ export interface GenerateSortRoundParams {
   totalItems?: number;
   /** Sort by the word's first sound (default) or last sound. */
   target?: SoundTarget;
+  /** Bias the round so this sound is one of the baskets (targeted practice). */
+  focusSound?: string;
   rng?: () => number;
 }
 
@@ -101,7 +103,15 @@ export function generateSortRound(params: GenerateSortRoundParams): SortRound {
   const requested = params.basketCount ?? randInt(rng, 2, maxBaskets);
   const basketCount = Math.max(2, Math.min(requested, pool.length));
 
-  const chosen = (params.sounds ?? shuffle(pool, rng).slice(0, basketCount)).slice();
+  let chosen: string[];
+  if (params.sounds) {
+    chosen = params.sounds.slice();
+  } else if (params.focusSound && pool.includes(params.focusSound)) {
+    const others = shuffle(pool.filter((s) => s !== params.focusSound), rng).slice(0, basketCount - 1);
+    chosen = [params.focusSound, ...others];
+  } else {
+    chosen = shuffle(pool, rng).slice(0, basketCount);
+  }
   if (chosen.length < 2) {
     throw new Error('a round needs at least 2 target sounds');
   }

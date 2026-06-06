@@ -105,7 +105,12 @@ export function SpaceSortGame({
     return map;
   });
   const handledRef = useRef(false);
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
+  // distance constraint: a tap (<8px) fires the creature's onClick (replay the
+  // word) instead of being swallowed as a zero-length drag; real drags still work.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor),
+  );
 
   const total = round.items.length;
   const isLast = roundIndex >= totalRounds - 1;
@@ -184,7 +189,7 @@ export function SpaceSortGame({
         </div>
 
         <p className="sg-status" role="status">
-          {game.message ?? (placed > 0 ? `${placed} of ${total} routed — keep going!` : 'Drag a creature to its planet.')}
+          {game.message ?? (placed > 0 ? `${placed} of ${total} routed — keep going!` : '')}
         </p>
 
         <div className="sg-scout">

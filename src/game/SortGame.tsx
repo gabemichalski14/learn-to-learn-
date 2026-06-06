@@ -96,7 +96,12 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
     onCorrect: ({ complete }) => spawnCorrectFeedback(complete),
     onWrong: () => spawnWrongFeedback(),
   });
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
+  // distance constraint so a tap fires the card's onClick (replay the word)
+  // instead of being captured as a zero-length drag; real drags still work.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor),
+  );
 
   const total = round.items.length;
   const roundTarget = round.target ?? 'beginning';

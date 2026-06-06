@@ -92,17 +92,22 @@ const CREATURE_ICONS: Record<string, ReactElement> = {
   ),
   net: (
     <g>
-      <circle cx="26" cy="18" r="9" fill="none" stroke="#cdd6dd" strokeWidth="2.6" />
-      <path d="M18 14 l15 7 M18 19 l13 -6 M19 24 q7-2 13-5" stroke="#aeb8c0" strokeWidth="1" fill="none" />
-      <path d="M19 25 L9 38" stroke="#8a6a4a" strokeWidth="3.2" strokeLinecap="round" />
+      <path d="M19 29 L9 39" stroke="#9c6b3f" strokeWidth="3.4" strokeLinecap="round" />
+      <path d="M17.5 17 q2.5 15 9.5 17 q7 -2 9.5 -17 z" fill="rgba(190,235,244,.16)" stroke="#aeb8c0" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M21 19 q3 12 6 14 M27 18.5 V34 M33 19 q-3 12 -6 14 M18.5 23 h17 M20 29 h14" stroke="#9fb0b8" strokeWidth="0.8" fill="none" />
+      <ellipse cx="27" cy="17" rx="10" ry="4.5" fill="none" stroke="#dfe8ec" strokeWidth="2.6" />
     </g>
   ),
   pen: (
     <g>
-      <path d="M31 9 l8 8 -17 17 -9 1 1 -9 z" fill="#3a86c8" />
-      <path d="M31 9 l8 8 -3 3 -8 -8 z" fill="#cdd6dd" />
-      <path d="M13 26 l-1 9 9 -1 z" fill="#22303a" />
-      <path d="M15 33 l-2 2 3 -1 z" fill="#f2c94c" />
+      <path d="M33 9 l6 6 -3.5 3.5 -6 -6 z" fill="#cdd6dd" />
+      <path d="M34.6 12 l1.7 1.7 -1 4.2 -1.7 -1.7 z" fill="#9aa6b2" />
+      <path d="M29.5 12.5 l6 6 -14 14 -6 -6 z" fill="#2f6fbf" />
+      <path d="M31 15 l2.4 2.4 -12 12 -2.4 -2.4 z" fill="#4f93e0" />
+      <path d="M21.5 20.5 l6 6 -2 2 -6 -6 z" fill="#234d85" />
+      <path d="M15.5 26.5 l6 6 -4 4 -6 -6 z" fill="#c7d0d8" />
+      <path d="M14.5 30 l3.5 3.5" stroke="#7f8b95" strokeWidth="0.9" />
+      <path d="M11.5 30.5 l4 4 -2.5 2.5 -3.5 -3.5 z" fill="#15366b" />
     </g>
   ),
   web: (
@@ -115,8 +120,13 @@ const CREATURE_ICONS: Record<string, ReactElement> = {
   ),
   jet: (
     <g>
-      <path d="M24 8 q3 0 3 6 v9 l9 6 v3.5 l-9 -3 v6 l3 3 v2.5 l-6 -2 -6 2 v-2.5 l3 -3 v-6 l-9 3 v-3.5 l9 -6 v-9 q0-6 3-6z" fill="#cdd6dd" />
-      <circle cx="24" cy="14" r="2" fill="#3aa0b4" />
+      <path d="M24 6 L27.5 22 L27 35 L24 32 L21 35 L20.5 22 Z" fill="#d6dee2" />
+      <path d="M25 21 L40 31 L40 33 L25 27.5 Z" fill="#9aa6b2" />
+      <path d="M23 21 L8 31 L8 33 L23 27.5 Z" fill="#9aa6b2" />
+      <path d="M25 32 L31 37 L31 38.5 L25 35.5 Z" fill="#9aa6b2" />
+      <path d="M23 32 L17 37 L17 38.5 L23 35.5 Z" fill="#9aa6b2" />
+      <path d="M22 35 h4 l-2 5.5 z" fill="#f2a83a" />
+      <ellipse cx="24" cy="14" rx="1.9" ry="3.2" fill="#2b6f8a" />
     </g>
   ),
 
@@ -174,13 +184,18 @@ const CREATURE_ICONS: Record<string, ReactElement> = {
   // ── short o ──────────────────────────────────────────────
   dog: (
     <g>
-      <path d="M12 17 q-4 8 1 15 q4-2 4-9z" fill="#9c6b3f" />
-      <path d="M36 17 q4 8 -1 15 q-4-2-4-9z" fill="#9c6b3f" />
-      <circle cx="24" cy="26" r="12" fill="#bb8350" />
-      <ellipse cx="24" cy="30" rx="7" ry="5" fill="#e7d3b8" />
-      <circle cx="24" cy="28" r="2" fill="#2b2f36" />
-      <circle cx="19" cy="22" r="1.8" fill="#2b2f36" />
-      <circle cx="29" cy="22" r="1.8" fill="#2b2f36" />
+      <ellipse cx="12.5" cy="25" rx="4.5" ry="9" transform="rotate(-14 12.5 25)" fill="#7c5226" />
+      <ellipse cx="35.5" cy="25" rx="4.5" ry="9" transform="rotate(14 35.5 25)" fill="#7c5226" />
+      <path d="M24 11 q11 0 11 12 q0 8-6 11 q-5 3-10 0 q-6-3-6-11 q0-12 11-12z" fill="#b07d49" />
+      <ellipse cx="24" cy="30" rx="7.5" ry="6" fill="#e9d6bd" />
+      <ellipse cx="24" cy="27.5" rx="2.7" ry="2.1" fill="#2b2f36" />
+      <path d="M24 29.5 v3" stroke="#5a4632" strokeWidth="1.1" />
+      <path d="M24 32.5 q-3.5 1-4.5-1.5 M24 32.5 q3.5 1 4.5-1.5" stroke="#5a4632" strokeWidth="1.1" fill="none" strokeLinecap="round" />
+      <path d="M22.5 33 q1.5 3 3 0 z" fill="#e07d8a" />
+      <circle cx="19" cy="21" r="2" fill="#2b2f36" />
+      <circle cx="29" cy="21" r="2" fill="#2b2f36" />
+      <circle cx="19.7" cy="20.3" r="0.7" fill="#ffffff" />
+      <circle cx="29.7" cy="20.3" r="0.7" fill="#ffffff" />
     </g>
   ),
   box: (

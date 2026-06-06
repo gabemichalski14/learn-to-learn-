@@ -6,12 +6,13 @@ import type { SortRound, WordItem } from '../../domain/types';
 import type { AudioPlayer } from '../../audio/audioPlayer';
 import { useSortGame } from '../../game/useSortGame';
 import { recordItem } from '../../mastery/mastery';
-import { recordFinish, formatTime } from '../../progress';
+import { recordFinish } from '../../progress';
 import { logSession, noteRound } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { navigate } from '../../router';
 import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
 import { SpaceSpecimen } from './creatureIcons';
+import { SpaceFinish } from './SpaceFinish';
 import './space.css';
 
 interface Props {
@@ -36,6 +37,9 @@ const PLANET_GRADIENTS = [
   'radial-gradient(circle at 34% 28%, #d98a5a, #5e2f18)',
   'radial-gradient(circle at 34% 28%, #b07cff, #3d1f6e)',
 ];
+
+/** Over-the-top hero ranks — one picked at random when a patrol is completed. */
+const HERO_TITLES = ['GALACTIC LEGEND', 'COSMIC CHAMPION', 'STARFLEET HERO', 'NEBULA MASTER', 'SUPERNOVA STAR', 'INTERSTELLAR ACE'];
 
 /** A vowel "planet" — a droppable basket. Tapping it replays its sound. */
 function Planet({ vowel, color, catching, onReplay }: { vowel: string; color: string; catching: boolean; onReplay: () => void }) {
@@ -85,7 +89,8 @@ export function SpaceSortGame({
 }: Props) {
   const [startAt] = useState(() => sessionStartAt ?? Date.now());
   const [catching, setCatching] = useState<string | null>(null);
-  const [finish, setFinish] = useState<{ ms: number; best: boolean } | null>(null);
+  const [finish, setFinish] = useState<{ ms: number; best: boolean; stars: number; title: string } | null>(null);
+  const [guideOpen, setGuideOpen] = useState(true);
   // Shuffle the palette across THIS round's planets so colour never predicts the
   // vowel. Lazy init (runs once per mount; the screen remounts each round) keeps
   // colours stable mid-round and re-rolls them every new sector — no pattern.
@@ -136,7 +141,9 @@ export function SpaceSortGame({
       accuracy: totals.items > 0 ? totals.items / (totals.items + totals.wrong) : 1,
     });
     awardForSession(learnerId);
-    setFinish({ ms: durationMs, best: res.isBest });
+    const stars = totals.wrong === 0 ? 3 : totals.wrong <= 2 ? 2 : 1;
+    const title = HERO_TITLES[Math.floor(Math.random() * HERO_TITLES.length)];
+    setFinish({ ms: durationMs, best: res.isBest, stars, title });
   }
 
   function handleDragEnd(e: DragEndEvent) {
@@ -164,8 +171,6 @@ export function SpaceSortGame({
           </span>
         </div>
 
-        <p className="sg-ask">Hear each creature, then send it to the planet of its <b>middle sound</b>.</p>
-
         <div className="sg-planets">
           {round.baskets.map((v) => (
             <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} onReplay={() => game.replaySound(v)} />
@@ -182,7 +187,24 @@ export function SpaceSortGame({
           {game.message ?? (placed > 0 ? `${placed} of ${total} routed — keep going!` : 'Drag a creature to its planet.')}
         </p>
 
-        <ScoutDrone />
+        <div className="sg-scout">
+          {guideOpen && (
+            <div className="sg-bubble" role="status">
+              <button type="button" className="sg-bubble__x" onClick={() => setGuideOpen(false)} aria-label="Close directions">✕</button>
+              <p className="sg-bubble__hi">Scout here, Captain! 🛰️</p>
+              <p>Tap a space critter to <b>hear its word</b>, then drag it to the planet with the <b>same middle sound</b>.</p>
+              <p className="sg-bubble__hint">Tap a planet to hear its sound, too.</p>
+            </div>
+          )}
+          <button
+            type="button"
+            className={`sg-scout__btn${guideOpen ? '' : ' nudge'}`}
+            onClick={() => setGuideOpen((o) => !o)}
+            aria-label="Scout — tap for directions"
+          >
+            <ScoutDrone />
+          </button>
+        </div>
 
         {roundDone && !isLast && !finish && (
           <div className="sg-finish">
@@ -195,16 +217,14 @@ export function SpaceSortGame({
         )}
 
         {finish && (
-          <div className="sg-finish">
-            <div className="sg-finish__card">
-              <p className="sg-finish__title">Patrol complete! 🌟</p>
-              <p className="sg-finish__sub">
-                Finished in {formatTime(finish.ms)}{finish.best ? ' — new best time!' : ''}
-              </p>
-              <button type="button" className="sg-btn" onClick={onRestart} style={{ marginRight: 8 }}>Play again</button>
-              <button type="button" className="sg-back" onClick={() => navigate('#/level/2')}>Back to Level 2</button>
-            </div>
-          </div>
+          <SpaceFinish
+            ms={finish.ms}
+            best={finish.best}
+            stars={finish.stars}
+            title={finish.title}
+            onRestart={() => onRestart?.()}
+            onBack={() => navigate('#/level/2')}
+          />
         )}
       </main>
     </DndContext>

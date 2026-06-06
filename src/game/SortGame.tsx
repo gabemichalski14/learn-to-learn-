@@ -16,6 +16,7 @@ import { soundOf } from '../domain/engine';
 import { recordFinish, formatTime, loadEarned } from '../progress';
 import { logSession, noteRound } from '../sessionLog';
 import { recordItem } from '../mastery/mastery';
+import { logSkillEvent } from '../data/cloudSync';
 import { awardForSession, ACHIEVEMENTS } from '../achievements';
 import type { Achievement } from '../achievements';
 
@@ -92,7 +93,10 @@ export function SortGame({ round, audio, roundIndex = 0, totalRounds = 1, sessio
   const game = useSortGame({
     round,
     audio,
-    onItemResult: ({ skillKey, correct }) => recordItem(learnerId, skillKey, correct),
+    onItemResult: ({ skillKey, correct }) => {
+      recordItem(learnerId, skillKey, correct);
+      logSkillEvent(learnerId, { skillKey, correct, at: Date.now() });
+    },
     onCorrect: ({ complete }) => spawnCorrectFeedback(complete),
     onWrong: () => spawnWrongFeedback(),
   });

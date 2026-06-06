@@ -6,6 +6,7 @@ import type { SortRound, WordItem } from '../../domain/types';
 import type { AudioPlayer } from '../../audio/audioPlayer';
 import { useSortGame } from '../../game/useSortGame';
 import { recordItem } from '../../mastery/mastery';
+import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession, noteRound } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
@@ -118,7 +119,10 @@ export function SpaceSortGame({
   const game = useSortGame({
     round,
     audio,
-    onItemResult: ({ skillKey, correct }) => recordItem(learnerId, skillKey, correct),
+    onItemResult: ({ skillKey, correct }) => {
+      recordItem(learnerId, skillKey, correct);
+      logSkillEvent(learnerId, { skillKey, correct, at: Date.now() });
+    },
     onCorrect: ({ complete }) => finishRoundIfComplete(complete),
   });
 

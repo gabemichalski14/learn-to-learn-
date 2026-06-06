@@ -77,7 +77,7 @@ function Creature({ item, onReplay }: { item: WordItem; onReplay: () => void }) 
       {...listeners}
       {...attributes}
     >
-      <SpaceSpecimen id={item.id} emoji={item.emoji} />
+      <SpaceSpecimen id={item.id} label={item.label} emoji={item.emoji} />
     </button>
   );
 }

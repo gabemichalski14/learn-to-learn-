@@ -3,6 +3,8 @@ import { LearnerBar } from './LearnerBar';
 import { getLearner, initials } from './profiles';
 import { loadProgress } from './progress';
 import { ACHIEVEMENTS } from './achievements';
+import { NextUp } from './NextUp';
+import { AreasToImprove } from './AreasToImprove';
 
 interface Props {
   learnerId: string;
@@ -34,6 +36,12 @@ export function ProfilePage({ learnerId, onSelectLearner }: Props) {
           </div>
         </div>
       )}
+
+      <section className="site__section" aria-labelledby="focus-h">
+        <h2 id="focus-h" className="site__h2">Learning focus</h2>
+        <NextUp learnerId={learnerId} />
+        <AreasToImprove learnerId={learnerId} />
+      </section>
 
       <section className="site__section" aria-labelledby="who-h">
         <h2 id="who-h" className="site__h2">Switch player</h2>

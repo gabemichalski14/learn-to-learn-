@@ -67,6 +67,17 @@ export function masteryScore(learnerId: string, skillKey: SkillKey): number {
   return scoreOf(loadMastery(learnerId)[skillKey]);
 }
 
+/** Rank a mastery map's rated, weak skills (weakest first), capped at n. */
+export function rankAreas(map: MasteryMap, n = 3): FocusArea[] {
+  return Object.entries(map)
+    .filter(([, s]) => s.attempts >= RATED_MIN)
+    .map(([skillKey, s]) => ({ skillKey, score: scoreOf(s), attempts: s.attempts, lastSeen: s.lastSeen }))
+    .filter((a) => a.score < IMPROVE_BELOW)
+    .sort((a, b) => a.score - b.score || b.lastSeen - a.lastSeen)
+    .slice(0, n)
+    .map(({ skillKey, score, attempts }) => ({ skillKey, score, attempts }));
+}
+
 /**
  * Rated, weak skills (weakest first), drawn from whatever the learner has
  * actually practiced.
@@ -80,14 +91,7 @@ export function masteryScore(learnerId: string, skillKey: SkillKey): number {
  * been practiced is the meaningful behavior for Phase 1.
  */
 export function areasToImprove(learnerId: string, n = 3): FocusArea[] {
-  const map = loadMastery(learnerId);
-  return Object.entries(map)
-    .filter(([, s]) => s.attempts >= RATED_MIN)
-    .map(([skillKey, s]) => ({ skillKey, score: scoreOf(s), attempts: s.attempts, lastSeen: s.lastSeen }))
-    .filter((a) => a.score < IMPROVE_BELOW)
-    .sort((a, b) => a.score - b.score || b.lastSeen - a.lastSeen)
-    .slice(0, n)
-    .map(({ skillKey, score, attempts }) => ({ skillKey, score, attempts }));
+  return rankAreas(loadMastery(learnerId), n);
 }
 
 export function clearMastery(learnerId: string): void {

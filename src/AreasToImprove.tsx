@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { navigate } from './router';
-import { areasToImprove } from './mastery/mastery';
+import { areasToImprove, type FocusArea } from './mastery/mastery';
 import { skillLabel } from './mastery/skills';
 import { skillHelp } from './mastery/skill-help';
 import { practiceRouteForSkill } from './mastery/skill-games';
 
 /** "Areas to improve" — weak skills with What/Why/How + a targeted practice link. */
-export function AreasToImprove({ learnerId }: { learnerId: string }) {
-  const areas = areasToImprove(learnerId, 3);
+export function AreasToImprove({ learnerId, focus }: { learnerId: string; focus?: FocusArea[] }) {
+  const areas = focus ?? areasToImprove(learnerId, 3);
   const [open, setOpen] = useState<string | null>(areas[0]?.skillKey ?? null);
 
   if (areas.length === 0) {

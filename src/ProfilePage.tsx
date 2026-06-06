@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { navigate } from './router';
 import { LearnerBar } from './LearnerBar';
 import { getLearner, initials } from './profiles';
@@ -5,6 +6,8 @@ import { loadProgress } from './progress';
 import { ACHIEVEMENTS } from './achievements';
 import { NextUp } from './NextUp';
 import { AreasToImprove } from './AreasToImprove';
+import { getMastery } from './data/dataSource';
+import { rankAreas, areasToImprove, type FocusArea } from './mastery/mastery';
 
 interface Props {
   learnerId: string;
@@ -15,6 +18,15 @@ interface Props {
 export function ProfilePage({ learnerId, onSelectLearner }: Props) {
   const learner = getLearner(learnerId);
   const { earned, sessions } = loadProgress(learnerId);
+
+  const [focus, setFocus] = useState<FocusArea[]>(() => areasToImprove(learnerId));
+  useEffect(() => {
+    let live = true;
+    const foundLearner = getLearner(learnerId);
+    if (!foundLearner) return;
+    void getMastery(foundLearner).then((map) => { if (live) setFocus(rankAreas(map)); });
+    return () => { live = false; };
+  }, [learnerId]);
   const stickers = new Set(earned).size;
 
   return (
@@ -40,7 +52,7 @@ export function ProfilePage({ learnerId, onSelectLearner }: Props) {
       <section className="site__section" aria-labelledby="focus-h">
         <h2 id="focus-h" className="site__h2">Learning focus</h2>
         <NextUp learnerId={learnerId} />
-        <AreasToImprove learnerId={learnerId} />
+        <AreasToImprove learnerId={learnerId} focus={focus} />
       </section>
 
       <section className="site__section" aria-labelledby="who-h">

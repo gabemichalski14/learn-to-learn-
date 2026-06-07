@@ -16,7 +16,8 @@ const ITEMS: NavItem[] = [
   { label: 'Levels', to: '#/levels', icon: '📚', match: ['levels', 'level'] },
   { label: 'Games', to: '#/games', icon: '🎮', match: ['games', 'play'] },
   { label: 'Leaderboard', to: '#/leaderboard', icon: '🏆', match: ['leaderboard'] },
-  { label: 'Profile', to: '#/profile', icon: '👤', match: ['profile', 'account'] },
+  { label: 'Profile', to: '#/profile', icon: '👤', match: ['profile'] },
+  { label: 'Tutor sign-in', to: '#/account', icon: '🔑', match: ['account'] },
 ];
 
 /**

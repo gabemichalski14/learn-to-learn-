@@ -1,19 +1,15 @@
 import { LEVELS, availableCount } from './games';
 import { navigate } from './router';
-import { loadProgress } from './progress';
-import { ACHIEVEMENTS } from './achievements';
 import { NowPlaying } from './NowPlaying';
 import { LevelEmblem } from './LevelEmblem';
 
 interface Props {
-  learnerId: string;
   onChooseLearner?: (id: string) => void;
 }
 
-/** Platform home: the 10-level curriculum + progress entries. */
-export function Home({ learnerId, onChooseLearner }: Props) {
-  const { earned, sessions } = loadProgress(learnerId);
-
+/** Platform home: the 10-level curriculum. Leaderboard, Tutor Dashboard, and
+ *  tutor sign-in live in the left-side menu (NavDrawer), not on this page. */
+export function Home({ onChooseLearner }: Props) {
   return (
     <main className="site">
       <NowPlaying onChange={onChooseLearner} />
@@ -41,31 +37,7 @@ export function Home({ learnerId, onChooseLearner }: Props) {
             );
           })}
         </div>
-        <p className="page__note">Level focus and games are placeholders — the final lineup follows the Barton scope &amp; sequence.</p>
       </section>
-
-      <section className="site__section" aria-labelledby="more-h">
-        <h2 id="more-h" className="site__h2">Progress</h2>
-        <div className="panel-grid">
-          <button type="button" className="panel-card" onClick={() => navigate('#/leaderboard')}>
-            <span className="panel-card__emoji" aria-hidden="true">🏆</span>
-            <span className="panel-card__title">Leaderboard</span>
-            <span className="panel-card__sub">{new Set(earned).size} of {ACHIEVEMENTS.length} stickers earned</span>
-          </button>
-          <button type="button" className="panel-card" onClick={() => navigate('#/tutor')}>
-            <span className="panel-card__emoji" aria-hidden="true">📊</span>
-            <span className="panel-card__title">Tutor Dashboard</span>
-            <span className="panel-card__sub">{sessions} session{sessions === 1 ? '' : 's'} logged</span>
-          </button>
-        </div>
-      </section>
-
-      <footer className="site__footer">
-        Learn to Learn Tutoring Solutions
-        <button type="button" className="link-btn" onClick={() => navigate('#/account')} style={{ marginLeft: 10 }}>
-          Tutor sign-in
-        </button>
-      </footer>
     </main>
   );
 }

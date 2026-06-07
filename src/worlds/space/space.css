@@ -259,3 +259,46 @@
 .sg-hub__lessons h2{ font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:#9fe9f0; text-align:center; margin:0 0 8px; }
 .sg-hub__lesson{ display:flex; gap:10px; align-items:baseline; padding:7px 2px; border-bottom:1px solid rgba(120,220,230,.12); color:#cfe7ec; font-size:13px; }
 .sg-hub__lesson b{ color:#5ef0c8; min-width:18px; }
+
+/* ============================================================
+   Game juice — catch squash/stretch, sparkle burst, combo,
+   reactive Scout, mute, gentle miss-shake
+   ============================================================ */
+/* juicier squash & stretch on a correct catch (overrides earlier sg-catch) */
+@keyframes sg-catch { 0%{transform:scale(1)} 22%{transform:scale(1.26,0.84)} 46%{transform:scale(0.9,1.14)} 70%{transform:scale(1.08,0.95)} 100%{transform:scale(1)} }
+
+/* sparkle burst from the planet centre */
+.sg-burst{ position:absolute; inset:0; pointer-events:none; }
+.sg-burst i{ position:absolute; left:50%; top:50%; width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%;
+  background:#fdf6c8; box-shadow:0 0 8px 2px rgba(255,238,150,.9); opacity:0;
+  animation:sg-spark .58s ease-out forwards; }
+@keyframes sg-spark{
+  0%{ opacity:0; transform:rotate(var(--a)) translateX(2px) scale(.4); }
+  25%{ opacity:1; }
+  100%{ opacity:0; transform:rotate(var(--a)) translateX(46px) scale(1); }
+}
+
+/* Scout reacts: cheer on a hit, wobble on a miss */
+.sg-drone--cheer{ animation:sg-cheer .7s ease; }
+@keyframes sg-cheer{ 0%{transform:translateY(0) scale(1)} 30%{transform:translateY(-15px) scale(1.12)} 55%{transform:translateY(0) scale(1)} 78%{transform:translateY(-7px)} 100%{transform:translateY(0)} }
+.sg-drone--wobble{ animation:sg-wobble .55s ease; }
+@keyframes sg-wobble{ 0%,100%{transform:rotate(0)} 25%{transform:rotate(-11deg)} 50%{transform:rotate(9deg)} 75%{transform:rotate(-5deg)} }
+
+/* combo streak chip (key changes each hit -> replays the pop) */
+.sg-combo{ display:inline-flex; align-items:center; gap:4px; font-weight:900; font-size:13px; color:#3a1f00;
+  background:linear-gradient(90deg,#ffd95e,#ffb24a); border-radius:999px; padding:3px 10px;
+  box-shadow:0 0 16px rgba(255,200,76,.55); animation:sg-combopop .42s cubic-bezier(.2,1.6,.4,1); }
+@keyframes sg-combopop{ 0%{transform:scale(.4) rotate(-8deg); opacity:0} 60%{transform:scale(1.18) rotate(4deg)} 100%{transform:scale(1) rotate(0); opacity:1} }
+
+/* mute toggle */
+.sg-mute{ width:34px; height:34px; border-radius:999px; cursor:pointer; font-size:15px; line-height:1;
+  color:#bfe9ef; background:rgba(10,34,46,.6); border:1px solid rgba(120,220,230,.35); }
+.sg-mute:focus-visible{ outline:2px solid #eafcff; outline-offset:2px; }
+
+/* gentle shake on a miss */
+.sg-stage--shake{ animation:sg-shakekf .4s ease; }
+@keyframes sg-shakekf{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)} }
+
+@media (prefers-reduced-motion: reduce){
+  .sg-burst i,.sg-drone--cheer,.sg-drone--wobble,.sg-combo,.sg-stage--shake,.sg-planet--catch{ animation:none; }
+}

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type CSSProperties } from 'react';
 import { DndContext, PointerSensor, KeyboardSensor, useSensor, useSensors, useDraggable, useDroppable } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
@@ -14,7 +14,11 @@ import { navigate } from '../../router';
 import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
 import { SpaceSpecimen } from './creatureIcons';
 import { SpaceFinish } from './SpaceFinish';
+import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import './space.css';
+
+/** Sparkle directions for the catch burst (degrees around the planet). */
+const SPARKS = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
 
 interface Props {
   round: SortRound;
@@ -62,6 +66,11 @@ function Planet({ vowel, color, catching, onReplay }: { vowel: string; color: st
       aria-label={`Planet for the ${vowel} sound — tap to hear it`}
     >
       <span className="lab">{vowel}</span>
+      {catching && (
+        <span className="sg-burst" aria-hidden="true">
+          {SPARKS.map((a, i) => <i key={i} style={{ '--a': `${a}deg` } as CSSProperties} />)}
+        </span>
+      )}
     </button>
   );
 }
@@ -102,6 +111,11 @@ export function SpaceSortGame({
   const [catching, setCatching] = useState<string | null>(null);
   const [finish, setFinish] = useState<{ ms: number; best: boolean; stars: number; title: string } | null>(null);
   const [guideOpen, setGuideOpen] = useState(true);
+  const [combo, setCombo] = useState(0);
+  const comboRef = useRef(0);
+  const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
+  const [shake, setShake] = useState(false);
+  const [muted, setMutedState] = useState(isMuted());
   // Shuffle the palette across THIS round's planets so colour never predicts the
   // vowel. Lazy init (runs once per mount; the screen remounts each round) keeps
   // colours stable mid-round and re-rolls them every new sector — no pattern.
@@ -162,7 +176,14 @@ export function SpaceSortGame({
     awardForSession(learnerId);
     const stars = totals.wrong === 0 ? 3 : totals.wrong <= 2 ? 2 : 1;
     const title = HERO_TITLES[Math.floor(Math.random() * HERO_TITLES.length)];
+    sfx.win();
     setFinish({ ms: durationMs, best: res.isBest, stars, title });
+  }
+
+  function toggleMute() {
+    const next = !muted;
+    setMuted(next);
+    setMutedState(next);
   }
 
   function handleDragEnd(e: DragEndEvent) {
@@ -170,8 +191,25 @@ export function SpaceSortGame({
     const basket = e.over ? String(e.over.id) : null;
     if (!basket) return;
     if (game.attemptPlace(wordId, basket)) {
+      // correct — pop the planet, burst sparkles, climb the combo, Scout cheers
       setCatching(basket);
-      window.setTimeout(() => setCatching((c) => (c === basket ? null : c)), 500);
+      sfx.pop();
+      const c = comboRef.current + 1;
+      comboRef.current = c;
+      setCombo(c);
+      if (c >= 2) sfx.combo(c); else sfx.correct();
+      setMood('cheer');
+      window.setTimeout(() => setCatching((cur) => (cur === basket ? null : cur)), 520);
+      window.setTimeout(() => setMood((m) => (m === 'cheer' ? null : m)), 760);
+    } else {
+      // miss — gentle shake, soft cue, Scout wobble, combo resets
+      comboRef.current = 0;
+      setCombo(0);
+      sfx.wrong();
+      setMood('wobble');
+      setShake(true);
+      window.setTimeout(() => setShake(false), 420);
+      window.setTimeout(() => setMood((m) => (m === 'wobble' ? null : m)), 620);
     }
   }
 
@@ -183,15 +221,17 @@ export function SpaceSortGame({
         <div className="sg-hud">
           <button type="button" className="sg-back" onClick={() => navigate(`#/level/${level}`)}>← Back</button>
           <span className="sg-badge"><span className="dot" /> {title} · Sector {roundIndex + 1}</span>
+          {combo >= 2 && <span key={combo} className="sg-combo" aria-label={`${combo} in a row`}>🔥 {combo}</span>}
           <span className="sg-seg" aria-label={`Sector ${roundIndex + 1} of ${totalRounds}`}>
             {Array.from({ length: totalRounds }).map((_, i) => (
               <i key={i} className={i <= roundIndex ? 'on' : ''} />
             ))}
           </span>
           {learnerName && <span className="sg-who" aria-label={`Playing as ${learnerName}`}>👤 {learnerName}</span>}
+          <button type="button" className="sg-mute" onClick={toggleMute} aria-label={muted ? 'Turn sound on' : 'Turn sound off'} aria-pressed={muted}>{muted ? '🔇' : '🔊'}</button>
         </div>
 
-        <div className="sg-stage">
+        <div className={`sg-stage${shake ? ' sg-stage--shake' : ''}`}>
           <div className="sg-planets">
             {round.baskets.map((v) => (
               <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} onReplay={() => game.replaySound(v)} />
@@ -200,7 +240,7 @@ export function SpaceSortGame({
 
           <div className="sg-tray">
             {game.remainingItems.map((it) => (
-              <Creature key={it.id} item={it} onReplay={() => game.replayWord(it)} />
+              <Creature key={it.id} item={it} onReplay={() => { sfx.tap(); game.replayWord(it); }} />
             ))}
           </div>
 
@@ -216,7 +256,7 @@ export function SpaceSortGame({
             onClick={() => setGuideOpen((o) => !o)}
             aria-label="Scout — tap for directions"
           >
-            <ScoutDrone />
+            <ScoutDrone mood={mood} />
           </button>
           {guideOpen && (
             <div className="sg-bubble" role="status">

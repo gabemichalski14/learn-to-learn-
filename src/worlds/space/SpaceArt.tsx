@@ -103,10 +103,11 @@ export function SpaceBackdrop() {
   );
 }
 
-/** Scout — the Level 2 mascot. A friendly drone: glowing eye, antenna, thruster. */
-export function ScoutDrone({ size = 64 }: { size?: number }) {
+/** Scout — the Level 2 mascot. A friendly drone: glowing eye, antenna, thruster.
+ *  `mood` lets the game make Scout cheer on a correct answer or wobble on a miss. */
+export function ScoutDrone({ size = 64, mood = null }: { size?: number; mood?: 'cheer' | 'wobble' | null }) {
   return (
-    <span className="sg-drone">
+    <span className={`sg-drone${mood ? ` sg-drone--${mood}` : ''}`}>
       <svg width={size} height={size * 0.94} viewBox="0 0 64 60" role="img" aria-label="Scout, your patrol drone">
         <ellipse cx="32" cy="56" rx="16" ry="3" fill="rgba(0,0,0,.35)" />
         <line x1="32" y1="6" x2="32" y2="14" stroke="#7fd6e0" strokeWidth="2" />

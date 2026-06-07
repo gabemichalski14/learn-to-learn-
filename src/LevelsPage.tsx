@@ -19,7 +19,7 @@ function footText(num: number, games: number): string {
   return games > 0 ? `${lessonStr} · ${games} game${games === 1 ? '' : 's'} ▸` : lessonStr;
 }
 
-/** Index of all 10 Barton levels. Themed levels (Level 2 = Space Patrol) render
+/** Index of all 10 structured-literacy levels. Themed levels (Level 2 = Space Patrol) render
  *  as a fully themed, animated card; the rest use the brand standard card. */
 export function LevelsPage() {
   return (
@@ -28,7 +28,7 @@ export function LevelsPage() {
       <header className="levels-head l2l-reveal" style={{ '--i': 0 } as CSSProperties}>
         <p className="l2l-eyebrow">The curriculum</p>
         <h1 className="l2l-display">Ten levels, one <em>journey</em>.</h1>
-        <p className="l2l-lead">The Barton Reading &amp; Spelling scope &amp; sequence — from hearing sounds to spelling multisyllable words. Each level becomes its own themed world as it opens.</p>
+        <p className="l2l-lead">A structured-literacy scope &amp; sequence — from hearing sounds to spelling multisyllable words. Each level becomes its own themed world as it opens.</p>
       </header>
 
       <div className="levels-grid">

@@ -10,6 +10,7 @@ import { LevelsPage } from './LevelsPage';
 import { GamesPage } from './GamesPage';
 import { ProfilePage } from './ProfilePage';
 import { NavDrawer } from './NavDrawer';
+import { SiteFooter } from './SiteFooter';
 import { MascotBuddy } from './mascots/MascotBuddy';
 import { SpaceLevelHub } from './worlds/space/SpaceLevelHub';
 import { GardenLevelHub } from './worlds/garden/GardenLevelHub';
@@ -76,6 +77,7 @@ export default function App() {
     <>
       <NavDrawer route={route.name} isTutor={isTutor} />
       {page}
+      <SiteFooter />
       {/* Roaming easter-egg buddy — keyed by route so each page gets a fresh
           surprise placement/message. Only on these (non-immersive) pages; the
           games keep their own world guides. */}

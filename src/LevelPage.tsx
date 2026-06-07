@@ -2,7 +2,7 @@ import { navigate } from './router';
 import { findLevel } from './games';
 import { levelCurriculum, lessonSounds } from './curriculum';
 
-/** Sub-menu for one Barton level: its lessons (the curriculum) + its games. */
+/** Sub-menu for one level: its lessons (the curriculum) + its games. */
 export function LevelPage({ level }: { level: number }) {
   const lvl = findLevel(level);
   const curriculum = levelCurriculum(level);

@@ -1,6 +1,6 @@
 export type SoundType = 'consonant' | 'vowel' | 'unit';
 
-/** A single Barton sound. `id` is our internal key (e.g. 'b', 's', 'a'). */
+/** A single phonics sound. `id` is our internal key (e.g. 'b', 's', 'a'). */
 export interface Phoneme {
   id: string;
   label: string; // shown to tutors only, never to the learner during play

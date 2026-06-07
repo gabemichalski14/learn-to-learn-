@@ -1,7 +1,7 @@
 /**
- * Curriculum registry: the 10 Barton levels, each holding a sub-menu of games.
+ * Curriculum registry: the 10 structured-literacy levels, each holding a sub-menu of games.
  * PLACEHOLDER lineup — titles/focus and the per-level games are first-pass and
- * will be finalised against the full scanned Barton scope & sequence. Game
+ * will be finalised against the full structured-literacy scope & sequence. Game
  * NAMES are intentionally playful; the tagline states the actual skill so a
  * tutor always knows what each game practises. (All content is our own.)
  */

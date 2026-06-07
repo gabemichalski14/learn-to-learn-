@@ -381,3 +381,15 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 @media (prefers-reduced-motion: reduce){
   .level-emblem,.le-rocket,.le-flame,.le-star{ animation:none; }
 }
+
+/* Site footer — copyright + independence/trademark disclaimer. Quiet by
+   design: small, muted, generous top space so it never competes with play. */
+.l2l-footer{
+  max-width:720px;
+  margin:56px auto 0;
+  padding:20px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  text-align:center;
+  border-top:1px solid var(--teal-ring);
+}
+.l2l-footer__brand{ margin:0; font-size:13px; font-weight:600; color:var(--muted); }
+.l2l-footer__legal{ margin:6px 0 0; font-size:11px; line-height:1.5; color:var(--muted); opacity:.8; }

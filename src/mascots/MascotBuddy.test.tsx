@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MascotBuddy } from './MascotBuddy';
 import { Pip } from './Pip';
@@ -16,6 +16,11 @@ describe('Pip & Echo', () => {
 });
 
 describe('MascotBuddy', () => {
+  // Pin randomness so the rare "trickster dodge" (≈18% of pokes) never fires
+  // during these deterministic interaction tests.
+  beforeEach(() => vi.spyOn(Math, 'random').mockReturnValue(0.99));
+  afterEach(() => vi.restoreAllMocks());
+
   it('pops a warm, dismissible phrase when poked', () => {
     render(<MascotBuddy />);
     const btn = screen.getByRole('button', { name: /says hi/i });

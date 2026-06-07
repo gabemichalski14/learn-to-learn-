@@ -10,7 +10,7 @@ import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession, noteRound } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
-import { navigate } from '../../router';
+import { goBack } from '../../router';
 import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
 import { SpaceSpecimen } from './creatureIcons';
 import { SpaceFinish } from './SpaceFinish';
@@ -219,7 +219,7 @@ export function SpaceSortGame({
         <SpaceBackdrop />
 
         <div className="sg-hud">
-          <button type="button" className="sg-back" onClick={() => navigate(`#/level/${level}`)}>← Back</button>
+          <button type="button" className="sg-back" onClick={() => goBack(`#/level/${level}`)}>← Back</button>
           <span className="sg-badge"><span className="dot" /> {title} · Sector {roundIndex + 1}</span>
           {combo >= 2 && <span key={combo} className="sg-combo" aria-label={`${combo} in a row`}>🔥 {combo}</span>}
           <span className="sg-seg" aria-label={`Sector ${roundIndex + 1} of ${totalRounds}`}>
@@ -285,7 +285,7 @@ export function SpaceSortGame({
             stars={finish.stars}
             title={finish.title}
             onRestart={() => onRestart?.()}
-            onBack={() => navigate(`#/level/${level}`)}
+            onBack={() => goBack(`#/level/${level}`)}
           />
         )}
       </main>

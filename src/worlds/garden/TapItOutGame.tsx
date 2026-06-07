@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { navigate } from '../../router';
+import { goBack } from '../../router';
 import { createStubAudioPlayer } from '../../audio/stubAudioPlayer';
 import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import { tapItOutWords, type TapWord } from '../../content/packs/tapItOut';
@@ -191,7 +191,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       <GardenBackdrop />
 
       <div className="gd-hud">
-        <button type="button" className="gd-back" onClick={() => navigate('#/level/1')}>← Back</button>
+        <button type="button" className="gd-back" onClick={() => goBack('#/level/1')}>← Back</button>
         <span className="gd-badge">🌱 Tap It Out · Word {round + 1}</span>
         <span className="gd-hud__right">
           {combo >= 2 && <span key={combo} className="gd-combo" aria-label={`${combo} in a row`}>🌸 {combo}</span>}
@@ -261,7 +261,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
             </div>
             <div className="gd-finish__btns">
               <button type="button" className="gd-btn" onClick={restart}>Plant again 🌱</button>
-              <button type="button" className="gd-ghost" onClick={() => navigate('#/level/1')}>Back to Level 1</button>
+              <button type="button" className="gd-ghost" onClick={() => goBack('#/level/1')}>Back to Level 1</button>
             </div>
           </div>
         </div>

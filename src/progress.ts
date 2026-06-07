@@ -4,7 +4,17 @@
  * device cleanly separates students. A future backend syncs this same shape.
  */
 
+import { stableRead } from './data/stableRead';
+
 const k = (learnerId: string, suffix: string) => `ll:${learnerId}:${suffix}`;
+
+function rawOf(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
 
 export interface Progress {
   earned: string[];
@@ -29,13 +39,18 @@ function readNumber(key: string): number | null {
   }
 }
 
+/** Earned achievement ids — memoized on the raw string for a stable reference
+ *  (safe as a React dependency; see data/stableRead.ts). */
 export function loadEarned(learnerId: string): string[] {
-  try {
-    const raw = JSON.parse(localStorage.getItem(k(learnerId, 'earned')) ?? '[]');
-    return Array.isArray(raw) ? raw.filter((x): x is string => typeof x === 'string') : [];
-  } catch {
-    return [];
-  }
+  const raw = rawOf(k(learnerId, 'earned'));
+  return stableRead<string[]>(`earned:${learnerId}`, raw ?? '∅', () => {
+    try {
+      const parsed = JSON.parse(raw ?? '[]');
+      return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : [];
+    } catch {
+      return [];
+    }
+  });
 }
 
 export function addEarned(learnerId: string, ids: string[]): string[] {
@@ -48,12 +63,22 @@ export function addEarned(learnerId: string, ids: string[]): string[] {
   return merged;
 }
 
+/** A learner's progress snapshot — memoized on the raw stored values so the same
+ *  object reference is returned until something actually changes. Stable to use
+ *  in render and dependency arrays. */
 export function loadProgress(learnerId: string): Progress {
-  return {
-    earned: loadEarned(learnerId),
-    bestMs: readNumber(k(learnerId, 'best')),
-    sessions: readNumber(k(learnerId, 'sessions')) ?? 0,
-  };
+  const earnedRaw = rawOf(k(learnerId, 'earned')) ?? '';
+  const bestRaw = rawOf(k(learnerId, 'best')) ?? '';
+  const sessRaw = rawOf(k(learnerId, 'sessions')) ?? '';
+  return stableRead<Progress>(
+    `progress:${learnerId}`,
+    `${earnedRaw}|${bestRaw}|${sessRaw}`,
+    () => ({
+      earned: loadEarned(learnerId),
+      bestMs: readNumber(k(learnerId, 'best')),
+      sessions: readNumber(k(learnerId, 'sessions')) ?? 0,
+    }),
+  );
 }
 
 export function recordFinish(learnerId: string, elapsedMs: number): FinishResult {

@@ -4,6 +4,8 @@
  * session log) is keyed per learner id. Local-only today; the same shape syncs
  * to a center backend later (each learner would also carry a center/class id).
  */
+import { stableRead } from './data/stableRead';
+
 export interface Learner {
   id: string;
   name: string;
@@ -16,18 +18,32 @@ const LEARNERS_KEY = 'll-learners';
 const CURRENT_KEY = 'll-current';
 const COLORS = ['#12b3a8', '#ff7aa2', '#8a6bff', '#2bb8e6', '#ffb01f', '#33c27a', '#ff7a4d', '#d069e0'];
 
-function readJSON<T>(key: string, fallback: T): T {
+function rawOf(key: string): string | null {
   try {
-    const v = localStorage.getItem(key);
-    return v ? (JSON.parse(v) as T) : fallback;
+    return localStorage.getItem(key);
   } catch {
-    return fallback;
+    return null;
   }
 }
 
+/**
+ * The roster. Memoized on the raw stored string so repeated reads return a
+ * STABLE array reference until the data actually changes — `getLearner(id)`
+ * therefore also returns a stable learner object. This is what keeps the value
+ * safe to use in React dependency arrays (see data/stableRead.ts). Callers must
+ * treat the result as read-only (derive with map/filter/sort, never mutate).
+ */
 export function loadLearners(): Learner[] {
-  const list = readJSON<Learner[]>(LEARNERS_KEY, []);
-  return Array.isArray(list) ? list.filter((l) => l && typeof l.id === 'string') : [];
+  const raw = rawOf(LEARNERS_KEY);
+  return stableRead<Learner[]>('learners', raw ?? '∅', () => {
+    if (!raw) return [];
+    try {
+      const list = JSON.parse(raw) as Learner[];
+      return Array.isArray(list) ? list.filter((l) => l && typeof l.id === 'string') : [];
+    } catch {
+      return [];
+    }
+  });
 }
 
 function persist(list: Learner[]): void {
@@ -41,10 +57,10 @@ function persist(list: Learner[]): void {
 /** Set the cloud learner uuid for a local profile (idempotent). */
 export function setCloudId(localId: string, cloudId: string): void {
   const list = loadLearners();
-  const l = list.find((x) => x.id === localId);
-  if (l && l.cloudId !== cloudId) {
-    l.cloudId = cloudId;
-    persist(list);
+  const target = list.find((x) => x.id === localId);
+  if (target && target.cloudId !== cloudId) {
+    // Rebuild immutably — never mutate the shared (cached) array in place.
+    persist(list.map((x) => (x.id === localId ? { ...x, cloudId } : x)));
   }
 }
 

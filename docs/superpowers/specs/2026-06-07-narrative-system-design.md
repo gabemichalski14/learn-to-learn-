@@ -327,3 +327,57 @@ soften to no-fail, player-paced). No engine rewrites.
 Phase 0 and Phase 1 are independent of the Space-vs-Garden first-chapter choice,
 so we **commence** on them immediately; the first-chapter content decision (§14.2)
 is finalized entering Phase 3, informed by the foundation we'll have built.
+
+## 15. Addendum (2026-06-07) — the cast (one character per level)
+
+User direction: *"research each character to embody a different study on the
+psychology of mascots/guides + our dyslexia data; each character pulls
+heartstrings; each level gets a different character; the level's games follow that
+character's storyline; pivot on building games from curriculum + the level's
+character arc."* Approved: framework + **build Level 2 first**.
+
+### 15.1 Principle
+
+**Pip stays the constant companion** (parasocial anchor across the whole journey).
+**Each level introduces a new friend** built from (a) a *distinct psychology
+lever*, (b) a *distinct dyslexic strength* (the cast collectively affirms the whole
+spectrum), and (c) a *wound the level's Barton skill heals*. That level's games
+**dramatize helping** the character (reframe-not-rewrite; empathy-driven, no-fail).
+Healed characters **join the Garden home** (bloom as their named planting).
+
+Research levers (assign one per character): anthropomorphism/parasocial trust;
+companion-design *contrast*; Spiritfarer empathy-not-rewards loop; Bandura
+self-efficacy (mastery, **vicarious modeling**, encouragement, calm state); growth
+mindset ("not yet"); belonging; curiosity; flow; autonomy; mastery identity.
+
+### 15.2 Cast map (working — names/levers rename-able; content in data tables)
+
+| Lvl | Curriculum | Character | Dyslexic strength | Psychology lever |
+|----|----|----|----|----|
+| 1 | Phonemic awareness (oral) | Echo | listening / musical pattern | parasocial + empathy |
+| 2 | Consonants & short vowels | **Moss** (BUILT) | spatial / 3-D sorting | self-efficacy (vicarious mastery) |
+| 3 | Closed syllables & rules | a builder | rule/pattern-finding | growth mindset |
+| 4 | Syllable division | a navigator | big-picture chunking | mastery experience |
+| 5 | Prefixes & suffixes | a tinkerer | creative recombination | autonomy |
+| 6 | Silent-E reasons | a detective | reasoning / "why" | curiosity |
+| 7 | Vowel-R | the "bossy R" to befriend | verbal play | belonging |
+| 8 | Advanced vowel teams | a harmonizer | pattern / music | flow |
+| 9 | Foreign-language influence | a traveler | cross-connection | cultural belonging |
+| 10 | Greek/Latin roots | a root-keeper sage | meaning / etymology | mastery identity |
+
+### 15.3 Built reference — Level 2 / Moss (`src/world/lore/cast.ts`)
+
+`LevelCharacter` registry + `characterStage` (pure: arrived → healing → healed →
+resident, derived from real mastery + lore) + `beatFor` (authored, deterministic).
+Surfaced by `worlds/space/LevelStory.tsx` on the Space hub (reusable for every
+level). Moss = a sprout-critter adrift in space who lost his hum (/m/); helping =
+the existing Blast Off (beginning-sounds) game unchanged; on heal he goes **home
+to the Garden** where the same /m/ mastery already blooms as "the /m/ marigold"
+(Phase 2) — the worlds unite. Committed `744bafb`.
+
+### 15.4 Game-build pivot (forward)
+
+Future game work is authored **per level around its character's arc + the Barton
+curriculum** for that level (not generic mechanics). Reuse `LevelStory` + extend
+`CAST`; reframe each level's game as helping that character; keep mechanics unless
+they fight coziness. Levels 3–10 fill in as their books/curriculum are captured.

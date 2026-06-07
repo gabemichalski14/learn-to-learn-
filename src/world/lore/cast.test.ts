@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { CAST, MOSS, castFor, characterStage, beatFor } from './cast';
+import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine } from './cast';
+import type { ReactionKind } from './cast';
 import { parseSkillKey } from '../../mastery/skills';
 import type { MasteryMap } from '../../mastery/mastery';
 import type { LoreState } from './loreStore';
@@ -54,5 +55,29 @@ describe('beatFor', () => {
   it('is deterministic given a seeded rng', () => {
     expect(beatFor(MOSS, 'arrived', () => 0)).toBe(MOSS.beats.arrived![0]);
     expect(beatFor(MOSS, 'arrived', () => 0.99)).toBe(MOSS.beats.arrived![1]);
+  });
+});
+
+describe('persona (want/need/flaw spine)', () => {
+  it('every cast member has a full, non-empty persona', () => {
+    for (const c of CAST) {
+      for (const field of ['want', 'need', 'flaw', 'trait'] as const) {
+        expect(c.persona[field].length).toBeGreaterThan(0);
+      }
+    }
+  });
+});
+
+describe('in-game reactions', () => {
+  const kinds: ReactionKind[] = ['intro', 'correct', 'wrong', 'clear', 'win'];
+  it('Moss reacts to every in-game moment, with no undefined leaks', () => {
+    for (const kind of kinds) {
+      const line = reactionLine(MOSS, kind, () => 0);
+      expect(line.length).toBeGreaterThan(0);
+      expect(line).not.toContain('undefined');
+    }
+  });
+  it('reactionLine is deterministic given a seeded rng', () => {
+    expect(reactionLine(MOSS, 'correct', () => 0)).toBe(MOSS.reactions.correct![0]);
   });
 });

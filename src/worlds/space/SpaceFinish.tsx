@@ -37,12 +37,13 @@ interface Props {
   best: boolean;
   stars: number; // 1–3
   title: string;
+  beat?: string; // the level character's win line (their arc payoff)
   onRestart: () => void;
   onBack: () => void;
 }
 
 /** Over-the-top "you saved the galaxy" finish overlay for a completed patrol. */
-export function SpaceFinish({ ms, best, stars, title, onRestart, onBack }: Props) {
+export function SpaceFinish({ ms, best, stars, title, beat, onRestart, onBack }: Props) {
   const [bits] = useState(makeConfetti);
   return (
     <div className="sg-finish sg-win">
@@ -74,7 +75,9 @@ export function SpaceFinish({ ms, best, stars, title, onRestart, onBack }: Props
             <span key={i} className={i < stars ? 'on' : undefined} style={{ animationDelay: `${0.12 * i}s` }}>★</span>
           ))}
         </div>
-        <p className="sg-win__sub">You cleared every sector and saved the whole galaxy! 🚀🌌</p>
+        {beat
+          ? <p className="sg-win__sub sg-win__beat">{beat}</p>
+          : <p className="sg-win__sub">You cleared every sector and saved the whole galaxy! 🚀🌌</p>}
         <p className="sg-win__stat">
           Patrol time <b>{formatTime(ms)}</b>{best ? ' · 🏆 NEW BEST!' : ''}
         </p>

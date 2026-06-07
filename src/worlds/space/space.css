@@ -333,3 +333,14 @@
 .sg-story__cta--home{ background:linear-gradient(135deg,#f6d36b,#f0b44e); }
 .sg-story__cta--ghost{ background:rgba(255,255,255,.1); color:#cfeef3; border:1px solid rgba(150,220,230,.4); }
 .sg-story__cta:focus-visible{ outline:3px solid #eafcff; outline-offset:3px; }
+
+/* Level character as the in-game companion (replaces the generic Scout) */
+.sg-char{ font-size:48px; line-height:1; display:inline-block; filter:drop-shadow(0 6px 12px rgba(120,200,220,.45));
+  animation:sg-charbob 3.4s ease-in-out infinite; }
+.sg-char--cheer{ animation:sg-charcheer .6s ease; }
+.sg-char--wobble{ animation:sg-charwobble .6s ease; }
+@keyframes sg-charbob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+@keyframes sg-charcheer{ 0%{transform:scale(1)} 40%{transform:scale(1.26) rotate(-6deg)} 100%{transform:scale(1)} }
+@keyframes sg-charwobble{ 0%,100%{transform:rotate(0)} 25%{transform:rotate(-9deg)} 75%{transform:rotate(9deg)} }
+.sg-win__beat{ font-style:italic; color:#eafcff; }
+@media (prefers-reduced-motion: reduce){ .sg-char,.sg-char--cheer,.sg-char--wobble{ animation:none; } }

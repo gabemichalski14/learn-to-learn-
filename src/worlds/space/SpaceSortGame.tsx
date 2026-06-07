@@ -14,6 +14,7 @@ import { goBack } from '../../router';
 import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
 import { SpaceSpecimen } from './creatureIcons';
 import { SpaceFinish } from './SpaceFinish';
+import { castFor, reactionLine } from '../../world/lore/cast';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
 import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import './space.css';
@@ -110,7 +111,7 @@ export function SpaceSortGame({
   const posWord = POS_WORD[target];
   const [startAt] = useState(() => sessionStartAt ?? Date.now());
   const [catching, setCatching] = useState<string | null>(null);
-  const [finish, setFinish] = useState<{ ms: number; best: boolean; stars: number; title: string } | null>(null);
+  const [finish, setFinish] = useState<{ ms: number; best: boolean; stars: number; title: string; beat?: string } | null>(null);
   const [guideOpen, setGuideOpen] = useState(true);
   const [combo, setCombo] = useState(0);
   const comboRef = useRef(0);
@@ -119,6 +120,11 @@ export function SpaceSortGame({
   const [muted, setMutedState] = useState(isMuted());
   const [echoPing, setEchoPing] = useState(0); // bumps on an audio moment → Echo twinkles
   const pingEcho = () => setEchoPing((p) => p + 1);
+  // The level's character is the in-game companion — you play to help THEM, and
+  // they react to every move (agency → attachment). Lines are authored/data-driven.
+  const character = castFor(level);
+  const [charLine, setCharLine] = useState(() => (character ? reactionLine(character, 'intro') : ''));
+  const [clearLine] = useState(() => (character ? reactionLine(character, 'clear') : '')); // stable sector-clear beat
   // Shuffle the palette across THIS round's planets so colour never predicts the
   // vowel. Lazy init (runs once per mount; the screen remounts each round) keeps
   // colours stable mid-round and re-rolls them every new sector — no pattern.
@@ -180,7 +186,7 @@ export function SpaceSortGame({
     const stars = totals.wrong === 0 ? 3 : totals.wrong <= 2 ? 2 : 1;
     const title = HERO_TITLES[Math.floor(Math.random() * HERO_TITLES.length)];
     sfx.win();
-    setFinish({ ms: durationMs, best: res.isBest, stars, title });
+    setFinish({ ms: durationMs, best: res.isBest, stars, title, beat: character ? reactionLine(character, 'win') : undefined });
   }
 
   function toggleMute() {
@@ -202,6 +208,7 @@ export function SpaceSortGame({
       setCombo(c);
       if (c >= 2) sfx.combo(c); else sfx.correct();
       setMood('cheer');
+      if (character) setCharLine(reactionLine(character, 'correct'));
       window.setTimeout(() => setCatching((cur) => (cur === basket ? null : cur)), 520);
       window.setTimeout(() => setMood((m) => (m === 'cheer' ? null : m)), 760);
     } else {
@@ -210,6 +217,7 @@ export function SpaceSortGame({
       setCombo(0);
       sfx.wrong();
       setMood('wobble');
+      if (character) setCharLine(reactionLine(character, 'wrong'));
       setShake(true);
       window.setTimeout(() => setShake(false), 420);
       window.setTimeout(() => setMood((m) => (m === 'wobble' ? null : m)), 620);
@@ -258,16 +266,28 @@ export function SpaceSortGame({
             type="button"
             className={`sg-scout__btn${guideOpen ? '' : ' nudge'}`}
             onClick={() => setGuideOpen((o) => !o)}
-            aria-label="Scout — tap for directions"
+            aria-label={character ? `${character.name} — tap to talk` : 'Scout — tap for directions'}
           >
-            <ScoutDrone mood={mood} />
+            {character
+              ? <span className={`sg-char${mood ? ` sg-char--${mood}` : ''}`} aria-hidden="true">{character.emoji}</span>
+              : <ScoutDrone mood={mood} />}
           </button>
           {guideOpen && (
             <div className="sg-bubble" role="status">
-              <button type="button" className="sg-bubble__x" onClick={() => setGuideOpen(false)} aria-label="Close directions">✕</button>
-              <p className="sg-bubble__hi">Scout here, Captain! 🛰️</p>
-              <p>Tap a space critter to <b>hear its word</b>, then drag it to the planet with the <b>same {posWord} sound</b>.</p>
-              <p className="sg-bubble__hint">Tap a planet to hear its sound, too.</p>
+              <button type="button" className="sg-bubble__x" onClick={() => setGuideOpen(false)} aria-label="Close">✕</button>
+              {character ? (
+                <>
+                  <p className="sg-bubble__hi">{character.name} {character.emoji}</p>
+                  <p>{charLine}</p>
+                  <p className="sg-bubble__hint">Tap a critter to hear its word, then drag it to the planet with the same {posWord} sound.</p>
+                </>
+              ) : (
+                <>
+                  <p className="sg-bubble__hi">Scout here, Captain! 🛰️</p>
+                  <p>Tap a space critter to <b>hear its word</b>, then drag it to the planet with the <b>same {posWord} sound</b>.</p>
+                  <p className="sg-bubble__hint">Tap a planet to hear its sound, too.</p>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -276,7 +296,7 @@ export function SpaceSortGame({
           <div className="sg-finish">
             <div className="sg-finish__card">
               <p className="sg-finish__title">Sector clear! 🛰️</p>
-              <p className="sg-finish__sub">Nice routing. Ready for the next sector?</p>
+              <p className="sg-finish__sub">{character && clearLine ? clearLine : 'Nice routing. Ready for the next sector?'}</p>
               <button type="button" className="sg-btn" onClick={onAdvance}>Next sector →</button>
             </div>
           </div>
@@ -288,6 +308,7 @@ export function SpaceSortGame({
             best={finish.best}
             stars={finish.stars}
             title={finish.title}
+            beat={finish.beat}
             onRestart={() => onRestart?.()}
             onBack={() => goBack(`#/level/${level}`)}
           />

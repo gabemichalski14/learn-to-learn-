@@ -17,6 +17,19 @@ import type { MasteryMap } from '../../mastery/mastery';
 import { isMastered } from './plantings';
 import type { LoreState, StoryStage } from './loreStore';
 
+/** The compelling-character spine (want vs need + a flaw + how they show emotion).
+ *  Drives writing and gives the cast real arcs people follow. */
+export interface Persona {
+  want: string;   // the surface goal they chase
+  need: string;   // the deeper thing they actually need (the heart of the arc)
+  flaw: string;   // how they get in their own way
+  trait: string;  // how they show emotion (expression > dialogue)
+}
+
+/** In-game reaction moments — the character REACTS to what you do (agency →
+ *  attachment), so they live inside the game, not just on the hub. */
+export type ReactionKind = 'intro' | 'correct' | 'wrong' | 'clear' | 'win';
+
 export interface LevelCharacter {
   id: string;          // 'moss'
   level: number;       // which level they belong to
@@ -26,13 +39,17 @@ export interface LevelCharacter {
   strength: string;
   /** The psychology lever they're designed around (author/tutor note). */
   lever: string;
+  /** Want/need/flaw/expression — the arc spine. */
+  persona: Persona;
   /** The sound they "lost" — healed by mastering this skill in the level's game. */
   skillKey: SkillKey;
   soundId: string;
   /** Where helping happens (the level's game). */
   playRoute: string;
-  /** Authored beat lines per stage (no GenAI). */
+  /** Authored beat lines per story stage (hub). */
   beats: Partial<Record<StoryStage, string[]>>;
+  /** Authored in-game reactions (no GenAI). */
+  reactions: Partial<Record<ReactionKind, string[]>>;
 }
 
 export const MOSS: LevelCharacter = {
@@ -42,9 +59,39 @@ export const MOSS: LevelCharacter = {
   emoji: '🌱',
   strength: 'spatial sense — he knows where every sound belongs, even in the dark',
   lever: 'self-efficacy via vicarious mastery (you watch a lost sound click home)',
+  persona: {
+    want: 'find his lost hum (/m/) and go home',
+    need: "to learn he wasn't broken — just lost — and that the right friend and the right way make him whole",
+    flaw: 'blames himself and hides in the dark, sure he is "broken"',
+    trait: 'shy; curls up when unsure, glows and hums when a sound clicks home',
+  },
   skillKey: 'sound:first:m',
   soundId: 'm',
   playRoute: '#/play/beginning-sounds',
+  reactions: {
+    intro: [
+      "These little critters carry my lost hums, scattered across the sectors. Help me send each one home to its sound? 🌱",
+      "Will you help me? Each critter belongs with a sound. Sort them home and I get a little more… me.",
+    ],
+    correct: [
+      'Mmm — that one’s mine! I can feel it. 🌟',
+      'Yes! Home it goes. You hear it too, don’t you?',
+      'There — a hum comes back. You’re good at this.',
+    ],
+    wrong: [
+      "Oh — not that sound. But you’re still here with me, and that’s what counts. Try again? 💚",
+      "Close! The little ones are slippery — they were for me too. Listen once more?",
+      "Not quite — and that’s okay. ‘Not yet’ just means we keep going.",
+    ],
+    clear: [
+      "A whole sector, cleared. I’m humming a little louder already…",
+      "Look at that — you sent them all home. I feel less lost.",
+    ],
+    win: [
+      "You brought them ALL home — mmmmm! 🌼 I wasn’t broken… I was just waiting for you.",
+      "Every hum, home. I’m whole again — and it’s because you stayed. Let’s go to the garden.",
+    ],
+  },
   beats: {
     arrived: [
       "…oh! A friendly face. I'm Moss — a little sprout, drifted up here from a garden far below. Out in the dark I lost my hum… my /m/ sound. Could you help me find it? 🌱",
@@ -87,6 +134,13 @@ export function characterStage(c: LevelCharacter, lore: LoreState, mastery: Mast
 /** A beat line for a stage (deterministic given rng). Falls back to 'arrived'. */
 export function beatFor(c: LevelCharacter, stage: StoryStage, rng: () => number = Math.random): string {
   const pool = c.beats[stage] ?? c.beats.arrived ?? [];
+  if (pool.length === 0) return '';
+  return pool[Math.floor(rng() * pool.length)] ?? pool[0];
+}
+
+/** An in-game reaction line for a moment (deterministic given rng). */
+export function reactionLine(c: LevelCharacter, kind: ReactionKind, rng: () => number = Math.random): string {
+  const pool = c.reactions[kind] ?? c.reactions.intro ?? [];
   if (pool.length === 0) return '';
   return pool[Math.floor(rng() * pool.length)] ?? pool[0];
 }

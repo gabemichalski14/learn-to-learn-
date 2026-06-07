@@ -18,12 +18,14 @@
  * the more named sounds the learner has grown.
  */
 import type { Line } from './dialogue';
+import type { Persona } from './cast';
 
 export interface Character {
   id: 'pip' | 'echo';
   name: string;
   tagline: string;
-  bio: string[]; // short paragraphs for an "about" surface
+  bio: string[];     // short paragraphs for an "about" surface
+  persona: Persona;  // want/need/flaw/expression — Pip & Echo have real arcs too
 }
 
 /** Bond counts at which Pip opens up more of himself. Never decays. */
@@ -45,6 +47,12 @@ export const PIP: Character = {
     "So Pip found a way that works: one sound at a time. Hear it, say it, see it, plant it — make it solid, then the next. One by one, the garden wakes up.",
     "He'll tell you the truth: you have the very same gifts. We grow this place together.",
   ],
+  persona: {
+    want: 'to wake the whole Sound Garden back into song',
+    need: 'to stop hiding that the little pieces are hard for him — and trust that leading with his gifts is enough',
+    flaw: 'rushes to the big picture and gets frustrated by the tiny pieces; downplays how hard it once was for him',
+    trait: 'warm and quick to wonder; lights up at patterns, goes quiet when a small sound slips away',
+  },
 };
 
 export const ECHO: Character = {
@@ -55,6 +63,12 @@ export const ECHO: Character = {
     "Echo is the old song of the Sound Garden — the music it made before the sounds drifted apart.",
     "Echo is shy, and easy to miss, but grows clearer every time you make a sound true. Grow enough, and the whole garden sings.",
   ],
+  persona: {
+    want: 'to be heard — to sing again',
+    need: 'to believe she still matters even when she is faint',
+    flaw: 'goes quiet and hides when she is unsure she is wanted',
+    trait: 'shy and shimmering; brightens with every sound you make true',
+  },
 };
 
 const pct = (n: number) => Math.round(n * 100);

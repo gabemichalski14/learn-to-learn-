@@ -9,6 +9,13 @@ export interface SkillHelp {
 
 /** Our own kid-friendly guidance per skill (never Barton's scripts). */
 export function skillHelp(key: SkillKey): SkillHelp {
+  if (key === 'pa:segment') {
+    return {
+      what: 'We listen to a whole word and tap once for each sound we hear.',
+      why: 'Hearing the separate sounds in a word is the first step to reading and spelling it.',
+      tip: 'Say a word slowly and stretch it — c…a…t — tapping a finger for each sound.',
+    };
+  }
   const p = parseSkillKey(key);
   if (!p) return { what: key, why: 'A skill to practice.', tip: 'Keep practicing — short and playful.' };
   const s = p.soundId;

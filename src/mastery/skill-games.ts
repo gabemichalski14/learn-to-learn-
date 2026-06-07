@@ -3,6 +3,7 @@ import type { SkillKey } from './skills';
 
 /** The game that drills a given skill, as a route with a ?focus= param. Null if none yet. */
 export function practiceRouteForSkill(skillKey: SkillKey): string | null {
+  if (skillKey === 'pa:segment') return '#/play/tap-it-out';
   const p = parseSkillKey(skillKey);
   if (!p) return null;
   const game = p.target === 'ending' ? 'ending-sounds' : p.target === 'medial' ? 'middle-sounds' : 'beginning-sounds';

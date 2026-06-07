@@ -27,6 +27,7 @@ export function parseSkillKey(key: SkillKey): ParsedSkill | null {
 
 /** Learner-facing label. ipa is simply /id/ in our registry, so we build from the id. */
 export function skillLabel(key: SkillKey): string {
+  if (key === 'pa:segment') return 'hearing each sound in a word';
   const p = parseSkillKey(key);
   if (!p) return key;
   const where = p.target === 'ending' ? 'at the end' : p.target === 'medial' ? 'in the middle' : 'at the start';

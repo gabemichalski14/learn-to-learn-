@@ -1,0 +1,114 @@
+/* ============================================================
+   Sound Garden world — Level 1 (Phonemic Awareness)
+   A calm meadow; the child plants a sprout for every sound.
+   ============================================================ */
+.gd { position: relative; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+  color: #173d2a; font-family: 'Poppins', -apple-system, system-ui, sans-serif; overflow: hidden; }
+
+/* ---- backdrop ---- */
+.gd-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden;
+  background: linear-gradient(180deg, #bfe9fb 0%, #d8f3ef 46%, #eafae6 100%); }
+.gd-sun { position: absolute; top: 6%; right: 9%; width: 84px; height: 84px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #ffe07a, #f5c84c); box-shadow: 0 0 60px 18px rgba(245, 200, 76, 0.45);
+  animation: gd-sun 7s ease-in-out infinite alternate; }
+@keyframes gd-sun { from { transform: scale(1); } to { transform: scale(1.06); } }
+.gd-cloud { position: absolute; width: 120px; height: 36px; background: #ffffff; border-radius: 40px; opacity: 0.92;
+  box-shadow: 30px 8px 0 -4px #fff, -32px 10px 0 -2px #fff, 8px -12px 0 -6px #fff; animation: gd-drift linear infinite; }
+.gd-cloud--1 { top: 12%; left: -14%; transform: scale(1); animation-duration: 58s; }
+.gd-cloud--2 { top: 24%; left: -22%; transform: scale(1.4); opacity: 0.8; animation-duration: 82s; animation-delay: -30s; }
+.gd-cloud--3 { top: 7%; left: -10%; transform: scale(0.7); animation-duration: 66s; animation-delay: -48s; }
+@keyframes gd-drift { from { left: -22%; } to { left: 118%; } }
+.gd-hill { position: absolute; left: -10%; right: -10%; border-radius: 50% 50% 0 0; }
+.gd-hill--back { bottom: 0; height: 42%; background: linear-gradient(180deg, #a8d5c2, #8ecf9f); }
+.gd-hill--front { bottom: -6%; height: 30%; background: linear-gradient(180deg, #6bae7f, #4e9568); border-radius: 46% 54% 0 0; }
+.gd-fly { position: absolute; font-size: 22px; }
+.gd-fly--1 { top: 30%; left: 12%; animation: gd-flutter 9s ease-in-out infinite; }
+.gd-fly--2 { top: 44%; right: 16%; font-size: 18px; animation: gd-flutter 11s ease-in-out infinite reverse; }
+@keyframes gd-flutter { 0%, 100% { transform: translate(0, 0) rotate(-4deg); } 50% { transform: translate(24px, -18px) rotate(6deg); } }
+.gd-vig { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 -40px 80px rgba(78, 149, 104, 0.25); }
+
+/* ---- HUD ---- */
+.gd-hud { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 16px; max-width: 760px; margin: 0 auto; width: 100%; flex-wrap: wrap; }
+.gd-badge { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 12px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: #2f7d56; }
+.gd-back { border: none; background: rgba(255, 255, 255, 0.7); color: #2f7d56; font: inherit; font-weight: 800; font-size: 13px;
+  border-radius: 999px; padding: 6px 14px; cursor: pointer; box-shadow: 0 2px 8px rgba(78, 149, 104, 0.18); }
+.gd-back:focus-visible { outline: 2px solid #173d2a; outline-offset: 2px; }
+.gd-seg { display: flex; gap: 4px; }
+.gd-seg i { width: 14px; height: 6px; border-radius: 3px; background: rgba(78, 149, 104, 0.25); }
+.gd-seg i.on { background: linear-gradient(90deg, #6bae7f, #4e9568); }
+.gd-who { font-size: 12px; font-weight: 700; color: #2f7d56; background: rgba(255, 255, 255, 0.7); border-radius: 999px; padding: 3px 10px; }
+
+/* ---- stage ---- */
+.gd-stage { position: relative; z-index: 1; flex: 1 1 auto; min-height: 0; width: 100%; max-width: 620px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 6px 16px 40px; text-align: center; }
+.gd-word { display: inline-flex; flex-direction: column; align-items: center; gap: 12px; padding: 18px 26px; border-radius: 26px;
+  background: rgba(255, 255, 255, 0.92); box-shadow: 0 16px 36px rgba(78, 149, 104, 0.28); border: 1px solid rgba(78, 149, 104, 0.18); }
+.gd-pic { font-size: clamp(56px, 16vw, 88px); line-height: 1; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18)); }
+.gd-hear { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer;
+  border: none; color: #fff; background: linear-gradient(135deg, #6bae7f, #4e9568); padding: 9px 20px; border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(78, 149, 104, 0.4); }
+.gd-hear:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+.gd-ask { margin: 2px 0; font-size: clamp(15px, 3.4vw, 18px); font-weight: 700; color: #235c40; }
+
+/* sprout row */
+.gd-row { display: flex; align-items: flex-end; justify-content: center; gap: 10px; min-height: 64px; flex-wrap: wrap; }
+.gd-row__hint { color: #5e8a6f; font-size: 13px; font-style: italic; opacity: 0.8; align-self: center; }
+.gd-grown { font-size: 40px; line-height: 1; animation: gd-pop 0.32s cubic-bezier(0.2, 1.5, 0.4, 1) both; }
+@keyframes gd-pop { from { transform: scale(0) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+.gd-grown.bloom { animation: gd-bloom 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+@keyframes gd-bloom { 0% { transform: scale(0.6) rotate(-12deg); } 60% { transform: scale(1.2) rotate(8deg); } 100% { transform: scale(1) rotate(0); } }
+
+/* tap pad + actions */
+.gd-pad { font: inherit; font-weight: 800; font-size: 17px; cursor: pointer; color: #235c40;
+  background: rgba(255, 255, 255, 0.85); border: 2px dashed #6bae7f; border-radius: 18px; padding: 16px 28px;
+  box-shadow: 0 6px 16px rgba(78, 149, 104, 0.18); transition: transform 0.1s ease, background 0.15s ease; min-width: 220px; }
+.gd-pad:hover { background: #fff; }
+.gd-pad:active { transform: scale(0.97); }
+.gd-pad:disabled { opacity: 0.5; cursor: default; }
+.gd-pad:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+.gd-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.gd-btn { font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; border: none; color: #fff;
+  background: linear-gradient(135deg, #f5b13c, #ef962a); padding: 12px 24px; border-radius: 999px; box-shadow: 0 8px 18px rgba(239, 150, 42, 0.4); }
+.gd-btn:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+.gd-btn:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+.gd-ghost { font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; color: #2f7d56;
+  background: transparent; border: 1.5px solid #8ecf9f; padding: 12px 22px; border-radius: 999px; }
+.gd-ghost:disabled { opacity: 0.4; cursor: default; }
+.gd-ghost:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+.gd-status { min-height: 22px; font-size: 14px; font-weight: 700; color: #235c40; margin: 2px 0; }
+.gd-status--wrong { color: #b4622a; }
+
+/* ---- Sprout guide + speech bubble ---- */
+.gd-scout { position: absolute; z-index: 5; left: 14px; bottom: 14px; display: flex; align-items: flex-end; gap: 10px; max-width: min(80vw, 320px); }
+.gd-sproutmascot { display: block; filter: drop-shadow(0 8px 14px rgba(78, 149, 104, 0.35)); animation: gd-hover 3.4s ease-in-out infinite alternate; }
+@keyframes gd-hover { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+.gd-sproutmascot__sway { transform-origin: 32px 52px; animation: gd-sway 3s ease-in-out infinite alternate; }
+@keyframes gd-sway { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+.gd-scout__btn { flex: none; background: none; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.gd-scout__btn:focus-visible { outline: 2px solid #173d2a; outline-offset: 4px; border-radius: 50%; }
+.gd-bubble { position: relative; background: #fff; border: 1px solid rgba(78, 149, 104, 0.3); border-radius: 16px; padding: 12px 14px;
+  color: #235c40; font-size: 13px; line-height: 1.4; max-width: 232px; box-shadow: 0 12px 28px rgba(78, 149, 104, 0.28);
+  transform-origin: left bottom; animation: gd-pop 0.3s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.gd-bubble::after { content: ''; position: absolute; left: -9px; bottom: 18px; width: 0; height: 0; border: 7px solid transparent; border-right-color: #fff; }
+.gd-bubble p { margin: 0; }
+.gd-bubble b { color: #2f7d56; }
+.gd-bubble__hi { font-weight: 800; color: #4e9568; margin-bottom: 4px !important; }
+.gd-bubble__x { position: absolute; top: 4px; right: 7px; background: none; border: none; color: #8ab397; cursor: pointer; font-size: 13px; line-height: 1; padding: 2px; }
+
+/* ---- finish ---- */
+.gd-finish { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; text-align: center;
+  background: rgba(232, 250, 230, 0.82); backdrop-filter: blur(3px); }
+.gd-finish__card { background: #fff; border: 1px solid rgba(78, 149, 104, 0.3); border-radius: 26px; padding: 30px 32px;
+  box-shadow: 0 24px 60px rgba(78, 149, 104, 0.35); max-width: 340px; animation: gd-pop 0.4s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
+.gd-finish__bloom { font-size: 48px; line-height: 1; }
+.gd-finish__title { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 26px; color: #173d2a; margin: 8px 0 4px; }
+.gd-finish__sub { font-size: 14px; color: #4e7a5e; margin: 0 0 14px; }
+.gd-finish__stars { font-size: 30px; letter-spacing: 6px; color: rgba(78, 149, 104, 0.22); margin-bottom: 16px; }
+.gd-finish__stars span.on { color: #f5c84c; text-shadow: 0 0 12px rgba(245, 200, 76, 0.7); }
+.gd-finish__btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gd-sun, .gd-cloud, .gd-fly, .gd-sproutmascot, .gd-sproutmascot__sway, .gd-grown, .gd-grown.bloom, .gd-bubble, .gd-finish__card { animation: none; }
+}

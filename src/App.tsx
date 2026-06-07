@@ -11,6 +11,7 @@ import { GamesPage } from './GamesPage';
 import { ProfilePage } from './ProfilePage';
 import { NavDrawer } from './NavDrawer';
 import { SpaceLevelHub } from './worlds/space/SpaceLevelHub';
+import { TapItOutGame } from './worlds/garden/TapItOutGame';
 import type { ThemeId } from './themes';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
 import { useTutorSignedIn } from './useAuth';
@@ -51,6 +52,9 @@ export default function App() {
 
   // The game screen stays immersive (its own back button); every other page
   // gets the left-side burger menu.
+  if (route.name === 'play' && route.game === 'tap-it-out') {
+    return <TapItOutGame learnerId={learnerId} />;
+  }
   if (route.name === 'play') {
     return <GameScreen theme={theme} setTheme={setTheme} learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} focus={route.focus} />;
   }

@@ -35,7 +35,7 @@ export const LEVELS: LevelInfo[] = [
     title: 'Phonemic Awareness',
     focus: 'Hearing and changing the sounds in spoken words (oral, no letters)',
     games: [
-      soon('l1-tap', 'Tap It Out', '👏', 'Tap a tile for each sound you hear.'),
+      { id: 'tap-it-out', title: 'Tap It Out', emoji: '🌱', tagline: 'Tap a sprout for each sound you hear.', status: 'available', route: '#/play/tap-it-out' },
       soon('l1-switch', 'Switch It', '🔁', 'Change or drop one sound to make a new word.'),
       soon('l1-same', 'Same or Different?', '👂', 'Decide if two spoken words match.'),
     ],

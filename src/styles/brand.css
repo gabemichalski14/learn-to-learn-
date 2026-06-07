@@ -16,14 +16,16 @@
   --pill: 999px;
 }
 
-/* ---- global atmosphere: a soft brand mesh behind everything ---- */
-body {
+/* ---- global atmosphere: a soft brand mesh on a fixed, COMPOSITED layer.
+   (A fixed ::before paints once and never repaints on scroll — unlike
+   background-attachment:fixed, which janks the whole viewport every frame.) ---- */
+body { background: var(--bg); }
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
     radial-gradient(60vw 50vh at 12% -8%, rgba(168, 213, 194, 0.30), transparent 60%),
     radial-gradient(55vw 45vh at 98% 6%, rgba(27, 154, 170, 0.12), transparent 55%),
-    radial-gradient(50vw 50vh at 88% 102%, rgba(245, 200, 76, 0.10), transparent 60%),
-    var(--bg);
-  background-attachment: fixed;
+    radial-gradient(50vw 50vh at 88% 102%, rgba(245, 200, 76, 0.10), transparent 60%);
 }
 
 /* ---- page shell ---- */

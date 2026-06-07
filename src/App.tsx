@@ -12,6 +12,7 @@ import { ProfilePage } from './ProfilePage';
 import { NavDrawer } from './NavDrawer';
 import { SiteFooter } from './SiteFooter';
 import { LivingWorld } from './world/LivingWorld';
+import { GardenFrame } from './world/GardenFrame';
 import { EasterEggs } from './world/EasterEggs';
 import { useWorldTier } from './world/worldTier';
 import { MascotBuddy } from './mascots/MascotBuddy';
@@ -80,6 +81,7 @@ export default function App() {
   return (
     <>
       <LivingWorld tier={world.tier} />
+      <GardenFrame />
       <NavDrawer route={route.name} isTutor={isTutor} />
       {page}
       <SiteFooter />

@@ -113,7 +113,7 @@ export function MascotBuddy() {
       return;
     }
     if (open) { setOpen(false); return; }
-    setPhrase(randomPhrase(['greet', 'nudge', 'idle']));
+    setPhrase(randomPhrase(['greet', 'nudge', 'idle', 'tip']));
     setExpr('excited');
     setOpen(true);
     setBurst(true);

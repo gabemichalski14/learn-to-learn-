@@ -7,10 +7,11 @@
    ============================================================ */
 
 :root {
-  --shadow-sm: 0 2px 8px rgba(13, 27, 42, 0.06);
-  --shadow-md: 0 12px 30px rgba(13, 27, 42, 0.08);
-  --shadow-lg: 0 26px 60px rgba(13, 27, 42, 0.12);
-  --shadow-teal: 0 14px 30px rgba(27, 154, 170, 0.28);
+  /* warm-tinted, soft + generous shadows so cards nestle into the scene */
+  --shadow-sm: 0 3px 12px rgba(74, 54, 33, 0.08);
+  --shadow-md: 0 16px 38px rgba(74, 54, 33, 0.12);
+  --shadow-lg: 0 30px 70px rgba(74, 54, 33, 0.16);
+  --shadow-teal: 0 16px 34px rgba(27, 154, 170, 0.26);
   --radius-lg: 24px;
   --radius-xl: 30px;
   --pill: 999px;
@@ -23,9 +24,9 @@ body { background: var(--bg); }
 body::before {
   content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(60vw 50vh at 12% -8%, rgba(168, 213, 194, 0.30), transparent 60%),
-    radial-gradient(55vw 45vh at 98% 6%, rgba(27, 154, 170, 0.12), transparent 55%),
-    radial-gradient(50vw 50vh at 88% 102%, rgba(245, 200, 76, 0.10), transparent 60%);
+    radial-gradient(62vw 55vh at 50% -10%, rgba(255, 214, 150, 0.42), transparent 60%),  /* warm sun overhead */
+    radial-gradient(52vw 45vh at 100% 8%, rgba(255, 178, 120, 0.18), transparent 55%),    /* peach glow */
+    radial-gradient(60vw 52vh at 50% 104%, rgba(122, 184, 106, 0.16), transparent 60%);   /* green ground haze */
 }
 
 /* ---- page shell ---- */

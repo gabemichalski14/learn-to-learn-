@@ -10,20 +10,37 @@
   z-index: -1;            /* behind page content, above the body base gradient */
   overflow: hidden;
   pointer-events: none;
-  /* A soft sky-to-meadow wash that warms as the tier climbs (set per tier). */
-  --lw-sky-top: #eef6f4;
-  --lw-sky-bot: #f4f7f2;
-  --lw-land: rgba(122, 184, 106, 0.10);
-  background: linear-gradient(180deg, var(--lw-sky-top) 0%, var(--lw-sky-bot) 62%);
+  /* Golden-hour wash: warm cream sky, a low warm sun, a soft green meadow floor.
+     Warms further as the tier climbs (set per tier). */
+  --lw-sky-top: #fdf4e4;
+  --lw-sky-bot: #f3efdf;
+  --lw-land: rgba(150, 172, 92, 0.12);
+  --lw-sun: rgba(255, 210, 140, 0.55);
+  background:
+    radial-gradient(75vw 52vh at 76% -8%, var(--lw-sun), transparent 60%),
+    linear-gradient(180deg, var(--lw-sky-top) 0%, #f7f2e4 54%, var(--lw-sky-bot) 100%);
 }
 
-/* Tier sky tints — barely-there, so text contrast on top is never harmed. */
-.living-world--t0 { --lw-sky-top:#eef6f4; --lw-sky-bot:#f4f7f2; --lw-land:rgba(122,184,106,.06); }
-.living-world--t1 { --lw-sky-top:#eaf6f1; --lw-sky-bot:#f1f7ef; --lw-land:rgba(122,184,106,.10); }
-.living-world--t2 { --lw-sky-top:#e7f4ef; --lw-sky-bot:#eef6ed; --lw-land:rgba(122,184,106,.14); }
-.living-world--t3 { --lw-sky-top:#e6f1f1; --lw-sky-bot:#ecf4ec; --lw-land:rgba(96,170,130,.16); }
-.living-world--t4 { --lw-sky-top:#e8f0f3; --lw-sky-bot:#edf5ec; --lw-land:rgba(96,170,130,.18); }
-.living-world--t5 { --lw-sky-top:#eaeef6; --lw-sky-bot:#ecf4ed; --lw-land:rgba(96,170,130,.20); }
+/* Warm grain so the scene reads as illustrated paper, not a flat screen. */
+.living-world::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Warm vignette: darkens the edges so the content sits in a cozy pool of light. */
+.living-world::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(125% 105% at 50% 42%, transparent 52%, rgba(74, 54, 33, 0.16) 100%);
+}
+
+/* Tier sky tints — warm + greener as the world grows; contrast on top stays safe. */
+.living-world--t0 { --lw-sky-top:#fdf5e7; --lw-sky-bot:#f4f0e1; --lw-land:rgba(150,172,92,.09); --lw-sun:rgba(255,212,148,.42); }
+.living-world--t1 { --lw-sky-top:#fdf3e2; --lw-sky-bot:#f2efdc; --lw-land:rgba(150,172,92,.12); --lw-sun:rgba(255,208,140,.50); }
+.living-world--t2 { --lw-sky-top:#fdf1dd; --lw-sky-bot:#f0eed8; --lw-land:rgba(140,170,84,.15); --lw-sun:rgba(255,202,128,.56); }
+.living-world--t3 { --lw-sky-top:#fdefd7; --lw-sky-bot:#eeedd3; --lw-land:rgba(130,168,80,.18); --lw-sun:rgba(255,196,120,.60); }
+.living-world--t4 { --lw-sky-top:#fdecd0; --lw-sky-bot:#ecedce; --lw-land:rgba(120,164,78,.20); --lw-sun:rgba(255,190,112,.66); }
+.living-world--t5 { --lw-sky-top:#fde7c8; --lw-sky-bot:#eaecca; --lw-land:rgba(112,160,74,.22); --lw-sun:rgba(255,184,104,.72); }
 
 /* Rolling hills along the bottom — two soft bands give depth. */
 .lw-hills {
@@ -33,8 +50,36 @@
     radial-gradient(120% 80% at 78% 140%, var(--lw-land) 0%, transparent 60%);
 }
 
+/* ---- atmospheric haze band near the horizon (separates bg from midground) ---- */
+.lw-haze {
+  position: absolute; left: 0; right: 0; bottom: 22%; height: 26%;
+  background: linear-gradient(180deg, transparent, rgba(255, 248, 232, 0.55) 45%, transparent);
+  pointer-events: none;
+}
+
 /* ---- trees on the horizon (always present — gives a real outdoor scene) ---- */
 .lw-tree { position: absolute; }
+
+/* ============================================================================
+   Foreground framing foliage (z-index above the backdrop, behind/around content).
+   ============================================================================ */
+.garden-frame { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+.gf { position: absolute; }
+.gf--bl { left: -12px; bottom: -12px; width: clamp(120px, 21vw, 280px); height: clamp(120px, 21vw, 280px); }
+.gf--br { right: -12px; bottom: -12px; width: clamp(120px, 21vw, 280px); height: clamp(120px, 21vw, 280px); }
+.gf--tr { right: -6px; top: -6px; width: clamp(92px, 13vw, 180px); height: clamp(80px, 12vw, 160px); }
+.gf__sway { transform-origin: bottom center; animation: gf-sway 9s ease-in-out infinite; }
+.gf__sway--b { animation-delay: -4s; }
+.gf__sway--hang { transform-origin: top right; animation: gf-hang 8s ease-in-out infinite; }
+@keyframes gf-sway { 0%,100% { transform: rotate(-1.6deg); } 50% { transform: rotate(1.6deg); } }
+@keyframes gf-hang { 0%,100% { transform: rotate(2deg); } 50% { transform: rotate(-2deg); } }
+@media (max-width: 560px) {
+  .gf--bl, .gf--br { width: 96px; height: 96px; opacity: 0.9; }
+  .gf--tr { width: 84px; height: 74px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gf__sway, .gf__sway--b, .gf__sway--hang { animation: none; }
+}
 
 /* ---- drifting clouds (always present) ---- */
 .lw-cloud { position: absolute; left: -16%; opacity: 0.72; will-change: transform;

@@ -182,6 +182,7 @@ export function LivingWorld({ tier }: { tier: number }) {
   return (
     <div className={`living-world living-world--t${t}${waking ? ' living-world--waking' : ''}`} aria-hidden="true">
       <div className="lw-hills" />
+      <div className="lw-haze" />
 
       {/* far layer: trees on the horizon */}
       {scene.trees.map((tr, i) => <Tree key={`tr-${i}`} {...tr} />)}

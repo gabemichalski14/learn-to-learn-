@@ -9,7 +9,7 @@ export interface Phrase {
   to?: string;
 }
 
-export type PhraseKind = 'greet' | 'nudge' | 'celebrate' | 'idle';
+export type PhraseKind = 'greet' | 'nudge' | 'celebrate' | 'idle' | 'tip';
 
 const BANK: Record<PhraseKind, Phrase[]> = {
   greet: [
@@ -50,6 +50,20 @@ const BANK: Record<PhraseKind, Phrase[]> = {
     { say: 'Boop! 👃' },
     { say: 'Practice makes brave, not just perfect.' },
     { say: 'Echo says hi too! ✨' },
+    { say: 'I planted a flower for you while you were gone. 🌷' },
+    { say: 'Shhh… a butterfly’s about to land. 🦋' },
+    { say: 'The garden gets bigger every time you visit. 🌿' },
+    { say: 'Wanna hear a secret? You’re my favorite. 🤫💚' },
+  ],
+  // Gentle, genuinely useful coaching — short, kind, never a quiz.
+  tip: [
+    { say: 'Tip: say the word out loud, then catch its first sound. 👂' },
+    { say: 'Try it: tap a sound, then whisper it back to me.' },
+    { say: 'A few minutes a day beats one long sit. You’ve got this. ⏳' },
+    { say: 'Stuck? Stretch the word like taffy — sss-un. It helps!' },
+    { say: 'Warm up your ears: what sound does your name start with?' },
+    { say: 'Mistakes grow your brain. Wrong is just “not yet”. 🌱' },
+    { say: 'Cozy up, take a breath, and let’s find one new sound today.' },
   ],
 };
 

@@ -1,9 +1,9 @@
 :root {
   /* Learn to Learn official brand palette */
-  --bg: #f2f4f6;          /* light gray */
-  --surface: #ffffff;
-  --ink: #0d1b2a;         /* navy — text & headers */
-  --muted: #5c6b75;       /* secondary text */
+  --bg: #f6efe1;          /* warm cream — cozy, not clinical gray */
+  --surface: #fffdf7;     /* warm white — cards read as paper, not screen */
+  --ink: #24201a;         /* warm near-black — text & headers (AA on cream) */
+  --muted: #6a6253;       /* warm secondary text */
   --teal: #1b9aaa;        /* brand teal — primary accent / fills */
   --teal-ring: #7fc7ce;   /* light teal — borders */
   --teal-soft: #e2f1f2;   /* very light teal — soft fills */

@@ -3,141 +3,129 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Garden home — target</title>
+<title>Garden home — target v2</title>
 <style>
   /* ============================================================
-     STATIC VISUAL TARGET (not the app) — the cozy storybook meadow
-     the real build will aim at. Layered landscape + grounded plants
-     + board nestled in the meadow. Toggle day <-> dusk top-right.
+     STATIC VISUAL TARGET v2 — softer storybook palette, a lush
+     meadow, and a cozy "spot": shade tree, winding path, pond,
+     picnic blanket under the board, props. Toggle day/dusk.
      ============================================================ */
-  :root{
-    --ink:#2c2a33; --muted:#6a6477;
-    --board:#f7f0de; --board2:#efe6cf; --card:#fffdf7;
-  }
+  :root{ --ink:#3a3630; --muted:#7b7464; --card:#fffdf7; }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{font-family:'Poppins',-apple-system,system-ui,sans-serif;overflow:hidden;color:var(--ink)}
 
-  /* ---- the scene = layered bands, back to front ---- */
+  /* softer, dreamier storybook sky */
   .scene{position:fixed;inset:0;overflow:hidden;
-    /* DAY sky: soft storybook blue -> cream -> warm near horizon */
     background:
-      radial-gradient(60vw 30vh at 78% 8%, rgba(255,244,210,.9), transparent 60%),
-      linear-gradient(180deg,#bfe3ef 0%,#d8eee6 34%,#eef4dd 52%, #f3eecd 60%);
-    transition:background 1.2s ease;}
-  .sun{position:absolute;top:7%;right:12%;width:92px;height:92px;border-radius:50%;
-    background:radial-gradient(circle at 42% 40%,#fff6cf,#ffe79a 60%,rgba(255,231,154,0));
-    box-shadow:0 0 70px 26px rgba(255,231,154,.5);transition:all 1.2s ease}
-  .cloud{position:absolute;background:#fff;border-radius:60px;opacity:.92;
+      radial-gradient(58vw 30vh at 76% 10%, rgba(255,248,228,.85), transparent 62%),
+      linear-gradient(180deg,#d6e8ec 0%,#e4eee4 34%,#eef2df 52%,#f1ecd9 60%);
+    transition:background 1.2s ease}
+  /* watercolor mottle so the sky/ground read painterly, not flat */
+  .scene::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.06;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .sun{position:absolute;top:8%;right:13%;width:84px;height:84px;border-radius:50%;
+    background:radial-gradient(circle at 42% 40%,#fffae0,#ffe6b0 60%,rgba(255,230,176,0));
+    box-shadow:0 0 64px 24px rgba(255,234,180,.42);transition:all 1.2s ease}
+  .cloud{position:absolute;background:#fff;border-radius:60px;opacity:.82;
     box-shadow:34px 10px 0 -4px #fff,-36px 12px 0 -2px #fff,10px -14px 0 -7px #fff;transition:opacity .8s}
-  .c1{top:14%;left:12%;width:120px;height:34px}
-  .c2{top:22%;left:60%;width:90px;height:26px;opacity:.8}
+  .c1{top:13%;left:10%;width:130px;height:36px}.c2{top:21%;left:58%;width:96px;height:28px;opacity:.7}.c3{top:30%;left:30%;width:80px;height:24px;opacity:.6}
 
-  /* far hills sit ON the horizon (~58%), pale + hazy = atmospheric depth */
   .hill{position:absolute;left:-8%;right:-8%;border-radius:50% 50% 0 0;transition:background 1.2s ease}
-  .hill--3{bottom:40%;height:20%;background:#c4d6b2;filter:blur(.4px);opacity:.9}
-  .hill--2{bottom:38%;height:18%;left:-20%;width:70%;background:#b6cda6}
-  .hill--2b{bottom:38%;height:16%;right:-20%;left:auto;width:70%;background:#bdd1ab}
+  .hill--3{bottom:40%;height:21%;background:#cdd9c0;opacity:.92}
+  .hill--2{bottom:38%;height:18%;left:-22%;width:72%;background:#c3d3b4}
+  .hill--2b{bottom:38%;height:16%;right:-22%;left:auto;width:72%;background:#c9d6bd}
   .treeline{position:absolute;bottom:41%;left:0;right:0;height:60px}
 
-  /* the MEADOW ground plane — the foundation. solid field, horizon at ~58% */
+  /* softer sage meadow ground plane (less saturated, lighter) */
   .meadow{position:absolute;left:0;right:0;bottom:0;height:42%;
-    background:linear-gradient(180deg,#9fc977 0%,#79b465 30%,#5f9a58 70%,#4f8a50 100%);
+    background:linear-gradient(180deg,#aed18c 0%,#92c074 28%,#7bae66 64%,#6aa15e 100%);
     border-radius:46% 54% 0 0/8% 8% 0 0;transition:background 1.2s ease}
   .meadow::before{content:'';position:absolute;inset:0;border-radius:inherit;
-    background:radial-gradient(120% 60% at 50% 0,rgba(255,247,214,.45),transparent 55%)}
+    background:radial-gradient(120% 60% at 50% 0,rgba(255,250,228,.5),transparent 55%)}
+
+  /* winding path into the meadow */
+  .path{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:54%;height:40%;z-index:1}
 
   .layer{position:absolute;inset:0;pointer-events:none}
-  /* a planted thing = sprite + its contact shadow (shadow first, under it) */
   .plant{position:absolute;transform:translateX(-50%);transform-origin:bottom center}
-  .shadow{position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);
-    border-radius:50%;background:rgba(40,46,28,.20);filter:blur(1px)}
+  .shadow{position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);border-radius:50%;background:rgba(40,46,28,.18);filter:blur(1px)}
   .sway{animation:sway 7s ease-in-out infinite}
   @keyframes sway{0%,100%{transform:translateX(-50%) rotate(-2.5deg)}50%{transform:translateX(-50%) rotate(2.5deg)}}
 
   .firefly{position:absolute;width:7px;height:7px;border-radius:50%;
-    background:radial-gradient(circle,#fff6b0,#f5d24c 55%,rgba(245,210,76,0) 72%);
-    opacity:0;transition:opacity 1s}
+    background:radial-gradient(circle,#fff6b0,#f5d24c 55%,rgba(245,210,76,0) 72%);opacity:0}
   .dusk .firefly{animation:glow 4s ease-in-out infinite}
   @keyframes glow{0%,100%{opacity:0;transform:translateY(0)}45%{opacity:.95;transform:translateY(-10px)}}
 
-  /* ---- DUSK variant ---- */
-  .scene.dusk{background:
-      radial-gradient(50vw 28vh at 80% 86%, rgba(255,170,120,.55), transparent 60%),
-      linear-gradient(180deg,#33356b 0%,#5b4f86 34%,#9a6f8f 52%,#d98f6e 60%)}
-  .dusk .sun{top:auto;bottom:30%;right:16%;width:74px;height:74px;
-    background:radial-gradient(circle at 42% 40%,#ffd9a0,#ff9e63 60%,rgba(255,158,99,0));
-    box-shadow:0 0 80px 30px rgba(255,150,90,.45)}
-  .dusk .cloud{opacity:.25}
-  .dusk .hill--3{background:#6e7e8e}.dusk .hill--2{background:#5d6a82}.dusk .hill--2b{background:#65718a}
-  .dusk .meadow{background:linear-gradient(180deg,#5b7a5f 0%,#3f5f4c 40%,#2f4a3e 100%)}
+  /* dusk */
+  .scene.dusk{background:radial-gradient(50vw 28vh at 80% 86%, rgba(255,176,128,.5), transparent 60%),
+      linear-gradient(180deg,#3a3c6e 0%,#60548a 34%,#9c7596 52%,#d99576 60%)}
+  .dusk .sun{top:auto;bottom:30%;right:16%;width:70px;background:radial-gradient(circle at 42% 40%,#ffdca6,#ff9e63 60%,rgba(255,158,99,0));box-shadow:0 0 78px 28px rgba(255,150,90,.4)}
+  .dusk .cloud{opacity:.22}
+  .dusk .hill--3{background:#74808e}.dusk .hill--2{background:#646f86}.dusk .hill--2b{background:#6b768d}
+  .dusk .meadow{background:linear-gradient(180deg,#62805f 0%,#46624c 40%,#33493d 100%)}
 
-  /* ---- the board, nestled INTO the meadow ---- */
-  .wrap{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center;
-    padding-top:13vh}
+  .wrap{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center;padding-top:13vh}
   .board{position:relative;width:min(900px,92vw);
-    background:
-      radial-gradient(90% 30% at 50% 0,rgba(255,246,222,.9),transparent 70%),
-      linear-gradient(180deg,#f7f0de,#efe6cf);
+    background:radial-gradient(90% 30% at 50% 0,rgba(255,248,226,.92),transparent 70%),linear-gradient(180deg,#f8f1e0,#efe6cf);
     border:1px solid rgba(74,54,33,.12);border-radius:30px 30px 22px 22px;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 26px 60px -16px rgba(40,40,20,.4);
-    padding:30px 34px 40px;}
-  .vine{position:absolute;top:-16px;width:150px;height:120px;pointer-events:none}
-  .vine--l{left:-26px;transform:scaleX(-1)}
-  .vine--r{right:-26px}
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 26px 60px -16px rgba(40,40,20,.4);padding:30px 34px 40px;z-index:3}
+  /* picnic blanket peeking under the board */
+  .blanket{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);width:min(960px,96vw);height:120px;border-radius:0 0 40px 40px;z-index:2;
+    background:repeating-linear-gradient(45deg,#e3b7a0 0 22px,#edcbb6 22px 44px);opacity:.9;
+    box-shadow:0 16px 30px -10px rgba(40,40,20,.35);transition:opacity .8s}
+  .dusk ~ .wrap .blanket{opacity:.5}
+  .vine{position:absolute;top:-16px;width:150px;height:120px;pointer-events:none;z-index:4}
+  .vine--l{left:-26px;transform:scaleX(-1)}.vine--r{right:-26px}
   .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3f7a55}
-  h1{font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,5vw,46px);line-height:1.05;margin:6px 0 6px;color:#24201a}
+  h1{font-family:Georgia,serif;font-size:clamp(30px,5vw,46px);line-height:1.05;margin:6px 0 6px;color:#3a3630}
   h1 em{font-style:italic;color:#1b9aaa}
   .lead{color:var(--muted);max-width:48ch;font-size:15px;line-height:1.5}
   .cta{margin-top:18px;display:inline-flex;gap:10px}
-  .btn{border:none;cursor:pointer;font:inherit;font-weight:800;color:#fff;padding:12px 22px;border-radius:999px;
-    background:linear-gradient(135deg,#1b9aaa,#127a88);box-shadow:0 12px 24px rgba(27,154,170,.35)}
+  .btn{border:none;cursor:pointer;font:inherit;font-weight:800;color:#fff;padding:12px 22px;border-radius:999px;background:linear-gradient(135deg,#1b9aaa,#127a88);box-shadow:0 12px 24px rgba(27,154,170,.32)}
   .btn.ghost{background:#fff;color:#127a88;border:1.5px solid #7fc7ce;box-shadow:none}
   .keepsakes{margin-top:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-  .keep{background:var(--card);border:1px solid rgba(74,54,33,.10);border-radius:18px;padding:16px 10px;text-align:center;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 6px 14px -6px rgba(40,40,20,.22)}
+  .keep{background:var(--card);border:1px solid rgba(74,54,33,.10);border-radius:18px;padding:16px 10px;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 6px 14px -6px rgba(40,40,20,.2)}
   .keep .badge{width:46px;height:46px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px}
-  .keep .num{font-family:Georgia,serif;font-size:30px;line-height:1;color:#24201a}
-  .keep .lbl{font-size:12px;color:var(--muted);font-weight:600}
-  .k1 .badge{background:#e2f1f2}.k2 .badge{background:#e6f3ea}.k3 .badge{background:#fdf0d2}.k4 .badge{background:#e9edf9}
-
-  .pip{position:absolute;right:26px;top:-58px;width:104px;height:104px}
-  .toggle{position:fixed;top:14px;right:16px;z-index:9;border:none;cursor:pointer;font:inherit;font-weight:700;
-    background:rgba(255,255,255,.85);color:#2c2a33;border-radius:999px;padding:9px 16px;box-shadow:0 6px 16px rgba(0,0,0,.15)}
-  .note{position:fixed;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:rgba(60,50,30,.55)}
-  .dusk ~ .wrap .note{color:rgba(255,255,255,.6)}
+  .keep .num{font-family:Georgia,serif;font-size:30px;line-height:1;color:#3a3630}.keep .lbl{font-size:12px;color:var(--muted);font-weight:600}
+  .k1 .badge{background:#e2f1f2}.k2 .badge{background:#e7f3ea}.k3 .badge{background:#fdf0d2}.k4 .badge{background:#eaedf8}
+  .pip{position:absolute;right:24px;top:-58px;width:104px;height:104px;z-index:5}
+  .toggle{position:fixed;top:14px;right:16px;z-index:20;border:none;cursor:pointer;font:inherit;font-weight:700;background:rgba(255,255,255,.85);color:#3a3630;border-radius:999px;padding:9px 16px;box-shadow:0 6px 16px rgba(0,0,0,.15)}
+  .note{position:fixed;bottom:8px;left:0;right:0;text-align:center;font-size:11px;color:rgba(60,50,30,.5);z-index:20}
 </style>
 </head>
 <body>
   <div class="scene" id="scene">
     <div class="sun"></div>
-    <div class="cloud c1"></div><div class="cloud c2"></div>
+    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
     <div class="hill hill--3"></div><div class="hill hill--2"></div><div class="hill hill--2b"></div>
     <div class="treeline layer" id="treeline"></div>
     <div class="meadow"></div>
+    <svg class="path" viewBox="0 0 300 200" preserveAspectRatio="none">
+      <path d="M120 200 q40 -60 30 -110 q-8 -50 30 -90 L190 200 Z" fill="#e6d9b6" opacity=".75"/>
+      <path d="M150 200 q20 -60 14 -110" fill="none" stroke="#d8c79c" stroke-width="3" opacity=".5"/>
+    </svg>
+    <div class="layer" id="props"></div>
     <div class="layer" id="flora"></div>
     <div class="layer" id="fireflies"></div>
     <div class="layer" id="foreground"></div>
+    <div class="layer" id="bigtree"></div>
   </div>
 
   <button class="toggle" id="toggle">🌙 Dusk</button>
 
   <div class="wrap">
+    <div class="blanket"></div>
     <div class="board">
       <svg class="vine vine--l" viewBox="0 0 150 120"><g fill="#5f9a58"><path d="M150 6 q-60 6 -92 60" fill="none" stroke="#4e7d49" stroke-width="5" stroke-linecap="round"/><path d="M150 6 q-34 2 -46 34 q30 2 46 -16z"/><path d="M118 30 q-30 4 -40 34 q28 4 44 -14z" fill="#6aa85f"/><path d="M92 58 q-28 8 -32 38 q26 0 40 -18z" fill="#73b066"/></g></svg>
       <svg class="vine vine--r" viewBox="0 0 150 120"><g fill="#5f9a58"><path d="M150 6 q-60 6 -92 60" fill="none" stroke="#4e7d49" stroke-width="5" stroke-linecap="round"/><path d="M150 6 q-34 2 -46 34 q30 2 46 -16z"/><path d="M118 30 q-30 4 -40 34 q28 4 44 -14z" fill="#6aa85f"/><path d="M92 58 q-28 8 -32 38 q26 0 40 -18z" fill="#73b066"/></g></svg>
-
       <svg class="pip" viewBox="0 0 100 100" aria-hidden="true">
         <ellipse cx="50" cy="92" rx="26" ry="6" fill="rgba(40,46,28,.18)"/>
-        <path d="M50 14 q4 -12 12 -12 q-2 8 -6 12z" fill="#7cc36b"/>
-        <circle cx="50" cy="52" r="34" fill="#8fd07a"/>
-        <circle cx="50" cy="52" r="34" fill="none" stroke="#6bb45a" stroke-width="2"/>
-        <ellipse cx="40" cy="48" rx="6.5" ry="7.5" fill="#fff"/><circle cx="41" cy="49" r="3.4" fill="#2c3a22"/>
-        <ellipse cx="60" cy="48" rx="6.5" ry="7.5" fill="#fff"/><circle cx="61" cy="49" r="3.4" fill="#2c3a22"/>
-        <path d="M44 62 q6 5 12 0" fill="none" stroke="#2c3a22" stroke-width="2.4" stroke-linecap="round"/>
-        <circle cx="34" cy="58" r="3" fill="#f2a0b0" opacity=".6"/><circle cx="66" cy="58" r="3" fill="#f2a0b0" opacity=".6"/>
+        <path d="M50 14 q4 -12 12 -12 q-2 8 -6 12z" fill="#7cc36b"/><circle cx="50" cy="52" r="34" fill="#8fd07a"/><circle cx="50" cy="52" r="34" fill="none" stroke="#6bb45a" stroke-width="2"/>
+        <ellipse cx="40" cy="48" rx="6.5" ry="7.5" fill="#fff"/><circle cx="41" cy="49" r="3.4" fill="#2c3a22"/><ellipse cx="60" cy="48" rx="6.5" ry="7.5" fill="#fff"/><circle cx="61" cy="49" r="3.4" fill="#2c3a22"/>
+        <path d="M44 62 q6 5 12 0" fill="none" stroke="#2c3a22" stroke-width="2.4" stroke-linecap="round"/><circle cx="34" cy="58" r="3" fill="#f2a0b0" opacity=".6"/><circle cx="66" cy="58" r="3" fill="#f2a0b0" opacity=".6"/>
       </svg>
-
       <p class="eyebrow">Welcome back</p>
       <h1>Hi <em>friend</em>,<br/>come sit a while.</h1>
       <p class="lead">Your garden grew while you were away. Every sound you practice makes reading a little easier — let's find one today.</p>
@@ -150,84 +138,54 @@
       </div>
     </div>
   </div>
-  <div class="note">Static target mockup · toggle day/dusk top-right · the real app will render this scene behind every page</div>
+  <div class="note">Static target v2 · softer palette · lush meadow · shade tree, path, pond, picnic blanket · toggle day/dusk top-right</div>
 
 <script>
-const NS='http://www.w3.org/2000/svg';
-function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstChild;}
+function el(h){const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild;}
 function rnd(a,b){return a+Math.random()*(b-a);}
+const HUES=['#e6849a','#ffd97a','#ef8a6e','#fbf3ea','#9aa6ec','#f2a8c2','#c89af0'];
 
-// flower sprite (simple, recolorable) with a contact shadow
-function flower(size, hue, depth){
-  const wrap=el(`<span class="plant"></span>`);
-  const sw=Math.round(size*0.7);
-  wrap.appendChild(el(`<span class="shadow" style="width:${sw}px;height:${Math.round(sw*0.32)}px"></span>`));
-  const petals=[0,72,144,216,288].map(a=>`<ellipse cx="22" cy="9" rx="5.5" ry="9" fill="${hue}" transform="rotate(${a} 22 22)"/>`).join('');
-  const s=el(`<svg width="${size}" height="${Math.round(size*1.5)}" viewBox="0 0 44 64" style="position:relative;display:block">
-    <path d="M22 62 V28" stroke="#3f7a4a" stroke-width="2.6" stroke-linecap="round"/>
-    <path d="M22 46 q-9 -1 -11 -8 q9 0 11 7z" fill="#6aa85f"/>
-    ${petals}<circle cx="22" cy="22" r="6" fill="#ffce44"/></svg>`);
-  s.style.opacity=String(0.55+depth*0.45); // far = paler
-  wrap.appendChild(s);
-  return wrap;
-}
-function grass(size){
-  const wrap=el(`<span class="plant"></span>`);
-  wrap.appendChild(el(`<span class="shadow" style="width:${Math.round(size*0.7)}px;height:${Math.round(size*0.22)}px"></span>`));
-  wrap.appendChild(el(`<svg width="${size}" height="${Math.round(size*0.8)}" viewBox="0 0 40 32" style="position:relative;display:block">
-    <g fill="none" stroke="#4f8a50" stroke-width="2.6" stroke-linecap="round">
-    <path d="M20 32 q-6 -18 -11 -24"/><path d="M20 32 q-2 -20 -3 -28"/><path d="M20 32 q3 -19 8 -25"/><path d="M20 32 q7 -16 13 -21"/></g></svg>`));
-  return wrap;
-}
-function tree(size, depth){
-  const wrap=el(`<span class="plant"></span>`);
-  wrap.appendChild(el(`<span class="shadow" style="width:${Math.round(size*0.7)}px;height:${Math.round(size*0.2)}px"></span>`));
-  const g=0.55+depth*0.45;
-  const s=el(`<svg width="${size}" height="${Math.round(size*1.2)}" viewBox="0 0 60 72" style="position:relative;display:block">
-    <path d="M30 72 V44" stroke="#9c6b43" stroke-width="5" stroke-linecap="round"/>
-    <circle cx="30" cy="28" r="18" fill="#7cb86a"/><circle cx="17" cy="38" r="12" fill="#6aa85f"/><circle cx="44" cy="38" r="12" fill="#86c074"/></svg>`);
-  s.style.opacity=String(g);
-  wrap.appendChild(s); return wrap;
-}
+function withShadow(svg,w){const wrap=el('<span class="plant"></span>');wrap.appendChild(el(`<span class="shadow" style="width:${Math.round(w*0.7)}px;height:${Math.round(w*0.26)}px"></span>`));svg.style.position='relative';svg.style.display='block';wrap.appendChild(svg);return wrap;}
+function flower(size,hue,depth){const petals=[0,72,144,216,288].map(a=>`<ellipse cx="22" cy="9" rx="5.5" ry="9" fill="${hue}" transform="rotate(${a} 22 22)"/>`).join('');const s=el(`<svg width="${size}" height="${Math.round(size*1.5)}" viewBox="0 0 44 64"><path d="M22 62 V28" stroke="#4f8a50" stroke-width="2.6" stroke-linecap="round"/><path d="M22 46 q-9 -1 -11 -8 q9 0 11 7z" fill="#6aa85f"/>${petals}<circle cx="22" cy="22" r="6" fill="#ffce44"/></svg>`);s.style.opacity=String(0.6+depth*0.4);return withShadow(s,size);}
+function tallFlower(size,hue,depth){const s=el(`<svg width="${size}" height="${Math.round(size*2.0)}" viewBox="0 0 30 70"><path d="M15 70 V14" stroke="#4f8a50" stroke-width="2.4" stroke-linecap="round"/><path d="M15 44 q-7 -2 -9 -8 q7 0 9 6z" fill="#6aa85f"/><circle cx="15" cy="12" r="6" fill="${hue}"/><circle cx="9" cy="20" r="5" fill="${hue}"/><circle cx="21" cy="22" r="5" fill="${hue}"/></svg>`);s.style.opacity=String(0.6+depth*0.4);return withShadow(s,size*0.7);}
+function grass(size){const s=el(`<svg width="${size}" height="${Math.round(size*0.8)}" viewBox="0 0 40 32"><g fill="none" stroke="#4f8a50" stroke-width="2.6" stroke-linecap="round"><path d="M20 32 q-6 -18 -11 -24"/><path d="M20 32 q-2 -20 -3 -28"/><path d="M20 32 q3 -19 8 -25"/><path d="M20 32 q7 -16 13 -21"/></g></svg>`);return withShadow(s,size);}
+function clover(size){const s=el(`<svg width="${size}" height="${Math.round(size*0.8)}" viewBox="0 0 40 32"><g fill="#5fae5a"><circle cx="14" cy="16" r="6"/><circle cx="22" cy="12" r="6"/><circle cx="26" cy="20" r="6"/><circle cx="18" cy="22" r="6"/></g></svg>`);return withShadow(s,size);}
+function bush(size,depth){const s=el(`<svg width="${size}" height="${Math.round(size*0.72)}" viewBox="0 0 80 58"><g fill="#6fae62"><ellipse cx="40" cy="40" rx="34" ry="20"/><circle cx="22" cy="30" r="15"/><circle cx="44" cy="24" r="18"/><circle cx="60" cy="32" r="14"/></g></svg>`);s.style.opacity=String(0.65+depth*0.35);return withShadow(s,size*0.9);}
+function tree(size,depth){const s=el(`<svg width="${size}" height="${Math.round(size*1.2)}" viewBox="0 0 60 72"><path d="M30 72 V44" stroke="#9c6b43" stroke-width="5" stroke-linecap="round"/><circle cx="30" cy="28" r="18" fill="#7cb86a"/><circle cx="17" cy="38" r="12" fill="#6aa85f"/><circle cx="44" cy="38" r="12" fill="#86c074"/></svg>`);s.style.opacity=String(0.55+depth*0.45);return withShadow(s,size*0.7);}
 
-const HUES=['#e8657f','#ffd34d','#e8553f','#ffffff','#7d8ff0','#f08fb0'];
-const flora=document.getElementById('flora');
-const fg=document.getElementById('foreground');
-const tl=document.getElementById('treeline');
-const ff=document.getElementById('fireflies');
-const H=window.innerHeight, W=window.innerWidth;
-const horizon=0.58; // ground starts here
+const flora=document.getElementById('flora'),fg=document.getElementById('foreground'),tl=document.getElementById('treeline'),ff=document.getElementById('fireflies'),props=document.getElementById('props'),bigtree=document.getElementById('bigtree');
+const horizon=0.58;
 
-// distant treeline along the horizon (small, pale, clustered)
-for(let i=0;i<7;i++){const t=tree(rnd(34,52),0.2);t.style.left=(6+i*13+rnd(-3,3))+'%';t.style.top=(horizon*100-3)+'%';tl.appendChild(t);}
+// distant treeline + a low fence along the horizon
+for(let i=0;i<8;i++){const t=tree(rnd(34,50),0.2);t.style.left=(5+i*12+rnd(-3,3))+'%';t.style.top=(horizon*100-3)+'%';tl.appendChild(t);}
+const fence=el('<svg class="plant" style="left:64%;top:55.5%" width="150" height="34" viewBox="0 0 150 34"><g stroke="#cdb98c" stroke-width="4" fill="none"><path d="M8 34 V8 M38 34 V8 M68 34 V8 M98 34 V8 M128 34 V8"/><path d="M0 16 H150 M0 24 H150"/></g></svg>');fence.style.opacity='.8';props.appendChild(fence);
 
-// flower CLUSTERS across the field (denser near horizon + foreground), grounded, depth-scaled
-const centers=[18,30,44,58,70,82,12,38,52,64,76,88];
-centers.forEach((cx)=>{
-  const cy=rnd(horizon+0.02,0.96); // vertical position in field
-  const depth=(cy-horizon)/(1-horizon); // 0 far .. 1 near
-  const n=Math.round(rnd(2,5));
-  for(let k=0;k<n;k++){
-    const size=14+depth*30; // near = bigger
-    const f=flower(size,HUES[Math.floor(rnd(0,HUES.length))],depth);
-    f.style.left=(cx+rnd(-5,5))+'%'; f.style.top=(cy*100+rnd(-3,3))+'%';
-    if(k%3===0)f.classList.add('sway');
-    flora.appendChild(f);
-    if(Math.random()<0.6){const gr=grass(16+depth*26);gr.style.left=(cx+rnd(-6,6))+'%';gr.style.top=(cy*100+rnd(-2,3))+'%';flora.appendChild(gr);}
-  }
+// a little pond in the field
+const pond=el('<span class="plant" style="left:74%;top:78%"><span class="shadow" style="width:120px;height:30px"></span><svg width="150" height="60" viewBox="0 0 150 60" style="position:relative;display:block"><ellipse cx="75" cy="34" rx="70" ry="24" fill="#9fd6e6"/><ellipse cx="75" cy="30" rx="62" ry="18" fill="#bfe6f0"/><ellipse cx="55" cy="28" rx="14" ry="6" fill="#dff3f7" opacity=".8"/><ellipse cx="98" cy="40" rx="12" ry="5" fill="#7fc06a"/></svg></span>');flora.appendChild(pond);
+
+// LUSH clusters across the field (more centers, more per cluster, more variety)
+const centers=[10,16,24,30,36,44,50,56,62,68,82,88,14,28,40,52,60,72,80,90];
+centers.forEach((cx)=>{const cy=rnd(horizon+0.02,0.97);const depth=(cy-horizon)/(1-horizon);const n=Math.round(rnd(3,7));
+  for(let k=0;k<n;k++){const r=Math.random();let p;const size=14+depth*30;
+    if(r<0.62)p=flower(size,HUES[Math.floor(rnd(0,HUES.length))],depth);
+    else if(r<0.8)p=tallFlower(size*1.1,HUES[Math.floor(rnd(0,HUES.length))],depth);
+    else if(r<0.92)p=clover(14+depth*20);else p=grass(16+depth*26);
+    p.style.left=(cx+rnd(-6,6))+'%';p.style.top=(cy*100+rnd(-3,3))+'%';if(k%3===0)p.classList.add('sway');flora.appendChild(p);}
+  if(Math.random()<0.4){const b=bush(40+rnd(0,30),(cy-horizon)/(1-horizon));b.style.left=(cx+rnd(-4,4))+'%';b.style.top=(cy*100)+'%';flora.appendChild(b);}
 });
 
-// dense foreground grass + big flowers along the very bottom (overlap board)
-for(let i=0;i<22;i++){const gr=grass(rnd(34,58));gr.style.left=(i*4.6+rnd(-2,2))+'%';gr.style.bottom='-6px';gr.style.top='auto';if(i%3===0)gr.classList.add('sway');fg.appendChild(gr);}
-for(let i=0;i<7;i++){const f=flower(rnd(34,46),HUES[Math.floor(rnd(0,HUES.length))],1);f.style.left=(8+i*13+rnd(-3,3))+'%';f.style.bottom='-4px';f.style.top='auto';f.classList.add('sway');fg.appendChild(f);}
+// dense foreground grass + flowers overlapping the board base
+for(let i=0;i<34;i++){const gr=grass(rnd(34,60));gr.style.left=(i*3+rnd(-2,2))+'%';gr.style.bottom='-6px';gr.style.top='auto';if(i%3===0)gr.classList.add('sway');fg.appendChild(gr);}
+for(let i=0;i<11;i++){const f=Math.random()<0.5?flower(rnd(34,48),HUES[Math.floor(rnd(0,HUES.length))],1):tallFlower(rnd(40,54),HUES[Math.floor(rnd(0,HUES.length))],1);f.style.left=(5+i*8.6+rnd(-3,3))+'%';f.style.bottom='-4px';f.style.top='auto';f.classList.add('sway');fg.appendChild(f);}
 
-// fireflies (visible at dusk)
-for(let i=0;i<14;i++){const e=el('<span class="firefly"></span>');e.style.left=rnd(4,94)+'%';e.style.top=rnd(40,92)+'%';e.style.animationDelay=rnd(0,6)+'s';ff.appendChild(e);}
+// the big shade TREE the board nestles beside (bottom-left), + a watering can prop
+const big=el('<span class="plant" style="left:11%;bottom:-10px;top:auto"><span class="shadow" style="width:220px;height:46px"></span><svg width="320" height="380" viewBox="0 0 320 380" style="position:relative;display:block"><path d="M160 380 V150" stroke="#9c6b43" stroke-width="20" stroke-linecap="round"/><path d="M160 230 q-50 -10 -70 -50 M160 200 q50 -10 74 -54" stroke="#9c6b43" stroke-width="12" fill="none" stroke-linecap="round"/><g fill="#7cb86a"><circle cx="160" cy="110" r="84"/><circle cx="92" cy="150" r="58"/><circle cx="232" cy="150" r="58"/><circle cx="130" cy="180" r="56"/><circle cx="200" cy="172" r="54"/></g><g fill="#8cc678"><circle cx="150" cy="92" r="46"/><circle cx="208" cy="128" r="34"/></g></svg></span>');bigtree.appendChild(big);
+const can=el('<span class="plant" style="left:88%;bottom:8%;top:auto"><span class="shadow" style="width:54px;height:16px"></span><svg width="64" height="50" viewBox="0 0 64 50" style="position:relative;display:block"><path d="M6 18 h40 v22 q0 6 -6 6 H12 q-6 0 -6 -6z" fill="#6fb0c4"/><path d="M46 22 l14 -10 4 4 -12 12z" fill="#5b9bb0"/><rect x="14" y="10" width="24" height="8" rx="4" fill="#5b9bb0"/><path d="M58 10 q6 2 8 8" stroke="#bfe6f0" stroke-width="2" fill="none"/></svg></span>');props.appendChild(can);
 
-document.getElementById('toggle').onclick=()=>{
-  const s=document.getElementById('scene');const d=s.classList.toggle('dusk');
-  document.getElementById('toggle').textContent=d?'☀️ Day':'🌙 Dusk';
-};
+// fireflies
+for(let i=0;i<16;i++){const e=el('<span class="firefly"></span>');e.style.left=rnd(4,94)+'%';e.style.top=rnd(40,92)+'%';e.style.animationDelay=rnd(0,6)+'s';ff.appendChild(e);}
+
+document.getElementById('toggle').onclick=()=>{const s=document.getElementById('scene');const d=s.classList.toggle('dusk');document.getElementById('toggle').textContent=d?'☀️ Day':'🌙 Dusk';};
 </script>
 </body>
 </html>

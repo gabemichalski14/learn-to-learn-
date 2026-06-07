@@ -16,6 +16,7 @@ import { SpaceSpecimen } from './creatureIcons';
 import { SpaceFinish } from './SpaceFinish';
 import { castFor, reactionLine } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
+import { LevelScene } from '../../world/LevelScene';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
 import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import './space.css';
@@ -231,9 +232,9 @@ export function SpaceSortGame({
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <main className="sg" style={{ '--heal': journey } as CSSProperties}>
+      <main className="sg">
         <SpaceBackdrop />
-        {character && <div className="sg-warm" aria-hidden="true" />}
+        {character && <LevelScene heal={journey} />}
 
         <div className="sg-hud">
           <button type="button" className="sg-back" onClick={() => goBack(`#/level/${level}`)}>← Back</button>

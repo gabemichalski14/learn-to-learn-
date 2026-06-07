@@ -1,0 +1,13 @@
+/* Arc-following level background: CC0 parallax layers + a warm overlay that
+   brightens with the character's heal (dark when lost → warm when home). */
+.level-scene { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.level-scene__layer {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+}
+.level-scene__warm {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(130% 95% at 50% 2%, rgba(255, 216, 128, .40), rgba(255, 170, 96, .13) 44%, transparent 72%);
+  transition: opacity .6s ease;
+}
+@media (prefers-reduced-motion: reduce) { .level-scene__warm { transition: none; } }

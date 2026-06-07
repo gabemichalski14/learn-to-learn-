@@ -22,7 +22,7 @@ describe('MascotBuddy', () => {
   afterEach(() => vi.restoreAllMocks());
 
   it('pops a warm, dismissible phrase when poked', () => {
-    render(<MascotBuddy />);
+    render(<MascotBuddy learnerId="test" />);
     const btn = screen.getByRole('button', { name: /says hi/i });
     fireEvent.click(btn);
     // a dismissible speech bubble appears (the phrase is random; a CTA is optional)
@@ -31,7 +31,7 @@ describe('MascotBuddy', () => {
   });
 
   it('summons the Pip parade on rapid pokes (the easter egg)', () => {
-    const { container } = render(<MascotBuddy />);
+    const { container } = render(<MascotBuddy learnerId="test" />);
     const btn = screen.getByRole('button', { name: /says hi/i });
     for (let i = 0; i < 4; i++) fireEvent.click(btn);
     expect(container.querySelector('.pip-parade')).toBeTruthy();

@@ -88,7 +88,7 @@ export default function App() {
       {/* Roaming easter-egg buddy — keyed by route so each page gets a fresh
           surprise placement/message. Only on these (non-immersive) pages; the
           games keep their own world guides. */}
-      <MascotBuddy key={route.name} />
+      <MascotBuddy key={route.name} learnerId={learnerId} />
       {/* Rare ambient surprises (Pip peek, clover, butterfly) — tier-scaled. */}
       <EasterEggs key={`egg-${route.name}`} tier={world.tier} />
     </>

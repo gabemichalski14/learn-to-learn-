@@ -4,6 +4,7 @@ import { Echo } from './Echo';
 import { MascotBubble } from './MascotBubble';
 import { PipParade } from './PipParade';
 import { randomPhrase, type Phrase } from './phrases';
+import { narrativeState, pipGreetingFor } from '../world/narrative';
 import { sfx } from '../audio/sfx';
 import { useGuide } from '../world/guideContext';
 import './mascots.css';
@@ -32,7 +33,7 @@ const PEEK_EXPR: PipExpression[] = ['happy', 'wink', 'curious', 'happy', 'excite
 const SPARKS = [0, 45, 90, 135, 180, 225, 270, 315];
 const rnd = (n: number) => Math.floor(Math.random() * n);
 
-export function MascotBuddy() {
+export function MascotBuddy({ learnerId }: { learnerId: string }) {
   const [isEcho] = useState(() => Math.random() < 0.22);
   const [spot, setSpot] = useState(() => rnd(SPOTS.length));
   const [expr, setExpr] = useState<PipExpression>(() => PEEK_EXPR[rnd(PEEK_EXPR.length)]);
@@ -126,7 +127,9 @@ export function MascotBuddy() {
       return;
     }
     dodgedRef.current = false;
-    setPhrase(randomPhrase(['greet', 'nudge', 'idle', 'tip']));
+    // Most opens = a memory-aware greeting (remembers your last visit + last sound);
+    // the rest stay varied (nudges/tips/quips). Read at click-time (no render loop).
+    setPhrase(Math.random() < 0.6 ? pipGreetingFor(narrativeState(learnerId, Date.now())) : randomPhrase(['nudge', 'idle', 'tip']));
     setExpr('excited');
     setOpen(true);
     setBurst(true);

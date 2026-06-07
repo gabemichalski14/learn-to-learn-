@@ -9,6 +9,7 @@ import { getMastery, getSessions } from './data/dataSource';
 import { useDataVersion } from './data/store';
 import { rankAreas, type FocusArea } from './mastery/mastery';
 import type { SessionRecord } from './sessionLog';
+import { useNarrative, homeLead } from './world/narrative';
 
 interface Props {
   learnerId: string;
@@ -25,6 +26,7 @@ export function Home({ learnerId, onChooseLearner }: Props) {
   const name = learner?.name ?? 'Explorer';
   const prog = loadProgress(learnerId);
   const stickers = new Set(prog.earned).size;
+  const narr = useNarrative(learnerId); // story spine: premise + memory of your last visit
 
   // Sessions + focus from cloud-or-local, keyed by learner so switching students
   // never shows stale data (setState only in the async .then).
@@ -73,7 +75,7 @@ export function Home({ learnerId, onChooseLearner }: Props) {
         <div className="home-hero__content">
           <p className="l2l-eyebrow">{greeting}</p>
           <h1 className="l2l-display">Hi <em>{name}</em>,<br />let's keep growing.</h1>
-          <p className="l2l-lead">Every sound you practice makes reading and spelling a little easier. Pick up where you left off — your patrol is waiting.</p>
+          <p className="l2l-lead">{homeLead(narr)}</p>
           <div className="home-hero__cta">
             <button type="button" className="l2l-btn" onClick={() => navigate('#/levels')}>Continue learning →</button>
             <button type="button" className="l2l-btn l2l-btn--ghost" onClick={() => navigate('#/profile')}>My profile</button>

@@ -24,4 +24,11 @@ describe('MascotBuddy', () => {
     expect(screen.getByRole('status')).toBeTruthy();
     expect(screen.getByRole('button', { name: /dismiss/i })).toBeTruthy();
   });
+
+  it('summons the Pip parade on rapid pokes (the easter egg)', () => {
+    const { container } = render(<MascotBuddy />);
+    const btn = screen.getByRole('button', { name: /says hi/i });
+    for (let i = 0; i < 4; i++) fireEvent.click(btn);
+    expect(container.querySelector('.pip-parade')).toBeTruthy();
+  });
 });

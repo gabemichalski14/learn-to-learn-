@@ -5,7 +5,6 @@ import { loadProgress } from './progress';
 import { ACHIEVEMENTS } from './achievements';
 import { NowPlaying } from './NowPlaying';
 import { AreasToImprove } from './AreasToImprove';
-import { MascotSpeaker } from './mascots/MascotSpeaker';
 import { getMastery, getSessions } from './data/dataSource';
 import { useDataVersion } from './data/store';
 import { rankAreas, type FocusArea } from './mastery/mastery';
@@ -81,7 +80,6 @@ export function Home({ learnerId, onChooseLearner }: Props) {
           </div>
         </div>
         <div className="home-hero__avatar" style={{ background: learner?.color ?? 'var(--teal)' }} aria-hidden="true">{initials(name)}</div>
-        <MascotSpeaker className="home-hero__pip" size={92} expression={streak > 0 || prog.sessions > 0 ? 'excited' : 'happy'} kinds={['greet', 'celebrate', 'idle']} label="Pip — tap to chat" />
       </header>
 
       <section className="home-stats" aria-label="Your progress">

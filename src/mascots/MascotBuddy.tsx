@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Pip, type PipExpression } from './Pip';
 import { Echo } from './Echo';
 import { MascotBubble } from './MascotBubble';
+import { PipParade } from './PipParade';
 import { randomPhrase, type Phrase } from './phrases';
 import { sfx } from '../audio/sfx';
 import { navigate } from '../router';
@@ -39,11 +40,23 @@ export function MascotBuddy() {
   const [open, setOpen] = useState(false);
   const [phrase, setPhrase] = useState<Phrase | null>(null);
   const [burst, setBurst] = useState(false);
+  const [parade, setParade] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const openRef = useRef(false);
+  const paradeRef = useRef(false);
+  const pokeTimes = useRef<number[]>([]);
   const timers = useRef<number[]>([]);
+
+  // The gag: a conga line of Pips waddles across the screen, then is gone again.
+  function summonParade() {
+    if (paradeRef.current) return;
+    setParade(true);
+    sfx.combo(6);
+    timers.current.push(window.setTimeout(() => setParade(false), 10500));
+  }
   useEffect(() => { openRef.current = open; }, [open]);
+  useEffect(() => { paradeRef.current = parade; }, [parade]);
   const clearAll = () => { timers.current.forEach(window.clearTimeout); timers.current = []; };
 
   // Wander to a new spot on a randomized cadence (paused while open). One
@@ -54,8 +67,12 @@ export function MascotBuddy() {
       const id = window.setTimeout(() => {
         if (!alive) return;
         if (!openRef.current) {
-          setSpot((s) => (s + 1 + rnd(SPOTS.length - 1)) % SPOTS.length); // a different spot
-          setExpr(PEEK_EXPR[rnd(PEEK_EXPR.length)]);
+          if (Math.random() < 0.12) {
+            summonParade(); // rare gag
+          } else {
+            setSpot((s) => (s + 1 + rnd(SPOTS.length - 1)) % SPOTS.length); // a different spot
+            setExpr(PEEK_EXPR[rnd(PEEK_EXPR.length)]);
+          }
         }
         schedule();
       }, 14000 + rnd(12000)); // 14–26s, randomized
@@ -85,6 +102,15 @@ export function MascotBuddy() {
   useEffect(() => clearAll, []);
 
   function poke() {
+    // Poke Pip a few times fast → summon the parade (a discoverable easter egg).
+    const now = Date.now();
+    pokeTimes.current = [...pokeTimes.current, now].filter((t) => now - t < 1600);
+    if (pokeTimes.current.length >= 4) {
+      pokeTimes.current = [];
+      setOpen(false);
+      summonParade();
+      return;
+    }
     if (open) { setOpen(false); return; }
     setPhrase(randomPhrase(['greet', 'nudge', 'idle']));
     setExpr('excited');
@@ -102,11 +128,13 @@ export function MascotBuddy() {
 
   const s = SPOTS[spot];
   return (
-    <div
-      ref={rootRef}
-      className={`mascot-egg mascot-egg--${s.v} mascot-egg--${s.s}${open ? ' mascot-egg--open' : ''}`}
-      style={{ left: s.left, top: s.top } as CSSProperties}
-    >
+    <>
+      {parade && <PipParade />}
+      <div
+        ref={rootRef}
+        className={`mascot-egg mascot-egg--${s.v} mascot-egg--${s.s}${open ? ' mascot-egg--open' : ''}`}
+        style={{ left: s.left, top: s.top } as CSSProperties}
+      >
       {open && phrase && <MascotBubble phrase={phrase} onCta={go} onDismiss={() => setOpen(false)} />}
       <div className="mascot-egg__bob" style={{ '--bob-delay': bobDelay } as CSSProperties}>
         <button type="button" className="mascot-egg__btn" onClick={poke} aria-label={isEcho ? 'Echo says hi' : 'Pip says hi'}>
@@ -118,6 +146,7 @@ export function MascotBuddy() {
           {isEcho ? <Echo size={86} /> : <Pip size={104} expression={open ? 'excited' : expr} />}
         </button>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

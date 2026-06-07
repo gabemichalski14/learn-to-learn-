@@ -95,6 +95,13 @@
 .mascot-say__x:hover { color: #173d2a; background: #f2f4f6; }
 .mascot-say__x:focus-visible { outline: 2px solid #1b9aaa; outline-offset: 2px; }
 
+/* the gag: a parade of Pips waddles across the bottom of the screen */
+.pip-parade { position: fixed; left: 0; right: 0; bottom: 4px; height: 130px; z-index: 44; pointer-events: none; overflow: hidden; }
+.pip-parade__one { position: absolute; bottom: 0; left: 0; animation: pip-march 6.6s linear var(--delay, 0s) forwards; }
+@keyframes pip-march { from { transform: translateX(-170px); } to { transform: translateX(104vw); } }
+.pip-parade__waddle { display: block; transform-origin: 50% 100%; animation: pip-waddle .5s ease-in-out infinite; }
+@keyframes pip-waddle { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-7px) rotate(5deg); } }
+
 /* static clickable greeter (Home hero / Tutor / finishes) */
 .mascot-speaker { position: relative; display: inline-block; }
 .mascot-speaker__btn { background: none; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; display: block; }
@@ -117,4 +124,5 @@
   .mascot-egg__bob, .mascot-burst i, .mascot-say { animation: none; }
   .mascot-egg__btn { transition: none; }
   .mascot-egg { transition: none; }
+  .pip-parade { display: none; }
 }

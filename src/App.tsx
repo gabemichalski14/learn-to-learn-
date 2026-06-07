@@ -10,6 +10,7 @@ import { LevelsPage } from './LevelsPage';
 import { GamesPage } from './GamesPage';
 import { ProfilePage } from './ProfilePage';
 import { NavDrawer } from './NavDrawer';
+import { MascotBuddy } from './mascots/MascotBuddy';
 import { SpaceLevelHub } from './worlds/space/SpaceLevelHub';
 import { TapItOutGame } from './worlds/garden/TapItOutGame';
 import type { ThemeId } from './themes';
@@ -95,6 +96,10 @@ export default function App() {
     <>
       <NavDrawer route={route.name} isTutor={isTutor} />
       {page}
+      {/* Roaming easter-egg buddy — keyed by route so each page gets a fresh
+          surprise placement/message. Only on these (non-immersive) pages; the
+          games keep their own world guides. */}
+      <MascotBuddy key={route.name} />
     </>
   );
 }

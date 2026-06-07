@@ -1,0 +1,64 @@
+/* ============================================================
+   Mascots — Pip & Echo: organic idle life + easter-egg buddy
+   ============================================================ */
+.pip, .echo { display: inline-block; line-height: 0; }
+
+/* ---- Pip idle life: breathe + antenna sway + blink (staggered per instance) ---- */
+.pip--alive { animation: pip-breathe 3.6s ease-in-out infinite; animation-delay: var(--pip-delay, 0s); transform-origin: 50% 92%; }
+@keyframes pip-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035, 0.975); } }
+.pip--alive .pip__antenna { animation: pip-antenna 3s ease-in-out infinite alternate; animation-delay: var(--pip-delay, 0s); }
+@keyframes pip-antenna { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+.pip--alive .pip__eyes { animation: pip-blink 5.4s ease-in-out infinite; animation-delay: var(--pip-delay, 0s); transform-box: fill-box; transform-origin: center; }
+@keyframes pip-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(0.1); } }
+
+/* ---- Echo idle life: pulse + breathing ripples + blink ---- */
+.echo--alive { animation: echo-pulse 2.8s ease-in-out infinite; transform-origin: 50% 50%; }
+@keyframes echo-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+.echo--alive .echo__ripple { animation: echo-ripple 2.2s ease-in-out infinite; }
+@keyframes echo-ripple { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.12); opacity: .65; } }
+.echo--alive .echo__eyes { animation: pip-blink 4.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+/* ============================================================
+   Easter-egg buddy — peeks from a corner, pops up to nudge you
+   ============================================================ */
+.mascot-egg { position: fixed; bottom: 0; z-index: 45; pointer-events: none; }
+.mascot-egg--br { right: 16px; }
+.mascot-egg--bl { left: 16px; }
+
+.mascot-egg__btn { position: relative; pointer-events: auto; background: none; border: none; padding: 0; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transform: translateY(42%); transition: transform .45s cubic-bezier(.2, 1.3, .4, 1);
+  filter: drop-shadow(0 10px 16px rgba(13, 27, 42, .25)); }
+.mascot-egg:not(.mascot-egg--open) .mascot-egg__btn { animation: mascot-peekbob 3.6s ease-in-out infinite; }
+@keyframes mascot-peekbob { 0%, 100% { transform: translateY(45%); } 50% { transform: translateY(37%); } }
+.mascot-egg--open .mascot-egg__btn { transform: translateY(2%); animation: none; }
+.mascot-egg__btn:focus-visible { outline: 3px solid var(--teal, #1b9aaa); outline-offset: 4px; border-radius: 40%; }
+
+/* sparkle burst when poked */
+.mascot-burst { position: absolute; left: 50%; top: 34%; width: 0; height: 0; pointer-events: none; }
+.mascot-burst i { position: absolute; left: 0; top: 0; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%;
+  background: #ffe07a; box-shadow: 0 0 7px rgba(255, 215, 110, .9); opacity: 0; animation: mascot-spark .68s ease-out forwards; }
+@keyframes mascot-spark {
+  0% { opacity: 0; transform: rotate(var(--a)) translateX(2px) scale(.4); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--a)) translateX(52px) scale(1); }
+}
+
+/* speech bubble */
+.mascot-say { position: absolute; bottom: 86%; width: max-content; max-width: 240px;
+  background: #fff; color: #173d2a; border-radius: 16px; padding: 12px 14px 12px; box-shadow: 0 16px 36px rgba(13, 27, 42, .28);
+  border: 1px solid rgba(27, 154, 170, .18); font-family: 'Poppins', system-ui, sans-serif;
+  animation: mascot-saypop .34s cubic-bezier(.2, 1.4, .4, 1) both; }
+.mascot-egg--br .mascot-say { right: 8px; transform-origin: bottom right; }
+.mascot-egg--bl .mascot-say { left: 8px; transform-origin: bottom left; }
+@keyframes mascot-saypop { 0% { opacity: 0; transform: scale(.6) translateY(8px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+.mascot-say p { margin: 0 0 10px; font-size: 14px; font-weight: 600; line-height: 1.4; }
+.mascot-say__cta { font: inherit; font-weight: 800; font-size: 13px; cursor: pointer; border: none; color: #fff;
+  background: linear-gradient(135deg, #1b9aaa, #127a88); padding: 8px 14px; border-radius: 999px; box-shadow: 0 6px 14px rgba(27, 154, 170, .4); }
+.mascot-say__cta:focus-visible { outline: 2px solid #0d1b2a; outline-offset: 2px; }
+.mascot-say__x { position: absolute; top: 4px; right: 7px; background: none; border: none; color: #9ab0a4; cursor: pointer; font-size: 13px; line-height: 1; padding: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pip--alive, .pip--alive .pip__antenna, .pip--alive .pip__eyes,
+  .echo--alive, .echo--alive .echo__ripple, .echo--alive .echo__eyes,
+  .mascot-egg:not(.mascot-egg--open) .mascot-egg__btn, .mascot-burst i, .mascot-say { animation: none; }
+}

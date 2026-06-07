@@ -5,7 +5,7 @@ import { MascotBubble } from './MascotBubble';
 import { PipParade } from './PipParade';
 import { randomPhrase, type Phrase } from './phrases';
 import { sfx } from '../audio/sfx';
-import { navigate } from '../router';
+import { useGuide } from '../world/guideContext';
 import './mascots.css';
 
 /**
@@ -41,6 +41,7 @@ export function MascotBuddy() {
   const [phrase, setPhrase] = useState<Phrase | null>(null);
   const [burst, setBurst] = useState(false);
   const [parade, setParade] = useState(false);
+  const guide = useGuide();
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const openRef = useRef(false);
@@ -123,7 +124,8 @@ export function MascotBuddy() {
   function go() {
     sfx.tap();
     setOpen(false);
-    if (phrase?.to) navigate(phrase.to);
+    // Pip walks you there: sweep left if the buddy sits on the right, else right.
+    if (phrase?.to) guide.goTo(phrase.to, SPOTS[spot].s === 'sr' ? 'left' : 'right');
   }
 
   const s = SPOTS[spot];

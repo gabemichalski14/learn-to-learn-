@@ -1,0 +1,153 @@
+/* ============================================================================
+   Living World — app-wide ambient backdrop (sits behind page content).
+   Tiered richness via .living-world--t0 .. --t5. Motion is transform/opacity
+   only, staggered, and a subset at a time. prefers-reduced-motion freezes it.
+   ============================================================================ */
+
+.living-world {
+  position: fixed;
+  inset: 0;
+  z-index: -1;            /* behind page content, above the body base gradient */
+  overflow: hidden;
+  pointer-events: none;
+  /* A soft sky-to-meadow wash that warms as the tier climbs (set per tier). */
+  --lw-sky-top: #eef6f4;
+  --lw-sky-bot: #f4f7f2;
+  --lw-land: rgba(122, 184, 106, 0.10);
+  background: linear-gradient(180deg, var(--lw-sky-top) 0%, var(--lw-sky-bot) 62%);
+}
+
+/* Tier sky tints — barely-there, so text contrast on top is never harmed. */
+.living-world--t0 { --lw-sky-top:#eef6f4; --lw-sky-bot:#f4f7f2; --lw-land:rgba(122,184,106,.06); }
+.living-world--t1 { --lw-sky-top:#eaf6f1; --lw-sky-bot:#f1f7ef; --lw-land:rgba(122,184,106,.10); }
+.living-world--t2 { --lw-sky-top:#e7f4ef; --lw-sky-bot:#eef6ed; --lw-land:rgba(122,184,106,.14); }
+.living-world--t3 { --lw-sky-top:#e6f1f1; --lw-sky-bot:#ecf4ec; --lw-land:rgba(96,170,130,.16); }
+.living-world--t4 { --lw-sky-top:#e8f0f3; --lw-sky-bot:#edf5ec; --lw-land:rgba(96,170,130,.18); }
+.living-world--t5 { --lw-sky-top:#eaeef6; --lw-sky-bot:#ecf4ed; --lw-land:rgba(96,170,130,.20); }
+
+/* Rolling hills along the bottom — two soft bands give depth. */
+.lw-hills {
+  position: absolute; left: -5%; right: -5%; bottom: 0; height: 34vh;
+  background:
+    radial-gradient(120% 80% at 22% 130%, var(--lw-land) 0%, transparent 60%),
+    radial-gradient(120% 80% at 78% 140%, var(--lw-land) 0%, transparent 60%);
+}
+
+/* ---- ground flora band ---- */
+.lw-ground { position: absolute; inset: 0; }
+.lw-flora { position: absolute; transform-origin: bottom center; will-change: transform; }
+.lw-flora--sway { animation: lw-sway 7s ease-in-out infinite; animation-delay: var(--delay, 0s); }
+@keyframes lw-sway { 0%,100% { transform: rotate(-2.2deg); } 50% { transform: rotate(2.2deg); } }
+
+/* ---- butterflies / birds drift across the scene ---- */
+.lw-drift, .lw-bird {
+  position: absolute; left: -8%;
+  animation: lw-cross var(--dur, 26s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  transform: scaleX(var(--dir, 1));
+}
+@keyframes lw-cross {
+  0%   { transform: translate(-10vw, 0) scaleX(var(--dir,1)); opacity: 0; }
+  8%   { opacity: 1; }
+  50%  { transform: translate(52vw, -3vh) scaleX(var(--dir,1)); }
+  92%  { opacity: 1; }
+  100% { transform: translate(118vw, 2vh) scaleX(var(--dir,1)); opacity: 0; }
+}
+.lw-bird__wing { transform-origin: 18px 9px; }
+.lw-bird__wing--l { animation: lw-flap-l 0.9s ease-in-out infinite; }
+.lw-bird__wing--r { animation: lw-flap-r 0.9s ease-in-out infinite; }
+@keyframes lw-flap-l { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(16deg); } }
+@keyframes lw-flap-r { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-16deg); } }
+
+/* ---- fireflies (dusk tiers) ---- */
+.lw-firefly {
+  position: absolute; width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle, #fff6b0 0%, #f5d24c 55%, rgba(245,210,76,0) 72%);
+  opacity: 0; animation: lw-glow var(--dur, 5s) ease-in-out infinite; animation-delay: var(--delay, 0s);
+}
+@keyframes lw-glow {
+  0%,100% { opacity: 0; transform: translateY(0); }
+  45%     { opacity: 0.9; transform: translateY(-10px); }
+  70%     { opacity: 0.35; transform: translateY(-4px); }
+}
+
+/* ---- falling blossom petals (lush tiers) ---- */
+.lw-petal { position: absolute; top: -4%; animation: lw-fall var(--dur, 11s) linear infinite; animation-delay: var(--delay, 0s); }
+@keyframes lw-fall {
+  0%   { transform: translate(0, -4vh) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.85; }
+  100% { transform: translate(var(--drift, 0), 104vh) rotate(320deg); opacity: 0; }
+}
+
+/* ---- the rare shooting star (top tier only) ---- */
+.lw-shooting-star {
+  position: absolute; top: 12%; left: 70%; width: 80px; height: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0), #fff);
+  border-radius: 2px; opacity: 0; transform: rotate(18deg);
+  animation: lw-shoot 14s ease-in infinite;
+}
+@keyframes lw-shoot {
+  0%, 86% { opacity: 0; transform: translate(0,0) rotate(18deg); }
+  90%     { opacity: 0.9; }
+  100%    { opacity: 0; transform: translate(-160px, 60px) rotate(18deg); }
+}
+
+/* ---- bloom-in when the layer first mounts (the world "wakes up") ---- */
+.living-world--waking { animation: lw-wake 1.4s ease-out both; }
+@keyframes lw-wake { from { opacity: 0; transform: scale(1.015); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .living-world--waking { animation: none; }
+  .lw-flora--sway, .lw-drift, .lw-bird, .lw-bird__wing--l, .lw-bird__wing--r,
+  .lw-firefly, .lw-petal, .lw-shooting-star { animation: none; }
+  /* Keep the world present but still: fireflies stay faintly lit, drifters parked off-stage. */
+  .lw-firefly { opacity: 0.5; }
+  .lw-drift, .lw-bird, .lw-petal, .lw-shooting-star { display: none; }
+}
+
+/* ============================================================================
+   Easter eggs — rare surprises layered above page content (but below chrome).
+   ============================================================================ */
+.egg { position: fixed; z-index: 38; pointer-events: none; }
+
+/* Pip peeks in from a screen edge, lingers, slips away. */
+.egg--peek { width: 92px; }
+.egg--right { right: 0; animation: egg-peek-r 4.2s ease-in-out both; }
+.egg--left  { left: 0;  animation: egg-peek-l 4.2s ease-in-out both; }
+@keyframes egg-peek-r {
+  0% { transform: translateX(110%) rotate(8deg); } 14%,80% { transform: translateX(18%) rotate(0); }
+  100% { transform: translateX(110%) rotate(8deg); }
+}
+@keyframes egg-peek-l {
+  0% { transform: translateX(-110%) rotate(-8deg); } 14%,80% { transform: translateX(-18%) rotate(0); }
+  100% { transform: translateX(-110%) rotate(-8deg); }
+}
+
+/* A lone butterfly crosses once. */
+.egg--bfly { left: -6%; animation: egg-cross 7.2s ease-in-out both; }
+@keyframes egg-cross {
+  0% { transform: translate(-8vw, 0); opacity: 0; } 10% { opacity: 1; }
+  50% { transform: translate(50vw, -4vh); } 90% { opacity: 1; }
+  100% { transform: translate(112vw, 2vh); opacity: 0; }
+}
+
+/* A quick sparkle. */
+.egg--star { width: 14px; height: 14px; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #ffe98c 40%, rgba(255,236,150,0) 70%);
+  animation: egg-spark 1.6s ease-out both; }
+@keyframes egg-spark { 0% { transform: scale(0); opacity: 0; } 30% { transform: scale(1.4); opacity: 1; } 100% { transform: scale(0.6); opacity: 0; } }
+
+/* The one tappable surprise — opt-in, generous hit area, rewards a tap. */
+.egg--clover { pointer-events: auto; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer; padding: 6px; animation: egg-clover-in 0.5s cubic-bezier(0.2,1.4,0.4,1) both; }
+.egg--clover svg { animation: egg-clover-bob 2.6s ease-in-out infinite; }
+.egg--clover:focus-visible { outline: 2px solid #3f7a55; outline-offset: 3px; border-radius: 12px; }
+.egg--caught { animation: egg-clover-out 0.6s ease-out both; }
+@keyframes egg-clover-in { from { transform: scale(0) rotate(-30deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes egg-clover-out { to { transform: scale(1.7) rotate(20deg); opacity: 0; } }
+@keyframes egg-clover-bob { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-5px) rotate(4deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .egg--peek, .egg--bfly, .egg--star { display: none; }
+  .egg--clover { animation: none; } .egg--clover svg { animation: none; }
+}

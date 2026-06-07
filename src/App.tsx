@@ -11,6 +11,9 @@ import { GamesPage } from './GamesPage';
 import { ProfilePage } from './ProfilePage';
 import { NavDrawer } from './NavDrawer';
 import { SiteFooter } from './SiteFooter';
+import { LivingWorld } from './world/LivingWorld';
+import { EasterEggs } from './world/EasterEggs';
+import { useWorldTier } from './world/worldTier';
 import { MascotBuddy } from './mascots/MascotBuddy';
 import { SpaceLevelHub } from './worlds/space/SpaceLevelHub';
 import { GardenLevelHub } from './worlds/garden/GardenLevelHub';
@@ -22,6 +25,7 @@ export default function App() {
   const route = useRoute();
   const [learnerId, setLearnerId] = useState<string>(() => ensureLearner().id);
   const isTutor = useTutorSignedIn();
+  const world = useWorldTier(learnerId); // app-wide ambient richness grows with real practice
 
   function chooseLearner(id: string) {
     setCurrentLearnerId(id);
@@ -75,6 +79,7 @@ export default function App() {
 
   return (
     <>
+      <LivingWorld tier={world.tier} />
       <NavDrawer route={route.name} isTutor={isTutor} />
       {page}
       <SiteFooter />
@@ -82,6 +87,8 @@ export default function App() {
           surprise placement/message. Only on these (non-immersive) pages; the
           games keep their own world guides. */}
       <MascotBuddy key={route.name} />
+      {/* Rare ambient surprises (Pip peek, clover, butterfly) — tier-scaled. */}
+      <EasterEggs key={`egg-${route.name}`} tier={world.tier} />
     </>
   );
 }

@@ -1,0 +1,50 @@
+/* Mascot-led navigation wipe. A leafy curtain sweeps across (covering the page
+   while the route swaps underneath) with Pip scampering on its leading edge.
+   Transform/opacity only; the whole thing is gated off under reduced-motion in
+   GuideProvider (it navigates instantly there), so no reduced-motion rules are
+   needed here. */
+.guide {
+  position: fixed; inset: 0; z-index: 120; pointer-events: auto; overflow: hidden;
+}
+
+.guide__curtain {
+  position: absolute; top: -10%; bottom: -10%; width: 150vw;
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,0.18), transparent 60%),
+    linear-gradient(100deg, #6bae7f 0%, #4e9568 45%, #2f7d56 100%);
+  box-shadow: 0 0 60px rgba(47, 125, 86, 0.5);
+  border-radius: 0 48% 48% 0 / 0 50% 50% 0;
+}
+
+/* Curtain sweeps left→right (default) or right→left, covering at the midpoint. */
+.guide--right .guide__curtain { left: 0; animation: guide-sweep-r var(--guide-total, 920ms) cubic-bezier(0.65,0,0.35,1) both; }
+.guide--left  .guide__curtain { right: 0; animation: guide-sweep-l var(--guide-total, 920ms) cubic-bezier(0.65,0,0.35,1) both; }
+@keyframes guide-sweep-r {
+  0%   { transform: translateX(-160vw); }
+  48%  { transform: translateX(-25vw); }   /* fully covered */
+  52%  { transform: translateX(-25vw); }
+  100% { transform: translateX(110vw); }
+}
+@keyframes guide-sweep-l {
+  0%   { transform: translateX(160vw); }
+  48%  { transform: translateX(25vw); }
+  52%  { transform: translateX(25vw); }
+  100% { transform: translateX(-110vw); }
+}
+
+/* Pip rides the leading edge, scampering. */
+.guide__pip { position: absolute; top: 50%; }
+.guide--right .guide__pip { left: 0; animation: guide-pip-r var(--total, 920ms) cubic-bezier(0.65,0,0.35,1) both; }
+.guide--left  .guide__pip { right: 0; animation: guide-pip-l var(--total, 920ms) cubic-bezier(0.65,0,0.35,1) both; transform: scaleX(-1); }
+@keyframes guide-pip-r {
+  0%   { transform: translate(-140px, -50%) rotate(-6deg); }
+  48%  { transform: translate(46vw, -50%) rotate(0deg); }
+  52%  { transform: translate(46vw, -50%) rotate(0deg); }
+  100% { transform: translate(108vw, -50%) rotate(6deg); }
+}
+@keyframes guide-pip-l {
+  0%   { transform: translate(140px, -50%) scaleX(-1) rotate(6deg); }
+  48%  { transform: translate(-46vw, -50%) scaleX(-1) rotate(0deg); }
+  52%  { transform: translate(-46vw, -50%) scaleX(-1) rotate(0deg); }
+  100% { transform: translate(-108vw, -50%) scaleX(-1) rotate(-6deg); }
+}

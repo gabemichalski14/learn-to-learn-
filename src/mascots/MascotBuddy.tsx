@@ -26,12 +26,16 @@ const PEEK_EXPR: PipExpression[] = ['happy', 'wink', 'curious', 'happy'];
 
 export function MascotBuddy() {
   // Chosen once per mount → fresh "surprise" each page (component is keyed by route).
-  const [pick] = useState(() => ({
-    corner: Math.random() < 0.5 ? 'bl' : 'br',
-    isEcho: Math.random() < 0.22, // rare appearance = variable reward
-    nudge: NUDGES[Math.floor(Math.random() * NUDGES.length)],
-    expr: PEEK_EXPR[Math.floor(Math.random() * PEEK_EXPR.length)],
-  }));
+  const [pick] = useState(() => {
+    const isEcho = Math.random() < 0.22; // rare appearance = variable reward
+    return {
+      corner: Math.random() < 0.5 ? 'bl' : 'br',
+      isEcho,
+      wander: !isEcho && Math.random() < 0.25, // rare: Pip strolls in across the page
+      nudge: NUDGES[Math.floor(Math.random() * NUDGES.length)],
+      expr: PEEK_EXPR[Math.floor(Math.random() * PEEK_EXPR.length)],
+    };
+  });
   const [open, setOpen] = useState(false);
   const [burst, setBurst] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -77,7 +81,7 @@ export function MascotBuddy() {
   }
 
   return (
-    <div ref={rootRef} className={`mascot-egg mascot-egg--${pick.corner}${open ? ' mascot-egg--open' : ''}`}>
+    <div ref={rootRef} className={`mascot-egg mascot-egg--${pick.corner}${pick.wander ? ' mascot-egg--wander' : ''}${open ? ' mascot-egg--open' : ''}`}>
       {open && (
         <div className="mascot-say" role="status">
           <button type="button" className="mascot-say__x" onClick={() => setOpen(false)} aria-label="Dismiss">✕</button>

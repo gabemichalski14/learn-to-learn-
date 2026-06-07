@@ -9,6 +9,8 @@ import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { GardenBackdrop, SproutGuide } from './GardenArt';
+import { EchoTwinkle } from '../../mascots/EchoTwinkle';
+import { Pip } from '../../mascots/Pip';
 import './garden.css';
 
 const ROUNDS = 5;
@@ -48,6 +50,8 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
   const [sway, setSway] = useState(false);
   const [muted, setMutedState] = useState(isMuted());
+  const [echoPing, setEchoPing] = useState(0); // bumps on an audio moment → Echo twinkles
+  const pingEcho = () => setEchoPing((p) => p + 1);
 
   const startRef = useRef(Date.now());
   const firstTryRef = useRef(0);
@@ -91,6 +95,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   function check() {
     if (bloom || taps === 0) return;
     void audio.playWord(word);
+    pingEcho();
     if (taps === word.sounds) {
       const firstTry = attempts === 0;
       if (firstTry) firstTryRef.current += 1;
@@ -203,9 +208,10 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       </div>
 
       <div className={`gd-stage${sway ? ' gd-stage--sway' : ''}`}>
+        {echoPing > 0 && <EchoTwinkle key={echoPing} className="gd-echoping" />}
         <div className="gd-word">
           <span className="gd-pic" aria-hidden="true">{word.emoji}</span>
-          <button type="button" className="gd-hear" onClick={() => { sfx.tap(); void audio.playWord(word); }}>🔊 Hear it</button>
+          <button type="button" className="gd-hear" onClick={() => { sfx.tap(); pingEcho(); void audio.playWord(word); }}>🔊 Hear it</button>
         </div>
 
         <p className="gd-ask">Tap a sprout for every sound you hear in <b>{word.label}</b>.</p>
@@ -253,6 +259,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
         <div className="gd-finish">
           <div className="gd-petalfall" aria-hidden="true">{Array.from({ length: 14 }).map((_, i) => <i key={i} style={{ '--d': `${(i % 7) * 0.32}s`, '--x': `${(i * 7) % 100}%` } as CSSProperties}>{['🌸', '🌼', '🌷', '🌿'][i % 4]}</i>)}</div>
           <div className="gd-finish__card">
+            <div className="gd-finish__pip" aria-hidden="true"><Pip size={84} expression="excited" /></div>
             <div className="gd-finish__bloom" aria-hidden="true">🌸🌼🌷</div>
             <p className="gd-finish__title">Your garden is in bloom!</p>
             <p className="gd-finish__sub">You planted every sound — beautiful listening. 🌿</p>

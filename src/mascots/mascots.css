@@ -3,20 +3,47 @@
    ============================================================ */
 .pip, .echo { display: inline-block; line-height: 0; }
 
-/* ---- Pip idle life: breathe + antenna sway + blink (staggered per instance) ---- */
-.pip--alive { animation: pip-breathe 3.6s ease-in-out infinite; animation-delay: var(--pip-delay, 0s); transform-origin: 50% 92%; }
-@keyframes pip-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035, 0.975); } }
-.pip--alive .pip__antenna { animation: pip-antenna 3s ease-in-out infinite alternate; animation-delay: var(--pip-delay, 0s); }
-@keyframes pip-antenna { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
-.pip--alive .pip__eyes { animation: pip-blink 5.4s ease-in-out infinite; animation-delay: var(--pip-delay, 0s); transform-box: fill-box; transform-origin: center; }
-@keyframes pip-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(0.1); } }
+/* ---- Pip idle life — layered so he reads as a real little creature:
+   breathing (body), a periodic spontaneous "life" loop (curious wiggle + happy
+   double-hop), a lively springy antenna (secondary action), and double-blinks.
+   Each animation lives on a different element so transforms compose, never fight.
+   Staggered per instance via --pip-delay so a crowd never moves in lockstep. ---- */
+.pip--alive { animation: pip-breathe 2.9s ease-in-out infinite; animation-delay: var(--pip-delay, 0s); transform-origin: 50% 94%; }
+@keyframes pip-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06, 0.93); } }
 
-/* ---- Echo idle life: pulse + breathing ripples + blink ---- */
-.echo--alive { animation: echo-pulse 2.8s ease-in-out infinite; transform-origin: 50% 50%; }
-@keyframes echo-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-.echo--alive .echo__ripple { animation: echo-ripple 2.2s ease-in-out infinite; }
-@keyframes echo-ripple { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.12); opacity: .65; } }
-.echo--alive .echo__eyes { animation: pip-blink 4.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.pip--alive svg { animation: pip-life 7s ease-in-out infinite; animation-delay: var(--pip-delay, 0s); transform-origin: 50% 92%; }
+@keyframes pip-life {
+  0%, 26%, 42%, 62%, 100% { transform: translateY(0) rotate(0); }
+  /* curious head-wiggle */
+  30% { transform: rotate(-6deg); }
+  34% { transform: rotate(6deg); }
+  38% { transform: rotate(-3deg); }
+  /* excited double-hop */
+  67% { transform: translateY(-13px) scaleY(1.05); }
+  73% { transform: translateY(0) scaleY(0.95); }
+  78% { transform: translateY(-7px); }
+  84% { transform: translateY(0); }
+}
+.pip--alive .pip__antenna { animation: pip-antenna 2.3s ease-in-out infinite alternate; animation-delay: var(--pip-delay, 0s); }
+@keyframes pip-antenna { 0% { transform: rotate(-9deg); } 60% { transform: rotate(8deg); } 80% { transform: rotate(11deg); } 100% { transform: rotate(7deg); } }
+.pip--alive .pip__eyes { animation: pip-blink 3.4s ease-in-out infinite; animation-delay: var(--pip-delay, 0s); transform-box: fill-box; transform-origin: center; }
+@keyframes pip-blink { 0%, 86%, 100% { transform: scaleY(1); } 89% { transform: scaleY(0.1); } 92% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } 98% { transform: scaleY(1); } }
+
+/* ---- Echo idle life: brighter pulse + breathing ripples + its own float/spin + blink ---- */
+.echo--alive { animation: echo-pulse 2.4s ease-in-out infinite; transform-origin: 50% 50%; }
+@keyframes echo-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.echo--alive svg { animation: echo-life 6s ease-in-out infinite; transform-origin: 50% 50%; }
+@keyframes echo-life {
+  0%, 40%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-9px); }
+  60% { transform: translateY(0); }
+  72% { transform: rotate(9deg); }
+  79% { transform: rotate(-7deg); }
+  86% { transform: rotate(0); }
+}
+.echo--alive .echo__ripple { animation: echo-ripple 1.8s ease-in-out infinite; }
+@keyframes echo-ripple { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.18); opacity: .55; } }
+.echo--alive .echo__eyes { animation: pip-blink 4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 
 /* ============================================================
    Easter-egg buddy — peeks from a corner, pops up to nudge you
@@ -24,6 +51,28 @@
 .mascot-egg { position: fixed; bottom: 0; z-index: 45; pointer-events: none; }
 .mascot-egg--br { right: 16px; }
 .mascot-egg--bl { left: 16px; }
+
+/* rare "wander": Pip strolls in along the bottom edge (waddle) to his corner */
+.mascot-egg--wander.mascot-egg--br { animation: mascot-wander-l 5.4s cubic-bezier(.25, .6, .4, 1) both; }
+.mascot-egg--wander.mascot-egg--bl { animation: mascot-wander-r 5.4s cubic-bezier(.25, .6, .4, 1) both; }
+@keyframes mascot-wander-l {
+  0% { transform: translateX(-96vw) rotate(-3deg); }
+  15% { transform: translateX(-76vw) rotate(3deg); }
+  30% { transform: translateX(-56vw) rotate(-3deg); }
+  45% { transform: translateX(-38vw) rotate(3deg); }
+  60% { transform: translateX(-22vw) rotate(-3deg); }
+  78% { transform: translateX(-8vw) rotate(2deg); }
+  100% { transform: translateX(0) rotate(0); }
+}
+@keyframes mascot-wander-r {
+  0% { transform: translateX(96vw) rotate(3deg); }
+  15% { transform: translateX(76vw) rotate(-3deg); }
+  30% { transform: translateX(56vw) rotate(3deg); }
+  45% { transform: translateX(38vw) rotate(-3deg); }
+  60% { transform: translateX(22vw) rotate(3deg); }
+  78% { transform: translateX(8vw) rotate(-2deg); }
+  100% { transform: translateX(0) rotate(0); }
+}
 
 /* gentle, continuous float (peeking) — stops when open. Separate element from
    the rise transform so the two never fight (no snapping between "phases"). */
@@ -67,9 +116,20 @@
 .mascot-say__x:hover { color: #173d2a; background: #f2f4f6; }
 .mascot-say__x:focus-visible { outline: 2px solid #1b9aaa; outline-offset: 2px; }
 
+/* one-shot Echo sparkle near audio moments inside the games */
+.echo-twinkle { position: absolute; pointer-events: none; z-index: 4; line-height: 0;
+  animation: echo-twinkle .85s ease-out forwards; }
+@keyframes echo-twinkle {
+  0% { opacity: 0; transform: scale(.3) translateY(6px); }
+  30% { opacity: 1; transform: scale(1.12) translateY(0); }
+  100% { opacity: 0; transform: scale(1) translateY(-16px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .pip--alive, .pip--alive .pip__antenna, .pip--alive .pip__eyes,
-  .echo--alive, .echo--alive .echo__ripple, .echo--alive .echo__eyes,
-  .mascot-egg__bob, .mascot-burst i, .mascot-say { animation: none; }
+  .echo-twinkle { animation: none; opacity: 0; }
+  .pip--alive, .pip--alive svg, .pip--alive .pip__antenna, .pip--alive .pip__eyes,
+  .echo--alive, .echo--alive svg, .echo--alive .echo__ripple, .echo--alive .echo__eyes,
+  .mascot-egg__bob, .mascot-burst i, .mascot-say,
+  .mascot-egg--wander.mascot-egg--br, .mascot-egg--wander.mascot-egg--bl { animation: none; }
   .mascot-egg__btn { transition: none; }
 }

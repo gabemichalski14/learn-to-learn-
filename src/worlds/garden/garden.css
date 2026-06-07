@@ -86,6 +86,12 @@
 @keyframes gd-hover { from { transform: translateY(0); } to { transform: translateY(-8px); } }
 .gd-sproutmascot__sway { transform-origin: 32px 52px; animation: gd-sway 3s ease-in-out infinite alternate; }
 @keyframes gd-sway { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+/* Sprout idle life: a curious peek-tilt + a periodic double-blink (on the inner
+   svg so it composes with the hover). */
+.gd-sproutmascot svg { animation: gd-life 6.8s ease-in-out infinite; transform-origin: 50% 86%; }
+@keyframes gd-life { 0%, 36%, 100% { transform: rotate(0); } 26% { transform: rotate(-6deg); } 32% { transform: rotate(5deg); } 36% { transform: rotate(0); } 72% { transform: translateY(-3px); } 80% { transform: translateY(0); } }
+.gd-sproutmascot__eyes { transform-box: fill-box; transform-origin: center; animation: gd-blink 3.6s ease-in-out infinite; }
+@keyframes gd-blink { 0%, 88%, 100% { transform: scaleY(1); } 91% { transform: scaleY(.1); } 94% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
 .gd-scout__btn { flex: none; background: none; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .gd-scout__btn:focus-visible { outline: 2px solid #173d2a; outline-offset: 4px; border-radius: 50%; }
 .gd-bubble { position: relative; background: #fff; border: 1px solid rgba(78, 149, 104, 0.3); border-radius: 16px; padding: 12px 14px;
@@ -100,7 +106,8 @@
 /* ---- finish ---- */
 .gd-finish { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; text-align: center;
   background: rgba(232, 250, 230, 0.82); backdrop-filter: blur(3px); }
-.gd-finish__card { background: #fff; border: 1px solid rgba(78, 149, 104, 0.3); border-radius: 26px; padding: 30px 32px;
+.gd-finish__pip { position: absolute; top: -52px; left: 50%; margin-left: -42px; pointer-events: none; }
+.gd-finish__card { position: relative; background: #fff; border: 1px solid rgba(78, 149, 104, 0.3); border-radius: 26px; padding: 30px 32px;
   box-shadow: 0 24px 60px rgba(78, 149, 104, 0.35); max-width: 340px; animation: gd-pop 0.4s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
 .gd-finish__bloom { font-size: 48px; line-height: 1; }
 .gd-finish__title { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: 26px; color: #173d2a; margin: 8px 0 4px; }
@@ -110,7 +117,7 @@
 .gd-finish__btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
 @media (prefers-reduced-motion: reduce) {
-  .gd-sun, .gd-cloud, .gd-fly, .gd-sproutmascot, .gd-sproutmascot__sway, .gd-grown, .gd-grown.bloom, .gd-bubble, .gd-finish__card { animation: none; }
+  .gd-sun, .gd-cloud, .gd-fly, .gd-sproutmascot, .gd-sproutmascot svg, .gd-sproutmascot__eyes, .gd-sproutmascot__sway, .gd-grown, .gd-grown.bloom, .gd-bubble, .gd-finish__card { animation: none; }
 }
 
 /* ============================================================
@@ -144,6 +151,7 @@
 }
 
 /* gentle sway on a miss (softer than a hard shake — it's a calm garden) */
+.gd-echoping { left: 50%; top: 2%; margin-left: -23px; }
 .gd-stage--sway { animation: gd-swaykf 0.48s ease; }
 @keyframes gd-swaykf { 0%, 100% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-6px) rotate(-0.4deg); } 60% { transform: translateX(5px) rotate(0.4deg); } }
 

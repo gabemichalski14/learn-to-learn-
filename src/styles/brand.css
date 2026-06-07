@@ -133,7 +133,10 @@ body::before {
 
 /* ---- Home (family/student dashboard) ---- */
 .home { padding-top: clamp(10px, 2vw, 18px); }
-.home-hero { overflow: hidden; display: grid; grid-template-columns: 1fr auto; gap: clamp(16px, 4vw, 36px); align-items: center; }
+.home-hero { position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr auto; gap: clamp(16px, 4vw, 36px); align-items: center; }
+/* Pip the greeter — tucked in the hero's bottom-right corner, celebrating. */
+.home-hero__pip { position: absolute; right: 10px; bottom: 4px; z-index: 2; pointer-events: none; }
+@media (max-width: 640px) { .home-hero__pip { display: none; } }
 .home-hero__content { position: relative; z-index: 1; }
 .home-hero__cta { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
 .home-hero__avatar { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center;

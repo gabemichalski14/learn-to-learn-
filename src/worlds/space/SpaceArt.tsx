@@ -114,10 +114,12 @@ export function ScoutDrone({ size = 64, mood = null }: { size?: number; mood?: '
         <circle cx="32" cy="5" r="3" fill="#5ef0c8" />
         <rect x="14" y="14" width="36" height="30" rx="14" fill="#173d4c" stroke="#5ef0c8" strokeOpacity=".5" />
         <rect x="20" y="22" width="24" height="14" rx="7" fill="#0a1c24" />
-        <circle cx="32" cy="29" r="5.5" fill="#5ef0c8">
-          <animate attributeName="r" values="5.5;4;5.5" dur="2.4s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="33.5" cy="27.5" r="1.6" fill="#eafcff" />
+        <g className="sg-drone__eye">
+          <circle cx="32" cy="29" r="5.5" fill="#5ef0c8">
+            <animate attributeName="r" values="5.5;4;5.5" dur="2.4s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="33.5" cy="27.5" r="1.6" fill="#eafcff" />
+        </g>
         <path d="M14 28 Q4 26 4 34" stroke="#173d4c" strokeWidth="5" fill="none" strokeLinecap="round" />
         <path d="M50 28 Q60 26 60 34" stroke="#173d4c" strokeWidth="5" fill="none" strokeLinecap="round" />
         <ellipse cx="32" cy="48" rx="9" ry="4" fill="#5ef0c8" opacity=".5">

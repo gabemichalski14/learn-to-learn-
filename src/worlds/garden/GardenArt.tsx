@@ -35,8 +35,10 @@ export function SproutGuide({ size = 64, mood = null }: { size?: number; mood?: 
         <path d="M32 38 q13 -3 15 -16 q-13 1 -15 12z" fill="#8ecf9f" />
         {/* bud face */}
         <circle cx="32" cy="30" r="7.5" fill="#6bae7f" />
-        <circle cx="29.4" cy="29" r="1.4" fill="#173d2a" />
-        <circle cx="34.6" cy="29" r="1.4" fill="#173d2a" />
+        <g className="gd-sproutmascot__eyes">
+          <circle cx="29.4" cy="29" r="1.4" fill="#173d2a" />
+          <circle cx="34.6" cy="29" r="1.4" fill="#173d2a" />
+        </g>
         <path d="M29 32.4 q3 2.6 6 0" stroke="#173d2a" strokeWidth="1.4" fill="none" strokeLinecap="round" />
         <circle cx="27.5" cy="31.5" r="1.2" fill="#ffb6b6" opacity=".7" />
         <circle cx="36.5" cy="31.5" r="1.2" fill="#ffb6b6" opacity=".7" />

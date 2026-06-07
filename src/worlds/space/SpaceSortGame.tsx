@@ -14,6 +14,7 @@ import { goBack } from '../../router';
 import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
 import { SpaceSpecimen } from './creatureIcons';
 import { SpaceFinish } from './SpaceFinish';
+import { EchoTwinkle } from '../../mascots/EchoTwinkle';
 import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import './space.css';
 
@@ -116,6 +117,8 @@ export function SpaceSortGame({
   const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
   const [shake, setShake] = useState(false);
   const [muted, setMutedState] = useState(isMuted());
+  const [echoPing, setEchoPing] = useState(0); // bumps on an audio moment → Echo twinkles
+  const pingEcho = () => setEchoPing((p) => p + 1);
   // Shuffle the palette across THIS round's planets so colour never predicts the
   // vowel. Lazy init (runs once per mount; the screen remounts each round) keeps
   // colours stable mid-round and re-rolls them every new sector — no pattern.
@@ -232,15 +235,16 @@ export function SpaceSortGame({
         </div>
 
         <div className={`sg-stage${shake ? ' sg-stage--shake' : ''}`}>
+          {echoPing > 0 && <EchoTwinkle key={echoPing} className="sg-echoping" />}
           <div className="sg-planets">
             {round.baskets.map((v) => (
-              <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} onReplay={() => game.replaySound(v)} />
+              <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} onReplay={() => { pingEcho(); game.replaySound(v); }} />
             ))}
           </div>
 
           <div className="sg-tray">
             {game.remainingItems.map((it) => (
-              <Creature key={it.id} item={it} onReplay={() => { sfx.tap(); game.replayWord(it); }} />
+              <Creature key={it.id} item={it} onReplay={() => { sfx.tap(); pingEcho(); game.replayWord(it); }} />
             ))}
           </div>
 

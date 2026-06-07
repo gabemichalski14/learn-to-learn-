@@ -114,6 +114,12 @@
 .sg-scout__btn.nudge{ animation:sg-nudge 2.6s ease-in-out infinite; }
 @keyframes sg-nudge{ 0%,82%,100%{transform:translateY(0)} 88%{transform:translateY(-5px)} 94%{transform:translateY(-2px)} }
 .sg-drone{ display:block; animation:sg-hover 3.4s ease-in-out infinite alternate; }
+/* Scout idle life: a scanning look + gentle rise (on the inner svg so it composes
+   with the hover), and a periodic blink of the glowing eye. */
+.sg-drone svg{ animation:sg-life 6.5s ease-in-out infinite; transform-origin:50% 70%; }
+@keyframes sg-life{ 0%,38%,100%{ transform:translateY(0) rotate(0) } 28%{ transform:rotate(-5deg) } 34%{ transform:rotate(5deg) } 38%{ transform:rotate(0) } 70%{ transform:translateY(-4px) } 78%{ transform:translateY(0) } }
+.sg-drone__eye{ transform-box:fill-box; transform-origin:center; animation:sg-blink 3.8s ease-in-out infinite; }
+@keyframes sg-blink{ 0%,90%,100%{ transform:scaleY(1) } 93%{ transform:scaleY(.12) } 96%{ transform:scaleY(1) } }
 @keyframes sg-hover{ from{transform:translateY(0)} to{transform:translateY(-12px)} }
 
 .sg-bubble{ position:relative; background:linear-gradient(160deg,rgba(22,64,80,.97),rgba(12,36,48,.97));
@@ -182,7 +188,7 @@
 .sg-win__btns{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
 
 @media (prefers-reduced-motion: reduce){
-  .sg-stars i,.sg-planet--target,.sg-planet--target .beacon,.sg-drone,.sg-scout__btn.nudge,
+  .sg-stars i,.sg-planet--target,.sg-planet--target .beacon,.sg-drone,.sg-drone svg,.sg-drone__eye,.sg-scout__btn.nudge,
   .sg-win__burst,.sg-win__card,.sg-win__medal,.sg-win__title,.sg-win__stars span.on{ animation:none; }
   .sg-confetti{ display:none; } }
 
@@ -303,6 +309,8 @@
 .sg-mute:focus-visible{ outline:2px solid #eafcff; outline-offset:2px; }
 
 /* gentle shake on a miss */
+.sg-echoping{ left:50%; top:8%; margin-left:-23px; }
+.sg-win__pip{ position:absolute; top:-54px; right:-6px; z-index:2; transform:rotate(8deg); pointer-events:none; }
 .sg-stage--shake{ animation:sg-shakekf .4s ease; }
 @keyframes sg-shakekf{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)} }
 

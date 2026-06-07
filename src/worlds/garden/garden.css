@@ -223,6 +223,34 @@
 .gd-hub__lesson b { color: #4e9568; min-width: 16px; }
 .gd-hub__scout { z-index: 5; }
 
+/* Named plantings — the garden that remembers you ("the /m/ marigold") */
+.gd-plantings { width: 100%; max-width: 620px; margin: 0 auto 18px; }
+.gd-plantings__h { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #2f7d56; margin: 0 0 10px; text-align: center; }
+.gd-plantings__empty { font-size: 13.5px; color: #4e7a5e; text-align: center; line-height: 1.5; margin: 0; }
+.gd-plantings__link { font: inherit; font-weight: 800; color: #2f7d56; background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; }
+.gd-plantings__grid { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.gd-planting { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; font: inherit; cursor: pointer;
+  background: rgba(255, 255, 255, .9); color: #1f5236; font-weight: 800; font-size: 14px;
+  border: 1px solid color-mix(in srgb, var(--c, #6bae7f) 55%, #cfe6d6); border-left: 4px solid var(--c, #6bae7f);
+  border-radius: 14px; box-shadow: 0 6px 16px rgba(78, 149, 104, .18); transition: transform .14s ease, box-shadow .14s ease; }
+.gd-planting:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(78, 149, 104, .26); }
+.gd-planting:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+.gd-planting__emoji { font-size: 22px; line-height: 1; }
+.gd-planting__praise { margin: 6px 2px 0; font-size: 12.5px; color: #357a55; line-height: 1.4; }
+
+.gd-bloombeat { display: flex; align-items: center; gap: 10px; margin: 0 auto 14px; max-width: 560px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, .96), rgba(247, 252, 240, .94));
+  border: 1px solid rgba(245, 200, 76, .55); border-radius: 16px; padding: 10px 12px;
+  box-shadow: 0 10px 26px rgba(120, 150, 90, .22); animation: gd-bloombeat-in .5s ease-out; }
+.gd-bloombeat__art { font-size: 26px; line-height: 1; }
+.gd-bloombeat__text { margin: 0; flex: 1; font-size: 13.5px; color: #2b5a40; line-height: 1.4; }
+.gd-bloombeat__text b { color: #1f5236; }
+.gd-bloombeat__ok { flex: none; min-height: 40px; padding: 8px 14px; font: inherit; font-weight: 800; font-size: 13px; cursor: pointer;
+  color: #fff; border: none; border-radius: 999px; background: linear-gradient(135deg, #6bae7f, #4e9568); }
+.gd-bloombeat__ok:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+@keyframes gd-bloombeat-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .gd-bloombeat { animation: none; } }
+
 @media (prefers-reduced-motion: reduce) {
   .gd-flora-slot, .gd-flora--sway svg, .gd-bug__wing { animation: none; }
 }

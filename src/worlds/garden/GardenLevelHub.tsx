@@ -4,6 +4,7 @@ import { levelCurriculum, lessonSounds } from '../../curriculum';
 import { useProgress } from '../../data/store';
 import { GardenBackdrop, SproutGuide } from './GardenArt';
 import { GardenMeadow } from './GardenMeadow';
+import { GardenPlantings } from './GardenPlantings';
 import { bloomCount } from './gardenGrowth';
 import './garden.css';
 
@@ -37,6 +38,8 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
         <h1 className="gd-hub__title">{lvl.title}</h1>
         <p className="gd-hub__lead">{lvl.focus}</p>
         <p className="gd-hub__grown">🌷 Your garden: <b>{blooms}</b> blooms — every sound you learn plants another!</p>
+
+        <GardenPlantings learnerId={learnerId} />
 
         <div className="gd-missions">
           {lvl.games.map((g) => {

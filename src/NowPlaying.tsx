@@ -3,7 +3,7 @@ import { initials, setCurrentLearnerId, markRecentlyActive } from './profiles';
 import { useCurrentLearnerId, useLearner } from './data/store';
 import { StudentPicker } from './StudentPicker';
 
-/** The persistent "Now playing: <child> ▾" control. Opens the picker; on select,
+/** The persistent "Explorer: <child> ▾" control. Opens the picker; on select,
  *  sets the active learner, stamps recency, and notifies the parent. The active
  *  learner comes from the reactive store, so it stays in sync everywhere. */
 export function NowPlaying({ onChange }: { onChange?: (id: string) => void }) {
@@ -13,13 +13,13 @@ export function NowPlaying({ onChange }: { onChange?: (id: string) => void }) {
   return (
     <div className="nowplaying">
       <button type="button" className="nowplaying__btn" onClick={() => setOpen(true)} aria-haspopup="dialog">
-        <span className="nowplaying__label">Now playing</span>
+        <span className="nowplaying__label">Explorer</span>
         {learner ? (
           <span className="nowplaying__who">
             <span className="nowplaying__avatar" style={{ background: learner.color }} aria-hidden="true">{initials(learner.name)}</span>
             {learner.name} <span aria-hidden="true">▾</span>
           </span>
-        ) : <span className="nowplaying__who">Choose a student ▾</span>}
+        ) : <span className="nowplaying__who">Choose an explorer ▾</span>}
       </button>
       <StudentPicker
         open={open}

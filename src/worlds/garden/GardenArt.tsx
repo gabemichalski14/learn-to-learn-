@@ -18,10 +18,11 @@ export function GardenBackdrop() {
   );
 }
 
-/** Sprout — the friendly Level 1 guide mascot. */
-export function SproutGuide({ size = 64 }: { size?: number }) {
+/** Sprout — the friendly Level 1 guide mascot. `mood` lets the game make Sprout
+ *  cheer on a correct answer or give a gentle wobble on a miss. */
+export function SproutGuide({ size = 64, mood = null }: { size?: number; mood?: 'cheer' | 'wobble' | null }) {
   return (
-    <span className="gd-sproutmascot">
+    <span className={`gd-sproutmascot${mood ? ` gd-sproutmascot--${mood}` : ''}`}>
       <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label="Sprout, your garden guide">
         <ellipse cx="32" cy="59" rx="15" ry="3" fill="rgba(0,0,0,.12)" />
         {/* soil mound */}

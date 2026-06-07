@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { navigate } from '../../router';
 import { createStubAudioPlayer } from '../../audio/stubAudioPlayer';
+import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import { tapItOutWords, type TapWord } from '../../content/packs/tapItOut';
 import { recordItem } from '../../mastery/mastery';
 import { logSkillEvent } from '../../data/cloudSync';
@@ -13,6 +14,8 @@ import './garden.css';
 const ROUNDS = 5;
 type Phase = 'idle' | 'right' | 'wrong' | 'modeled';
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+// Petal-burst directions (degrees) — soft, organic spray on a correct word.
+const PETALS = [0, 40, 80, 120, 160, 200, 240, 280, 320];
 
 function pickWords(n: number): TapWord[] {
   const pool = [...tapItOutWords];
@@ -26,7 +29,8 @@ function pickWords(n: number): TapWord[] {
 /**
  * Tap It Out (Level 1 — Sound Garden): hear a word, tap a sprout for each sound.
  * Self-contained — owns its own 5-word session, audio, and finish; logs to the
- * shared pipeline (session + the `pa:segment` skill).
+ * shared pipeline (session + the `pa:segment` skill). Juice is tuned warm &
+ * organic to match the garden world (vs. the bigger, dramatic space games).
  */
 export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const audio = useMemo(() => createStubAudioPlayer(), []);
@@ -37,6 +41,13 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [finish, setFinish] = useState<{ stars: number } | null>(null);
   const [guideOpen, setGuideOpen] = useState(true);
+
+  // Juice state
+  const [combo, setCombo] = useState(0);
+  const comboRef = useRef(0);
+  const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
+  const [sway, setSway] = useState(false);
+  const [muted, setMutedState] = useState(isMuted());
 
   const startRef = useRef(Date.now());
   const firstTryRef = useRef(0);
@@ -61,8 +72,15 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
+  function toggleMute() {
+    const next = !muted;
+    setMuted(next);
+    setMutedState(next);
+  }
+
   function tap() {
     if (bloom) return;
+    sfx.tap();
     setTaps((t) => t + 1);
   }
   function undo() {
@@ -78,9 +96,23 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       if (firstTry) firstTryRef.current += 1;
       recordItem(learnerId, 'pa:segment', firstTry);
       logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: firstTry, at: Date.now() });
+      // Bloom + climbing combo + a happy Sprout.
+      const c = comboRef.current + 1;
+      comboRef.current = c;
+      setCombo(c);
+      if (c >= 2) sfx.combo(c); else sfx.correct();
+      setMood('cheer');
+      window.setTimeout(() => setMood((m) => (m === 'cheer' ? null : m)), 900);
       setPhase('right');
     } else {
       wrongRef.current += 1;
+      comboRef.current = 0;
+      setCombo(0);
+      sfx.wrong();
+      setMood('wobble');
+      setSway(true);
+      window.setTimeout(() => setSway(false), 480);
+      window.setTimeout(() => setMood((m) => (m === 'wobble' ? null : m)), 640);
       const next = attempts + 1;
       setAttempts(next);
       if (next >= 2) {
@@ -127,6 +159,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
     });
     awardForSession(learnerId);
     const stars = wrongRef.current === 0 ? 3 : firstTryRef.current >= ROUNDS - 1 ? 2 : 1;
+    sfx.win();
     setFinish({ stars });
   }
 
@@ -141,6 +174,10 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
     wrongRef.current = 0;
     handledRef.current = false;
     startRef.current = Date.now();
+    comboRef.current = 0;
+    setCombo(0);
+    setMood(null);
+    setSway(false);
   }
 
   const status =
@@ -156,15 +193,19 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       <div className="gd-hud">
         <button type="button" className="gd-back" onClick={() => navigate('#/level/1')}>← Back</button>
         <span className="gd-badge">🌱 Tap It Out · Word {round + 1}</span>
-        <span className="gd-seg" aria-label={`Word ${round + 1} of ${ROUNDS}`}>
-          {Array.from({ length: ROUNDS }).map((_, i) => <i key={i} className={i <= round ? 'on' : ''} />)}
+        <span className="gd-hud__right">
+          {combo >= 2 && <span key={combo} className="gd-combo" aria-label={`${combo} in a row`}>🌸 {combo}</span>}
+          <span className="gd-seg" aria-label={`Word ${round + 1} of ${ROUNDS}`}>
+            {Array.from({ length: ROUNDS }).map((_, i) => <i key={i} className={i <= round ? 'on' : ''} />)}
+          </span>
+          <button type="button" className="gd-mute" onClick={toggleMute} aria-label={muted ? 'Turn sound on' : 'Turn sound off'} aria-pressed={muted}>{muted ? '🔇' : '🔊'}</button>
         </span>
       </div>
 
-      <div className="gd-stage">
+      <div className={`gd-stage${sway ? ' gd-stage--sway' : ''}`}>
         <div className="gd-word">
           <span className="gd-pic" aria-hidden="true">{word.emoji}</span>
-          <button type="button" className="gd-hear" onClick={() => void audio.playWord(word)}>🔊 Hear it</button>
+          <button type="button" className="gd-hear" onClick={() => { sfx.tap(); void audio.playWord(word); }}>🔊 Hear it</button>
         </div>
 
         <p className="gd-ask">Tap a sprout for every sound you hear in <b>{word.label}</b>.</p>
@@ -174,6 +215,9 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
           {Array.from({ length: taps }).map((_, i) => (
             <span key={i} className={`gd-grown${bloom ? ' bloom' : ''}`} aria-hidden="true">{bloom ? '🌸' : '🌱'}</span>
           ))}
+          {phase === 'right' && (
+            <span className="gd-burst" aria-hidden="true">{PETALS.map((a, i) => <i key={i} style={{ '--a': `${a}deg` } as CSSProperties} />)}</span>
+          )}
         </div>
 
         <button type="button" className="gd-pad" onClick={tap} disabled={bloom} aria-label="Tap for one sound">＋ tap a sound</button>
@@ -193,8 +237,8 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       </div>
 
       <div className="gd-scout">
-        <button type="button" className="gd-scout__btn" onClick={() => setGuideOpen((o) => !o)} aria-label="Sprout — tap for help">
-          <SproutGuide />
+        <button type="button" className="gd-scout__btn" onClick={() => { sfx.tap(); setGuideOpen((o) => !o); }} aria-label="Sprout — tap for help">
+          <SproutGuide mood={mood} />
         </button>
         {guideOpen && (
           <div className="gd-bubble" role="status">
@@ -207,6 +251,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
 
       {finish && (
         <div className="gd-finish">
+          <div className="gd-petalfall" aria-hidden="true">{Array.from({ length: 14 }).map((_, i) => <i key={i} style={{ '--d': `${(i % 7) * 0.32}s`, '--x': `${(i * 7) % 100}%` } as CSSProperties}>{['🌸', '🌼', '🌷', '🌿'][i % 4]}</i>)}</div>
           <div className="gd-finish__card">
             <div className="gd-finish__bloom" aria-hidden="true">🌸🌼🌷</div>
             <p className="gd-finish__title">Your garden is in bloom!</p>

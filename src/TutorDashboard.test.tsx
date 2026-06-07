@@ -12,4 +12,10 @@ describe('TutorDashboard', () => {
     expect(await screen.findByText(/Tutor Dashboard/i)).toBeTruthy();
     expect(screen.getByText(/avg accuracy/i)).toBeTruthy();
   });
+
+  it('renders the Activity section when a learner exists', async () => {
+    addLearner('Mia');
+    render(<TutorDashboard />);
+    expect(await screen.findByText(/Activity/i)).toBeTruthy();
+  });
 });

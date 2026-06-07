@@ -5,8 +5,12 @@ import { loadLearners, getCurrentLearnerId, getLearner, initials, renameLearner,
 import { loadProgress, formatTime } from './progress';
 import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
-import { getSessions } from './data/dataSource';
+import { getSessions, getMastery } from './data/dataSource';
 import { ACHIEVEMENTS } from './achievements';
+import { loadMastery, rankAreas, scoreOf } from './mastery/mastery';
+import type { MasteryMap, FocusArea } from './mastery/mastery';
+import { skillLabel } from './mastery/skills';
+import { AreasToImprove } from './AreasToImprove';
 
 const CW = 280;
 const CH = 90;
@@ -84,6 +88,30 @@ export function TutorDashboard() {
   }, [sel]);
   const log = cloudLog && cloudLog.id === sel ? cloudLog.rows : (sel ? loadSessionLog(sel) : []);
 
+  const [cloudMastery, setCloudMastery] = useState<{ id: string; map: MasteryMap } | null>(null);
+  useEffect(() => {
+    let live = true;
+    const learner = sel ? getLearner(sel) : undefined;
+    if (!learner) return;
+    void getMastery(learner).then((map) => { if (live) setCloudMastery({ id: sel, map }); });
+    return () => { live = false; };
+  }, [sel]);
+  const mastery: MasteryMap = cloudMastery && cloudMastery.id === sel ? cloudMastery.map : (sel ? loadMastery(sel) : {});
+  const focus: FocusArea[] = rankAreas(mastery);
+  const strongest = Object.entries(mastery)
+    .filter(([, s]) => s.attempts >= 5)
+    .map(([skillKey, s]) => ({ skillKey, score: scoreOf(s), attempts: s.attempts }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4);
+  const dayKeys = new Set(log.map((r) => r.endedAt.slice(0, 10)));
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const key = new Date(now - (13 - i) * 864e5).toISOString().slice(0, 10);
+    return { key, active: dayKeys.has(key) };
+  });
+  let streak = 0;
+  for (let i = days.length - 1; i >= 0; i--) { if (days[i].active) streak++; else break; }
+  const activeIn14 = days.filter((d) => d.active).length;
+
   const learner = getLearner(sel);
   const prog = sel ? loadProgress(sel) : null;
   const recent = log.slice(-12);
@@ -157,6 +185,34 @@ export function TutorDashboard() {
                   <h3 className="chart-card__title">Time per session</h3>
                   <TimeChart records={recent} />
                 </div>
+              </div>
+
+              <div className="chart-grid">
+                {strongest.length > 0 && (
+                  <div className="chart-card">
+                    <h3 className="chart-card__title">Sound mastery — strongest</h3>
+                    <ul className="mastery-list">
+                      {strongest.map((a) => (
+                        <li key={a.skillKey} className="mastery-row">
+                          <span className="mastery-row__label">{skillLabel(a.skillKey)}</span>
+                          <span className="mastery-bar"><span className="mastery-bar__fill" style={{ width: `${Math.round(a.score * 100)}%` }} /></span>
+                          <span className="mastery-row__pct">{Math.round(a.score * 100)}%</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <div className="chart-card">
+                  <h3 className="chart-card__title">Activity — last 14 days{streak > 1 ? ` · ${streak}-day streak 🔥` : ''}</h3>
+                  <div className="activity-strip" aria-label={`${activeIn14} active days in the last 14`}>
+                    {days.map((d) => <span key={d.key} className={`activity-dot${d.active ? ' on' : ''}`} title={d.key} />)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="page__panel">
+                <h3 className="chart-card__title">Focus areas</h3>
+                <AreasToImprove learnerId={sel} focus={focus} />
               </div>
 
               <div className="page__panel report__log">

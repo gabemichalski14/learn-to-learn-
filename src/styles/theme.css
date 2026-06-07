@@ -1009,3 +1009,14 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .picker__avatar{ width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; font-weight:800; }
 .picker__name{ font-weight:700; color:#0d3b40; }
 .picker__empty{ grid-column:1/-1; color:#6b8a90; text-align:center; padding:20px; }
+
+/* tutor dashboard: per-skill mastery + activity */
+.mastery-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+.mastery-row{ display:grid; grid-template-columns:1fr 90px 40px; align-items:center; gap:10px; font-size:13px; }
+.mastery-row__label{ color:#0d3b40; }
+.mastery-row__pct{ text-align:right; font-weight:700; color:#0d3b40; }
+.mastery-bar{ height:8px; background:#e6eef0; border-radius:999px; overflow:hidden; }
+.mastery-bar__fill{ display:block; height:100%; background:linear-gradient(90deg,#12b3a8,#36c5ff); border-radius:999px; }
+.activity-strip{ display:flex; gap:5px; flex-wrap:wrap; }
+.activity-dot{ width:16px; height:16px; border-radius:4px; background:#e6eef0; }
+.activity-dot.on{ background:linear-gradient(160deg,#12b3a8,#0f978f); }

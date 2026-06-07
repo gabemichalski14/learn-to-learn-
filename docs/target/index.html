@@ -3,64 +3,48 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Garden home — target v2</title>
+<title>Garden home — target v3</title>
 <style>
-  /* ============================================================
-     STATIC VISUAL TARGET v2 — softer storybook palette, a lush
-     meadow, and a cozy "spot": shade tree, winding path, pond,
-     picnic blanket under the board, props. Toggle day/dusk.
-     ============================================================ */
   :root{ --ink:#3a3630; --muted:#7b7464; --card:#fffdf7; }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{font-family:'Poppins',-apple-system,system-ui,sans-serif;overflow:hidden;color:var(--ink)}
 
-  /* softer, dreamier storybook sky */
   .scene{position:fixed;inset:0;overflow:hidden;
-    background:
-      radial-gradient(58vw 30vh at 76% 10%, rgba(255,248,228,.85), transparent 62%),
-      linear-gradient(180deg,#d6e8ec 0%,#e4eee4 34%,#eef2df 52%,#f1ecd9 60%);
-    transition:background 1.2s ease}
-  /* watercolor mottle so the sky/ground read painterly, not flat */
+    background:radial-gradient(58vw 30vh at 76% 10%, rgba(255,248,228,.85), transparent 62%),
+      linear-gradient(180deg,#d6e8ec 0%,#e4eee4 34%,#eef2df 52%,#f1ecd9 60%);transition:background 1.2s ease}
   .scene::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.06;mix-blend-mode:multiply;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
   .sun{position:absolute;top:8%;right:13%;width:84px;height:84px;border-radius:50%;
-    background:radial-gradient(circle at 42% 40%,#fffae0,#ffe6b0 60%,rgba(255,230,176,0));
-    box-shadow:0 0 64px 24px rgba(255,234,180,.42);transition:all 1.2s ease}
-  .cloud{position:absolute;background:#fff;border-radius:60px;opacity:.82;
-    box-shadow:34px 10px 0 -4px #fff,-36px 12px 0 -2px #fff,10px -14px 0 -7px #fff;transition:opacity .8s}
-  .c1{top:13%;left:10%;width:130px;height:36px}.c2{top:21%;left:58%;width:96px;height:28px;opacity:.7}.c3{top:30%;left:30%;width:80px;height:24px;opacity:.6}
+    background:radial-gradient(circle at 42% 40%,#fffae0,#ffe6b0 60%,rgba(255,230,176,0));box-shadow:0 0 64px 24px rgba(255,234,180,.42);transition:all 1.2s ease}
+  .cloud{position:absolute;background:#fff;border-radius:60px;opacity:.82;box-shadow:34px 10px 0 -4px #fff,-36px 12px 0 -2px #fff,10px -14px 0 -7px #fff;transition:opacity .8s}
+  .c1{top:13%;left:10%;width:130px;height:36px}.c2{top:20%;left:58%;width:96px;height:28px;opacity:.7}.c3{top:29%;left:30%;width:80px;height:24px;opacity:.6}
 
   .hill{position:absolute;left:-8%;right:-8%;border-radius:50% 50% 0 0;transition:background 1.2s ease}
   .hill--3{bottom:40%;height:21%;background:#cdd9c0;opacity:.92}
   .hill--2{bottom:38%;height:18%;left:-22%;width:72%;background:#c3d3b4}
   .hill--2b{bottom:38%;height:16%;right:-22%;left:auto;width:72%;background:#c9d6bd}
-  .treeline{position:absolute;bottom:41%;left:0;right:0;height:60px}
 
-  /* softer sage meadow ground plane (less saturated, lighter) */
   .meadow{position:absolute;left:0;right:0;bottom:0;height:42%;
-    background:linear-gradient(180deg,#aed18c 0%,#92c074 28%,#7bae66 64%,#6aa15e 100%);
-    border-radius:46% 54% 0 0/8% 8% 0 0;transition:background 1.2s ease}
-  .meadow::before{content:'';position:absolute;inset:0;border-radius:inherit;
-    background:radial-gradient(120% 60% at 50% 0,rgba(255,250,228,.5),transparent 55%)}
+    background:linear-gradient(180deg,#aed18c 0%,#92c074 28%,#7bae66 64%,#6aa15e 100%);border-radius:46% 54% 0 0/8% 8% 0 0;transition:background 1.2s ease}
+  .meadow::before{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 60% at 50% 0,rgba(255,250,228,.5),transparent 55%)}
+  .path{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:46%;height:38%;z-index:1}
 
-  /* winding path into the meadow */
-  .path{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:54%;height:40%;z-index:1}
-
+  /* every sprite is placed by its BASE (bottom%) and carries a contact shadow */
   .layer{position:absolute;inset:0;pointer-events:none}
   .plant{position:absolute;transform:translateX(-50%);transform-origin:bottom center}
+  .plant>svg{position:relative;display:block}
   .shadow{position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);border-radius:50%;background:rgba(40,46,28,.18);filter:blur(1px)}
   .sway{animation:sway 7s ease-in-out infinite}
-  @keyframes sway{0%,100%{transform:translateX(-50%) rotate(-2.5deg)}50%{transform:translateX(-50%) rotate(2.5deg)}}
+  @keyframes sway{0%,100%{transform:translateX(-50%) rotate(-2.4deg)}50%{transform:translateX(-50%) rotate(2.4deg)}}
+  .bob{animation:bob 4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
 
-  .firefly{position:absolute;width:7px;height:7px;border-radius:50%;
-    background:radial-gradient(circle,#fff6b0,#f5d24c 55%,rgba(245,210,76,0) 72%);opacity:0}
+  .firefly{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle,#fff6b0,#f5d24c 55%,rgba(245,210,76,0) 72%);opacity:0}
   .dusk .firefly{animation:glow 4s ease-in-out infinite}
   @keyframes glow{0%,100%{opacity:0;transform:translateY(0)}45%{opacity:.95;transform:translateY(-10px)}}
 
-  /* dusk */
-  .scene.dusk{background:radial-gradient(50vw 28vh at 80% 86%, rgba(255,176,128,.5), transparent 60%),
-      linear-gradient(180deg,#3a3c6e 0%,#60548a 34%,#9c7596 52%,#d99576 60%)}
+  .scene.dusk{background:radial-gradient(50vw 28vh at 80% 86%, rgba(255,176,128,.5), transparent 60%),linear-gradient(180deg,#3a3c6e 0%,#60548a 34%,#9c7596 52%,#d99576 60%)}
   .dusk .sun{top:auto;bottom:30%;right:16%;width:70px;background:radial-gradient(circle at 42% 40%,#ffdca6,#ff9e63 60%,rgba(255,158,99,0));box-shadow:0 0 78px 28px rgba(255,150,90,.4)}
   .dusk .cloud{opacity:.22}
   .dusk .hill--3{background:#74808e}.dusk .hill--2{background:#646f86}.dusk .hill--2b{background:#6b768d}
@@ -69,15 +53,14 @@
   .wrap{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center;padding-top:13vh}
   .board{position:relative;width:min(900px,92vw);
     background:radial-gradient(90% 30% at 50% 0,rgba(255,248,226,.92),transparent 70%),linear-gradient(180deg,#f8f1e0,#efe6cf);
-    border:1px solid rgba(74,54,33,.12);border-radius:30px 30px 22px 22px;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 26px 60px -16px rgba(40,40,20,.4);padding:30px 34px 40px;z-index:3}
-  /* picnic blanket peeking under the board */
-  .blanket{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);width:min(960px,96vw);height:120px;border-radius:0 0 40px 40px;z-index:2;
-    background:repeating-linear-gradient(45deg,#e3b7a0 0 22px,#edcbb6 22px 44px);opacity:.9;
-    box-shadow:0 16px 30px -10px rgba(40,40,20,.35);transition:opacity .8s}
-  .dusk ~ .wrap .blanket{opacity:.5}
-  .vine{position:absolute;top:-16px;width:150px;height:120px;pointer-events:none;z-index:4}
-  .vine--l{left:-26px;transform:scaleX(-1)}.vine--r{right:-26px}
+    border:1px solid rgba(74,54,33,.12);border-radius:30px 30px 24px 24px;box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 26px 60px -16px rgba(40,40,20,.4);padding:30px 34px 40px;z-index:3}
+  /* gingham picnic blanket the board sits ON (peeks out below + sides, laid in perspective) */
+  .blanket{position:absolute;left:-46px;right:-46px;bottom:-54px;height:150px;z-index:-1;
+    clip-path:polygon(9% 0,91% 0,100% 100%,0 100%);
+    background-color:#edcdbb;
+    background-image:repeating-linear-gradient(0deg,rgba(198,96,74,.34) 0 20px,transparent 20px 40px),repeating-linear-gradient(90deg,rgba(198,96,74,.34) 0 20px,transparent 20px 40px);
+    box-shadow:0 16px 26px -12px rgba(40,40,20,.4);transition:opacity .8s}
+  .dusk ~ .wrap .blanket{opacity:.55}
   .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3f7a55}
   h1{font-family:Georgia,serif;font-size:clamp(30px,5vw,46px);line-height:1.05;margin:6px 0 6px;color:#3a3630}
   h1 em{font-style:italic;color:#1b9aaa}
@@ -90,9 +73,34 @@
   .keep .badge{width:46px;height:46px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px}
   .keep .num{font-family:Georgia,serif;font-size:30px;line-height:1;color:#3a3630}.keep .lbl{font-size:12px;color:var(--muted);font-weight:600}
   .k1 .badge{background:#e2f1f2}.k2 .badge{background:#e7f3ea}.k3 .badge{background:#fdf0d2}.k4 .badge{background:#eaedf8}
-  .pip{position:absolute;right:24px;top:-58px;width:104px;height:104px;z-index:5}
+  .pip{position:absolute;right:24px;top:-54px;width:100px;height:100px;z-index:5}
   .toggle{position:fixed;top:14px;right:16px;z-index:20;border:none;cursor:pointer;font:inherit;font-weight:700;background:rgba(255,255,255,.85);color:#3a3630;border-radius:999px;padding:9px 16px;box-shadow:0 6px 16px rgba(0,0,0,.15)}
   .note{position:fixed;bottom:8px;left:0;right:0;text-align:center;font-size:11px;color:rgba(60,50,30,.5);z-index:20}
+
+  /* ---- juice + storytelling motion (restrained, opacity/transform only) ---- */
+  .rays{position:absolute;top:-6%;right:6%;width:42vw;height:64vh;pointer-events:none;opacity:.3;mix-blend-mode:soft-light;transition:opacity 1s;
+    background:conic-gradient(from 196deg at 100% 0,transparent 0 7deg,rgba(255,246,205,.7) 8deg 11deg,transparent 12deg 19deg,rgba(255,246,205,.55) 20deg 23deg,transparent 24deg 31deg,rgba(255,246,205,.6) 32deg 35deg,transparent 36deg)}
+  .dusk .rays{opacity:.12}
+  .smoke{position:absolute;border-radius:50%;background:rgba(255,255,255,.65);animation:smoke 6s ease-in infinite}
+  @keyframes smoke{0%{transform:translateY(0) scale(.5);opacity:0}25%{opacity:.55}100%{transform:translateY(-72px) scale(1.7);opacity:0}}
+  .ripple{position:absolute;border:2px solid rgba(255,255,255,.55);border-radius:50%;animation:ripple 4.5s ease-out infinite}
+  @keyframes ripple{0%{transform:scale(.3);opacity:.5}100%{transform:scale(1.5);opacity:0}}
+  .leaf-fall{position:absolute;animation:leaffall linear infinite}
+  @keyframes leaffall{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:.9}100%{transform:translate(var(--lx,40px),300px) rotate(340deg);opacity:0}}
+  .dandelion-seed{position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,255,255,0) 70%);animation:seed linear infinite}
+  @keyframes seed{0%{transform:translate(0,0);opacity:0}15%{opacity:.85}100%{transform:translate(var(--sx,90px),-130px);opacity:0}}
+  .flap-l{transform-origin:right center;animation:flap .4s ease-in-out infinite alternate}
+  .flap-r{transform-origin:left center;animation:flap .4s ease-in-out infinite alternate}
+  @keyframes flap{from{transform:scaleX(1)}to{transform:scaleX(.55)}}
+  .lantern{transition:filter 1s}
+  .dusk .lantern{filter:drop-shadow(0 0 9px rgba(255,201,112,.95))}
+  .twinkle{animation:twk 2.6s ease-in-out infinite}
+  @keyframes twk{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1.12)}}
+  .shoot{position:absolute;top:13%;right:32%;width:74px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#fff);opacity:0;transform:rotate(20deg);z-index:1}
+  .dusk .shoot{animation:shoot 13s ease-in infinite}
+  @keyframes shoot{0%,88%{opacity:0;transform:translate(0,0) rotate(20deg)}92%{opacity:.9}100%{opacity:0;transform:translate(-150px,56px) rotate(20deg)}}
+  .heartcloud{position:absolute;top:11%;left:44%;opacity:.85}
+  .dusk .heartcloud{opacity:.4}
 </style>
 </head>
 <body>
@@ -100,26 +108,17 @@
     <div class="sun"></div>
     <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
     <div class="hill hill--3"></div><div class="hill hill--2"></div><div class="hill hill--2b"></div>
-    <div class="treeline layer" id="treeline"></div>
     <div class="meadow"></div>
-    <svg class="path" viewBox="0 0 300 200" preserveAspectRatio="none">
-      <path d="M120 200 q40 -60 30 -110 q-8 -50 30 -90 L190 200 Z" fill="#e6d9b6" opacity=".75"/>
-      <path d="M150 200 q20 -60 14 -110" fill="none" stroke="#d8c79c" stroke-width="3" opacity=".5"/>
-    </svg>
-    <div class="layer" id="props"></div>
-    <div class="layer" id="flora"></div>
+    <svg class="path" viewBox="0 0 300 200" preserveAspectRatio="none"><path d="M118 200 q44 -64 32 -116 q-8 -52 32 -84 L182 200 Z" fill="#e6d9b6" opacity=".7"/></svg>
+    <div class="layer" id="scene-layer"></div>
     <div class="layer" id="fireflies"></div>
-    <div class="layer" id="foreground"></div>
-    <div class="layer" id="bigtree"></div>
   </div>
 
   <button class="toggle" id="toggle">🌙 Dusk</button>
 
   <div class="wrap">
-    <div class="blanket"></div>
     <div class="board">
-      <svg class="vine vine--l" viewBox="0 0 150 120"><g fill="#5f9a58"><path d="M150 6 q-60 6 -92 60" fill="none" stroke="#4e7d49" stroke-width="5" stroke-linecap="round"/><path d="M150 6 q-34 2 -46 34 q30 2 46 -16z"/><path d="M118 30 q-30 4 -40 34 q28 4 44 -14z" fill="#6aa85f"/><path d="M92 58 q-28 8 -32 38 q26 0 40 -18z" fill="#73b066"/></g></svg>
-      <svg class="vine vine--r" viewBox="0 0 150 120"><g fill="#5f9a58"><path d="M150 6 q-60 6 -92 60" fill="none" stroke="#4e7d49" stroke-width="5" stroke-linecap="round"/><path d="M150 6 q-34 2 -46 34 q30 2 46 -16z"/><path d="M118 30 q-30 4 -40 34 q28 4 44 -14z" fill="#6aa85f"/><path d="M92 58 q-28 8 -32 38 q26 0 40 -18z" fill="#73b066"/></g></svg>
+      <div class="blanket"></div>
       <svg class="pip" viewBox="0 0 100 100" aria-hidden="true">
         <ellipse cx="50" cy="92" rx="26" ry="6" fill="rgba(40,46,28,.18)"/>
         <path d="M50 14 q4 -12 12 -12 q-2 8 -6 12z" fill="#7cc36b"/><circle cx="50" cy="52" r="34" fill="#8fd07a"/><circle cx="50" cy="52" r="34" fill="none" stroke="#6bb45a" stroke-width="2"/>
@@ -138,54 +137,133 @@
       </div>
     </div>
   </div>
-  <div class="note">Static target v2 · softer palette · lush meadow · shade tree, path, pond, picnic blanket · toggle day/dusk top-right</div>
+  <div class="note">Static target v3 · auto day/dusk by your clock · grounded trees · cottage, animals & props · gingham blanket</div>
 
 <script>
 function el(h){const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild;}
 function rnd(a,b){return a+Math.random()*(b-a);}
 const HUES=['#e6849a','#ffd97a','#ef8a6e','#fbf3ea','#9aa6ec','#f2a8c2','#c89af0'];
+const L=document.getElementById('scene-layer');
+const HOR=42; // meadow occupies bottom 42% of the viewport; horizon at bottom:42%
 
-function withShadow(svg,w){const wrap=el('<span class="plant"></span>');wrap.appendChild(el(`<span class="shadow" style="width:${Math.round(w*0.7)}px;height:${Math.round(w*0.26)}px"></span>`));svg.style.position='relative';svg.style.display='block';wrap.appendChild(svg);return wrap;}
-function flower(size,hue,depth){const petals=[0,72,144,216,288].map(a=>`<ellipse cx="22" cy="9" rx="5.5" ry="9" fill="${hue}" transform="rotate(${a} 22 22)"/>`).join('');const s=el(`<svg width="${size}" height="${Math.round(size*1.5)}" viewBox="0 0 44 64"><path d="M22 62 V28" stroke="#4f8a50" stroke-width="2.6" stroke-linecap="round"/><path d="M22 46 q-9 -1 -11 -8 q9 0 11 7z" fill="#6aa85f"/>${petals}<circle cx="22" cy="22" r="6" fill="#ffce44"/></svg>`);s.style.opacity=String(0.6+depth*0.4);return withShadow(s,size);}
-function tallFlower(size,hue,depth){const s=el(`<svg width="${size}" height="${Math.round(size*2.0)}" viewBox="0 0 30 70"><path d="M15 70 V14" stroke="#4f8a50" stroke-width="2.4" stroke-linecap="round"/><path d="M15 44 q-7 -2 -9 -8 q7 0 9 6z" fill="#6aa85f"/><circle cx="15" cy="12" r="6" fill="${hue}"/><circle cx="9" cy="20" r="5" fill="${hue}"/><circle cx="21" cy="22" r="5" fill="${hue}"/></svg>`);s.style.opacity=String(0.6+depth*0.4);return withShadow(s,size*0.7);}
-function grass(size){const s=el(`<svg width="${size}" height="${Math.round(size*0.8)}" viewBox="0 0 40 32"><g fill="none" stroke="#4f8a50" stroke-width="2.6" stroke-linecap="round"><path d="M20 32 q-6 -18 -11 -24"/><path d="M20 32 q-2 -20 -3 -28"/><path d="M20 32 q3 -19 8 -25"/><path d="M20 32 q7 -16 13 -21"/></g></svg>`);return withShadow(s,size);}
-function clover(size){const s=el(`<svg width="${size}" height="${Math.round(size*0.8)}" viewBox="0 0 40 32"><g fill="#5fae5a"><circle cx="14" cy="16" r="6"/><circle cx="22" cy="12" r="6"/><circle cx="26" cy="20" r="6"/><circle cx="18" cy="22" r="6"/></g></svg>`);return withShadow(s,size);}
-function bush(size,depth){const s=el(`<svg width="${size}" height="${Math.round(size*0.72)}" viewBox="0 0 80 58"><g fill="#6fae62"><ellipse cx="40" cy="40" rx="34" ry="20"/><circle cx="22" cy="30" r="15"/><circle cx="44" cy="24" r="18"/><circle cx="60" cy="32" r="14"/></g></svg>`);s.style.opacity=String(0.65+depth*0.35);return withShadow(s,size*0.9);}
-function tree(size,depth){const s=el(`<svg width="${size}" height="${Math.round(size*1.2)}" viewBox="0 0 60 72"><path d="M30 72 V44" stroke="#9c6b43" stroke-width="5" stroke-linecap="round"/><circle cx="30" cy="28" r="18" fill="#7cb86a"/><circle cx="17" cy="38" r="12" fill="#6aa85f"/><circle cx="44" cy="38" r="12" fill="#86c074"/></svg>`);s.style.opacity=String(0.55+depth*0.45);return withShadow(s,size*0.7);}
+// place a sprite by its BASE: x in %, base in vh-from-bottom %, returns the wrapper
+function place(svg, w, xPct, basePct, shadowH){
+  const wrap=el('<span class="plant"></span>');
+  wrap.style.left=xPct+'%'; wrap.style.bottom=basePct+'%';
+  wrap.appendChild(el(`<span class="shadow" style="width:${Math.round(w*0.7)}px;height:${Math.round(shadowH||w*0.24)}px"></span>`));
+  wrap.appendChild(svg); L.appendChild(wrap); return wrap;
+}
+const depthAt=(basePct)=>Math.max(0,Math.min(1,(HOR-basePct)/HOR)); // 0 at horizon (far), 1 at bottom (near)
 
-const flora=document.getElementById('flora'),fg=document.getElementById('foreground'),tl=document.getElementById('treeline'),ff=document.getElementById('fireflies'),props=document.getElementById('props'),bigtree=document.getElementById('bigtree');
-const horizon=0.58;
+function flowerSvg(size,hue,o){const p=[0,72,144,216,288].map(a=>`<ellipse cx="22" cy="9" rx="5.5" ry="9" fill="${hue}" transform="rotate(${a} 22 22)"/>`).join('');const s=el(`<svg width="${size}" height="${Math.round(size*1.5)}" viewBox="0 0 44 64"><path d="M22 62 V28" stroke="#4f8a50" stroke-width="2.6" stroke-linecap="round"/><path d="M22 46 q-9 -1 -11 -8 q9 0 11 7z" fill="#6aa85f"/>${p}<circle cx="22" cy="22" r="6" fill="#ffce44"/></svg>`);s.style.opacity=o;return s;}
+function tallSvg(size,hue,o){const s=el(`<svg width="${size}" height="${Math.round(size*2)}" viewBox="0 0 30 70"><path d="M15 70 V14" stroke="#4f8a50" stroke-width="2.4" stroke-linecap="round"/><path d="M15 44 q-7 -2 -9 -8 q7 0 9 6z" fill="#6aa85f"/><circle cx="15" cy="12" r="6" fill="${hue}"/><circle cx="9" cy="20" r="5" fill="${hue}"/><circle cx="21" cy="22" r="5" fill="${hue}"/></svg>`);s.style.opacity=o;return s;}
+function grassSvg(size){return el(`<svg width="${size}" height="${Math.round(size*0.8)}" viewBox="0 0 40 32"><g fill="none" stroke="#4f8a50" stroke-width="2.6" stroke-linecap="round"><path d="M20 32 q-6 -18 -11 -24"/><path d="M20 32 q-2 -20 -3 -28"/><path d="M20 32 q3 -19 8 -25"/><path d="M20 32 q7 -16 13 -21"/></g></svg>`);}
+function cloverSvg(size){return el(`<svg width="${size}" height="${Math.round(size*0.8)}" viewBox="0 0 40 32"><g fill="#5fae5a"><circle cx="14" cy="16" r="6"/><circle cx="22" cy="12" r="6"/><circle cx="26" cy="20" r="6"/><circle cx="18" cy="22" r="6"/></g></svg>`);}
+function bushSvg(size,o){const s=el(`<svg width="${size}" height="${Math.round(size*0.72)}" viewBox="0 0 80 58"><g fill="#6fae62"><ellipse cx="40" cy="40" rx="34" ry="20"/><circle cx="22" cy="30" r="15"/><circle cx="44" cy="24" r="18"/><circle cx="60" cy="32" r="14"/></g></svg>`);s.style.opacity=o;return s;}
+function berrySvg(size){return el(`<svg width="${size}" height="${Math.round(size*0.72)}" viewBox="0 0 80 58"><g fill="#5b9a52"><ellipse cx="40" cy="40" rx="34" ry="20"/><circle cx="24" cy="30" r="15"/><circle cx="46" cy="26" r="17"/></g><g fill="#d84b5a"><circle cx="28" cy="34" r="3"/><circle cx="44" cy="30" r="3"/><circle cx="56" cy="38" r="3"/><circle cx="38" cy="42" r="3"/></g></svg>`);}
+function treeSvg(size,o){const s=el(`<svg width="${size}" height="${Math.round(size*1.2)}" viewBox="0 0 60 72"><path d="M30 72 V44" stroke="#9c6b43" stroke-width="5" stroke-linecap="round"/><circle cx="30" cy="28" r="18" fill="#7cb86a"/><circle cx="17" cy="38" r="12" fill="#6aa85f"/><circle cx="44" cy="38" r="12" fill="#86c074"/></svg>`);s.style.opacity=o;return s;}
+function mushroomSvg(size){return el(`<svg width="${size}" height="${Math.round(size)}" viewBox="0 0 40 40"><rect x="16" y="20" width="8" height="16" rx="3" fill="#f3ead7"/><path d="M4 22 q16 -20 32 0 q-16 8 -32 0z" fill="#e0573a"/><circle cx="14" cy="16" r="2.4" fill="#fff"/><circle cx="24" cy="13" r="2" fill="#fff"/><circle cx="29" cy="18" r="1.8" fill="#fff"/></svg>`);}
+function cattailSvg(size){return el(`<svg width="${size}" height="${Math.round(size*1.6)}" viewBox="0 0 30 50"><path d="M10 50 V8 M20 50 V14" stroke="#6aa85f" stroke-width="2.4" stroke-linecap="round" fill="none"/><rect x="7.6" y="6" width="5" height="14" rx="2.5" fill="#8a5a33"/><rect x="17.6" y="12" width="5" height="12" rx="2.5" fill="#8a5a33"/></svg>`);}
+// ---- a cozy cottage ----
+function cottageSvg(size){return el(`<svg width="${size}" height="${Math.round(size*0.95)}" viewBox="0 0 140 134">
+  <rect x="22" y="60" width="96" height="64" rx="6" fill="#f0e2c8"/><rect x="22" y="60" width="96" height="64" rx="6" fill="none" stroke="#d8c39e" stroke-width="2"/>
+  <path d="M10 64 L70 16 L130 64 q-60 -16 -120 0z" fill="#c98a5a"/><path d="M10 64 L70 16 L130 64" fill="none" stroke="#a96e44" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="58" y="92" width="24" height="32" rx="3" fill="#9c6b43"/><circle cx="76" cy="108" r="1.6" fill="#f3ead7"/>
+  <rect x="32" y="78" width="18" height="18" rx="2" fill="#bfe6f0"/><rect x="90" y="78" width="18" height="18" rx="2" fill="#bfe6f0"/>
+  <path d="M32 87 h18 M41 78 v18" stroke="#d8c39e" stroke-width="1.6"/><path d="M90 87 h18 M99 78 v18" stroke="#d8c39e" stroke-width="1.6"/>
+  <rect x="96" y="26" width="10" height="20" rx="2" fill="#b07a4e"/>
+  <ellipse cx="70" cy="124" rx="14" ry="4" fill="#5b9a52" opacity=".5"/></svg>`);}
+// ---- animals ----
+function rabbitSvg(size){return el(`<svg width="${size}" height="${Math.round(size*0.9)}" viewBox="0 0 50 46"><ellipse cx="26" cy="34" rx="15" ry="11" fill="#efe9df"/><circle cx="14" cy="28" r="8" fill="#efe9df"/><path d="M10 24 q-3 -16 2 -18 q4 4 3 17z" fill="#efe9df"/><path d="M16 23 q-2 -15 3 -17 q3 5 1 16z" fill="#efe9df"/><circle cx="10" cy="27" r="1.4" fill="#3a2a2a"/><circle cx="40" cy="32" r="4" fill="#fff"/></svg>`);}
+function birdSvg(size){return el(`<svg width="${size}" height="${Math.round(size*0.8)}" viewBox="0 0 36 28"><ellipse cx="18" cy="16" rx="12" ry="9" fill="#e8a14a"/><circle cx="26" cy="11" r="6" fill="#f0b25e"/><path d="M31 11 l6 1 -6 2z" fill="#d8762a"/><circle cx="27" cy="10" r="1.2" fill="#2c2018"/><path d="M8 16 q8 6 16 0 q-8 4 -16 0z" fill="#cf8636"/></svg>`);}
+function duckSvg(size){return el(`<svg width="${size}" height="${Math.round(size*0.8)}" viewBox="0 0 40 30"><ellipse cx="20" cy="20" rx="14" ry="8" fill="#fbf3ea"/><circle cx="31" cy="13" r="6" fill="#fff"/><path d="M36 13 l6 1.5 -6 2z" fill="#f2a83a"/><circle cx="32" cy="12" r="1.2" fill="#2c2018"/></svg>`);}
+function ladybugSvg(size){return el(`<svg width="${size}" height="${size}" viewBox="0 0 24 24"><ellipse cx="12" cy="14" rx="9" ry="8" fill="#d84b3a"/><path d="M12 6 v16" stroke="#2c2018" stroke-width="1.4"/><circle cx="12" cy="6" r="3.4" fill="#2c2018"/><circle cx="8" cy="12" r="1.6" fill="#2c2018"/><circle cx="16" cy="12" r="1.6" fill="#2c2018"/><circle cx="8" cy="17" r="1.4" fill="#2c2018"/><circle cx="16" cy="17" r="1.4" fill="#2c2018"/></svg>`);}
+function snailSvg(size){return el(`<svg width="${size}" height="${Math.round(size*0.7)}" viewBox="0 0 40 28"><path d="M6 24 q0 -8 10 -8 h12 q4 0 4 4" fill="#e7d3a0"/><circle cx="22" cy="15" r="9" fill="none" stroke="#c98a5a" stroke-width="4"/><circle cx="22" cy="15" r="3.5" fill="none" stroke="#c98a5a" stroke-width="3"/><path d="M30 12 v-5 M33 12 v-4" stroke="#e7d3a0" stroke-width="2" stroke-linecap="round"/></svg>`);}
+function butterflySvg(size){return el(`<svg width="${size}" height="${Math.round(size*0.85)}" viewBox="0 0 40 34"><ellipse cx="20" cy="17" rx="2" ry="8" fill="#5a4633"/><path d="M19 14 q-15 -12 -17 2 q3 9 17 5z" fill="#f2a8c2"/><path d="M21 14 q15 -12 17 2 q-3 9 -17 5z" fill="#f6bcd0"/></svg>`);}
 
-// distant treeline + a low fence along the horizon
-for(let i=0;i<8;i++){const t=tree(rnd(34,50),0.2);t.style.left=(5+i*12+rnd(-3,3))+'%';t.style.top=(horizon*100-3)+'%';tl.appendChild(t);}
-const fence=el('<svg class="plant" style="left:64%;top:55.5%" width="150" height="34" viewBox="0 0 150 34"><g stroke="#cdb98c" stroke-width="4" fill="none"><path d="M8 34 V8 M38 34 V8 M68 34 V8 M98 34 V8 M128 34 V8"/><path d="M0 16 H150 M0 24 H150"/></g></svg>');fence.style.opacity='.8';props.appendChild(fence);
+// ===== build the scene =====
+// 1) grounded treeline ON the horizon (base at ~HOR%, small, pale)
+for(let i=0;i<8;i++){const x=5+i*12+rnd(-3,3);place(treeSvg(rnd(40,58),0.55),42,x,HOR-rnd(0,2),16);}
+// a few mid bushes near the horizon
+for(let i=0;i<4;i++){place(bushSvg(rnd(44,64),0.7),46,rnd(8,90),HOR-rnd(1,4),16);}
 
-// a little pond in the field
-const pond=el('<span class="plant" style="left:74%;top:78%"><span class="shadow" style="width:120px;height:30px"></span><svg width="150" height="60" viewBox="0 0 150 60" style="position:relative;display:block"><ellipse cx="75" cy="34" rx="70" ry="24" fill="#9fd6e6"/><ellipse cx="75" cy="30" rx="62" ry="18" fill="#bfe6f0"/><ellipse cx="55" cy="28" rx="14" ry="6" fill="#dff3f7" opacity=".8"/><ellipse cx="98" cy="40" rx="12" ry="5" fill="#7fc06a"/></svg></span>');flora.appendChild(pond);
+// 2) the cozy COTTAGE, grounded mid-left
+place(cottageSvg(150),150,24,HOR-9,18);
+// the big shade tree the board nestles beside (bottom-left), grounded
+(()=>{const s=el(`<svg width="320" height="380" viewBox="0 0 320 380"><path d="M160 380 V150" stroke="#9c6b43" stroke-width="20" stroke-linecap="round"/><path d="M160 230 q-50 -10 -70 -50 M160 200 q50 -10 74 -54" stroke="#9c6b43" stroke-width="12" fill="none" stroke-linecap="round"/><g fill="#7cb86a"><circle cx="160" cy="110" r="84"/><circle cx="92" cy="150" r="58"/><circle cx="232" cy="150" r="58"/><circle cx="130" cy="180" r="56"/><circle cx="200" cy="172" r="54"/></g><g fill="#8cc678"><circle cx="150" cy="92" r="46"/><circle cx="208" cy="128" r="34"/></g></svg>`);place(s,300,11,1,46);})();
 
-// LUSH clusters across the field (more centers, more per cluster, more variety)
-const centers=[10,16,24,30,36,44,50,56,62,68,82,88,14,28,40,52,60,72,80,90];
-centers.forEach((cx)=>{const cy=rnd(horizon+0.02,0.97);const depth=(cy-horizon)/(1-horizon);const n=Math.round(rnd(3,7));
-  for(let k=0;k<n;k++){const r=Math.random();let p;const size=14+depth*30;
-    if(r<0.62)p=flower(size,HUES[Math.floor(rnd(0,HUES.length))],depth);
-    else if(r<0.8)p=tallFlower(size*1.1,HUES[Math.floor(rnd(0,HUES.length))],depth);
-    else if(r<0.92)p=clover(14+depth*20);else p=grass(16+depth*26);
-    p.style.left=(cx+rnd(-6,6))+'%';p.style.top=(cy*100+rnd(-3,3))+'%';if(k%3===0)p.classList.add('sway');flora.appendChild(p);}
-  if(Math.random()<0.4){const b=bush(40+rnd(0,30),(cy-horizon)/(1-horizon));b.style.left=(cx+rnd(-4,4))+'%';b.style.top=(cy*100)+'%';flora.appendChild(b);}
+// 3) pond + cattails + duck (right field)
+(()=>{const w=el('<span class="plant" style="left:76%;bottom:20%"><span class="shadow" style="width:120px;height:26px"></span><svg width="150" height="56" viewBox="0 0 150 56" style="position:relative;display:block"><ellipse cx="75" cy="32" rx="70" ry="22" fill="#9fd6e6"/><ellipse cx="75" cy="28" rx="62" ry="17" fill="#bfe6f0"/><ellipse cx="54" cy="26" rx="13" ry="5" fill="#dff3f7" opacity=".8"/><ellipse cx="100" cy="38" rx="12" ry="5" fill="#7fc06a"/></svg></span>');L.appendChild(w);})();
+place(cattailSvg(40),69,21,16);place(cattailSvg(34),67,22,16);
+place(duckSvg(40),78,21.5,12);
+
+// 4) LUSH clustered flora across the field, grounded + depth-scaled
+const centers=[8,16,30,38,50,58,64,72,84,90,12,34,46,56,68,80,88,42,62,86];
+centers.forEach((cx)=>{const base=rnd(2,HOR-3);const d=depthAt(base);const n=Math.round(rnd(3,7));
+  for(let k=0;k<n;k++){const r=Math.random();const size=14+d*30;let s;
+    if(r<0.6)s=flowerSvg(size,HUES[Math.floor(rnd(0,HUES.length))],0.6+d*0.4);
+    else if(r<0.8)s=tallSvg(size*1.1,HUES[Math.floor(rnd(0,HUES.length))],0.6+d*0.4);
+    else if(r<0.92)s=cloverSvg(14+d*20);else s=grassSvg(16+d*26);
+    const p=place(s,size,cx+rnd(-6,6),base+rnd(-2,2),Math.round(size*0.22));if(k%3===0)p.classList.add('sway');}
 });
+// scattered mushrooms + a berry bush
+for(let i=0;i<5;i++){place(mushroomSvg(rnd(20,30)),rnd(20,86),rnd(4,HOR-6),10);}
+place(berrySvg(58),92,8,16);
 
-// dense foreground grass + flowers overlapping the board base
-for(let i=0;i<34;i++){const gr=grass(rnd(34,60));gr.style.left=(i*3+rnd(-2,2))+'%';gr.style.bottom='-6px';gr.style.top='auto';if(i%3===0)gr.classList.add('sway');fg.appendChild(gr);}
-for(let i=0;i<11;i++){const f=Math.random()<0.5?flower(rnd(34,48),HUES[Math.floor(rnd(0,HUES.length))],1):tallFlower(rnd(40,54),HUES[Math.floor(rnd(0,HUES.length))],1);f.style.left=(5+i*8.6+rnd(-3,3))+'%';f.style.bottom='-4px';f.style.top='auto';f.classList.add('sway');fg.appendChild(f);}
+// 5) critters: rabbit, ladybug, snail, birds on the meadow; butterflies drifting
+place(rabbitSvg(46),40,6,12).classList.add('bob');
+place(ladybugSvg(20),58,10,6);place(ladybugSvg(16),30,18,5);
+place(snailSvg(34),48,4,10);
+place(birdSvg(34),12,30,10).classList.add('bob');
+for(let i=0;i<3;i++){const b=place(butterflySvg(rnd(26,34)),rnd(10,90),rnd(20,38),0);b.classList.add('bob');}
 
-// the big shade TREE the board nestles beside (bottom-left), + a watering can prop
-const big=el('<span class="plant" style="left:11%;bottom:-10px;top:auto"><span class="shadow" style="width:220px;height:46px"></span><svg width="320" height="380" viewBox="0 0 320 380" style="position:relative;display:block"><path d="M160 380 V150" stroke="#9c6b43" stroke-width="20" stroke-linecap="round"/><path d="M160 230 q-50 -10 -70 -50 M160 200 q50 -10 74 -54" stroke="#9c6b43" stroke-width="12" fill="none" stroke-linecap="round"/><g fill="#7cb86a"><circle cx="160" cy="110" r="84"/><circle cx="92" cy="150" r="58"/><circle cx="232" cy="150" r="58"/><circle cx="130" cy="180" r="56"/><circle cx="200" cy="172" r="54"/></g><g fill="#8cc678"><circle cx="150" cy="92" r="46"/><circle cx="208" cy="128" r="34"/></g></svg></span>');bigtree.appendChild(big);
-const can=el('<span class="plant" style="left:88%;bottom:8%;top:auto"><span class="shadow" style="width:54px;height:16px"></span><svg width="64" height="50" viewBox="0 0 64 50" style="position:relative;display:block"><path d="M6 18 h40 v22 q0 6 -6 6 H12 q-6 0 -6 -6z" fill="#6fb0c4"/><path d="M46 22 l14 -10 4 4 -12 12z" fill="#5b9bb0"/><rect x="14" y="10" width="24" height="8" rx="4" fill="#5b9bb0"/><path d="M58 10 q6 2 8 8" stroke="#bfe6f0" stroke-width="2" fill="none"/></svg></span>');props.appendChild(can);
+// 6) dense foreground grass + flowers overlapping the board base
+for(let i=0;i<32;i++){const p=place(grassSvg(rnd(34,60)),i*3.2+rnd(-2,2),0,16);if(i%3===0)p.classList.add('sway');}
+for(let i=0;i<10;i++){const s=Math.random()<0.5?flowerSvg(rnd(34,48),HUES[Math.floor(rnd(0,HUES.length))],1):tallSvg(rnd(40,54),HUES[Math.floor(rnd(0,HUES.length))],1);place(s,6+i*9.2+rnd(-3,3),0,14).classList.add('sway');}
+
+// 7) STORYTELLING + JUICE + FLUFF + EASTER EGGS
+L.appendChild(el('<span class="rays"></span>'));                                   // soft sun rays
+// chimney smoke (someone's home)
+[0,2,4].forEach((d,i)=>{const s=el('<span class="smoke"></span>');s.style.left=(27.4+i*0.3)+'%';s.style.bottom='52%';s.style.width=(11+i*3)+'px';s.style.height=(11+i*3)+'px';s.style.animationDelay=d+'s';L.appendChild(s);});
+// bunting strung from the shade tree to the cottage
+(()=>{const b=el('<svg style="position:absolute;left:7%;top:33%;width:24%;height:64px" viewBox="0 0 300 64" preserveAspectRatio="none"></svg>');let g='<path d="M4 6 q150 50 292 8" fill="none" stroke="#b78a5a" stroke-width="2"/>';const c=['#e6849a','#ffd97a','#8fd07a','#9aa6ec','#f2a8c2'];for(let i=0;i<12;i++){const x=8+i*24,y=8+Math.sin(i/11*Math.PI)*34;g+=`<path d="M${x} ${y} l9 0 l-4.5 13 z" fill="${c[i%c.length]}"/>`;}b.innerHTML=g;L.appendChild(b);})();
+// signpost (garden + a sense of place/evolution)
+place(el('<svg width="78" height="72" viewBox="0 0 78 72"><path d="M16 72 V20" stroke="#9c6b43" stroke-width="6" stroke-linecap="round"/><rect x="6" y="13" width="64" height="22" rx="4" fill="#d7b483"/><rect x="6" y="13" width="64" height="22" rx="4" fill="none" stroke="#b78a5a" stroke-width="2"/><text x="38" y="28" font-size="10.5" font-family="Georgia,serif" fill="#5a3f28" text-anchor="middle">Sound Garden</text></svg>'),74,45,6,16);
+// lanterns along the path (glow at dusk)
+[[40,8],[58,13]].forEach(([x,by])=>place(el('<svg class="lantern" width="34" height="64" viewBox="0 0 34 64"><path d="M17 64 V30" stroke="#8a6a45" stroke-width="4" stroke-linecap="round"/><path d="M17 12 q10 0 10 8" fill="none" stroke="#8a6a45" stroke-width="2.4"/><rect x="9" y="18" width="16" height="20" rx="4" fill="#ffd98a"/><rect x="9" y="18" width="16" height="20" rx="4" fill="none" stroke="#b78a5a" stroke-width="2"/></svg>'),34,x,by,12));
+// picnic basket on the blanket
+place(el('<svg width="50" height="42" viewBox="0 0 50 42"><path d="M8 18 h34 l-3 20 q-1 3 -4 3 H15 q-3 0 -4 -3z" fill="#c98a5a"/><path d="M8 18 h34 v4 H8z" fill="#b3743f"/><path d="M12 18 q13 -16 26 0" fill="none" stroke="#b3743f" stroke-width="3"/><path d="M14 38 V22 M25 41 V22 M36 38 V22" stroke="#b3743f" stroke-width="1.3"/><path d="M18 16 q7 -6 14 0" fill="#f2d27a"/></svg>'),50,31,2,14);
+// carrot by the rabbit (a nibble in progress)
+place(el('<svg width="20" height="30" viewBox="0 0 20 30"><path d="M10 30 q-5 -16 0 -22 q5 6 0 22z" fill="#e0772f"/><path d="M10 8 l-5 -7 M10 8 V0 M10 8 l5 -7" stroke="#5b9a52" stroke-width="2" stroke-linecap="round"/></svg>'),20,10,11,8);
+// nest in the tree + falling leaves
+L.appendChild(el('<svg style="position:absolute;left:9%;bottom:57%;width:38px;height:24px" viewBox="0 0 38 24"><ellipse cx="19" cy="16" rx="16" ry="8" fill="#a9743f"/><ellipse cx="19" cy="13" rx="11" ry="5" fill="#7c5230"/><circle cx="15" cy="13" r="2.4" fill="#cfe6ec"/><circle cx="22" cy="13" r="2.4" fill="#cfe6ec"/></svg>'));
+[0,3,6].forEach((d,i)=>{const lf=el('<span class="leaf-fall"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M8 1 q7 5 0 14 q-7 -9 0 -14z" fill="#86c074"/></svg></span>');lf.style.left=(8+i*3)+'%';lf.style.top='28%';lf.style.setProperty('--lx',(20+i*16)+'px');lf.style.animationDuration=(7+i*2)+'s';lf.style.animationDelay=d+'s';L.appendChild(lf);});
+// dandelion puffs + drifting seeds
+[[70,6],[86,10]].forEach(([x,by])=>{place(el('<svg width="30" height="44" viewBox="0 0 30 44"><path d="M15 44 V16" stroke="#4f8a50" stroke-width="2.2" stroke-linecap="round"/><g stroke="#eef3ef" stroke-width="1.2"><path d="M15 14 V4 M15 14 L9 6 M15 14 L21 6 M15 14 L7 12 M15 14 L23 12 M15 14 L10 20 M15 14 L20 20"/></g><circle cx="15" cy="14" r="2" fill="#f3ead7"/></svg>'),30,x,by,10);
+  for(let i=0;i<3;i++){const sd=el('<span class="dandelion-seed"></span>');sd.style.left=(x+rnd(-1,2))+'%';sd.style.bottom=(by+9)+'%';sd.style.setProperty('--sx',(60+rnd(0,60))+'px');sd.style.animationDuration=(9+rnd(0,6))+'s';sd.style.animationDelay=rnd(0,8)+'s';L.appendChild(sd);}});
+// pond ripples + a frog on the lily pad (easter egg)
+[0,2.2].forEach(d=>{const r=el('<span class="ripple"></span>');r.style.left='71%';r.style.bottom='23%';r.style.width='64px';r.style.height='24px';r.style.animationDelay=d+'s';L.appendChild(r);});
+place(el('<svg width="30" height="22" viewBox="0 0 30 22"><ellipse cx="15" cy="16" rx="13" ry="6" fill="#5fae5a"/><circle cx="9" cy="9" r="4" fill="#6fbf63"/><circle cx="21" cy="9" r="4" fill="#6fbf63"/><circle cx="9" cy="8" r="1.4" fill="#234"/><circle cx="21" cy="8" r="1.4" fill="#234"/><path d="M10 16 q5 3 10 0" stroke="#3f7a3a" stroke-width="1.4" fill="none"/></svg>'),30,80,21,8);
+// stepping stones on the path
+[[50,4],[49,8],[51,12]].forEach(([x,by])=>place(el('<svg width="34" height="14" viewBox="0 0 34 14"><ellipse cx="17" cy="8" rx="15" ry="6" fill="#c9bfa6"/></svg>'),34,x,by,8));
+// hidden four-leaf clover (easter egg)
+place(el('<svg class="twinkle" width="22" height="26" viewBox="0 0 24 26"><g fill="#3f9a4a"><path d="M12 13 q-7 -7 -2 -10 q5 -1 2 10z"/><path d="M12 13 q7 -7 2 -10 q-5 -1 -2 10z"/><path d="M12 13 q-7 7 -10 2 q-1 -5 10 -2z"/><path d="M12 13 q7 7 10 2 q1 -5 -10 -2z"/></g><path d="M12 13 q-1 7 -2 12" stroke="#2f7a3a" stroke-width="1.4" fill="none"/></svg>'),22,37,5,8);
+// Echo peeking from behind the cottage (easter egg)
+place(el('<svg class="twinkle" width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="9" fill="#7fd4e6"/><circle cx="13" cy="13" r="9" fill="none" stroke="#bfeaf2" stroke-width="2"/><circle cx="10" cy="11" r="1.6" fill="#1b4a55"/><circle cx="16" cy="11" r="1.6" fill="#1b4a55"/><path d="M10 16 q3 2 6 0" stroke="#1b4a55" stroke-width="1.4" fill="none"/></svg>'),26,33.5,30,8);
+// heart-shaped cloud + dusk shooting star (easter eggs)
+L.appendChild(el('<span class="heartcloud"><svg width="90" height="64" viewBox="0 0 90 64"><path d="M45 60 C10 36 18 8 45 24 C72 8 80 36 45 60 Z" fill="#fff"/></svg></span>'));
+document.getElementById('scene').appendChild(el('<span class="shoot"></span>'));
 
 // fireflies
+const ff=document.getElementById('fireflies');
 for(let i=0;i<16;i++){const e=el('<span class="firefly"></span>');e.style.left=rnd(4,94)+'%';e.style.top=rnd(40,92)+'%';e.style.animationDelay=rnd(0,6)+'s';ff.appendChild(e);}
 
-document.getElementById('toggle').onclick=()=>{const s=document.getElementById('scene');const d=s.classList.toggle('dusk');document.getElementById('toggle').textContent=d?'☀️ Day':'🌙 Dusk';};
+// ===== AUTO day/dusk by the device's local clock (toggle just for previewing) =====
+const scene=document.getElementById('scene'),toggle=document.getElementById('toggle');
+function setMode(dusk){scene.classList.toggle('dusk',dusk);toggle.textContent=dusk?'☀️ Day':'🌙 Dusk';}
+const h=new Date().getHours();
+setMode(h<7||h>=18); // evening/early morning = dusk + fireflies
+toggle.onclick=()=>setMode(!scene.classList.contains('dusk'));
 </script>
 </body>
 </html>

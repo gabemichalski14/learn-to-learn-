@@ -1,12 +1,16 @@
-# Beginning Sounds Match (Barton Level 1)
+# Learn to Learn — Phonics Games
 
-An audio-first, **letterless** phonics game tailored to the Barton Reading & Spelling
-System (Level 1 — Phonemic Awareness). Pictures stand in for words; the learner hears
-the word and sorts it by its **beginning sound** — no reading required.
+An audio-first, **letterless** phonics game aligned to general structured-literacy
+(Orton–Gillingham-based) methods (Level 1 — Phonemic Awareness). Pictures stand in for
+words; the learner hears the word and sorts it by its **beginning sound** — no reading
+required.
 
-This is game #1 of a planned Barton-aligned learning-games suite. It is built on
+This is game #1 of a planned structured-literacy learning-games suite. It is built on
 separated layers (content / engine / theme / shell) so future lessons, sounds, themes,
 and game modes extend it without rewriting the engine.
+
+> **Independent product.** Not affiliated with, endorsed by, or derived from the Barton
+> Reading & Spelling System®. See [`NOTICE`](./NOTICE) for the full trademark notice.
 
 ## Play modes
 - **Mode A — Sort into sound baskets** (this build): drag each picture into the basket
@@ -14,8 +18,8 @@ and game modes extend it without rewriting the engine.
 - **Mode B — Connect the pairs** (planned, Plan 2).
 
 ## Design principles
-- **Barton-faithful:** Level 1 shows no letters; everything is audio-first; sounds can be
-  replayed infinitely.
+- **Structured-literacy faithful:** Level 1 shows no letters; everything is audio-first;
+  sounds can be replayed infinitely.
 - **No anxiety:** no timers, no fail state. A wrong move gently replays the sound and
   returns the picture.
 - **For ages 5 → adult:** swappable age-band themes (Plan 2) keep it from ever looking babyish.
@@ -63,3 +67,27 @@ in Plan 2 (the audio interface is already in place, so no call sites change).
 toggle, recorded human audio, and the customizable avatar.
 
 See `docs/superpowers/specs/` and `docs/superpowers/plans/` for the full design and plan.
+
+## Deployment & security headers
+Deployed as a static Vite build (default: Vercel). [`vercel.json`](./vercel.json) ships
+a hardened header set on every response:
+
+- **Content-Security-Policy** locked to `'self'` plus the only external origins the app
+  uses — Google Fonts (`fonts.googleapis.com` / `fonts.gstatic.com`) and Supabase
+  (`*.supabase.co`, REST + realtime `wss:`). No inline scripts are emitted by the build.
+- `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
+  `Referrer-Policy: strict-origin-when-cross-origin`,
+  `Permissions-Policy` denying camera/microphone/geolocation/topics, and HSTS.
+- Hashed `/assets/*` are served `immutable` for a year.
+
+If you add a new external origin (e.g. an analytics or audio CDN), extend the CSP
+`connect-src` / `font-src` / `img-src` directives in `vercel.json` accordingly.
+
+## License & trademarks
+Proprietary — © 2026 Learn to Learn Tutoring Solutions, all rights reserved. See
+[`LICENSE`](./LICENSE). This is **not** open-source software.
+
+"Barton Reading & Spelling System®" is a registered trademark of its owner; this product
+is independent and not affiliated with or derived from it. All instructional copy, word
+lists, sentences, artwork, characters (Pip, Echo), and code are original works. See
+[`NOTICE`](./NOTICE).

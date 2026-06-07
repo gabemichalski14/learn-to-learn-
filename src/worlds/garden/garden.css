@@ -101,7 +101,7 @@
 .gd-bubble p { margin: 0; }
 .gd-bubble b { color: #2f7d56; }
 .gd-bubble__hi { font-weight: 800; color: #4e9568; margin-bottom: 4px !important; }
-.gd-bubble__x { position: absolute; top: 4px; right: 7px; background: none; border: none; color: #8ab397; cursor: pointer; font-size: 13px; line-height: 1; padding: 2px; }
+.gd-bubble__x { position: absolute; top: 0; right: 0; width: 40px; height: 40px; display: flex; align-items: flex-start; justify-content: flex-end; padding: 4px 7px; background: none; border: none; color: #8ab397; cursor: pointer; font-size: 14px; line-height: 1; }
 
 /* ---- finish ---- */
 .gd-finish { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; text-align: center;
@@ -133,7 +133,8 @@
 @keyframes gd-combopop { 0% { transform: scale(0.4) rotate(-8deg); opacity: 0; } 60% { transform: scale(1.18) rotate(5deg); } 100% { transform: scale(1) rotate(0); opacity: 1; } }
 
 /* mute toggle */
-.gd-mute { width: 32px; height: 32px; border-radius: 999px; cursor: pointer; font-size: 14px; line-height: 1;
+.gd-mute { width: 40px; height: 40px; border-radius: 999px; cursor: pointer; font-size: 16px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
   color: #2f7d56; background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(78, 149, 104, 0.35); }
 .gd-mute:focus-visible { outline: 2px solid #173d2a; outline-offset: 2px; }
 

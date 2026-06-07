@@ -135,8 +135,8 @@
 .sg-bubble b{ color:#bff7e6; }
 .sg-bubble__hi{ font-weight:800; color:#5ef0c8; margin-bottom:4px !important; }
 .sg-bubble__hint{ margin-top:6px !important; font-size:11.5px; color:#9fc6cf; }
-.sg-bubble__x{ position:absolute; top:4px; right:7px; background:none; border:none; color:#7fb0bb; cursor:pointer;
-  font-size:13px; line-height:1; padding:2px; }
+.sg-bubble__x{ position:absolute; top:0; right:0; width:40px; height:40px; display:flex; align-items:flex-start; justify-content:flex-end; padding:4px 7px; background:none; border:none; color:#7fb0bb; cursor:pointer;
+  font-size:14px; line-height:1; }
 .sg-bubble__x:hover{ color:#eafcff; }
 @keyframes sg-pop{ from{opacity:0; transform:scale(.82) translateY(6px)} to{opacity:1; transform:scale(1) translateY(0)} }
 
@@ -304,7 +304,8 @@
 @keyframes sg-combopop{ 0%{transform:scale(.4) rotate(-8deg); opacity:0} 60%{transform:scale(1.18) rotate(4deg)} 100%{transform:scale(1) rotate(0); opacity:1} }
 
 /* mute toggle */
-.sg-mute{ width:34px; height:34px; border-radius:999px; cursor:pointer; font-size:15px; line-height:1;
+.sg-mute{ width:40px; height:40px; border-radius:999px; cursor:pointer; font-size:16px; line-height:1;
+  display:flex; align-items:center; justify-content:center;
   color:#bfe9ef; background:rgba(10,34,46,.6); border:1px solid rgba(120,220,230,.35); }
 .sg-mute:focus-visible{ outline:2px solid #eafcff; outline-offset:2px; }
 

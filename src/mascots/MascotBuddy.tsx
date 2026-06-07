@@ -4,7 +4,8 @@ import { Echo } from './Echo';
 import { MascotBubble } from './MascotBubble';
 import { PipParade } from './PipParade';
 import { randomPhrase, type Phrase } from './phrases';
-import { narrativeState, pipGreetingFor } from '../world/narrative';
+import { speak } from '../world/lore/speak';
+import { PIP_LINES, ECHO_LINES } from '../world/lore/characters';
 import { sfx } from '../audio/sfx';
 import { useGuide } from '../world/guideContext';
 import './mascots.css';
@@ -127,9 +128,12 @@ export function MascotBuddy({ learnerId }: { learnerId: string }) {
       return;
     }
     dodgedRef.current = false;
-    // Most opens = a memory-aware greeting (remembers your last visit + last sound);
-    // the rest stay varied (nudges/tips/quips). Read at click-time (no render loop).
-    setPhrase(Math.random() < 0.6 ? pipGreetingFor(narrativeState(learnerId, Date.now())) : randomPhrase(['nudge', 'idle', 'tip']));
+    // Pip (or Echo) speaks an authored, memory + bond-aware line that evolves as
+    // you grow together and never repeats hollowly; each chat deepens the bond,
+    // unlocking deeper backstory over time. Falls back to a generic phrase only
+    // if the pool somehow yields nothing. Read/write at click-time (no render loop).
+    const pool = isEcho ? ECHO_LINES : PIP_LINES;
+    setPhrase(speak(learnerId, pool) ?? randomPhrase(['nudge', 'idle', 'tip']));
     setExpr('excited');
     setOpen(true);
     setBurst(true);

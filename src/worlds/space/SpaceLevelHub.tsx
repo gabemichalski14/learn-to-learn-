@@ -2,11 +2,12 @@ import { navigate } from '../../router';
 import { findLevel } from '../../games';
 import { levelCurriculum, lessonSounds } from '../../curriculum';
 import { SpaceBackdrop } from './SpaceArt';
+import { LevelStory } from './LevelStory';
 import './space.css';
 
 /** Immersive Space Patrol hub for Level 2 — a themed landing that flows straight
  *  into the space games. Rendered drawer-free by App for level 2. */
-export function SpaceLevelHub({ level }: { level: number }) {
+export function SpaceLevelHub({ level, learnerId }: { level: number; learnerId: string }) {
   const lvl = findLevel(level);
   const curriculum = levelCurriculum(level);
   if (!lvl) {
@@ -28,6 +29,7 @@ export function SpaceLevelHub({ level }: { level: number }) {
       <div className="sg-stage sg-hub__stage">
         <h1 className="sg-hub__title">{lvl.title}</h1>
         <p className="sg-hub__lead">{lvl.focus}</p>
+        <LevelStory learnerId={learnerId} level={lvl.num} />
         <div className="sg-missions">
           {lvl.games.map((g) => {
             const available = g.status === 'available';

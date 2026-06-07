@@ -43,7 +43,7 @@ export default function App() {
   }
 
   if (route.name === 'level' && (route.level ?? 1) === 2) {
-    return <SpaceLevelHub level={2} />;
+    return <SpaceLevelHub level={2} learnerId={learnerId} />;
   }
 
   if (route.name === 'level' && (route.level ?? 1) === 1) {

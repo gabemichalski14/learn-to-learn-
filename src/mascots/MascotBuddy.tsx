@@ -1,54 +1,71 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Pip, type PipExpression } from './Pip';
 import { Echo } from './Echo';
+import { MascotBubble } from './MascotBubble';
+import { randomPhrase, type Phrase } from './phrases';
 import { sfx } from '../audio/sfx';
 import { navigate } from '../router';
 import './mascots.css';
 
 /**
- * The roaming easter-egg buddy. Pip (occasionally Echo — a rare "variable
- * reward") peeks from a corner; poke them and they spring up with a short, warm
- * nudge toward learning. Deliberately ethical: every nudge points at play/
- * practice and frames it around the child's competence + choice — no streak
- * shaming, no FOMO, always easy to dismiss. (Relatedness + gentle persuasion.)
- *
- * Mount it keyed by route so each page gets a fresh placement/buddy/message.
+ * The roaming buddy. Pip (rarely Echo) appears at one of many spots around the
+ * page and, every so often, glides to a NEW spot — so it never sits in a fixed
+ * pattern and always feels alive. Poke them for a short, warm, randomly-chosen
+ * phrase (with an optional learning CTA). Everything is randomized (spot, timing,
+ * expression, phrase) with no immediate repeats, and movement is driven by a
+ * single self-rescheduling timer — no render loop.
  */
-const NUDGES: { say: string; cta: string; to: string }[] = [
-  { say: 'Psst… want to grow a few more sounds with me? 🌱', cta: 'Let’s play', to: '#/levels' },
-  { say: 'You’ve got a great ear today. One more round?', cta: 'Pick a game', to: '#/games' },
-  { say: 'I saved your spot — pick up where you left off!', cta: 'Continue', to: '#/levels' },
-  { say: 'Tiny steps make big readers. Try one with me?', cta: 'Let’s go', to: '#/levels' },
-  { say: 'I believe in you, Explorer. 💚', cta: 'Play a game', to: '#/games' },
+type Spot = { left: string; top: string; v: 'above' | 'below'; s: 'sl' | 'sr' | 'sc' };
+
+// Spread around the edges + sides + center (never top-left — the menu lives there).
+const SPOTS: Spot[] = [
+  { left: '16px', top: 'calc(100dvh - 156px)', v: 'above', s: 'sl' },
+  { left: 'calc(100vw - 132px)', top: 'calc(100dvh - 156px)', v: 'above', s: 'sr' },
+  { left: 'calc(50vw - 56px)', top: 'calc(100dvh - 156px)', v: 'above', s: 'sc' },
+  { left: '12px', top: '46vh', v: 'above', s: 'sl' },
+  { left: 'calc(100vw - 128px)', top: '46vh', v: 'above', s: 'sr' },
+  { left: 'calc(100vw - 128px)', top: '92px', v: 'below', s: 'sr' },
+  { left: 'calc(50vw - 56px)', top: '90px', v: 'below', s: 'sc' },
 ];
+const PEEK_EXPR: PipExpression[] = ['happy', 'wink', 'curious', 'happy', 'excited'];
 const SPARKS = [0, 45, 90, 135, 180, 225, 270, 315];
-const PEEK_EXPR: PipExpression[] = ['happy', 'wink', 'curious', 'happy'];
+const rnd = (n: number) => Math.floor(Math.random() * n);
 
 export function MascotBuddy() {
-  // Chosen once per mount → fresh "surprise" each page (component is keyed by route).
-  const [pick] = useState(() => {
-    const isEcho = Math.random() < 0.22; // rare appearance = variable reward
-    return {
-      corner: Math.random() < 0.5 ? 'bl' : 'br',
-      isEcho,
-      wander: !isEcho && Math.random() < 0.25, // rare: Pip strolls in across the page
-      nudge: NUDGES[Math.floor(Math.random() * NUDGES.length)],
-      expr: PEEK_EXPR[Math.floor(Math.random() * PEEK_EXPR.length)],
-    };
-  });
+  const [isEcho] = useState(() => Math.random() < 0.22);
+  const [spot, setSpot] = useState(() => rnd(SPOTS.length));
+  const [expr, setExpr] = useState<PipExpression>(() => PEEK_EXPR[rnd(PEEK_EXPR.length)]);
+  const [bobDelay] = useState(() => `${(rnd(1800)) / 1000}s`);
   const [open, setOpen] = useState(false);
+  const [phrase, setPhrase] = useState<Phrase | null>(null);
   const [burst, setBurst] = useState(false);
+
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const hideTimer = useRef<number | null>(null);
-  const burstTimer = useRef<number | null>(null);
+  const openRef = useRef(false);
+  const timers = useRef<number[]>([]);
+  useEffect(() => { openRef.current = open; }, [open]);
+  const clearAll = () => { timers.current.forEach(window.clearTimeout); timers.current = []; };
 
-  function clearTimers() {
-    if (hideTimer.current) window.clearTimeout(hideTimer.current);
-    if (burstTimer.current) window.clearTimeout(burstTimer.current);
-  }
-  useEffect(() => clearTimers, []);
+  // Wander to a new spot on a randomized cadence (paused while open). One
+  // self-rescheduling timer — bounded, cleaned up, never a render loop.
+  useEffect(() => {
+    let alive = true;
+    const schedule = () => {
+      const id = window.setTimeout(() => {
+        if (!alive) return;
+        if (!openRef.current) {
+          setSpot((s) => (s + 1 + rnd(SPOTS.length - 1)) % SPOTS.length); // a different spot
+          setExpr(PEEK_EXPR[rnd(PEEK_EXPR.length)]);
+        }
+        schedule();
+      }, 14000 + rnd(12000)); // 14–26s, randomized
+      timers.current.push(id);
+    };
+    schedule();
+    return () => { alive = false; clearAll(); };
+  }, []);
 
-  // While open: click-outside or Escape closes it, so it's never a trap.
+  // Click-outside / Escape closes the bubble.
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent | TouchEvent) => {
@@ -65,43 +82,40 @@ export function MascotBuddy() {
     };
   }, [open]);
 
+  useEffect(() => clearAll, []);
+
   function poke() {
     if (open) { setOpen(false); return; }
+    setPhrase(randomPhrase(['greet', 'nudge', 'idle']));
+    setExpr('excited');
     setOpen(true);
     setBurst(true);
     sfx.pop();
-    clearTimers();
-    burstTimer.current = window.setTimeout(() => setBurst(false), 700);
-    hideTimer.current = window.setTimeout(() => setOpen(false), 9000);
+    timers.current.push(window.setTimeout(() => setBurst(false), 700));
+    timers.current.push(window.setTimeout(() => setOpen(false), 9000));
   }
   function go() {
     sfx.tap();
     setOpen(false);
-    navigate(pick.nudge.to);
+    if (phrase?.to) navigate(phrase.to);
   }
 
+  const s = SPOTS[spot];
   return (
-    <div ref={rootRef} className={`mascot-egg mascot-egg--${pick.corner}${pick.wander ? ' mascot-egg--wander' : ''}${open ? ' mascot-egg--open' : ''}`}>
-      {open && (
-        <div className="mascot-say" role="status">
-          <button type="button" className="mascot-say__x" onClick={() => setOpen(false)} aria-label="Dismiss">✕</button>
-          <p>{pick.nudge.say}</p>
-          <button type="button" className="mascot-say__cta" onClick={go}>{pick.nudge.cta} →</button>
-        </div>
-      )}
-      <div className="mascot-egg__bob">
-        <button
-          type="button"
-          className="mascot-egg__btn"
-          onClick={poke}
-          aria-label={pick.isEcho ? 'Echo says hi' : 'Pip says hi'}
-        >
+    <div
+      ref={rootRef}
+      className={`mascot-egg mascot-egg--${s.v} mascot-egg--${s.s}${open ? ' mascot-egg--open' : ''}`}
+      style={{ left: s.left, top: s.top } as CSSProperties}
+    >
+      {open && phrase && <MascotBubble phrase={phrase} onCta={go} onDismiss={() => setOpen(false)} />}
+      <div className="mascot-egg__bob" style={{ '--bob-delay': bobDelay } as CSSProperties}>
+        <button type="button" className="mascot-egg__btn" onClick={poke} aria-label={isEcho ? 'Echo says hi' : 'Pip says hi'}>
           {burst && (
             <span className="mascot-burst" aria-hidden="true">
               {SPARKS.map((a, i) => <i key={i} style={{ '--a': `${a}deg` } as CSSProperties} />)}
             </span>
           )}
-          {pick.isEcho ? <Echo size={90} /> : <Pip size={118} expression={pick.expr} />}
+          {isEcho ? <Echo size={86} /> : <Pip size={104} expression={open ? 'excited' : expr} />}
         </button>
       </div>
     </div>

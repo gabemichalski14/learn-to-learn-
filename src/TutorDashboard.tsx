@@ -4,7 +4,7 @@ import { navigate } from './router';
 import { SessionLogPanel } from './SessionLogPanel';
 import { loadLearners, getCurrentLearnerId, getLearner, initials, renameLearner, removeLearner } from './profiles';
 import { useLearners, useDataVersion } from './data/store';
-import { Pip } from './mascots/Pip';
+import { MascotSpeaker } from './mascots/MascotSpeaker';
 import { loadProgress, formatTime } from './progress';
 import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
@@ -162,7 +162,7 @@ export function TutorDashboard() {
             <div className="report l2l-reveal" style={{ '--i': 2 } as CSSProperties}>
               <div className="l2l-card" style={{ marginTop: '16px' }}>
                 <div className="report__head">
-                  <span className="report__pip" aria-hidden="true"><Pip size={58} expression="excited" /></span>
+                  <MascotSpeaker className="report__pip" size={58} expression="excited" kinds={['celebrate', 'idle']} label="Pip" />
                   <span className="report__avatar" style={{ background: learner.color }} aria-hidden="true">{initials(learner.name)}</span>
                   <div>
                     <h2 className="report__name">{learner.name}</h2>

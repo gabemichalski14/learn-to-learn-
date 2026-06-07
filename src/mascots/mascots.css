@@ -46,46 +46,22 @@
 .echo--alive .echo__eyes { animation: pip-blink 4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 
 /* ============================================================
-   Easter-egg buddy — peeks from a corner, pops up to nudge you
+   Roaming buddy — appears at many spots and glides between them;
+   poke for a speech bubble. Position (left/top) is set inline per
+   spot; the transition makes Pip stroll smoothly between them.
    ============================================================ */
-.mascot-egg { position: fixed; bottom: 0; z-index: 45; pointer-events: none; }
-.mascot-egg--br { right: 16px; }
-.mascot-egg--bl { left: 16px; }
+.mascot-egg { position: fixed; z-index: 45; pointer-events: none;
+  transition: left .9s cubic-bezier(.45, .05, .25, 1), top .9s cubic-bezier(.45, .05, .25, 1); }
 
-/* rare "wander": Pip strolls in along the bottom edge (waddle) to his corner */
-.mascot-egg--wander.mascot-egg--br { animation: mascot-wander-l 5.4s cubic-bezier(.25, .6, .4, 1) both; }
-.mascot-egg--wander.mascot-egg--bl { animation: mascot-wander-r 5.4s cubic-bezier(.25, .6, .4, 1) both; }
-@keyframes mascot-wander-l {
-  0% { transform: translateX(-96vw) rotate(-3deg); }
-  15% { transform: translateX(-76vw) rotate(3deg); }
-  30% { transform: translateX(-56vw) rotate(-3deg); }
-  45% { transform: translateX(-38vw) rotate(3deg); }
-  60% { transform: translateX(-22vw) rotate(-3deg); }
-  78% { transform: translateX(-8vw) rotate(2deg); }
-  100% { transform: translateX(0) rotate(0); }
-}
-@keyframes mascot-wander-r {
-  0% { transform: translateX(96vw) rotate(3deg); }
-  15% { transform: translateX(76vw) rotate(-3deg); }
-  30% { transform: translateX(56vw) rotate(3deg); }
-  45% { transform: translateX(38vw) rotate(-3deg); }
-  60% { transform: translateX(22vw) rotate(3deg); }
-  78% { transform: translateX(8vw) rotate(-2deg); }
-  100% { transform: translateX(0) rotate(0); }
-}
-
-/* gentle, continuous float (peeking) — stops when open. Separate element from
-   the rise transform so the two never fight (no snapping between "phases"). */
-.mascot-egg__bob { animation: mascot-peekbob 3.8s ease-in-out infinite; }
+/* gentle continuous float */
+.mascot-egg__bob { animation: mascot-peekbob 3.8s ease-in-out infinite; animation-delay: var(--bob-delay, 0s); }
 @keyframes mascot-peekbob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
 
 .mascot-egg__btn { position: relative; display: block; pointer-events: auto; background: none; border: none; padding: 0; cursor: pointer;
-  -webkit-tap-highlight-color: transparent; transform-origin: 50% 100%;
-  transform: translateY(44%) scale(1); filter: drop-shadow(0 10px 16px rgba(13, 27, 42, .25));
-  /* a springy curve gives the pop its squash/stretch life — and eases BOTH ways
-     so opening and closing are smooth, never a hard phase swap. */
-  transition: transform .52s cubic-bezier(.34, 1.56, .64, 1); }
-.mascot-egg--open .mascot-egg__btn { transform: translateY(0) scale(1.05); }
+  -webkit-tap-highlight-color: transparent; transform-origin: 50% 100%; transform: scale(1);
+  filter: drop-shadow(0 10px 16px rgba(13, 27, 42, .25));
+  transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+.mascot-egg--open .mascot-egg__btn { transform: scale(1.06); }
 .mascot-egg__btn:focus-visible { outline: 3px solid var(--teal, #1b9aaa); outline-offset: 4px; border-radius: 40%; }
 
 /* sparkle burst when poked */
@@ -98,13 +74,16 @@
   100% { opacity: 0; transform: rotate(var(--a)) translateX(52px) scale(1); }
 }
 
-/* speech bubble */
-.mascot-say { position: absolute; bottom: 86%; width: max-content; max-width: 240px;
-  background: #fff; color: #173d2a; border-radius: 16px; padding: 12px 14px 12px; box-shadow: 0 16px 36px rgba(13, 27, 42, .28);
-  border: 1px solid rgba(27, 154, 170, .18); font-family: 'Poppins', system-ui, sans-serif;
+/* speech bubble — anchored above/below + left/right/center by spot modifiers */
+.mascot-say { position: absolute; pointer-events: auto; width: max-content; max-width: 230px;
+  background: #fff; color: #173d2a; border-radius: 16px; padding: 12px 14px; box-shadow: 0 16px 36px rgba(13, 27, 42, .28);
+  border: 1px solid rgba(27, 154, 170, .18); font-family: 'Poppins', system-ui, sans-serif; z-index: 2;
   animation: mascot-saypop .34s cubic-bezier(.2, 1.4, .4, 1) both; }
-.mascot-egg--br .mascot-say { right: 8px; transform-origin: bottom right; }
-.mascot-egg--bl .mascot-say { left: 8px; transform-origin: bottom left; }
+.mascot-egg--above .mascot-say { bottom: calc(100% - 8px); }
+.mascot-egg--below .mascot-say { top: calc(100% - 8px); }
+.mascot-egg--sl .mascot-say { left: 0; transform-origin: bottom left; }
+.mascot-egg--sr .mascot-say { right: 0; transform-origin: bottom right; }
+.mascot-egg--sc .mascot-say { left: 50%; margin-left: -115px; transform-origin: bottom center; }
 @keyframes mascot-saypop { 0% { opacity: 0; transform: scale(.6) translateY(8px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 .mascot-say p { margin: 0 0 10px; font-size: 14px; font-weight: 600; line-height: 1.4; }
 .mascot-say__cta { font: inherit; font-weight: 800; font-size: 13px; cursor: pointer; border: none; color: #fff;
@@ -115,6 +94,12 @@
   display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(13, 27, 42, .18); }
 .mascot-say__x:hover { color: #173d2a; background: #f2f4f6; }
 .mascot-say__x:focus-visible { outline: 2px solid #1b9aaa; outline-offset: 2px; }
+
+/* static clickable greeter (Home hero / Tutor / finishes) */
+.mascot-speaker { position: relative; display: inline-block; }
+.mascot-speaker__btn { background: none; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; display: block; }
+.mascot-speaker__btn:focus-visible { outline: 3px solid var(--teal, #1b9aaa); outline-offset: 4px; border-radius: 40%; }
+.mascot-speaker .mascot-say { bottom: calc(100% - 6px); left: 50%; margin-left: -115px; transform-origin: bottom center; }
 
 /* one-shot Echo sparkle near audio moments inside the games */
 .echo-twinkle { position: absolute; pointer-events: none; z-index: 4; line-height: 0;
@@ -129,7 +114,7 @@
   .echo-twinkle { animation: none; opacity: 0; }
   .pip--alive, .pip--alive svg, .pip--alive .pip__antenna, .pip--alive .pip__eyes,
   .echo--alive, .echo--alive svg, .echo--alive .echo__ripple, .echo--alive .echo__eyes,
-  .mascot-egg__bob, .mascot-burst i, .mascot-say,
-  .mascot-egg--wander.mascot-egg--br, .mascot-egg--wander.mascot-egg--bl { animation: none; }
+  .mascot-egg__bob, .mascot-burst i, .mascot-say { animation: none; }
   .mascot-egg__btn { transition: none; }
+  .mascot-egg { transition: none; }
 }

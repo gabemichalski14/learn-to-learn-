@@ -1,6 +1,6 @@
 import { useState, type CSSProperties } from 'react';
 import { formatTime } from '../../progress';
-import { Pip } from '../../mascots/Pip';
+import { MascotSpeaker } from '../../mascots/MascotSpeaker';
 
 const CONFETTI_COLORS = ['#5ef0c8', '#f7c948', '#e0683f', '#6f8ad6', '#b07cff', '#3aa0b4', '#ffffff'];
 
@@ -65,7 +65,7 @@ export function SpaceFinish({ ms, best, stars, title, onRestart, onBack }: Props
       </div>
 
       <div className="sg-win__card" role="dialog" aria-label="Patrol complete">
-        <div className="sg-win__pip" aria-hidden="true"><Pip size={86} expression="excited" /></div>
+        <MascotSpeaker className="sg-win__pip" size={86} expression="excited" kinds={['celebrate', 'idle']} label="Pip" />
         <div className="sg-win__medal"><StarMedal /></div>
         <p className="sg-win__eyebrow">★ MISSION COMPLETE ★</p>
         <h2 className="sg-win__title">{title}</h2>

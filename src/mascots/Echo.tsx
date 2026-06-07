@@ -32,7 +32,9 @@ export function Echo({ size = 96, alive = true, className = '' }: { size?: numbe
           <path d="M117 49 q12 21 0 42" opacity=".5" />
         </g>
         <circle cx="70" cy="70" r="34" fill={`url(#ec-${k})`} />
-        <ellipse cx="60" cy="57" rx="9" ry="6" fill="#fff" opacity=".55" />
+        <circle cx="70" cy="70" r="34" fill="none" stroke="#eafcff" strokeWidth="1.2" opacity=".35" />
+        <ellipse cx="59" cy="55" rx="11" ry="7" fill="#fff" opacity=".6" transform="rotate(-18 59 55)" />
+        <circle cx="55" cy="51" r="2.6" fill="#fff" />
         <g className="echo__eyes">
           <ellipse cx="60" cy="71" rx="5" ry="7" fill="#0a2a30" />
           <ellipse cx="80" cy="71" rx="5" ry="7" fill="#0a2a30" />

@@ -10,7 +10,7 @@ import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { GardenBackdrop, SproutGuide } from './GardenArt';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
-import { Pip } from '../../mascots/Pip';
+import { MascotSpeaker } from '../../mascots/MascotSpeaker';
 import './garden.css';
 
 const ROUNDS = 5;
@@ -259,7 +259,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
         <div className="gd-finish">
           <div className="gd-petalfall" aria-hidden="true">{Array.from({ length: 14 }).map((_, i) => <i key={i} style={{ '--d': `${(i % 7) * 0.32}s`, '--x': `${(i * 7) % 100}%` } as CSSProperties}>{['🌸', '🌼', '🌷', '🌿'][i % 4]}</i>)}</div>
           <div className="gd-finish__card">
-            <div className="gd-finish__pip" aria-hidden="true"><Pip size={84} expression="excited" /></div>
+            <MascotSpeaker className="gd-finish__pip" size={84} expression="excited" kinds={['celebrate', 'idle']} label="Pip" />
             <div className="gd-finish__bloom" aria-hidden="true">🌸🌼🌷</div>
             <p className="gd-finish__title">Your garden is in bloom!</p>
             <p className="gd-finish__sub">You planted every sound — beautiful listening. 🌿</p>

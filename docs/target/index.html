@@ -20,10 +20,9 @@
   .cloud{position:absolute;background:#fff;border-radius:60px;opacity:.82;box-shadow:34px 10px 0 -4px #fff,-36px 12px 0 -2px #fff,10px -14px 0 -7px #fff;transition:opacity .8s}
   .c1{top:13%;left:10%;width:130px;height:36px}.c2{top:20%;left:58%;width:96px;height:28px;opacity:.7}.c3{top:29%;left:30%;width:80px;height:24px;opacity:.6}
 
-  /* DEPTH: far mountains (palest, most desaturated) -> hills -> fog -> meadow */
-  .mtn{position:absolute;left:-12%;right:-12%;bottom:41%;height:15%;border-radius:50% 50% 0 0;background:#c3cdca;opacity:.65;filter:saturate(.55);transition:background 1.2s ease}
-  .mtn::before,.mtn::after{content:'';position:absolute;bottom:0;width:48%;border-radius:50% 50% 0 0;background:#bac6c6}
-  .mtn::before{left:4%;height:150%}.mtn::after{right:4%;height:125%}
+  /* DEPTH: far angular mountains (palest, most desaturated) -> hills -> fog -> meadow */
+  .mtn{position:absolute;left:-4%;right:-4%;bottom:41%;height:15%;opacity:.6;filter:saturate(.5)}
+  .mtn--2{bottom:40%;height:11%;opacity:.4;left:-8%;right:-8%}
   .hill{position:absolute;left:-8%;right:-8%;border-radius:50% 50% 0 0;transition:background 1.2s ease}
   .hill--3{bottom:40%;height:21%;background:#c7d6b6;opacity:.92}
   .hill--2{bottom:38%;height:18%;left:-22%;width:72%;background:#bcd0aa}
@@ -65,8 +64,12 @@
   .flap-r{transform-origin:left center;animation:flap .42s ease-in-out infinite alternate}
   @keyframes flap{from{transform:scaleX(1)}to{transform:scaleX(.5)}}
 
-  .firefly{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle,#fff6b0,#f5d24c 55%,rgba(245,210,76,0) 72%);opacity:0}
-  .dusk .firefly{animation:glow 4s ease-in-out infinite}
+  .firefly{position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,#fff6b0,#f5d24c 50%,rgba(245,210,76,0) 72%);opacity:0;will-change:transform,opacity}
+  .dusk .firefly{animation:ffwander var(--fw,9s) ease-in-out infinite, ffglow var(--fg,2.6s) ease-in-out infinite}
+  @keyframes ffwander{0%{transform:translate(0,0)}25%{transform:translate(var(--dx,18px),var(--dy,-14px))}50%{transform:translate(calc(var(--dx,18px)*-0.5),-8px)}75%{transform:translate(10px,var(--dy,-14px))}100%{transform:translate(0,0)}}
+  @keyframes ffglow{0%,100%{opacity:0}12%{opacity:.95}40%{opacity:.25}65%{opacity:.85}}
+  .signswing{transform-origin:65px 24px;animation:swingsign 4s ease-in-out infinite}
+  @keyframes swingsign{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}
   @keyframes glow{0%,100%{opacity:0;transform:translateY(0)}45%{opacity:.95;transform:translateY(-10px)}}
 
   .scene.dusk{background:radial-gradient(50vw 28vh at 80% 86%, rgba(255,176,128,.5), transparent 60%),linear-gradient(180deg,#3a3c6e 0%,#60548a 34%,#9c7596 52%,#d99576 60%)}
@@ -158,14 +161,15 @@
 </head>
 <body>
   <div class="scene" id="scene">
-    <div class="mtn"></div>
+    <svg class="mtn" viewBox="0 0 400 110" preserveAspectRatio="none"><path d="M0 110 L34 52 L66 72 L104 30 L138 62 L176 40 L214 70 L250 34 L292 64 L330 44 L366 66 L400 50 L400 110 Z" fill="#b7c5c9"/><path d="M104 30 l-12 18 l24 0 z M250 34 l-11 17 l22 0 z" fill="#eef4f5"/></svg>
+    <svg class="mtn mtn--2" viewBox="0 0 400 90" preserveAspectRatio="none"><path d="M0 90 L60 40 L120 64 L180 36 L250 60 L320 38 L400 58 L400 90 Z" fill="#c6d0d2"/></svg>
     <div class="sun"></div>
     <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
     <div class="hill hill--3"></div><div class="hill hill--2"></div><div class="hill hill--2b"></div>
     <div class="fog"></div>
     <div class="meadow"></div>
-    <svg class="stream" viewBox="0 0 120 220" preserveAspectRatio="none"><path d="M42 0 q44 52 8 100 q-30 40 26 120 L120 220 L120 0 Z" fill="#a9dded" opacity=".88"/><path d="M48 8 q42 50 8 98 q-26 36 22 108" fill="none" stroke="#e6f6fa" stroke-width="3" opacity=".6"/></svg>
-    <svg class="path" viewBox="0 0 300 200" preserveAspectRatio="none"><path d="M118 200 q44 -64 32 -116 q-8 -52 32 -84 L182 200 Z" fill="#e6d9b6" opacity=".7"/></svg>
+    <svg class="stream" viewBox="0 0 100 200" preserveAspectRatio="none"><path d="M38 -6 q36 46 6 92 q-30 48 30 118 l22 0 q-56 -68 -26 -118 q28 -44 -4 -92 Z" fill="#9bd8ea" stroke="#79bdd2" stroke-width="2"/><path d="M44 2 q33 44 7 90 q-26 46 27 112" fill="none" stroke="#cdeef7" stroke-width="3.5" opacity=".75"/><path d="M55 8 q28 42 8 86" fill="none" stroke="#f0fbff" stroke-width="2" opacity=".55"/></svg>
+    <svg class="path" viewBox="0 0 300 200" preserveAspectRatio="none"><path d="M110 200 q48 -66 36 -118 q-8 -50 30 -80 L178 200 Z" fill="#ddcda2"/><path d="M110 200 q48 -66 36 -118 q-8 -50 30 -80" fill="none" stroke="#bda878" stroke-width="2.5"/><path d="M178 200 q8 -78 28 -118" fill="none" stroke="#bda878" stroke-width="2.5"/><path d="M132 200 q40 -62 30 -114" fill="none" stroke="#cabd92" stroke-width="3" opacity=".7"/></svg>
     <div class="layer" id="scene-layer"></div>
     <div class="layer" id="fireflies"></div>
     <div class="warmth"></div>
@@ -257,8 +261,8 @@ function butterflySvg(size){return el(`<svg width="${size}" height="${Math.round
 function frogSvg(size){return el(`<svg width="${size}" height="${Math.round(size*0.72)}" viewBox="0 0 40 30"><ellipse cx="8" cy="24" rx="6" ry="3.4" fill="#5aa34f"/><ellipse cx="32" cy="24" rx="6" ry="3.4" fill="#5aa34f"/><ellipse cx="20" cy="19" rx="13" ry="9" fill="#6bbf5e"/><ellipse cx="13" cy="27" rx="3.6" ry="2" fill="#5aa34f"/><ellipse cx="27" cy="27" rx="3.6" ry="2" fill="#5aa34f"/><circle cx="14" cy="10" r="4.6" fill="#6bbf5e"/><circle cx="26" cy="10" r="4.6" fill="#6bbf5e"/><circle cx="14" cy="9" r="2.4" fill="#fff"/><circle cx="14" cy="9" r="1.2" fill="#243"/><circle cx="26" cy="9" r="2.4" fill="#fff"/><circle cx="26" cy="9" r="1.2" fill="#243"/><path d="M13 20 q7 5 14 0" stroke="#3f7a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>`);}
 
 // ===== build the scene (back to front; depth sets size + z-order) =====
-// 1) treeline ON the horizon (small, pale, atmospheric)
-for(let i=0;i<8;i++){const b=HOR-rnd(0,2);place(treeSvg(48*sc(b),0.55),48*sc(b),5+i*12+rnd(-3,3),b,14);}
+// 1) treeline ON the horizon (small, pale, atmospheric) — never in the brook/path
+for(let i=0;i<8;i++){const b=HOR-rnd(0,2);const x=5+i*12+rnd(-3,3);if(blocked(x,b))continue;place(treeSvg(48*sc(b),0.55),48*sc(b),x,b,14);}
 // 2) mid bushes near the horizon (skip the structures/path)
 for(let i=0;i<5;i++){const x=rnd(6,94),b=HOR-rnd(1,5);if(blocked(x,b))continue;place(bushSvg(56*sc(b),0.72),56*sc(b),x,b,14);}
 // 3) cottage + big shade tree
@@ -281,17 +285,15 @@ centers.forEach((cx)=>{const base=rnd(2,HOR-3);if(blocked(cx,base))return;const 
 });
 // scattered mushrooms (off structures) + a berry bush at the far edge
 for(let i=0;i<5;i++){const x=rnd(20,90),b=rnd(4,HOR-6);if(blocked(x,b))continue;place(mushroomSvg(22*sc(b)),22*sc(b),x,b,9);}
-place(berrySvg(60),60,95,14,16);
+place(berrySvg(56),56,60,9,16);
 // 6) just a COUPLE of animals that MOVE (story leads; critters are accents)
 // a rabbit that hops between spots (JS repositions every few seconds)
 const bunny=place(rabbitSvg(40*sc(6)),40,36,6,10); bunny.classList.add('roamer');
 place(el('<svg width="20" height="30" viewBox="0 0 20 30"><path d="M10 30 q-5 -16 0 -22 q5 6 0 22z" fill="#e0772f"/><path d="M10 8 l-5 -7 M10 8 V0 M10 8 l5 -7" stroke="#5b9a52" stroke-width="2" stroke-linecap="round"/></svg>'),20,40,5,8); // a nibbled carrot, left behind
-const bunnySpots=[34,28,46,40,52];let bi=0;
-function bunnyHop(){bi=(bi+1)%bunnySpots.length;const target=bunnySpots[bi];const from=parseFloat(bunny.style.left)||36;
-  bunny.style.left=((from+target)/2)+'%';bunny.classList.add('hopping');            // hop 1 (quick)
-  setTimeout(()=>{bunny.classList.remove('hopping');void bunny.offsetWidth;bunny.style.left=target+'%';bunny.classList.add('hopping');},430); // hop 2
-  setTimeout(()=>bunny.classList.remove('hopping'),900);}
-setInterval(bunnyHop,3400); // quick double-hop, then a pause — rabbit-like
+// rabbit travels across the foreground (ping-pongs between spread spots), hopping
+const bunnySpots=[12,30,52,70,88];let bi=0,bdir=1;
+function bunnyHop(){bi+=bdir;if(bi>=bunnySpots.length-1||bi<=0)bdir*=-1;bunny.style.left=bunnySpots[bi]+'%';bunny.classList.add('hopping');setTimeout(()=>bunny.classList.remove('hopping'),460);}
+setInterval(bunnyHop,2700); // one hop to the next spot, then a pause — travels around
 // two butterflies that flit between real flowers (land, pause, move on)
 [0,1].forEach((i)=>{const b=el('<span class="bfly"></span>');b.appendChild(butterflySvg(28+i*3));b.style.left=(24+i*34)+'%';b.style.bottom='26%';L.appendChild(b);
   const visit=()=>{if(!FLOWERS.length)return;const f=FLOWERS[Math.floor(Math.random()*FLOWERS.length)];b.style.left=f.x+'%';b.style.bottom=(f.base+5)+'%';};
@@ -309,10 +311,15 @@ L.appendChild(el('<span class="rays"></span>'));
   let g='<path d="M14 18 V96 M226 18 V96" stroke="#9c6b43" stroke-width="5" stroke-linecap="round"/><path d="M14 20 q106 34 212 0" fill="none" stroke="#b78a5a" stroke-width="2"/>';
   const c=['#e6849a','#ffd97a','#8fd07a','#9aa6ec','#f2a8c2'];for(let i=0;i<9;i++){const x=24+i*22,y=22+Math.sin(i/8*Math.PI)*16;g+=`<path d="M${x} ${y} l9 0 l-4.5 13 z" fill="${c[i%c.length]}"/>`;}
   const svg=el(`<svg width="170" height="96" viewBox="0 0 240 96" style="position:relative;display:block">${g}</svg>`);w.appendChild(svg);L.appendChild(w);})();
-// clean carved signpost (two lines so the words always fit)
-place(el('<svg width="104" height="84" viewBox="0 0 108 84"><path d="M26 84 V34" stroke="#9c6b43" stroke-width="7" stroke-linecap="round"/><rect x="8" y="10" width="92" height="36" rx="7" fill="#d7b483" stroke="#b78a5a" stroke-width="2.5"/><text x="54" y="26" font-family="Poppins,system-ui,sans-serif" font-size="13" font-weight="800" letter-spacing="1" fill="#5a3f28" text-anchor="middle">SOUND</text><text x="54" y="40" font-family="Poppins,system-ui,sans-serif" font-size="13" font-weight="800" letter-spacing="1" fill="#5a3f28" text-anchor="middle">GARDEN</text></svg>'),100,47,6,16);
-// more lanterns (path + near cottage + right) — they glow at dusk
-[[41,8],[57,12],[16,7],[62,9],[36,4]].forEach(([x,by])=>place(el('<svg class="lantern" width="32" height="62" viewBox="0 0 34 64"><path d="M17 64 V30" stroke="#8a6a45" stroke-width="4" stroke-linecap="round"/><path d="M17 12 q10 0 10 8" fill="none" stroke="#8a6a45" stroke-width="2.4"/><rect x="9" y="18" width="16" height="20" rx="4" fill="#ffd98a"/><rect x="9" y="18" width="16" height="20" rx="4" fill="none" stroke="#b78a5a" stroke-width="2"/></svg>'),32,x,by,12));
+// hanging shingle sign on a post (gently swings) — reads clearly as a wooden sign
+place(el('<svg width="116" height="96" viewBox="0 0 118 96"><path d="M20 96 V12 H104" fill="none" stroke="#9c6b43" stroke-width="6" stroke-linecap="round"/><circle cx="104" cy="12" r="3.4" fill="#9c6b43"/><path d="M34 14 V24 M96 14 V24" stroke="#7c5a3a" stroke-width="2"/><g class="signswing"><rect x="22" y="24" width="86" height="30" rx="5" fill="#d7b483" stroke="#b78a5a" stroke-width="2.5"/><text x="65" y="44" font-family="Poppins,system-ui,sans-serif" font-size="13" font-weight="800" fill="#5a3f28" text-anchor="middle">Sound Garden</text></g></svg>'),100,45,6,16);
+// a rose arbor at the top of the path — the way INTO the garden (the path now leads somewhere)
+place(el('<svg width="86" height="94" viewBox="0 0 90 96"><path d="M16 96 V42 q29 -34 58 0 V96" fill="none" stroke="#9c6b43" stroke-width="6"/><path d="M22 96 V46 M68 96 V46" stroke="#9c6b43" stroke-width="3" opacity=".45"/><g fill="#e6849a"><circle cx="20" cy="40" r="4.5"/><circle cx="45" cy="18" r="5"/><circle cx="70" cy="40" r="4.5"/><circle cx="33" cy="26" r="4"/><circle cx="57" cy="26" r="4"/></g><g fill="#8fd07a"><circle cx="27" cy="32" r="3.5"/><circle cx="63" cy="32" r="3.5"/></g></svg>'),84,50,33,14);
+// VARIED lanterns (standing box + shepherd-hook orb + glowing mushroom lamp) — all glow at dusk
+const lanternStand='<svg class="lantern" width="32" height="62" viewBox="0 0 34 64"><path d="M17 64 V30" stroke="#8a6a45" stroke-width="4" stroke-linecap="round"/><path d="M17 12 q10 0 10 8" fill="none" stroke="#8a6a45" stroke-width="2.4"/><rect x="9" y="18" width="16" height="20" rx="4" fill="#ffd98a"/><rect x="9" y="18" width="16" height="20" rx="4" fill="none" stroke="#b78a5a" stroke-width="2"/></svg>';
+const lanternHook='<svg class="lantern" width="36" height="66" viewBox="0 0 42 70"><path d="M13 70 V22 q0 -13 14 -13 q11 0 11 11" fill="none" stroke="#8a6a45" stroke-width="3.4" stroke-linecap="round"/><circle cx="38" cy="26" r="9" fill="#ffd98a" stroke="#b78a5a" stroke-width="2"/></svg>';
+const lanternMush='<svg class="lantern" width="34" height="42" viewBox="0 0 40 46"><rect x="16" y="22" width="8" height="18" rx="3" fill="#f3ead7"/><path d="M4 24 q16 -20 32 0 q-16 8 -32 0z" fill="#ffcf6a" stroke="#e0a84a" stroke-width="1.5"/><circle cx="14" cy="18" r="1.8" fill="#fff"/><circle cx="26" cy="16" r="1.5" fill="#fff"/></svg>';
+[[41,8,lanternStand],[57,12,lanternHook],[16,7,lanternMush],[62,9,lanternStand],[36,4,lanternHook],[24,3,lanternMush]].forEach(([x,by,svg])=>place(el(svg),34,x,by,12));
 // cozy night lights: warm dots hung in the big tree + a soft glow on the pond (dusk only)
 for(let i=0;i<7;i++){const g=el('<span class="glowdot"></span>');g.style.left=(6+i*1.8+rnd(-1,1))+'%';g.style.bottom=(34+rnd(0,16))+'%';g.style.transitionDelay=(i*0.12)+'s';L.appendChild(g);}
 L.appendChild(el('<span class="pondglow"></span>'));
@@ -321,7 +328,7 @@ place(el('<svg width="48" height="40" viewBox="0 0 50 42"><path d="M8 18 h34 l-3
 // falling leaves drift down from the big tree
 [0,3,6].forEach((d,i)=>{const lf=el('<span class="leaf-fall"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M8 1 q7 5 0 14 q-7 -9 0 -14z" fill="#86c074"/></svg></span>');lf.style.left=(8+i*3)+'%';lf.style.top='28%';lf.style.setProperty('--lx',(20+i*16)+'px');lf.style.animationDuration=(7+i*2)+'s';lf.style.animationDelay=d+'s';L.appendChild(lf);});
 // dandelion puffs + drifting seeds (below the pond, off-zone)
-[[68,5],[90,8]].forEach(([x,by])=>{place(el('<svg width="28" height="42" viewBox="0 0 30 44"><path d="M15 44 V16" stroke="#4f8a50" stroke-width="2.2" stroke-linecap="round"/><g stroke="#eef3ef" stroke-width="1.2"><path d="M15 14 V4 M15 14 L9 6 M15 14 L21 6 M15 14 L7 12 M15 14 L23 12 M15 14 L10 20 M15 14 L20 20"/></g><circle cx="15" cy="14" r="2" fill="#f3ead7"/></svg>'),28,x,by,9);
+[[60,5],[66,9]].forEach(([x,by])=>{place(el('<svg width="28" height="42" viewBox="0 0 30 44"><path d="M15 44 V16" stroke="#4f8a50" stroke-width="2.2" stroke-linecap="round"/><g stroke="#eef3ef" stroke-width="1.2"><path d="M15 14 V4 M15 14 L9 6 M15 14 L21 6 M15 14 L7 12 M15 14 L23 12 M15 14 L10 20 M15 14 L20 20"/></g><circle cx="15" cy="14" r="2" fill="#f3ead7"/></svg>'),28,x,by,9);
   for(let i=0;i<3;i++){const sd=el('<span class="dandelion-seed"></span>');sd.style.left=(x+rnd(-1,2))+'%';sd.style.bottom=(by+8)+'%';sd.style.setProperty('--sx',(60+rnd(0,60))+'px');sd.style.animationDuration=(9+rnd(0,6))+'s';sd.style.animationDelay=rnd(0,8)+'s';L.appendChild(sd);}});
 // pond ripples
 [0,2.2].forEach(d=>{const r=el('<span class="ripple"></span>');r.style.left='72%';r.style.bottom='23%';r.style.width='62px';r.style.height='22px';r.style.animationDelay=d+'s';L.appendChild(r);});
@@ -344,7 +351,10 @@ sceneEl.appendChild(el('<span class="skybird"><svg width="36" height="16" viewBo
 
 // fireflies
 const ff=document.getElementById('fireflies');
-for(let i=0;i<16;i++){const e=el('<span class="firefly"></span>');e.style.left=rnd(4,94)+'%';e.style.top=rnd(40,92)+'%';e.style.animationDelay=rnd(0,6)+'s';ff.appendChild(e);}
+for(let i=0;i<14;i++){const e=el('<span class="firefly"></span>');e.style.left=rnd(8,92)+'%';e.style.top=rnd(46,90)+'%';
+  e.style.setProperty('--dx',rnd(-32,32)+'px');e.style.setProperty('--dy',rnd(-34,-8)+'px');
+  e.style.setProperty('--fw',(7+rnd(0,7))+'s');e.style.setProperty('--fg',(2.2+rnd(0,1.8))+'s');
+  e.style.animationDelay=rnd(0,5)+'s';ff.appendChild(e);}
 
 // ===== AUTO day/dusk by the device's local clock (toggle just for previewing) =====
 const scene=document.getElementById('scene'),toggle=document.getElementById('toggle');

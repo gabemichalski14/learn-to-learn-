@@ -997,7 +997,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .nowplaying__label{ font-size:12px; color:#6b8a90; font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
 .nowplaying__who{ display:inline-flex; align-items:center; gap:8px; font-weight:800; color:#0d3b40; }
 .nowplaying__avatar{ width:26px; height:26px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:800; }
-.picker-overlay{ position:fixed; inset:0; z-index:80; background:rgba(8,30,34,.55); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:16px; }
+.picker-overlay{ position:fixed; inset:0; z-index:80; background:rgba(8,30,34,.55); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:16px; }
 .picker{ background:#fff; border-radius:20px; width:min(680px,94vw); max-height:88vh; overflow:auto; padding:18px 18px 24px; box-shadow:0 24px 60px rgba(0,0,0,.35); }
 .picker__head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
 .picker__title{ margin:0; font-size:20px; color:#0d3b40; }

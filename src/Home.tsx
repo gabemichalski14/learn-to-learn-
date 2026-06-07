@@ -3,6 +3,7 @@ import { navigate } from './router';
 import { loadProgress } from './progress';
 import { ACHIEVEMENTS } from './achievements';
 import { NowPlaying } from './NowPlaying';
+import { LevelEmblem } from './LevelEmblem';
 
 interface Props {
   learnerId: string;
@@ -29,6 +30,7 @@ export function Home({ learnerId, onChooseLearner }: Props) {
                 onClick={() => navigate(`#/level/${lvl.num}`)}
                 aria-label={`Level ${lvl.num}: ${lvl.title}`}
               >
+                <LevelEmblem level={lvl.num} />
                 <span className="level-card__num">Level {lvl.num}</span>
                 <span className="level-card__title">{lvl.title}</span>
                 <span className="level-card__focus">{lvl.focus}</span>

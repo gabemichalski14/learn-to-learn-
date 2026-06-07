@@ -127,3 +127,23 @@
   .mascot-egg { transition: none; }
   .pip-parade { display: none; }
 }
+
+/* ---- Pip-as-guide: "Take me to…" nav panel inside the bubble ---- */
+.mascot-say__row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.mascot-say__nav-toggle { font: inherit; font-weight: 700; font-size: 12.5px; cursor: pointer; min-height: 36px;
+  border: 1.5px solid var(--teal-ring); background: var(--teal-soft); color: var(--teal-deep); padding: 7px 12px; border-radius: 999px; }
+.mascot-say__nav-toggle:hover { background: #d5ebec; }
+.mascot-say__navtitle { margin: 0 0 8px; font-size: 13.5px; font-weight: 800; }
+.mascot-say__ask { display: flex; gap: 6px; margin-bottom: 8px; }
+.mascot-say__askinput { flex: 1; min-width: 0; font: inherit; font-size: 13px; padding: 8px 10px; min-height: 40px;
+  border: 1.5px solid var(--teal-ring); border-radius: 12px; background: #fff; color: var(--ink); }
+.mascot-say__askinput:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+.mascot-say__askgo { flex: 0 0 auto; width: 40px; min-height: 40px; border: none; border-radius: 12px; cursor: pointer;
+  background: linear-gradient(135deg, var(--teal), var(--teal-deep)); color: #fff; font-size: 18px; font-weight: 800; }
+.mascot-say__hint { margin: 0 0 8px; font-size: 12px; color: var(--muted); font-weight: 600; }
+.mascot-say__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.mascot-say__chip { font: inherit; font-weight: 700; font-size: 12px; cursor: pointer; min-height: 36px;
+  border: 1px solid var(--teal-ring); background: #fff; color: var(--teal-deep);
+  padding: 6px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 4px; }
+.mascot-say__chip:hover { background: var(--teal-soft); }
+.mascot-say__chip:focus-visible, .mascot-say__nav-toggle:focus-visible, .mascot-say__askgo:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }

@@ -46,6 +46,7 @@ export function MascotBuddy() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const openRef = useRef(false);
   const paradeRef = useRef(false);
+  const dodgedRef = useRef(false); // trickster: only dodge once in a row
   const pokeTimes = useRef<number[]>([]);
   const timers = useRef<number[]>([]);
 
@@ -113,6 +114,18 @@ export function MascotBuddy() {
       return;
     }
     if (open) { setOpen(false); return; }
+    // Trickster gag: every so often Pip playfully scoots to a new spot instead
+    // of opening — then waits to be caught. Reversible (the next poke opens),
+    // never moves real UI, and disabled under reduced-motion.
+    const reduce = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce && !dodgedRef.current && Math.random() < 0.18) {
+      dodgedRef.current = true;
+      setSpot((s) => (s + 1 + rnd(SPOTS.length - 1)) % SPOTS.length);
+      setExpr('wink');
+      sfx.tick();
+      return;
+    }
+    dodgedRef.current = false;
     setPhrase(randomPhrase(['greet', 'nudge', 'idle', 'tip']));
     setExpr('excited');
     setOpen(true);
@@ -137,7 +150,14 @@ export function MascotBuddy() {
         className={`mascot-egg mascot-egg--${s.v} mascot-egg--${s.s}${open ? ' mascot-egg--open' : ''}`}
         style={{ left: s.left, top: s.top } as CSSProperties}
       >
-      {open && phrase && <MascotBubble phrase={phrase} onCta={go} onDismiss={() => setOpen(false)} />}
+      {open && phrase && (
+        <MascotBubble
+          phrase={phrase}
+          onCta={go}
+          onDismiss={() => setOpen(false)}
+          onNavigate={(to) => { setOpen(false); guide.goTo(to, SPOTS[spot].s === 'sr' ? 'left' : 'right'); }}
+        />
+      )}
       <div className="mascot-egg__bob" style={{ '--bob-delay': bobDelay } as CSSProperties}>
         <button type="button" className="mascot-egg__btn" onClick={poke} aria-label={isEcho ? 'Echo says hi' : 'Pip says hi'}>
           {burst && (

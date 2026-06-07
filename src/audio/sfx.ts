@@ -61,6 +61,12 @@ export const sfx = {
   tap(): void {
     tone(520, 0, 0.05, 'sine', 0.05);
   },
+  /** A tap whose pitch climbs with the step count — builds anticipation as a
+   *  child taps out each sound in a word. */
+  tick(step: number): void {
+    tone(440 + Math.min(step, 7) * 58, 0, 0.06, 'sine', 0.055);
+    haptic(8);
+  },
   /** A satisfying "catch" pop when a piece lands. */
   pop(): void {
     tone(420, 0, 0.07, 'triangle', 0.08);

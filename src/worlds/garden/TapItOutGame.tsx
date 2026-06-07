@@ -52,6 +52,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const [muted, setMutedState] = useState(isMuted());
   const [echoPing, setEchoPing] = useState(0); // bumps on an audio moment → Echo twinkles
   const pingEcho = () => setEchoPing((p) => p + 1);
+  const [grew, setGrew] = useState(0); // bumps when a word is solved → a flower joins your garden
 
   const startRef = useRef(Date.now());
   const firstTryRef = useRef(0);
@@ -84,8 +85,9 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
 
   function tap() {
     if (bloom) return;
-    sfx.tap();
-    setTaps((t) => t + 1);
+    const next = taps + 1;
+    sfx.tick(next); // pitch climbs with each sound — anticipation
+    setTaps(next);
   }
   function undo() {
     if (bloom) return;
@@ -106,6 +108,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       comboRef.current = c;
       setCombo(c);
       if (c >= 2) sfx.combo(c); else sfx.correct();
+      setGrew((g) => g + 1); // a flower for your garden
       setMood('cheer');
       window.setTimeout(() => setMood((m) => (m === 'cheer' ? null : m)), 900);
       setPhase('right');
@@ -224,6 +227,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
           {phase === 'right' && (
             <span className="gd-burst" aria-hidden="true">{PETALS.map((a, i) => <i key={i} style={{ '--a': `${a}deg` } as CSSProperties} />)}</span>
           )}
+          {grew > 0 && <span key={grew} className="gd-grew" aria-hidden="true">+🌷</span>}
         </div>
 
         <button type="button" className="gd-pad" onClick={tap} disabled={bloom} aria-label="Tap for one sound">＋ tap a sound</button>

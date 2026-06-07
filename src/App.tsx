@@ -12,6 +12,7 @@ import { ProfilePage } from './ProfilePage';
 import { NavDrawer } from './NavDrawer';
 import { MascotBuddy } from './mascots/MascotBuddy';
 import { SpaceLevelHub } from './worlds/space/SpaceLevelHub';
+import { GardenLevelHub } from './worlds/garden/GardenLevelHub';
 import { TapItOutGame } from './worlds/garden/TapItOutGame';
 import type { ThemeId } from './themes';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
@@ -62,6 +63,10 @@ export default function App() {
 
   if (route.name === 'level' && (route.level ?? 1) === 2) {
     return <SpaceLevelHub level={2} />;
+  }
+
+  if (route.name === 'level' && (route.level ?? 1) === 1) {
+    return <GardenLevelHub level={1} learnerId={learnerId} />;
   }
 
   let page;

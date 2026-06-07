@@ -86,11 +86,12 @@ export default function App() {
       {page}
       <SiteFooter />
       {/* Roaming easter-egg buddy — keyed by route so each page gets a fresh
-          surprise placement/message. Only on these (non-immersive) pages; the
-          games keep their own world guides. */}
-      <MascotBuddy key={route.name} learnerId={learnerId} />
-      {/* Rare ambient surprises (Pip peek, clover, butterfly) — tier-scaled. */}
-      <EasterEggs key={`egg-${route.name}`} tier={world.tier} />
+          surprise placement/message. The child-facing buddy stays off the tutor
+          dashboard, where Pip instead gives the grown-up coaching tips. */}
+      {route.name !== 'tutor' && <MascotBuddy key={route.name} learnerId={learnerId} />}
+      {/* Rare ambient surprises (Pip peek, clover, butterfly) — tier-scaled.
+          Suppressed on the tutor dashboard to keep that view professional. */}
+      {route.name !== 'tutor' && <EasterEggs key={`egg-${route.name}`} tier={world.tier} />}
     </>
   );
 }

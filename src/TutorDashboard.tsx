@@ -14,6 +14,7 @@ import { loadMastery, rankAreas, scoreOf } from './mastery/mastery';
 import type { MasteryMap, FocusArea } from './mastery/mastery';
 import { skillLabel } from './mastery/skills';
 import { AreasToImprove } from './AreasToImprove';
+import { TutorPip } from './world/tutor/TutorPip';
 
 const CW = 280;
 const CH = 90;
@@ -189,6 +190,8 @@ export function TutorDashboard() {
                   <div className="kpi"><span className="kpi__icon">📅</span><strong>{week}</strong><span className="kpi__label">this week</span></div>
                 </div>
               </div>
+
+              <TutorPip mastery={mastery} name={learner.name} />
 
               <div className="chart-grid" style={{ marginTop: '16px' }}>
                 <div className="l2l-card chart-card">

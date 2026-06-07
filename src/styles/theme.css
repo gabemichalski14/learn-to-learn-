@@ -309,13 +309,10 @@ body { margin: 0; background: var(--bg); color: var(--ink); }
 .tile__ref--link:hover { text-decoration: underline; }
 
 /* ============================================================
-   Mastery: Next up + Areas to improve
+   Mastery: Areas to improve
    ============================================================ */
-.nextup, .atimprove { background: var(--surface); border: 1px solid var(--teal-ring); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; text-align: left; }
-.nextup { border: 2px solid var(--green); background: #f3faf5; }
-.nextup__h, .atimprove__h { margin: 0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--teal-deep); }
-.nextup__row { display: flex; gap: 10px; align-items: center; padding: 5px 0; font-size: 14px; }
-.nextup__pill { font-size: 10px; font-weight: 800; text-transform: uppercase; background: var(--green); color: #fff; border-radius: 99px; padding: 2px 8px; }
+.atimprove { background: var(--surface); border: 1px solid var(--teal-ring); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; text-align: left; }
+.atimprove__h { margin: 0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--teal-deep); }
 .atimprove__empty { color: var(--muted); font-size: 14px; margin: 0; }
 .focus { border: 1px solid #e2e8ea; border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
 .focus--open { border: 2px solid var(--gold); background: #fffdf5; }

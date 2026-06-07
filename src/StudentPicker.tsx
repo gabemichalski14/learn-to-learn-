@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { initials, recentlyActiveOrder } from './profiles';
 import { useLearners } from './data/store';
 
@@ -12,7 +13,9 @@ export function StudentPicker({ open, onSelect, onClose }: Props) {
   if (!open) return null;
   const all = recentlyActiveOrder(learners);
   const list = q.trim() ? all.filter((l) => l.name.toLowerCase().includes(q.trim().toLowerCase())) : all;
-  return (
+  // Portal to <body> so the fixed overlay escapes any page-level stacking context
+  // (the .l2l-page transform/z-index trap that was painting it behind content).
+  return createPortal(
     <div className="picker-overlay" role="dialog" aria-modal="true" aria-label="Choose the student playing" onClick={onClose}>
       <div className="picker" onClick={(e) => e.stopPropagation()}>
         <div className="picker__head">
@@ -32,6 +35,7 @@ export function StudentPicker({ open, onSelect, onClose }: Props) {
           {list.length === 0 && <p className="picker__empty">No students match "{q}".</p>}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

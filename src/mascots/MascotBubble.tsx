@@ -45,7 +45,7 @@ export function MascotBubble({
         </>
       ) : (
         <>
-          <p className="mascot-say__navtitle">Where to, Explorer?</p>
+          <p className="mascot-say__navtitle">Where shall we wander, Explorer? I'll walk you there. 🌿</p>
           <form className="mascot-say__ask" onSubmit={ask}>
             <input
               className="mascot-say__askinput"

@@ -1,12 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { matchDestination, PIP_DESTINATIONS } from './pipNav';
+import { matchDestination, destById, PIP_DESTINATIONS } from './pipNav';
 
 describe('matchDestination', () => {
   it('routes natural requests to the right place', () => {
-    expect(matchDestination('take me to my garden')?.to).toBe('#/levels');
+    // The worlds route to their ACTUAL hubs, not the generic Levels list.
+    expect(matchDestination('take me to my garden')?.to).toBe('#/level/1');
+    expect(matchDestination('blast off to space')?.to).toBe('#/level/2');
     expect(matchDestination('I want to play a game')?.to).toBe('#/games');
     expect(matchDestination('show me the leaderboard')?.to).toBe('#/leaderboard');
     expect(matchDestination('how is my progress?')?.to).toBe('#/profile');
+    expect(matchDestination('show me the map of worlds')?.to).toBe('#/levels');
     expect(matchDestination('go home please')?.to).toBe('#/');
   });
 
@@ -20,5 +23,31 @@ describe('matchDestination', () => {
     for (const dest of PIP_DESTINATIONS) {
       expect(matchDestination(dest.keys[0])?.to).toBe(dest.to);
     }
+  });
+
+  // Reliability contract: the place Pip NAMES is the place he GOES.
+  it('asking for a destination by its own label routes to that destination', () => {
+    for (const dest of PIP_DESTINATIONS) {
+      expect(matchDestination(dest.label)?.id).toBe(dest.id);
+    }
+  });
+
+  it('keyword sets are disjoint, so routing is unambiguous', () => {
+    const seen = new Map<string, string>();
+    for (const dest of PIP_DESTINATIONS) {
+      for (const key of dest.keys) {
+        expect(seen.has(key)).toBe(false); // no key belongs to two destinations
+        seen.set(key, dest.id);
+      }
+    }
+  });
+});
+
+describe('destById', () => {
+  it('resolves every destination id and rejects unknowns', () => {
+    for (const dest of PIP_DESTINATIONS) {
+      expect(destById(dest.id)).toBe(dest);
+    }
+    expect(destById('nope')).toBeNull();
   });
 });

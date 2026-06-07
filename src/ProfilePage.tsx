@@ -5,7 +5,6 @@ import { LearnerBar } from './LearnerBar';
 import { getLearner, initials } from './profiles';
 import { loadProgress } from './progress';
 import { ACHIEVEMENTS } from './achievements';
-import { NextUp } from './NextUp';
 import { AreasToImprove } from './AreasToImprove';
 import { getMastery } from './data/dataSource';
 import { rankAreas, areasToImprove, type FocusArea } from './mastery/mastery';
@@ -65,7 +64,6 @@ export function ProfilePage({ learnerId, onSelectLearner }: Props) {
       <section className="l2l-reveal" style={{ marginTop: '24px', '--i': 2 } as CSSProperties} aria-labelledby="focus-h">
         <div className="l2l-card">
           <h2 id="focus-h" className="l2l-h2" style={{ marginBottom: '16px' }}>Learning focus</h2>
-          <NextUp learnerId={learnerId} />
           <AreasToImprove learnerId={learnerId} focus={focus} />
         </div>
       </section>

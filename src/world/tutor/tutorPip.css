@@ -1,0 +1,19 @@
+/* Pip's coaching corner — tutor-facing, calm and professional. */
+.tutorpip { margin-top: 16px; }
+.tutorpip__head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.tutorpip__pip { flex: 0 0 auto; line-height: 0; }
+.tutorpip__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.tutorpip__tip {
+  background: #f3faf5;
+  border: 1px solid var(--teal-ring, #bfe7e6);
+  border-left: 4px solid var(--green, #2f9e6f);
+  border-radius: 12px;
+  padding: 11px 13px;
+}
+.tutorpip__title { display: block; font-size: 14px; color: var(--teal-deep, #0d3b40); margin-bottom: 3px; }
+.tutorpip__body { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--ink, #1f3a3d); }
+
+@media print {
+  .tutorpip__pip { display: none; }
+  .tutorpip__tip { background: #fff; border-left-color: #888; }
+}

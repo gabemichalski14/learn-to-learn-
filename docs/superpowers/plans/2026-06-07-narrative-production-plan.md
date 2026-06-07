@@ -135,3 +135,55 @@ specifics, best researched **just-in-time** at the step that needs them:
 Optionally, a short **upfront de-risking pass** on those three before building, if
 we want zero surprises. Recommendation: targeted JIT research per step (keeps
 momentum) unless you want the de-risk pass first.
+
+---
+
+## Appendix A — De-risk research findings → integration decisions (2026-06-07)
+
+### A1. Rive (React) — DECIDED
+- Use **`@rive-app/react-canvas`** (smallest bundle vs react-webgl).
+- `useRive(...)` loads the `.riv`; **`useStateMachineInput(rive, 'Moss', 'heal', 0)`**
+  returns the input — set `.value` for Number/Boolean, `.fire()` for Triggers.
+  Hook returns **null until ready → always guard**.
+- **Decision:** `CharacterArt` lazy-imports a `RiveAvatar` subcomponent ONLY when
+  `cast.art.rive` is set (dynamic `import()` → code-split, so emoji-only levels pay
+  zero cost). Feed `heal` (0–100 number) + `mood` (number or triggers). Emoji
+  placeholder shows while loading/null. Pause on `prefers-reduced-motion`. One
+  artboard; keep `.riv` small.
+- Sources: [Rive React params](https://rive.app/docs/runtimes/react/parameters-and-return-values) ·
+  [Codrops Rive+React](https://tympanus.net/codrops/2025/05/12/integrating-rive-into-a-react-project-behind-the-scenes-of-valley-adventures/)
+
+### A2. Twine → data (Twee 3) — DECIDED
+- Twee 3 passage = `:: Name [tag1 tag2] {json-metadata}` then body until next `::`.
+  Special `:: StoryData` (JSON, `ifid`) / `:: StoryTitle`.
+- **Decision:** author Moss's arc with a tag convention the loader keys on —
+  `[stage]` passages `Stage0..Stage3` (the transformation beats) and `[fragment]`
+  passages `Fragment_m`, `Fragment_…` (per-sound memories). Pure parser:
+  split on `^:: `, read name + `[tags]` + optional `{json}` + body → map to the
+  character's `beats`/stages + story fragments. Tests against a sample `.twee`.
+- Source: [Twee 3 spec](https://github.com/iftechfoundation/twine-specs/blob/master/twee-3-specification.md)
+
+### A3. Yarn Spinner → dialogue — DECIDED
+- Author in **try.yarnspinner.dev** → **File → Save as JSON**. Nodes hold lines;
+  `#hashtags` tag lines; `<<if>>` for conditions.
+- **Decision:** we do NOT run the full Yarn runtime (no in-game branching needed);
+  a pure loader ingests the JSON, maps **node titles → our pools**
+  (`Intro/Correct/Wrong/Clear/Win` → `reactions`; `Fragment_*` → story fragments),
+  one line per entry, keeping our deterministic + no-repeat engine. Optional
+  `#when:...` hashtags → `Line.when` gates. Tests against a sample JSON.
+- Sources: [Yarn JS library (IkeB108)](https://github.com/IkeB108/Yarn-Spinner-Javascript-Library) ·
+  [Yarn nodes & lines](https://docs.yarnspinner.dev/write-yarn-scripts/scripting-fundamentals/lines-nodes-and-options)
+
+### A4. Backgrounds (CC0) — DECIDED
+- **Kenney.nl** + **OpenGameArt CC0** (incl. layered parallax space/nature) — CC0 =
+  commercial-OK, no attribution required (but we track sources in a `LICENSES`/
+  `NOTICE` for hygiene).
+- **Decision:** `LevelScene` renders a few **layered parallax images** (CC0) +
+  an **arc-state overlay** (dark→warm by `heal`, generalizing `.sg-warm`).
+  Budget: compressed assets, ≤3–4 layers, transform/opacity motion only,
+  reduced-motion + low-end safe. Characters = Rive; scenery = CC0.
+- Sources: [Kenney CC0](https://kenney.nl) · [OpenGameArt CC0 backgrounds](https://opengameart.org/content/cc0-backgrounds)
+
+### Net: no blockers. Build order unchanged; loaders + RiveAvatar + LevelScene are
+now spec'd precisely enough to implement against sample fixtures before your real
+exports arrive.

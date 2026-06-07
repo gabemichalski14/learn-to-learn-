@@ -201,3 +201,20 @@ body {
   .lvl-space i, .lvl-space__rocket, .lvl-space__flame { animation: none; }
   .lvl-card:hover { transform: none; }
 }
+
+/* ---- Games tab: themed (Space) tiles ---- */
+.tile__emoji { position: relative; z-index: 1; }
+.tile--space { color: #eafcff; border-color: rgba(120, 220, 230, 0.4); overflow: hidden;
+  background: radial-gradient(135% 130% at 80% -14%, #16455a 0%, #0c2a39 46%, #071821 84%); box-shadow: 0 14px 32px rgba(8, 30, 40, 0.4); }
+.tile--space:hover { box-shadow: 0 22px 46px rgba(8, 30, 40, 0.6), 0 0 26px rgba(94, 240, 200, 0.25); }
+.tile--space .tile__title { color: #ffffff; position: relative; z-index: 1; }
+.tile--space .tile__tagline { color: #bcd3dd; position: relative; z-index: 1; }
+.tile--space .tile__foot { position: relative; z-index: 1; }
+.tile--space .tile__ref { color: #9fe9f0; }
+.tile--space .tile__badge { color: #9fc6cf; }
+.tile--space .tile__badge--go { color: #0a1014; background: linear-gradient(90deg, #5ef0c8, #22c1d6); box-shadow: 0 6px 14px rgba(94, 240, 200, 0.35); }
+.tile--space.tile--soon { filter: saturate(0.85); }
+.tile__emoji--space { background: rgba(10, 34, 46, 0.6); color: #eafcff;
+  box-shadow: inset 0 0 0 1px rgba(120, 220, 230, 0.4), 0 0 16px rgba(94, 240, 200, 0.22); }
+.tile-space { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.tile-space i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #dffaff; box-shadow: 0 0 6px #bdefff; animation: lvl-tw 4s infinite ease-in-out; }

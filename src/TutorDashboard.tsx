@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { useState, useEffect } from 'react';
 import { navigate } from './router';
 import { SessionLogPanel } from './SessionLogPanel';
@@ -121,23 +122,31 @@ export function TutorDashboard() {
   const week = log.filter((r) => now - new Date(r.endedAt).getTime() <= 7 * 864e5).length;
 
   return (
-    <main className="site site--page dash">
-      <button type="button" className="back-btn no-print" onClick={() => navigate('#/')}>← Home</button>
-      <div className="dash__top">
-        <div>
-          <h1 className="site__title">Tutor Dashboard</h1>
-          <p className="page__lead">Track each student's progress over time — recorded automatically.</p>
-        </div>
-        <div className="dash__controls no-print">
-          {learner && <button type="button" className="btn-ghost" onClick={() => window.print()}>Print report</button>}
+    <main className="l2l-page dash">
+      <button type="button" className="l2l-back no-print" onClick={() => navigate('#/')}>← Home</button>
+
+      <div className="l2l-reveal" style={{ '--i': 0 } as CSSProperties}>
+        <div className="dash__top">
+          <div>
+            <p className="l2l-eyebrow">Progress</p>
+            <h1 className="l2l-display">Tutor <em>Dashboard</em></h1>
+            <p className="l2l-lead">Track each student's progress over time — recorded automatically.</p>
+          </div>
+          <div className="dash__controls no-print">
+            {learner && (
+              <button type="button" className="l2l-btn l2l-btn--ghost" onClick={() => window.print()}>Print report</button>
+            )}
+          </div>
         </div>
       </div>
 
       {learners.length === 0 ? (
-        <div className="page__panel"><p>No students yet — add one from the home screen.</p></div>
+        <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', '--i': 1 } as CSSProperties}>
+          <p>No students yet — add one from the home screen.</p>
+        </div>
       ) : (
         <>
-          <div className="student-picker no-print" role="group" aria-label="Choose a student">
+          <div className="student-picker no-print l2l-reveal" style={{ '--i': 1 } as CSSProperties} role="group" aria-label="Choose a student">
             {learners.map((l) => (
               <button
                 key={l.id}
@@ -153,43 +162,45 @@ export function TutorDashboard() {
           </div>
 
           {learner && prog && (
-            <div className="report">
-              <div className="report__head">
-                <span className="report__avatar" style={{ background: learner.color }} aria-hidden="true">{initials(learner.name)}</span>
-                <div>
-                  <h2 className="report__name">{learner.name}</h2>
-                  <p className="report__since">
-                    {lastPlayed ? `Last played ${lastPlayed.toLocaleDateString()} · ${activeDays} day${activeDays === 1 ? '' : 's'} active` : 'No sessions yet'}
-                  </p>
+            <div className="report l2l-reveal" style={{ '--i': 2 } as CSSProperties}>
+              <div className="l2l-card" style={{ marginTop: '16px' }}>
+                <div className="report__head">
+                  <span className="report__avatar" style={{ background: learner.color }} aria-hidden="true">{initials(learner.name)}</span>
+                  <div>
+                    <h2 className="report__name">{learner.name}</h2>
+                    <p className="report__since">
+                      {lastPlayed ? `Last played ${lastPlayed.toLocaleDateString()} · ${activeDays} day${activeDays === 1 ? '' : 's'} active` : 'No sessions yet'}
+                    </p>
+                  </div>
+                  <div className="report__manage no-print">
+                    <button type="button" className="link-btn" onClick={renameStudent}>Rename</button>
+                    <button type="button" className="link-btn link-btn--danger" onClick={removeStudent}>Remove</button>
+                  </div>
                 </div>
-                <div className="report__manage no-print">
-                  <button type="button" className="link-btn" onClick={renameStudent}>Rename</button>
-                  <button type="button" className="link-btn link-btn--danger" onClick={removeStudent}>Remove</button>
+
+                <div className="kpi-grid" style={{ marginTop: '16px' }}>
+                  <div className="kpi"><span className="kpi__icon">🎮</span><strong>{prog.sessions}</strong><span className="kpi__label">sessions</span></div>
+                  <div className="kpi"><span className="kpi__icon">🎯</span><strong>{avgAccuracy}%</strong><span className="kpi__label">avg accuracy</span></div>
+                  <div className="kpi"><span className="kpi__icon">⏱</span><strong>{prog.bestMs != null ? formatTime(prog.bestMs) : '—'}</strong><span className="kpi__label">best time</span></div>
+                  <div className="kpi"><span className="kpi__icon">⭐</span><strong>{new Set(prog.earned).size}/{ACHIEVEMENTS.length}</strong><span className="kpi__label">stickers</span></div>
+                  <div className="kpi"><span className="kpi__icon">📅</span><strong>{week}</strong><span className="kpi__label">this week</span></div>
                 </div>
               </div>
 
-              <div className="kpi-grid">
-                <div className="kpi"><span className="kpi__icon">🎮</span><strong>{prog.sessions}</strong><span className="kpi__label">sessions</span></div>
-                <div className="kpi"><span className="kpi__icon">🎯</span><strong>{avgAccuracy}%</strong><span className="kpi__label">avg accuracy</span></div>
-                <div className="kpi"><span className="kpi__icon">⏱</span><strong>{prog.bestMs != null ? formatTime(prog.bestMs) : '—'}</strong><span className="kpi__label">best time</span></div>
-                <div className="kpi"><span className="kpi__icon">⭐</span><strong>{new Set(prog.earned).size}/{ACHIEVEMENTS.length}</strong><span className="kpi__label">stickers</span></div>
-                <div className="kpi"><span className="kpi__icon">📅</span><strong>{week}</strong><span className="kpi__label">this week</span></div>
-              </div>
-
-              <div className="chart-grid">
-                <div className="chart-card">
+              <div className="chart-grid" style={{ marginTop: '16px' }}>
+                <div className="l2l-card chart-card">
                   <h3 className="chart-card__title">Accuracy over time</h3>
                   <AccuracyChart values={recent.map((r) => r.accuracy)} />
                 </div>
-                <div className="chart-card">
+                <div className="l2l-card chart-card">
                   <h3 className="chart-card__title">Time per session</h3>
                   <TimeChart records={recent} />
                 </div>
               </div>
 
-              <div className="chart-grid">
+              <div className="chart-grid" style={{ marginTop: '16px' }}>
                 {strongest.length > 0 && (
-                  <div className="chart-card">
+                  <div className="l2l-card chart-card">
                     <h3 className="chart-card__title">Sound mastery — strongest</h3>
                     <ul className="mastery-list">
                       {strongest.map((a) => (
@@ -202,7 +213,7 @@ export function TutorDashboard() {
                     </ul>
                   </div>
                 )}
-                <div className="chart-card">
+                <div className="l2l-card chart-card">
                   <h3 className="chart-card__title">Activity — last 14 days{streak > 1 ? ` · ${streak}-day streak 🔥` : ''}</h3>
                   <div className="activity-strip" aria-label={`${activeIn14} active days in the last 14`}>
                     {days.map((d) => <span key={d.key} className={`activity-dot${d.active ? ' on' : ''}`} title={d.key} />)}
@@ -210,12 +221,12 @@ export function TutorDashboard() {
                 </div>
               </div>
 
-              <div className="page__panel">
+              <div className="l2l-card" style={{ marginTop: '16px' }}>
                 <h3 className="chart-card__title">Focus areas</h3>
                 <AreasToImprove learnerId={sel} focus={focus} />
               </div>
 
-              <div className="page__panel report__log">
+              <div className="l2l-card report__log" style={{ marginTop: '16px' }}>
                 <h3 className="chart-card__title">Session history</h3>
                 <SessionLogPanel learnerId={sel} showSummary={false} />
               </div>

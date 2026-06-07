@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { navigate } from './router';
 import { loadProgress, formatTime } from './progress';
 import { ACHIEVEMENTS } from './achievements';
@@ -63,25 +64,33 @@ export function Leaderboard() {
     .slice(0, 5);
 
   return (
-    <main className="site site--page">
-      <button type="button" className="back-btn" onClick={() => navigate('#/')}>← Home</button>
-      <h1 className="site__title">Leaderboard</h1>
-      <p className="page__lead">
-        Friendly competition across the players on this device. Center-wide leaderboards (across
-        every student at the center) arrive once accounts are added.
-      </p>
+    <main className="l2l-page">
+      <button type="button" className="l2l-back" onClick={() => navigate('#/')}>← Home</button>
 
-      {learners.length < 2 ? (
-        <div className="page__panel">
-          <p>Add more players from the home screen to compare stickers and times!</p>
-        </div>
-      ) : (
-        <div className="board-grid">
-          <Board title="🌟 Most stickers" entries={stickers} />
-          <Board title="⚡ Fastest finish" entries={fastest} />
-          <Board title="🎮 Most games" entries={sessions} />
-        </div>
-      )}
+      <div className="l2l-reveal" style={{ '--i': 0 } as CSSProperties}>
+        <p className="l2l-eyebrow">Rankings</p>
+        <h1 className="l2l-display">Friendly <em>standings</em></h1>
+        <p className="l2l-lead">
+          Friendly competition across the players on this device. Center-wide leaderboards (across
+          every student at the center) arrive once accounts are added.
+        </p>
+      </div>
+
+      <div className="l2l-reveal" style={{ '--i': 1 } as CSSProperties}>
+        {learners.length < 2 ? (
+          <div className="l2l-card" style={{ marginTop: '24px' }}>
+            <p>Add more players from the home screen to compare stickers and times!</p>
+          </div>
+        ) : (
+          <div className="l2l-card" style={{ marginTop: '24px' }}>
+            <div className="board-grid">
+              <Board title="🌟 Most stickers" entries={stickers} />
+              <Board title="⚡ Fastest finish" entries={fastest} />
+              <Board title="🎮 Most games" entries={sessions} />
+            </div>
+          </div>
+        )}
+      </div>
     </main>
   );
 }

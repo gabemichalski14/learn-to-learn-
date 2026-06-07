@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
@@ -57,13 +58,17 @@ export function Account() {
   }
 
   return (
-    <main className="site site--page">
-      <button type="button" className="back-btn" onClick={() => navigate('#/')}>← Home</button>
-      <h1 className="site__title">Tutor Account</h1>
+    <main className="l2l-page l2l-page--narrow">
+      <button type="button" className="l2l-back" onClick={() => navigate('#/')}>← Home</button>
+
+      <div className="l2l-reveal" style={{ '--i': 0 } as CSSProperties}>
+        <p className="l2l-eyebrow">Settings</p>
+        <h1 className="l2l-display">Tutor <em>account</em></h1>
+      </div>
 
       {!configured ? (
-        <div className="page__panel" style={{ textAlign: 'left' }}>
-          <p className="page__lead">Cloud sync isn't set up yet — the app is running in on-device mode.</p>
+        <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>
+          <p className="l2l-lead">Cloud sync isn't set up yet — the app is running in on-device mode.</p>
           <p className="page__note" style={{ marginTop: 0 }}>
             To enable center-wide accounts &amp; leaderboards: create a Supabase project, run
             <code> supabase/schema.sql</code>, then add the project URL + anon key to a local
@@ -71,20 +76,20 @@ export function Account() {
           </p>
         </div>
       ) : user ? (
-        <div className="page__panel" style={{ textAlign: 'left' }}>
-          <p className="page__lead">Signed in as <strong>{user}</strong>. Students &amp; sessions sync to your center.</p>
-          <button type="button" className="btn-ghost" onClick={() => signOut()}>Sign out</button>
+        <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>
+          <p className="l2l-lead">Signed in as <strong>{user}</strong>. Students &amp; sessions sync to your center.</p>
+          <button type="button" className="l2l-btn l2l-btn--ghost" style={{ marginTop: '12px' }} onClick={() => signOut()}>Sign out</button>
         </div>
       ) : (
-        <div className="page__panel" style={{ textAlign: 'left' }}>
-          <p className="page__lead">{mode === 'in' ? 'Sign in to sync your students across devices.' : 'Create a center account.'}</p>
+        <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>
+          <p className="l2l-lead">{mode === 'in' ? 'Sign in to sync your students across devices.' : 'Create a center account.'}</p>
           <form onSubmit={submit} className="auth-form">
             {mode === 'up' && (
-              <input className="auth-input" placeholder="Center / tutor name" value={centerName} onChange={(e) => setCenterName(e.target.value)} />
+              <input className="l2l-input auth-input" placeholder="Center / tutor name" value={centerName} onChange={(e) => setCenterName(e.target.value)} />
             )}
-            <input className="auth-input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <input className="auth-input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            <button type="submit" className="btn-primary" disabled={busy}>
+            <input className="l2l-input auth-input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input className="l2l-input auth-input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <button type="submit" className="l2l-btn" style={{ marginTop: '4px' }} disabled={busy}>
               {busy ? '…' : mode === 'in' ? 'Sign in' : 'Create account'}
             </button>
           </form>
@@ -94,7 +99,7 @@ export function Account() {
         </div>
       )}
 
-      {msg && <p className="page__note">{msg}</p>}
+      {msg && <p className="page__note l2l-reveal" style={{ '--i': 2 } as CSSProperties}>{msg}</p>}
     </main>
   );
 }

@@ -15,7 +15,12 @@
   display:flex; flex-direction:column; justify-content:center; align-items:center; }
 
 /* backdrop */
-.sg-neb{ position:absolute; border-radius:50%; filter:blur(46px); opacity:.5; mix-blend-mode:screen; pointer-events:none; }
+/* Blurred glow clouds. Deliberately NO mix-blend-mode and NO will-change:
+   screen-blended layers force a GPU backdrop re-read every frame as the rocket
+   and stars pass through them, and promoting them made it worse. With plain
+   compositing the blur rasterizes once and the drift just translates a cached
+   layer (near-free). Brighter colors + lighter blend via opacity keep the glow. */
+.sg-neb{ position:absolute; border-radius:50%; filter:blur(34px); opacity:.42; pointer-events:none; }
 .sg-neb--1{ width:46vw; height:46vw; left:-8vw; top:8vh; background:radial-gradient(circle,#1f9bd4,transparent 70%); }
 .sg-neb--2{ width:40vw; height:40vw; right:-10vw; top:32vh; background:radial-gradient(circle,#9b5cff,transparent 70%); opacity:.4; }
 .sg-neb--3{ width:54vw; height:30vw; left:6vw; bottom:-8vh; background:radial-gradient(circle,#13c2a3,transparent 70%); opacity:.32; }
@@ -184,9 +189,11 @@
 /* ============================================================
    Living cosmos — drifting + shining backdrop (decorative)
    ============================================================ */
-/* slow color drift across the whole nebula field */
-.sg-cosmos{ position:absolute; inset:0; pointer-events:none; animation:sg-hue 36s linear infinite; }
-@keyframes sg-hue{ to{ filter:hue-rotate(360deg); } }
+/* The nebula field. NOTE: never animate `filter` here — hue-rotate on this
+   container forced the three blurred children to re-rasterize every frame and
+   tanked the framerate. The clouds' own transform drift gives all the life we
+   need (composited, near-free). */
+.sg-cosmos{ position:absolute; inset:0; pointer-events:none; }
 /* each nebula cloud slowly drifts + breathes */
 .sg-neb--1{ animation:sg-drift1 26s ease-in-out infinite alternate; }
 .sg-neb--2{ animation:sg-drift2 32s ease-in-out infinite alternate; }

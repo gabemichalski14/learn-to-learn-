@@ -9,7 +9,9 @@ describe('TutorDashboard', () => {
   it('renders with a learner and shows the KPI labels', async () => {
     addLearner('Mia');
     render(<TutorDashboard />);
-    expect(await screen.findByText(/Tutor Dashboard/i)).toBeTruthy();
+    // The heading renders as "Tutor <em>Dashboard</em>"; the accessible name
+    // concatenates the parts, so match by role rather than a single text node.
+    expect(await screen.findByRole('heading', { name: /Tutor Dashboard/i })).toBeTruthy();
     expect(screen.getByText(/avg accuracy/i)).toBeTruthy();
   });
 

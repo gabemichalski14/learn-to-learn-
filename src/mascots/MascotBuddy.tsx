@@ -7,10 +7,10 @@ import './mascots.css';
 
 /**
  * The roaming easter-egg buddy. Pip (occasionally Echo — a rare "variable
- * reward") peeks from a corner; poke them and they pop up with a short, warm
+ * reward") peeks from a corner; poke them and they spring up with a short, warm
  * nudge toward learning. Deliberately ethical: every nudge points at play/
  * practice and frames it around the child's competence + choice — no streak
- * shaming, no FOMO, always dismissible. (Relatedness + gentle persuasion.)
+ * shaming, no FOMO, always easy to dismiss. (Relatedness + gentle persuasion.)
  *
  * Mount it keyed by route so each page gets a fresh placement/buddy/message.
  */
@@ -34,54 +34,72 @@ export function MascotBuddy() {
   }));
   const [open, setOpen] = useState(false);
   const [burst, setBurst] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const hideTimer = useRef<number | null>(null);
   const burstTimer = useRef<number | null>(null);
 
-  useEffect(() => () => {
+  function clearTimers() {
     if (hideTimer.current) window.clearTimeout(hideTimer.current);
     if (burstTimer.current) window.clearTimeout(burstTimer.current);
-  }, []);
+  }
+  useEffect(() => clearTimers, []);
+
+  // While open: click-outside or Escape closes it, so it's never a trap.
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('touchstart', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
 
   function poke() {
-    if (open) { dismiss(); return; }
+    if (open) { setOpen(false); return; }
     setOpen(true);
     setBurst(true);
     sfx.pop();
+    clearTimers();
     burstTimer.current = window.setTimeout(() => setBurst(false), 700);
-    hideTimer.current = window.setTimeout(() => setOpen(false), 7000);
-  }
-  function dismiss() {
-    setOpen(false);
-    if (hideTimer.current) window.clearTimeout(hideTimer.current);
+    hideTimer.current = window.setTimeout(() => setOpen(false), 9000);
   }
   function go() {
     sfx.tap();
-    dismiss();
+    setOpen(false);
     navigate(pick.nudge.to);
   }
 
   return (
-    <div className={`mascot-egg mascot-egg--${pick.corner}${open ? ' mascot-egg--open' : ''}`}>
+    <div ref={rootRef} className={`mascot-egg mascot-egg--${pick.corner}${open ? ' mascot-egg--open' : ''}`}>
       {open && (
         <div className="mascot-say" role="status">
-          <button type="button" className="mascot-say__x" onClick={dismiss} aria-label="Dismiss">✕</button>
+          <button type="button" className="mascot-say__x" onClick={() => setOpen(false)} aria-label="Dismiss">✕</button>
           <p>{pick.nudge.say}</p>
           <button type="button" className="mascot-say__cta" onClick={go}>{pick.nudge.cta} →</button>
         </div>
       )}
-      <button
-        type="button"
-        className="mascot-egg__btn"
-        onClick={poke}
-        aria-label={pick.isEcho ? 'Echo says hi' : 'Pip says hi'}
-      >
-        {burst && (
-          <span className="mascot-burst" aria-hidden="true">
-            {SPARKS.map((a, i) => <i key={i} style={{ '--a': `${a}deg` } as CSSProperties} />)}
-          </span>
-        )}
-        {pick.isEcho ? <Echo size={90} /> : <Pip size={118} expression={open ? 'excited' : pick.expr} />}
-      </button>
+      <div className="mascot-egg__bob">
+        <button
+          type="button"
+          className="mascot-egg__btn"
+          onClick={poke}
+          aria-label={pick.isEcho ? 'Echo says hi' : 'Pip says hi'}
+        >
+          {burst && (
+            <span className="mascot-burst" aria-hidden="true">
+              {SPARKS.map((a, i) => <i key={i} style={{ '--a': `${a}deg` } as CSSProperties} />)}
+            </span>
+          )}
+          {pick.isEcho ? <Echo size={90} /> : <Pip size={118} expression={pick.expr} />}
+        </button>
+      </div>
     </div>
   );
 }

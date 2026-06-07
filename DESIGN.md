@@ -45,8 +45,44 @@ The app-wide immersion + progression model. Three intrinsic mechanics only (inve
 ## Mascots
 Pip (kindchenschema baby-schema cuteness, modular expressions, idle life) is the primary guide; Echo (sound-spark) appears at audio moments. Scout/Sprout personify the Space/Garden worlds. Vocabulary is warm and learning-pointed — never streak-shaming. Silhouette-first design (per Duolingo Duo).
 
+## Road B — "Characterful Flat" art system (the cohesion contract)
+Adopted 2026-06-07 after the art-direction reset (see memory `barton-games-art-direction-rethink.md`).
+Research: pro polish comes from a single documented art direction (shape language +
+palette + motion), and engagement comes from **character + motion + safe feedback +
+visible progression** — not from a detailed painted background. This section is the
+style guide every screen must obey; cohesion is the product, not any one element.
+
+**Standing rule:** never hand-author literal illustrative scenery (cottages, streams,
+mountains, lanterns) in raw SVG path data — it reads amateur. Either compose real
+licensed/illustrated assets (Road A) or stay in this flat/character system.
+
+- **Shape language:** one consistent vocabulary — soft superellipse rounding
+  (radius scale sm 12 / md 18 / lg 24 / pill 999), 2px hairline warm borders, no hard
+  corners, no thin spiky detail. Every element is built from the same rounded family.
+- **Palette:** the live tokens only (warm cream bg, cream surfaces, teal/green/gold,
+  warm ink/muted). Max ~6 working colors per screen. No new ad-hoc colors.
+- **Background:** cohesive + ABSTRACT, not literal. Soft layered brand-gradient bands
+  (sky→meadow) with at most a couple of simple, consistent motif shapes. Calm; the
+  content + characters are the focus. (Replaces the literal-scene ambition.)
+- **Characters lead:** Pip & Echo are the hero visuals — richly animated (idle breath,
+  blink, reactions), the emotional anchor on every page. Decoration never competes
+  with them.
+- **Motion grammar:** transform/opacity only; ease-out enter, gentle spring on
+  press; staggered reveals; a restrained subset animates at once; `prefers-reduced-
+  motion` honored. Motion communicates (feedback/progress), never just decorates.
+- **Feedback:** every action gets immediate, warm feedback; mistakes get gentle
+  encouragement + a replay, never a red error state.
+- **Progression motif:** competence-made-visible as ONE clean, consistent motif
+  (a stylized growing sprout/garden meter), not a literal painted meadow.
+
+## Road A — real scene art (later)
+If/when the literal lush look is wanted, source it properly: licensed cozy asset
+packs (itch.io / CraftPix / Kenney), an illustrator, or a paid image-generation key.
+The engine composes these assets; we do not hand-draw them.
+
 ## Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | 2026-06-07 | Created DESIGN.md from the established brand + new Living World system | /design-consultation, after round-2 immersion/progression/guiding-mascot research |
 | 2026-06-07 | Growth tracks real practice only; no decay, no streak-guilt | Mission fit (no-anxiety) + research: only intrinsic mechanics transfer ethically |
+| 2026-06-07 | Art-direction reset → Road B "characterful flat" now, Road A real assets later; banned hand-coded literal SVG scenery | 9 mockup misses; research: hand-coded vector = amateur, cohesion + character + motion + feedback drive engagement, not painted backgrounds |

@@ -1,14 +1,18 @@
 import { goBack, navigate } from '../../router';
 import { findLevel } from '../../games';
 import { levelCurriculum, lessonSounds } from '../../curriculum';
+import { useProgress } from '../../data/store';
 import { GardenBackdrop, SproutGuide } from './GardenArt';
 import { GardenMeadow } from './GardenMeadow';
+import { bloomCount } from './gardenGrowth';
 import './garden.css';
 
-/** Immersive Sound Garden hub for Level 1 — a living meadow that flows straight
- *  into the games, with the child's garden growing as they learn. Rendered
- *  drawer-free by App for level 1 (matches the Level 2 space hub). */
+/** Immersive Sound Garden hub for Level 1 — the WHOLE screen is a living meadow
+ *  that fills with flowers as the child practices, flowing straight into the
+ *  games. Rendered drawer-free by App for level 1 (matches the Level 2 space hub). */
 export function GardenLevelHub({ level, learnerId }: { level: number; learnerId: string }) {
+  const prog = useProgress(learnerId);
+  const blooms = bloomCount(prog.sessions, new Set(prog.earned).size);
   const lvl = findLevel(level);
   const curriculum = levelCurriculum(level);
   if (!lvl) {
@@ -23,6 +27,7 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
   return (
     <main className="gd gd-hub">
       <GardenBackdrop />
+      <GardenMeadow learnerId={learnerId} />
       <div className="gd-hud">
         <button type="button" className="gd-back" onClick={() => goBack('#/')}>← Home</button>
         <span className="gd-badge">🌱 Sound Garden · Level {lvl.num}</span>
@@ -31,8 +36,7 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
       <div className="gd-stage gd-hub__stage">
         <h1 className="gd-hub__title">{lvl.title}</h1>
         <p className="gd-hub__lead">{lvl.focus}</p>
-
-        <GardenMeadow learnerId={learnerId} />
+        <p className="gd-hub__grown">🌷 Your garden: <b>{blooms}</b> blooms — every sound you learn plants another!</p>
 
         <div className="gd-missions">
           {lvl.games.map((g) => {

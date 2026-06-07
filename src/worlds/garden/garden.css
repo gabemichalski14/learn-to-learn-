@@ -181,16 +181,14 @@
 .gd-hub__title { font-size: clamp(24px, 6vw, 38px); font-weight: 900; margin: 6px 0 2px; color: #1f5236; text-align: center; }
 .gd-hub__lead { max-width: 520px; text-align: center; color: #357a55; font-size: 14px; line-height: 1.45; margin: 0 0 14px; }
 
-/* the living, growing garden */
-.gd-meadow { width: 100%; max-width: 760px; margin: 0 auto 18px; }
-.gd-meadow__field { position: relative; height: 122px; border-radius: 18px; overflow: hidden;
-  background: linear-gradient(180deg, rgba(191, 233, 251, .55), rgba(142, 207, 159, .6) 58%, #6bae7f);
-  box-shadow: inset 0 -18px 30px rgba(78, 149, 104, .35), 0 8px 22px rgba(78, 149, 104, .22); }
+/* the living garden — a FULL-SCREEN layer that fills with flowers as you play */
+.gd-growth { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .gd-bloom { position: absolute; line-height: 1; transform-origin: 50% 100%;
-  animation: gd-bloomin .5s cubic-bezier(.2, 1.5, .4, 1) both; filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .18)); }
-@keyframes gd-bloomin { 0% { transform: scale(0) translateY(8px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
-.gd-meadow__label { text-align: center; font-size: 13px; color: #357a55; margin: 8px 0 0; font-weight: 600; }
-.gd-meadow__label b { color: #1f5236; }
+  animation: gd-bloomin .55s cubic-bezier(.2, 1.5, .4, 1) both; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .22)); }
+@keyframes gd-bloomin { 0% { transform: scale(0) translateY(10px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+.gd-hub__grown { font-size: 13px; font-weight: 700; color: #2f7d56; margin: 0 0 16px;
+  background: rgba(255, 255, 255, .72); border: 1px solid rgba(78, 149, 104, .2); border-radius: 999px; padding: 5px 14px; }
+.gd-hub__grown b { color: #1f5236; }
 
 .gd-missions { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; width: 100%; max-width: 760px; }
 .gd-mission { text-align: left; border: 1px solid rgba(78, 149, 104, .35); border-radius: 18px; padding: 16px; color: #1f5236;

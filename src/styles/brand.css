@@ -41,7 +41,11 @@ body::before {
   font-family: var(--font-display); font-weight: 700; color: var(--ink);
   font-size: clamp(30px, 6.2vw, 56px); line-height: 1.04; letter-spacing: -0.015em; margin: 0;
 }
-.l2l-display em { font-style: italic; color: var(--teal); }
+.l2l-display em { font-style: italic; color: var(--teal);
+  background: linear-gradient(90deg, var(--teal), #34c6b2 45%, var(--teal-deep) 70%, var(--teal));
+  background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  animation: l2l-shimmer 6s linear infinite; }
+@keyframes l2l-shimmer { to { background-position: 220% 0; } }
 .l2l-h2 { font-family: var(--font-display); font-weight: 700; color: var(--ink); font-size: clamp(20px, 3.6vw, 28px); margin: 0; letter-spacing: -0.01em; }
 .l2l-lead { color: var(--muted); font-size: clamp(14px, 2.4vw, 17px); line-height: 1.6; margin: 14px 0 0; max-width: 56ch; }
 .l2l-kicker { font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 12px; color: var(--teal-deep); }
@@ -49,11 +53,12 @@ body::before {
 /* ---- cards ---- */
 .l2l-card {
   position: relative; background: var(--surface); border: 1px solid rgba(13, 27, 42, 0.06);
-  border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: clamp(18px, 3vw, 26px);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  border-radius: var(--radius-lg); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), var(--shadow-md); padding: clamp(18px, 3vw, 26px);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.2s ease;
 }
 .l2l-card--interactive { cursor: pointer; }
-.l2l-card--interactive:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.l2l-card--interactive:hover { transform: translateY(-5px) scale(1.012);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), var(--shadow-lg), 0 0 0 1.5px rgba(27, 154, 170, 0.22), 0 22px 44px rgba(27, 154, 170, 0.16); }
 .l2l-card--interactive:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
 .l2l-card--accent { border-top: 4px solid var(--teal); }
 
@@ -69,6 +74,7 @@ body::before {
 
 /* ---- buttons ---- */
 .l2l-btn {
+  position: relative; overflow: hidden;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; border: none;
   padding: 12px 24px; border-radius: var(--pill); color: #fff;
@@ -76,6 +82,10 @@ body::before {
   transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
 }
 .l2l-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+/* a light sweeps across on hover */
+.l2l-btn::after { content: ''; position: absolute; top: 0; left: -70%; width: 45%; height: 100%; transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent); transition: left 0.55s ease; pointer-events: none; }
+.l2l-btn:hover::after { left: 130%; }
 .l2l-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 .l2l-btn--ghost { background: transparent; color: var(--teal-deep); box-shadow: none; border: 1.5px solid var(--teal-ring); }
 .l2l-btn--ghost:hover { background: var(--teal-soft); }
@@ -250,3 +260,34 @@ body::before {
 .tile-garden__sun { position: absolute; top: 12px; right: 14px; width: 34px; height: 34px; border-radius: 50%;
   background: radial-gradient(circle at 40% 40%, #ffe07a, #f5c84c); box-shadow: 0 0 24px 6px rgba(245, 200, 76, 0.38); }
 .tile-garden__hill { position: absolute; left: -10%; right: -10%; bottom: -14px; height: 40px; border-radius: 50% 50% 0 0; background: linear-gradient(180deg, #8ecf9f, #6bae7f); }
+
+/* ============================================================
+   Delight layer — subtle, GPU-friendly life across brand pages
+   ============================================================ */
+/* slow drifting aurora behind content (composited transform; no scroll cost) */
+body::after {
+  content: ''; position: fixed; inset: -15%; z-index: -1; pointer-events: none; opacity: 0.6;
+  background:
+    radial-gradient(38vw 38vw at 22% 26%, rgba(110, 174, 127, 0.16), transparent 62%),
+    radial-gradient(34vw 34vw at 82% 74%, rgba(27, 154, 170, 0.13), transparent 62%);
+  animation: l2l-aurora 26s ease-in-out infinite alternate;
+}
+@keyframes l2l-aurora { from { transform: translate(-2%, -1%) scale(1); } to { transform: translate(3%, 2%) scale(1.07); } }
+
+/* hero: a soft warm gradient + a gentle pulsing ring on the avatar */
+.home-hero { background: linear-gradient(135deg, #ffffff 0%, #f4fbf7 58%, #eaf6f4 100%); }
+.home-hero__avatar::after { content: ''; position: absolute; inset: -9px; border-radius: 50%;
+  border: 2px solid rgba(27, 154, 170, 0.35); animation: l2l-ring 2.8s ease-out infinite; }
+@keyframes l2l-ring { 0% { transform: scale(0.9); opacity: 0.85; } 100% { transform: scale(1.16); opacity: 0; } }
+
+/* stat tiles: a colored accent top + a small icon */
+.home-stats .l2l-card { border-top: 3px solid var(--teal); }
+.home-stats .l2l-card:nth-child(2) { border-top-color: var(--green); }
+.home-stats .l2l-card:nth-child(3) { border-top-color: var(--gold); }
+.home-stats .l2l-card:nth-child(4) { border-top-color: #6f8ad6; }
+.l2l-stat__icon { display: block; font-size: 20px; line-height: 1; margin-bottom: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  body::after, .home-hero__avatar::after, .l2l-display em, .l2l-btn::after { animation: none; }
+  .l2l-display em { background-position: 0 0; }
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { investmentScore, worldTier, tierProgress, WORLD_MAX_TIER, TIER_NAMES } from './worldTier';
+import { investmentScore, worldTier, tierProgress, lushness, WORLD_MAX_TIER, TIER_NAMES } from './worldTier';
 
 describe('investmentScore', () => {
   it('weights sessions over stickers and never goes negative', () => {
@@ -15,28 +15,46 @@ describe('investmentScore', () => {
 });
 
 describe('worldTier', () => {
-  it('starts at 0 and climbs monotonically with score', () => {
+  it('climbs monotonically on the stretched multi-year thresholds', () => {
     expect(worldTier(0)).toBe(0);
-    expect(worldTier(2)).toBe(0);
-    expect(worldTier(3)).toBe(1);
-    expect(worldTier(10)).toBe(2);
-    expect(worldTier(22)).toBe(3);
-    expect(worldTier(40)).toBe(4);
-    expect(worldTier(70)).toBe(5);
+    expect(worldTier(24)).toBe(0);
+    expect(worldTier(25)).toBe(1);
+    expect(worldTier(70)).toBe(2);
+    expect(worldTier(140)).toBe(3);
+    expect(worldTier(260)).toBe(4);
+    expect(worldTier(450)).toBe(5);
   });
 
-  it('caps at WORLD_MAX_TIER no matter how high the score', () => {
+  it('reaches the top tier only after a long horizon (~150 sessions)', () => {
+    expect(worldTier(449)).toBe(4); // still climbing well past 100 sessions
     expect(worldTier(10_000)).toBe(WORLD_MAX_TIER);
   });
 });
 
+describe('lushness', () => {
+  it('is 0 at the start, grows gradually, and never reaches 1', () => {
+    expect(lushness(0)).toBe(0);
+    expect(lushness(180)).toBeCloseTo(1 - Math.exp(-1), 5);
+    expect(lushness(9)).toBeGreaterThan(0);           // a couple sessions already show
+    expect(lushness(9)).toBeLessThan(0.06);           // ...but only a little
+    expect(lushness(2000)).toBeLessThan(1);           // asymptotic; even years in, not maxed
+    expect(lushness(2000)).toBeGreaterThan(0.99);
+  });
+
+  it('increases monotonically', () => {
+    expect(lushness(50)).toBeGreaterThan(lushness(20));
+    expect(lushness(400)).toBeGreaterThan(lushness(200));
+  });
+});
+
 describe('tierProgress', () => {
-  it('reports fractional progress toward the next tier', () => {
-    const p = tierProgress(6); // tier 1 (base 3), next at 10 -> (6-3)/(10-3)
+  it('reports fractional progress toward the next tier + lushness', () => {
+    const p = tierProgress(47); // tier 1 (base 25), next at 70 -> (47-25)/(70-25)
     expect(p.tier).toBe(1);
-    expect(p.nextAt).toBe(10);
-    expect(p.pct).toBeCloseTo(3 / 7, 5);
+    expect(p.nextAt).toBe(70);
+    expect(p.pct).toBeCloseTo(22 / 45, 5);
     expect(p.name).toBe(TIER_NAMES[1]);
+    expect(p.lush).toBeCloseTo(lushness(47), 5);
   });
 
   it('saturates at the top tier with no next threshold', () => {

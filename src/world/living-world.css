@@ -34,6 +34,25 @@
   background: radial-gradient(125% 105% at 50% 42%, transparent 52%, rgba(74, 54, 33, 0.16) 100%);
 }
 
+/* Parallax layer — shifts a few px with the cursor (vars set in LivingWorld). */
+.lw-parallax {
+  position: absolute; inset: -14px; will-change: transform;
+  transform: translate(calc(var(--lw-px, 0) * 7px), calc(var(--lw-py, 0) * 5px));
+  transition: transform 0.18s ease-out;
+}
+
+/* Dappled sunlight — soft warm pools drifting slowly (opacity/transform only). */
+.lw-dapple {
+  position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: soft-light;
+  background: radial-gradient(circle, rgba(255, 232, 180, 0.9) 0%, rgba(255, 232, 180, 0) 70%);
+}
+.lw-dapple--1 { width: 46vw; height: 46vw; top: -6%; left: 6%; animation: lw-dapple 26s ease-in-out infinite; }
+.lw-dapple--2 { width: 38vw; height: 38vw; top: 8%; right: 4%; animation: lw-dapple 32s ease-in-out infinite reverse; }
+@keyframes lw-dapple {
+  0%,100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  50%     { transform: translate(3vw, 2vh) scale(1.08); opacity: 0.8; }
+}
+
 /* Tier sky tints — warm + greener as the world grows; contrast on top stays safe. */
 .living-world--t0 { --lw-sky-top:#fdf5e7; --lw-sky-bot:#f4f0e1; --lw-land:rgba(150,172,92,.09); --lw-sun:rgba(255,212,148,.42); }
 .living-world--t1 { --lw-sky-top:#fdf3e2; --lw-sky-bot:#f2efdc; --lw-land:rgba(150,172,92,.12); --lw-sun:rgba(255,208,140,.50); }
@@ -63,7 +82,10 @@
 /* ============================================================================
    Foreground framing foliage (z-index above the backdrop, behind/around content).
    ============================================================================ */
-.garden-frame { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+.garden-frame { position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  /* counter-parallax: foreground moves opposite + further than the scene = depth */
+  transform: translate(calc(var(--lw-px, 0) * -14px), calc(var(--lw-py, 0) * -9px));
+  transition: transform 0.18s ease-out; }
 .gf { position: absolute; }
 .gf--bl { left: -12px; bottom: -12px; width: clamp(120px, 21vw, 280px); height: clamp(120px, 21vw, 280px); }
 .gf--br { right: -12px; bottom: -12px; width: clamp(120px, 21vw, 280px); height: clamp(120px, 21vw, 280px); }
@@ -172,7 +194,9 @@
      drifting/falling things hidden. The meadow (trees, grass, flora) stays. */
   .lw-cloud { transform: translateX(38vw) scale(var(--scale, 1)); }
   .lw-firefly { opacity: 0.5; }
-  .lw-drift, .lw-bird, .lw-petal, .lw-shooting-star, .lw-mote { display: none; }
+  .lw-drift, .lw-bird, .lw-petal, .lw-shooting-star, .lw-mote, .lw-dapple { display: none; }
+  /* no parallax under reduced motion (effect also skips, this is belt + braces) */
+  .lw-parallax, .garden-frame { transform: none; transition: none; }
 }
 
 /* ============================================================================

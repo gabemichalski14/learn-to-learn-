@@ -31,9 +31,13 @@ function mulberry32(seed: number) {
 }
 
 // A lush baseline even at tier 0 — growth adds more on top.
-const FLORA_BY_TIER = [20, 28, 36, 46, 56, 68];
-const FIREFLY_BY_TIER = [0, 0, 2, 6, 9, 12];
-const TREES_BY_TIER = [2, 3, 3, 4, 4, 5];
+// Density grows with continuous `lush` (gradual over hundreds of sessions);
+// the rarer creatures unlock at far-apart SCORE milestones.
+const FIREFLY_AT = 70;   // ~23 sessions
+const PETAL_AT = 140;    // ~47 sessions
+const BIRD_AT = 200;     // ~67 sessions
+const STAR_AT = 350;     // ~117 sessions
+const lerp = (a: number, b: number, t: number) => Math.round(a + (b - a) * t);
 
 interface FloraBit { left: number; bottom: number; size: number; type: number; sway: boolean; delay: number; }
 interface Drifter { top: number; size: number; dur: number; delay: number; dir: 1 | -1; }
@@ -95,8 +99,9 @@ function Petal({ style }: { style: CSSProperties }) {
   );
 }
 
-export function LivingWorld({ tier }: { tier: number }) {
+export function LivingWorld({ tier, lush, score }: { tier: number; lush: number; score: number }) {
   const t = Math.max(0, Math.min(5, tier | 0));
+  const L = Math.max(0, Math.min(1, lush)); // continuous fullness 0..1
 
   // One bloom-in when the layer first mounts this session: the world visibly
   // "wakes up / re-blooms" on every return. Recovery, never punishment.
@@ -106,18 +111,43 @@ export function LivingWorld({ tier }: { tier: number }) {
     return () => window.clearTimeout(id);
   }, []);
 
+  // Gentle pointer parallax: the scene (and the foreground frame, which reads
+  // the same vars) shift a few px as the cursor moves — a diorama that breathes.
+  // rAF-batched, fine-pointer + motion-allowed only, writes CSS vars (no React
+  // state, so it can never loop). Cleans up its listener.
+  useEffect(() => {
+    if (typeof matchMedia === 'undefined') return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !matchMedia('(pointer: fine)').matches) return;
+    let raf = 0;
+    const onMove = (e: PointerEvent) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const root = document.documentElement.style;
+        root.setProperty('--lw-px', ((e.clientX / window.innerWidth - 0.5) * 2).toFixed(3));
+        root.setProperty('--lw-py', ((e.clientY / window.innerHeight - 0.5) * 2).toFixed(3));
+      });
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => { window.removeEventListener('pointermove', onMove); cancelAnimationFrame(raf); };
+  }, []);
+
   const scene = useMemo(() => {
+    // Seed on tier so the scene's character is stable; density grows with `L`
+    // by APPENDING from the same deterministic sequence (existing plants keep
+    // their spots, new ones simply appear — growth you can notice, never a
+    // reshuffle).
     const rnd = mulberry32(0x5eed + t * 97);
 
     // Dense grass floor band — always present, so the bottom always reads as a
-    // meadow even at tier 0.
-    const grass = Array.from({ length: 14 }, (_, i) => ({
-      left: (i / 14) * 100 + rnd() * 5,
+    // meadow even on day one. Grows a little with lushness.
+    const grassN = lerp(12, 22, L);
+    const grass = Array.from({ length: grassN }, (_, i) => ({
+      left: (i / grassN) * 100 + rnd() * 5,
       size: 26 + rnd() * 18,
       delay: rnd() * 6,
     }));
 
-    const floraN = FLORA_BY_TIER[t];
+    const floraN = lerp(16, 72, L); // ~16 on day one … creeps toward ~72 over a year+
     const flora: FloraBit[] = Array.from({ length: floraN }, (_, i) => {
       const bottom = rnd() * 17; // 0..17% — a band with depth
       const depth = 1 - bottom / 24;
@@ -131,28 +161,29 @@ export function LivingWorld({ tier }: { tier: number }) {
       };
     });
 
-    const trees: TreeBit[] = Array.from({ length: TREES_BY_TIER[t] }, (_, i) => ({
-      left: 4 + (i / TREES_BY_TIER[t]) * 92 + rnd() * 8,
+    const treeN = lerp(2, 6, L);
+    const trees: TreeBit[] = Array.from({ length: treeN }, (_, i) => ({
+      left: 4 + (i / treeN) * 92 + rnd() * 8,
       size: 64 + rnd() * 46,
       depth: rnd(), // 0 = far/pale/small, 1 = near
     }));
 
-    const clouds = Array.from({ length: t >= 3 ? 3 : 2 }, () => ({
+    const clouds = Array.from({ length: L > 0.5 ? 3 : 2 }, () => ({
       top: 4 + rnd() * 22,
       dur: 60 + rnd() * 50,
       delay: -rnd() * 60,
       scale: 0.7 + rnd() * 0.7,
     }));
 
-    const motes = Array.from({ length: 4 + t * 2 }, () => ({
+    const motes = Array.from({ length: lerp(4, 14, L) }, () => ({
       left: rnd() * 98,
       dur: 12 + rnd() * 12,
       delay: rnd() * 14,
       drift: -16 + rnd() * 32,
     }));
 
-    // At least one butterfly even at tier 0, so a brand-new world feels alive.
-    const butterflyN = Math.min(1 + t, 4);
+    // At least one butterfly on day one, up to ~5 as the meadow fills in.
+    const butterflyN = lerp(1, 5, L);
     const butterflies: Drifter[] = Array.from({ length: butterflyN }, () => ({
       top: 20 + rnd() * 46,
       size: 22 + rnd() * 12,
@@ -161,28 +192,31 @@ export function LivingWorld({ tier }: { tier: number }) {
       dir: rnd() < 0.5 ? 1 : -1,
     }));
 
-    const fireflies = Array.from({ length: FIREFLY_BY_TIER[t] }, () => ({
-      left: rnd() * 96,
-      top: 30 + rnd() * 52,
-      dur: 4 + rnd() * 4,
-      delay: rnd() * 6,
-    }));
+    const fireflies = score >= FIREFLY_AT
+      ? Array.from({ length: Math.max(3, lerp(3, 12, L)) }, () => ({
+          left: rnd() * 96, top: 30 + rnd() * 52, dur: 4 + rnd() * 4, delay: rnd() * 6,
+        }))
+      : [];
 
-    const birds: Drifter[] = t >= 4
+    const birds: Drifter[] = score >= BIRD_AT
       ? Array.from({ length: 2 }, () => ({ top: 6 + rnd() * 18, size: 30, dur: 26 + rnd() * 14, delay: rnd() * 16, dir: rnd() < 0.5 ? 1 : -1 }))
       : [];
 
-    const petals = t >= 3
-      ? Array.from({ length: t >= 5 ? 8 : 5 }, () => ({ left: rnd() * 96, dur: 9 + rnd() * 7, delay: rnd() * 10, drift: -20 + rnd() * 40 }))
+    const petals = score >= PETAL_AT
+      ? Array.from({ length: score >= STAR_AT ? 8 : 5 }, () => ({ left: rnd() * 96, dur: 9 + rnd() * 7, delay: rnd() * 10, drift: -20 + rnd() * 40 }))
       : [];
 
-    return { grass, flora, trees, clouds, motes, butterflies, fireflies, birds, petals };
-  }, [t]);
+    return { grass, flora, trees, clouds, motes, butterflies, fireflies, birds, petals, star: score >= STAR_AT };
+  }, [t, L, score]);
 
   return (
     <div className={`living-world living-world--t${t}${waking ? ' living-world--waking' : ''}`} aria-hidden="true">
+      <div className="lw-parallax">
       <div className="lw-hills" />
       <div className="lw-haze" />
+      {/* dappled sunlight — slow, soft, opacity-only */}
+      <span className="lw-dapple lw-dapple--1" />
+      <span className="lw-dapple lw-dapple--2" />
 
       {/* far layer: trees on the horizon */}
       {scene.trees.map((tr, i) => <Tree key={`tr-${i}`} {...tr} />)}
@@ -191,7 +225,7 @@ export function LivingWorld({ tier }: { tier: number }) {
       {scene.clouds.map((c, i) => (
         <Cloud key={`cl-${i}`} style={{ top: `${c.top}%`, '--dur': `${c.dur}s`, '--delay': `${c.delay}s`, '--scale': c.scale } as CSSProperties} />
       ))}
-      {t >= 5 && <span className="lw-shooting-star" />}
+      {scene.star && <span className="lw-shooting-star" />}
       {scene.birds.map((b, i) => (
         <Bird key={`bird-${i}`} style={{ top: `${b.top}%`, '--dur': `${b.dur}s`, '--delay': `${b.delay}s`, '--dir': b.dir } as CSSProperties} />
       ))}
@@ -222,6 +256,7 @@ export function LivingWorld({ tier }: { tier: number }) {
             <Flower type={f.type} size={f.size} />
           </span>
         ))}
+      </div>
       </div>
     </div>
   );

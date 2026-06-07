@@ -29,8 +29,35 @@ body::before {
     radial-gradient(60vw 52vh at 50% 104%, rgba(122, 184, 106, 0.16), transparent 60%);   /* green ground haze */
 }
 
-/* ---- page shell ---- */
-.l2l-page { max-width: 1080px; margin: 0 auto; padding: clamp(18px, 4vw, 40px) clamp(16px, 4vw, 36px) 72px; }
+/* ---- page shell = the "garden board": one warm parchment surface the whole
+   page rests ON, so cards read as notes on a board (Gestalt common region)
+   instead of islands floating on open space. It's nestled into the meadow/
+   foliage world: a warm light-pool at the top, paper grain, a soft rounded top
+   edge, and a grounded shadow so it sits in the scene. ---- */
+.l2l-page {
+  position: relative;
+  max-width: 1080px;
+  margin: 22px auto 0;            /* world peeks above the board */
+  min-height: calc(100dvh - 22px); /* fills the view -> a page, not a card */
+  padding: clamp(20px, 4vw, 44px) clamp(16px, 4vw, 36px) 80px;
+  border: 1px solid rgba(74, 54, 33, 0.10);
+  border-bottom: none;
+  border-radius: 30px 30px 0 0;
+  background:
+    radial-gradient(90% 34% at 50% -2%, rgba(255, 244, 218, 0.85), transparent 70%), /* warm light pool */
+    linear-gradient(180deg, #f7f0de 0%, #f1e8d3 60%, #ece2cb 100%);                  /* parchment */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 -2px 0 rgba(255, 255, 255, 0.4),
+    0 22px 60px -16px rgba(74, 54, 33, 0.34);  /* grounded ambient — the board rests in the garden */
+}
+/* paper grain on the board (static; no per-frame cost) */
+.l2l-page::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  opacity: 0.05; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.l2l-page > * { position: relative; z-index: 1; } /* content above the grain */
 .l2l-page--narrow { max-width: 760px; }
 
 /* ---- typography ---- */
@@ -53,13 +80,16 @@ body::before {
 
 /* ---- cards ---- */
 .l2l-card {
-  position: relative; background: var(--surface); border: 1px solid rgba(13, 27, 42, 0.06);
-  border-radius: var(--radius-lg); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), var(--shadow-md); padding: clamp(18px, 3vw, 26px);
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.2s ease;
+  position: relative; background: var(--surface); border: 1px solid rgba(74, 54, 33, 0.10);
+  border-radius: var(--radius-lg); padding: clamp(18px, 3vw, 26px);
+  /* grounded contact shadow: the card RESTS on the board (no big floaty halo) */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 2px rgba(74, 54, 33, 0.07), 0 6px 14px -6px rgba(74, 54, 33, 0.20);
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.18s ease;
 }
 .l2l-card--interactive { cursor: pointer; }
-.l2l-card--interactive:hover { transform: translateY(-5px) scale(1.012);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), var(--shadow-lg), 0 0 0 1.5px rgba(27, 154, 170, 0.22), 0 22px 44px rgba(27, 154, 170, 0.16); }
+.l2l-card--interactive:hover { transform: translateY(-3px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 2px 4px rgba(74, 54, 33, 0.08), 0 16px 30px -10px rgba(74, 54, 33, 0.26), 0 0 0 1.5px rgba(27, 154, 170, 0.20); }
+.l2l-card--interactive:active { transform: translateY(-1px) scale(0.997); } /* press feedback */
 .l2l-card--interactive:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
 .l2l-card--accent { border-top: 4px solid var(--teal); }
 
@@ -83,6 +113,7 @@ body::before {
   transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
 }
 .l2l-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.l2l-btn:active { transform: translateY(1px) scale(0.98); filter: brightness(0.98); } /* satisfying press */
 /* a light sweeps across on hover */
 .l2l-btn::after { content: ''; position: absolute; top: 0; left: -70%; width: 45%; height: 100%; transform: skewX(-20deg);
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent); transition: left 0.55s ease; pointer-events: none; }
@@ -92,7 +123,7 @@ body::before {
 .l2l-btn--ghost:hover { background: var(--teal-soft); }
 
 /* ---- stat tile ---- */
-.l2l-stat { display: flex; flex-direction: column; gap: 2px; }
+.l2l-stat { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
 .l2l-stat__num { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 5vw, 38px); color: var(--ink); line-height: 1; }
 .l2l-stat__label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
 
@@ -285,11 +316,18 @@ body::after {
 @keyframes l2l-ring { 0% { transform: scale(0.9); opacity: 0.85; } 100% { transform: scale(1.16); opacity: 0; } }
 
 /* stat tiles: a colored accent top + a small icon */
-.home-stats .l2l-card { border-top: 3px solid var(--teal); }
-.home-stats .l2l-card:nth-child(2) { border-top-color: var(--green); }
-.home-stats .l2l-card:nth-child(3) { border-top-color: var(--gold); }
-.home-stats .l2l-card:nth-child(4) { border-top-color: #6f8ad6; }
-.l2l-stat__icon { display: block; font-size: 20px; line-height: 1; margin-bottom: 6px; }
+/* Home stats as cozy "keepsakes": soft warm tiles, each icon nestled in a round
+   badge with a gentle per-stat tint — friendly mementos, not a dashboard readout. */
+.home-stats .l2l-card { text-align: center; --keep: #e2f1f2; }
+.home-stats .l2l-card:nth-child(2) { --keep: #e6f3ea; }
+.home-stats .l2l-card:nth-child(3) { --keep: #fdf0d2; }
+.home-stats .l2l-card:nth-child(4) { --keep: #e9edf9; }
+.l2l-stat__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; margin: 0 auto 8px; border-radius: 50%;
+  background: var(--keep); font-size: 22px; line-height: 1;
+  box-shadow: inset 0 0 0 1px rgba(74, 54, 33, 0.07);
+}
 
 @media (prefers-reduced-motion: reduce) {
   body::after, .home-hero__avatar::after, .l2l-display em, .l2l-btn::after { animation: none; }

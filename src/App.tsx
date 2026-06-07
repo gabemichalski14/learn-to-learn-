@@ -80,7 +80,7 @@ export default function App() {
 
   return (
     <>
-      <LivingWorld tier={world.tier} />
+      <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />
       <GardenFrame />
       <NavDrawer route={route.name} isTutor={isTutor} />
       {page}

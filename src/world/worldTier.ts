@@ -30,9 +30,21 @@ export function investmentScore(progress: Pick<Progress, 'sessions' | 'earned'>)
   return sessions * 3 + stickers;
 }
 
-/** Score needed to ENTER each tier (index = tier). Tuned so tier 1 arrives in
- *  the first session or two, and the top tier is a long, satisfying horizon. */
-const TIER_THRESHOLDS = [0, 3, 10, 22, 40, 70] as const;
+/** Score needed to ENTER each tier (index = tier). Tuned for a MULTI-YEAR
+ *  program (Barton takes years): ~3 score per finished session, so the top
+ *  "Wild Meadow" tier (450) is ~150 sessions — roughly a year of steady
+ *  practice — with the steps in between spread far apart. Tiers gate the big
+ *  reveals; `lushness` (below) fills the long stretches with small, frequent,
+ *  noticeable changes so the world keeps visibly growing the whole way. */
+const TIER_THRESHOLDS = [0, 25, 70, 140, 260, 450] as const;
+
+/** Continuous 0..1 "fullness" of the world from the same score. A long
+ *  exponential-approach curve: every session adds a little (early wins), and it
+ *  never abruptly maxes — it keeps creeping toward lush for hundreds of
+ *  sessions. Drives flora/creature DENSITY so growth feels gradual, not steppy. */
+export function lushness(score: number): number {
+  return 1 - Math.exp(-Math.max(0, score) / 180);
+}
 
 /** A short, grown-up-friendly name per tier (never babyish — works for adults). */
 export const TIER_NAMES = [
@@ -61,6 +73,8 @@ export interface TierProgress {
   nextAt: number | null;
   /** 0..1 progress through the current tier toward the next (1 at the top). */
   pct: number;
+  /** Continuous 0..1 world fullness — drives gradual density (see lushness). */
+  lush: number;
 }
 
 /** Full growth snapshot for a score — drives both the backdrop and any
@@ -70,7 +84,7 @@ export function tierProgress(score: number): TierProgress {
   const base = TIER_THRESHOLDS[tier];
   const nextAt = tier < WORLD_MAX_TIER ? TIER_THRESHOLDS[tier + 1] : null;
   const pct = nextAt == null ? 1 : Math.min(1, Math.max(0, (score - base) / (nextAt - base)));
-  return { tier, score, name: TIER_NAMES[tier], nextAt, pct };
+  return { tier, score, name: TIER_NAMES[tier], nextAt, pct, lush: lushness(score) };
 }
 
 /** Reactive hook: the current learner's world tier. Reads the memoized Progress

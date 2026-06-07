@@ -72,13 +72,26 @@ const CREATURE_ICONS: Record<string, ReactElement> = {
   // ── short e ──────────────────────────────────────────────
   hen: (
     <g>
-      <path d="M30 19 q8 1 7 11 q-1 8-13 8 q-12 0-13-9 q-1-8 8-9 q5-1 7 0z" fill="#f3ede4" />
-      <circle cx="31" cy="16" r="5.5" fill="#f3ede4" />
-      <path d="M29 11 q1.5-3 3 0 q1.5-3 3 0 q1.5-3 2 2" fill="#e0473b" />
-      <path d="M36 16 l6 1.5 -6 2 z" fill="#f2a83a" />
-      <circle cx="32" cy="15" r="1.1" fill="#22303a" />
-      <path d="M12 21 q-6-1-7 5 q6 2 9-2z" fill="#d9cdbb" />
-      <path d="M20 37 v3 M27 37 v3" stroke="#f2a83a" strokeWidth="1.8" strokeLinecap="round" />
+      {/* tail feathers */}
+      <path d="M9 23 q-5 -6 -1 -13 q6 4 7 11 z" fill="#e7ddcd" />
+      <path d="M8 27 q-6 -2 -7 -10 q7 1 11 7 z" fill="#d9cdbb" />
+      {/* plump body */}
+      <ellipse cx="23" cy="29" rx="14" ry="11" fill="#f3ede4" />
+      {/* folded wing */}
+      <path d="M21 24 q9 1 11 10 q-7 4 -14 0 q-1 -6 3 -10z" fill="#e2d8c6" />
+      {/* head */}
+      <circle cx="33" cy="17" r="6.6" fill="#f3ede4" />
+      {/* comb */}
+      <path d="M29.5 11.5 q1.4 -3 3 0 q1.4 -3 3 0 q1.2 -3 2 0.6 q-3.5 2.4 -8 1z" fill="#e0473b" />
+      {/* beak */}
+      <path d="M39.2 16.4 l6 2.1 -6 2.1 z" fill="#f2a83a" />
+      {/* wattle */}
+      <path d="M37 21 q1.4 4 -2 5.4 q-2.2 -2.4 -1 -5.6z" fill="#e0473b" />
+      {/* eye */}
+      <circle cx="34" cy="16" r="1.3" fill="#22303a" />
+      {/* legs + feet */}
+      <path d="M20 39 v4 M27 39 v4" stroke="#f2a83a" strokeWidth="1.9" strokeLinecap="round" />
+      <path d="M17.5 43.2 h5 M24.5 43.2 h5" stroke="#f2a83a" strokeWidth="1.6" strokeLinecap="round" />
     </g>
   ),
   bed: (
@@ -220,11 +233,18 @@ const CREATURE_ICONS: Record<string, ReactElement> = {
   ),
   pot: (
     <g>
-      <path d="M13 26 q-4 0 -4 3 q0 3 4 3" fill="none" stroke="#7c8a93" strokeWidth="2.6" />
-      <path d="M35 26 q4 0 4 3 q0 3 -4 3" fill="none" stroke="#7c8a93" strokeWidth="2.6" />
-      <rect x="13" y="22" width="22" height="14" rx="3" fill="#8a98a1" />
-      <rect x="11" y="18" width="26" height="4.5" rx="2.2" fill="#9aa6b2" />
-      <rect x="22" y="13" width="4" height="5" rx="2" fill="#9aa6b2" />
+      {/* steam */}
+      <path d="M20 9 q-2.5 -3 0 -6 M28 9 q2.5 -3 0 -6" fill="none" stroke="#cdd6dc" strokeWidth="1.6" strokeLinecap="round" />
+      {/* side handles */}
+      <path d="M11 24 q-5.5 0 -5.5 4.5 q0 4.5 5.5 4.5" fill="none" stroke="#6f7d86" strokeWidth="2.8" />
+      <path d="M37 24 q5.5 0 5.5 4.5 q0 4.5 -5.5 4.5" fill="none" stroke="#6f7d86" strokeWidth="2.8" />
+      {/* pot body (tapered) */}
+      <path d="M11 21 h26 l-2 14 q-0.6 4 -5 4 H18 q-4.4 0 -5 -4 z" fill="#8a98a1" />
+      {/* rim */}
+      <rect x="10" y="18.5" width="28" height="4" rx="2" fill="#9aa6b2" />
+      {/* lid + knob */}
+      <ellipse cx="24" cy="16" rx="13" ry="3" fill="#aab4bd" />
+      <rect x="21.5" y="11.5" width="5" height="4.5" rx="2.2" fill="#7c8a93" />
     </g>
   ),
   top: (
@@ -420,17 +440,18 @@ const CREATURE_ICONS: Record<string, ReactElement> = {
   ),
   sandwich: (
     <g>
-      {/* top bread slice — triangle shape */}
-      <path d="M8 18 l16-8 16 8 z" fill="#d9a861" />
-      <path d="M8 18 l16 6 16-6" stroke="#c08f45" strokeWidth="1" fill="none" />
-      {/* lettuce layer */}
-      <path d="M8 22 q6 3 8 1 q4 4 8 1 q4 4 8 1 l4-1 v3 H8 z" fill="#6bc06b" />
-      {/* cheese */}
-      <rect x="8" y="25" width="32" height="3" fill="#f0c040" />
-      {/* meat */}
-      <rect x="8" y="28" width="32" height="3" fill="#c05a3a" />
-      {/* bottom bread */}
-      <path d="M8 31 h32 v4 q0 3-4 3 H12 q-4 0-4-3 z" fill="#d9a861" />
+      {/* a triangular deli half, layers visible along the diagonal cut */}
+      {/* bread crust */}
+      <path d="M8 37 L24 11 L40 37 Z" fill="#eebd6e" />
+      {/* lighter inner crumb */}
+      <path d="M12.5 34.5 L24 16 L35.5 34.5 Z" fill="#f7e6bd" />
+      {/* lettuce frill peeking at the cut bottom */}
+      <path d="M11 35 q4 3 8 0 q5 3 10 0 q4 3 8 0 l-1 2.4 H12 z" fill="#76c06b" />
+      {/* tomato + cheese slivers */}
+      <rect x="12" y="37.2" width="24" height="2.2" fill="#e0573a" />
+      <path d="M19 30 l5 -7 5 7 q-5 2 -10 0z" fill="#f3c64a" opacity="0.9" />
+      {/* crust outline */}
+      <path d="M8 37 L24 11 L40 37 Z" fill="none" stroke="#cf9a4a" strokeWidth="1.5" strokeLinejoin="round" />
     </g>
   ),
   sailboat: (

@@ -1,3 +1,5 @@
+import { Butterfly, Bee } from './GardenFlora';
+
 /**
  * Sound Garden world art (Level 1) — a calm meadow backdrop + the Sprout guide.
  * Built as CSS/SVG so it animates and stays entirely ours.
@@ -11,8 +13,8 @@ export function GardenBackdrop() {
       <span className="gd-cloud gd-cloud--3" />
       <span className="gd-hill gd-hill--back" />
       <span className="gd-hill gd-hill--front" />
-      <span className="gd-fly gd-fly--1">🦋</span>
-      <span className="gd-fly gd-fly--2">🐝</span>
+      <span className="gd-fly gd-fly--1"><Butterfly size={28} /></span>
+      <span className="gd-fly gd-fly--2"><Bee size={24} /></span>
       <span className="gd-vig" />
     </div>
   );

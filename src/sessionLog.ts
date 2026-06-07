@@ -3,6 +3,7 @@
  * — EVERY game must log through `logSession()`. Keyed per learner id so the
  * tutor dashboard / leaderboard / reports are all per-student.
  */
+import { enqueueSession } from './data/cloudSync';
 
 export interface SessionRecord {
   id: string;
@@ -40,7 +41,9 @@ export function logSession(learnerId: string, rec: Omit<SessionRecord, 'id'>): S
     /* ignore */
   }
   // Queue for cloud sync (durable; no-op effect until flushed when signed in).
-  void import('./data/cloudSync').then((m) => m.enqueueSession(learnerId, rec));
+  // Static import is safe: cloudSync's back-reference to this module is type-only,
+  // and it lazy-loads the heavy Supabase SDK itself, so this adds no bundle weight.
+  enqueueSession(learnerId, rec);
   return full;
 }
 

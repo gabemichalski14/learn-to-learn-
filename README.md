@@ -29,6 +29,30 @@ and game modes extend it without rewriting the engine.
 - `npm run build` — production build into `dist/`
 - `npm run preview` — serve the production build
 
+## Level 2 — Space Patrol world
+Level 2 runs in an immersive "Space Patrol" theme. Clicking **Level 2** from Home opens a
+drawer-free cosmic hub; all three games (Sound Safari = first sound, Last Sound Standing =
+last sound, Vowel Patrol = middle vowel) play in the space world with bespoke creature
+icons. The active student is always shown in the game HUD.
+
+## Cloud sync & cross-device (operator setup)
+Local-first by default — with no Supabase configured the app runs entirely on-device, exactly
+as before. To let a tutor see a student's progress on **any** device (and, in a later
+sub-project, parents):
+
+1. Run `supabase/schema.sql` in the Supabase SQL editor (creates the tables, RLS, the
+   `skill_events` log + integrity trigger).
+2. Put the **public** URL + anon key in `.env.local` (`VITE_SUPABASE_URL`,
+   `VITE_SUPABASE_ANON_KEY`) — gitignored. Never commit the `service_role` key.
+3. Sign in on each device via the **Account** screen. The center roster syncs into the device,
+   every answered item + finished session is queued to a durable outbox and flushed to the
+   cloud, and the dashboards read cloud data when signed in (local otherwise).
+
+Per-skill mastery is computed from the answer log, so the **Tutor Dashboard** shows strongest
+sounds, focus areas (with links to the games that target them), and an activity streak.
+**Parents/guardians** (invite + linking + a read-only family dashboard) are the next
+sub-project — see the SP2 spec/plan in `docs/superpowers/`.
+
 ## Status
 **v1 foundation (this branch):** engine + content + Mode A, default "Soft & Friendly"
 look, **placeholder** TTS audio. The TTS voice mispronounces isolated phonemes on

@@ -4,6 +4,7 @@ import { navigate } from './router';
 import { SessionLogPanel } from './SessionLogPanel';
 import { loadLearners, getCurrentLearnerId, getLearner, initials, renameLearner, removeLearner } from './profiles';
 import { useLearners, useDataVersion } from './data/store';
+import { useDialog } from './ui/dialogContext';
 import { loadProgress, formatTime } from './progress';
 import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
@@ -56,17 +57,23 @@ export function TutorDashboard() {
   const [now] = useState(() => Date.now());
   const learners = useLearners(); // live roster (rename/remove reflect instantly)
   const version = useDataVersion(); // re-render + refetch when any data changes
+  const dialog = useDialog();
   const [sel, setSel] = useState<string>(() => getCurrentLearnerId() ?? learners[0]?.id ?? '');
 
-  function renameStudent() {
+  async function renameStudent() {
     const learner = getLearner(sel);
-    const name = window.prompt('Rename student:', learner?.name ?? '');
-    if (name && name.trim()) renameLearner(sel, name); // notifies → re-renders
+    const name = await dialog.prompt({ title: 'Rename student', initial: learner?.name ?? '', okLabel: 'Save' });
+    if (name) renameLearner(sel, name); // notifies → re-renders
   }
 
-  function removeStudent() {
+  async function removeStudent() {
     const learner = getLearner(sel);
-    if (window.confirm(`Remove ${learner?.name ?? 'this student'} and all of their data? This cannot be undone.`)) {
+    const ok = await dialog.confirm({
+      title: 'Remove student?',
+      message: `Remove ${learner?.name ?? 'this student'} and all of their data? This can’t be undone.`,
+      okLabel: 'Remove', danger: true,
+    });
+    if (ok) {
       removeLearner(sel);
       setSel(loadLearners()[0]?.id ?? '');
     }

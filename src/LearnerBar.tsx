@@ -1,5 +1,6 @@
 import { addLearner, initials } from './profiles';
 import { useLearners } from './data/store';
+import { useDialog } from './ui/dialogContext';
 
 interface Props {
   learnerId: string;
@@ -9,10 +10,11 @@ interface Props {
 /** "Who's playing?" selector — the tutor picks/adds the student before handing over. */
 export function LearnerBar({ learnerId, onSelect }: Props) {
   const learners = useLearners(); // live: re-renders when the roster changes
+  const dialog = useDialog();
 
-  function add() {
-    const name = window.prompt('New player name:');
-    if (name === null) return;
+  async function add() {
+    const name = await dialog.prompt({ title: 'Add a player', placeholder: 'Player name', okLabel: 'Add' });
+    if (!name) return;
     const learner = addLearner(name); // notifies → useLearners updates automatically
     onSelect(learner.id);
   }

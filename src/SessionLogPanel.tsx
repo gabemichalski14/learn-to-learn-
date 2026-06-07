@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { loadSessionLog, clearSessionLog, sessionLogCsv } from './sessionLog';
 import { formatTime } from './progress';
+import { useDialog } from './ui/dialogContext';
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -22,6 +23,7 @@ function isThisWeek(iso: string): boolean {
  */
 export function SessionLogPanel({ learnerId, showSummary = true }: { learnerId: string; showSummary?: boolean }) {
   const [, bump] = useState(0); // re-read after clearing
+  const dialog = useDialog();
 
   const records = loadSessionLog(learnerId).slice().reverse(); // newest first
   const total = records.length;
@@ -39,8 +41,13 @@ export function SessionLogPanel({ learnerId, showSummary = true }: { learnerId: 
     URL.revokeObjectURL(url);
   }
 
-  function clearAll() {
-    if (window.confirm('Clear this student’s whole session log? This cannot be undone.')) {
+  async function clearAll() {
+    const ok = await dialog.confirm({
+      title: 'Clear session log?',
+      message: 'Clear this student’s whole session log? This can’t be undone.',
+      okLabel: 'Clear', danger: true,
+    });
+    if (ok) {
       clearSessionLog(learnerId);
       bump((n) => n + 1);
     }

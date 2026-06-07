@@ -32,9 +32,9 @@ describe('SpaceSortGame (Vowel Patrol)', () => {
     expect(screen.getByLabelText('pig')).toBeTruthy();
   });
 
-  it('shows a custom title when provided (Sound Safari)', () => {
-    render(<SpaceSortGame round={round} audio={fakeAudio()} totalRounds={1} title="Sound Safari" target="beginning" />);
-    expect(screen.getByText(/Sound Safari/i)).toBeTruthy();
+  it('shows a custom title when provided (Blast Off)', () => {
+    render(<SpaceSortGame round={round} audio={fakeAudio()} totalRounds={1} title="Blast Off" target="beginning" />);
+    expect(screen.getByText(/Blast Off/i)).toBeTruthy();
   });
 
   it('shows the learner name chip when learnerName is provided', () => {

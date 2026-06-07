@@ -45,10 +45,10 @@ export const LEVELS: LevelInfo[] = [
     title: 'Consonants & Short Vowels',
     focus: 'Letter sounds, blending, short vowels',
     games: [
-      { id: 'beginning-sounds', title: 'Sound Safari', emoji: '🔊', tagline: 'Sort each picture by its first sound.', status: 'available', route: '#/play/beginning-sounds' },
-      { id: 'ending-sounds', title: 'Last Sound Standing', emoji: '🏁', tagline: 'Sort each picture by its last sound.', status: 'available', route: '#/play/ending-sounds' },
-      { id: 'middle-sounds', title: 'Vowel Patrol', emoji: '🚀', tagline: 'Sort space creatures by their middle vowel.', status: 'available', route: '#/play/middle-sounds' },
-      soon('l2-build', 'Brick by Brick', '🧱', 'Spell the word you hear.'),
+      { id: 'beginning-sounds', title: 'Blast Off', emoji: '🚀', tagline: 'Launch each space critter by its first sound.', status: 'available', route: '#/play/beginning-sounds' },
+      { id: 'ending-sounds', title: 'Touchdown', emoji: '🛬', tagline: 'Land each space critter by its last sound.', status: 'available', route: '#/play/ending-sounds' },
+      { id: 'middle-sounds', title: 'Vowel Patrol', emoji: '🛸', tagline: 'Sort space critters by their middle vowel.', status: 'available', route: '#/play/middle-sounds' },
+      soon('l2-build', 'Star Station', '🛰️', 'Build the word you hear, brick by brick.'),
     ],
   },
   {

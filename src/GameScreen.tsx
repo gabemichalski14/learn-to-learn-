@@ -28,8 +28,8 @@ interface GameConfig {
 }
 
 const GAMES: Record<string, GameConfig> = {
-  'beginning-sounds': { pack: everydayObjects, target: 'beginning', title: 'Sound Safari', space: true },
-  'ending-sounds': { pack: everydayEndings, target: 'ending', title: 'Last Sound Standing', space: true },
+  'beginning-sounds': { pack: everydayObjects, target: 'beginning', title: 'Blast Off', space: true },
+  'ending-sounds': { pack: everydayEndings, target: 'ending', title: 'Touchdown', space: true },
   'middle-sounds': { pack: shortVowelWords, target: 'medial', title: 'Vowel Patrol', space: true },
 };
 

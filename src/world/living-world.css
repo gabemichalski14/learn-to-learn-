@@ -245,3 +245,33 @@
   .egg--peek, .egg--bfly, .egg--star { display: none; }
   .egg--clover { animation: none; } .egg--clover svg { animation: none; }
 }
+
+/* ============================================================================
+   ROAD B "characterful flat" ambient — cohesive + abstract (replaces the literal
+   meadow). Soft brand-gradient bands + rounded hills (one shape language) + drifting
+   light + a clean growth-motif sprout row. transform/opacity only; reduced-motion safe.
+   ============================================================================ */
+.lw{position:fixed;inset:0;z-index:-1;overflow:hidden;
+  background:linear-gradient(180deg,#fbf4e6 0%,#eef3df 46%,#e3efd9 70%,#dcecd2 100%);transition:background 1.2s ease}
+.lw--eve{background:linear-gradient(180deg,#e7e6f2 0%,#e0e6ea 46%,#dbe6dc 72%,#d3e0d2 100%)}
+.lw--wake{animation:lw-wake 1.2s ease-out both}
+@keyframes lw-wake{from{opacity:0}to{opacity:1}}
+.lw-hill{position:absolute;border-radius:50% 50% 0 0/100% 100% 0 0}
+.lw-hill--far{left:-12%;right:-12%;bottom:30%;height:26%;background:#cfe3c2;opacity:.7}
+.lw-hill--mid{bottom:18%;height:30%;left:-20%;width:90%;background:#bcdcae}
+.lw-hill--near{bottom:0;height:30%;right:-20%;width:96%;background:#a9d29a}
+.lw--eve .lw-hill--far{background:#b9c6cb}.lw--eve .lw-hill--mid{background:#a6c0ad}.lw--eve .lw-hill--near{background:#93b694}
+.lw-glow{position:absolute;top:-8%;right:6%;width:46vw;height:46vw;border-radius:50%;pointer-events:none;mix-blend-mode:soft-light;
+  background:radial-gradient(circle,rgba(255,221,150,.6),transparent 66%);animation:lw-drift 26s ease-in-out infinite}
+.lw--eve .lw-glow{background:radial-gradient(circle,rgba(184,198,255,.5),transparent 66%)}
+@keyframes lw-drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-3vw,3vh) scale(1.08)}}
+.lw-mote{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.9),rgba(255,255,255,0) 70%);opacity:0;animation:lw-motef var(--dur,16s) linear infinite;animation-delay:var(--delay,0s)}
+@keyframes lw-motef{0%{transform:translate(0,0);opacity:0}15%{opacity:.7}85%{opacity:.5}100%{transform:translate(var(--drift,0),-60vh);opacity:0}}
+.lw-grow{position:absolute;left:0;right:0;bottom:0;height:18%}
+.lw-sprout{position:absolute;bottom:8%;transform:translateX(-50%);transform-origin:bottom center}
+.lw-sprout>svg{display:block}
+.lw-sprout--sway{animation:lw-sproutsway 7s ease-in-out infinite;animation-delay:var(--delay,0s)}
+@keyframes lw-sproutsway{0%,100%{transform:translateX(-50%) rotate(-3deg)}50%{transform:translateX(-50%) rotate(3deg)}}
+@media (prefers-reduced-motion: reduce){
+  .lw--wake{animation:none}.lw-glow{animation:none}.lw-mote{display:none}.lw-sprout--sway{animation:none}
+}

@@ -381,3 +381,43 @@ Future game work is authored **per level around its character's arc + the Barton
 curriculum** for that level (not generic mechanics). Reuse `LevelStory` + extend
 `CAST`; reframe each level's game as helping that character; keep mechanics unless
 they fight coziness. Levels 3–10 fill in as their books/curriculum are captured.
+
+## 16. Addendum (2026-06-07) — intrinsic fantasy correction (the GAMES, not just the hub)
+
+**Diagnosis (own it):** the first cut (hero band + reaction lines bolted onto the
+generic sort) was **extrinsic fantasy** (Malone) / **ludonarrative dissonance** —
+story attached *weakly* to a skill that has nothing to do with the character. A
+leaf emoji + a caption is not personification, and "reframe-not-rewrite" was the
+wrong principle: it kept a generic mechanic and decorated it.
+
+**The corrected law for generating EVERY game:**
+1. **Intrinsic fantasy** — the Barton skill *is* the character's need; remove the
+   character and the task is meaningless. (Malone: intrinsic > extrinsic for both
+   learning and engagement.)
+2. **Ludonarrative harmony** — every correct action *visibly advances the
+   character's story*; you could infer the story from the gameplay alone.
+3. **The character is the progress** — he *transforms* as you help; the win screen
+   is the character you rebuilt. Full personification (appearance/expression/voice/
+   want-need-flaw enacted), NOT captioned.
+4. **Cozy, no-fail, story-in-fragments** — each restored piece reveals a bit of his
+   past; misses are gentle (Spiritfarer).
+5. **Dyslexia-affirming partnership** — the character carries the dyslexic strength;
+   you each contribute; structured-literacy method (one sound, multisensory, mastery).
+6. **Agency → attachment** — the player's hands literally rebuild the character.
+
+**Moss redesign + the rebuilt "Bring Moss Home" game:** see the production spec
+`docs/art/2026-06-07-character-art-brief.md`. Moss is scattered and central; his
+lost hums are the items; each correct match restores a visible piece of him (heal
+stage) + a story fragment + warms the dark; he + the learner are a team (he knows
+*where* each sound goes, his gift; the learner catches the slippery sound). All
+home → he's whole, sings, goes to the garden.
+
+**Decision (art-first):** real, stateful character art (Rive preferred; CC0/sprite/
+Lottie alternatives) is the gating dependency for true personification + the
+transformation. Get the art (per the brief's integration contract), THEN build the
+rebuilt game in one coherent pass. The current hero-band Moss (commit 29ef7d6) is
+an interim placeholder, to be replaced by the intrinsic rebuild.
+
+**This supersedes §14.3's "reframe-not-rewrite"** for character levels: the game's
+*presentation, framing, objects, feedback, and progress* are rebuilt around the
+character (the underlying skill engine `useSortGame` is reused).

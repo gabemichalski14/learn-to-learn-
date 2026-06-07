@@ -6,6 +6,7 @@ import { ACHIEVEMENTS } from './achievements';
 import { NowPlaying } from './NowPlaying';
 import { AreasToImprove } from './AreasToImprove';
 import { getMastery, getSessions } from './data/dataSource';
+import { useDataVersion } from './data/store';
 import { rankAreas, type FocusArea } from './mastery/mastery';
 import type { SessionRecord } from './sessionLog';
 
@@ -19,6 +20,7 @@ interface Props {
  *  curriculum lives on the Levels page (in the menu). */
 export function Home({ learnerId, onChooseLearner }: Props) {
   const [now] = useState(() => Date.now());
+  const version = useDataVersion(); // re-render + refetch when local data changes
   const learner = getLearner(learnerId);
   const name = learner?.name ?? 'Explorer';
   const prog = loadProgress(learnerId);
@@ -39,7 +41,9 @@ export function Home({ learnerId, onChooseLearner }: Props) {
       if (live) setData({ id: learnerId, sessions, focus: rankAreas(mastery) });
     });
     return () => { live = false; };
-  }, [learnerId]);
+    // `version` re-runs the fetch when a session/progress write happens, so the
+    // headline stats refresh live. (version is a stable number — no loop.)
+  }, [learnerId, version]);
   const fresh = data && data.id === learnerId ? data : null;
   const sessions = fresh?.sessions ?? [];
   const focus = fresh?.focus ?? [];

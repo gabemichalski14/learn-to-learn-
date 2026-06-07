@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { getCurrentLearnerId, getLearner, initials, setCurrentLearnerId, markRecentlyActive } from './profiles';
+import { initials, setCurrentLearnerId, markRecentlyActive } from './profiles';
+import { useCurrentLearnerId, useLearner } from './data/store';
 import { StudentPicker } from './StudentPicker';
 
 /** The persistent "Now playing: <child> ▾" control. Opens the picker; on select,
- *  sets the active learner, stamps recency, and notifies the parent. */
+ *  sets the active learner, stamps recency, and notifies the parent. The active
+ *  learner comes from the reactive store, so it stays in sync everywhere. */
 export function NowPlaying({ onChange }: { onChange?: (id: string) => void }) {
   const [open, setOpen] = useState(false);
-  const [id, setId] = useState<string | null>(() => getCurrentLearnerId());
-  const learner = getLearner(id);
+  const id = useCurrentLearnerId();
+  const learner = useLearner(id);
   return (
     <div className="nowplaying">
       <button type="button" className="nowplaying__btn" onClick={() => setOpen(true)} aria-haspopup="dialog">
@@ -22,7 +24,7 @@ export function NowPlaying({ onChange }: { onChange?: (id: string) => void }) {
       <StudentPicker
         open={open}
         onClose={() => setOpen(false)}
-        onSelect={(sel) => { setCurrentLearnerId(sel); markRecentlyActive(sel); setId(sel); onChange?.(sel); }}
+        onSelect={(sel) => { setCurrentLearnerId(sel); markRecentlyActive(sel); onChange?.(sel); }}
       />
     </div>
   );

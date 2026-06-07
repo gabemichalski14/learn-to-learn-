@@ -5,6 +5,7 @@
  * to a center backend later (each learner would also carry a center/class id).
  */
 import { stableRead } from './data/stableRead';
+import { notifyDataChanged } from './data/dataBus';
 
 export interface Learner {
   id: string;
@@ -52,6 +53,7 @@ function persist(list: Learner[]): void {
   } catch {
     /* ignore */
   }
+  notifyDataChanged();
 }
 
 /** Set the cloud learner uuid for a local profile (idempotent). */
@@ -75,6 +77,7 @@ export function markRecentlyActive(localId: string): void {
     m[localId] = Date.now();
     localStorage.setItem(RECENT_KEY, JSON.stringify(m));
   } catch { /* ignore */ }
+  notifyDataChanged();
 }
 /** Learners sorted most-recently-active first (for the student picker). */
 export function recentlyActiveOrder(list: Learner[]): Learner[] {
@@ -88,6 +91,7 @@ export function setCurrentLearnerId(id: string): void {
   } catch {
     /* ignore */
   }
+  notifyDataChanged();
 }
 
 export function getCurrentLearnerId(): string | null {

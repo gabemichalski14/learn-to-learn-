@@ -3,6 +3,7 @@ import { navigate } from './router';
 import { loadProgress, formatTime } from './progress';
 import { ACHIEVEMENTS } from './achievements';
 import { loadLearners, initials } from './profiles';
+import { useDataVersion } from './data/store';
 import type { Learner } from './profiles';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
@@ -42,6 +43,7 @@ function Board({ title, entries }: { title: string; entries: Entry[] }) {
  * the eventual center-wide board (which needs a backend + shared accounts).
  */
 export function Leaderboard() {
+  useDataVersion(); // re-render whenever any student's data changes (live standings)
   const learners = loadLearners();
   const rows = learners.map((l) => ({ learner: l, p: loadProgress(l.id) }));
 

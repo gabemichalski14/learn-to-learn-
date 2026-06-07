@@ -5,6 +5,7 @@
  */
 
 import { stableRead } from './data/stableRead';
+import { notifyDataChanged } from './data/dataBus';
 
 const k = (learnerId: string, suffix: string) => `ll:${learnerId}:${suffix}`;
 
@@ -60,6 +61,7 @@ export function addEarned(learnerId: string, ids: string[]): string[] {
   } catch {
     /* ignore */
   }
+  notifyDataChanged();
   return merged;
 }
 
@@ -96,6 +98,7 @@ export function recordFinish(learnerId: string, elapsedMs: number): FinishResult
   } catch {
     /* ignore */
   }
+  notifyDataChanged();
 
   return { bestMs, isBest, sessions };
 }

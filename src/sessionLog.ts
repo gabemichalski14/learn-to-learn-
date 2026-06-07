@@ -4,6 +4,8 @@
  * tutor dashboard / leaderboard / reports are all per-student.
  */
 import { enqueueSession } from './data/cloudSync';
+import { stableRead } from './data/stableRead';
+import { notifyDataChanged } from './data/dataBus';
 
 export interface SessionRecord {
   id: string;
@@ -22,24 +24,34 @@ export interface SessionRecord {
 const logKey = (learnerId: string) => `ll:${learnerId}:log`;
 const MAX_RECORDS = 1000;
 
+/** Memoized on the raw string → stable reference (safe in render & deps). */
 export function loadSessionLog(learnerId: string): SessionRecord[] {
+  let raw: string | null = null;
   try {
-    const v = JSON.parse(localStorage.getItem(logKey(learnerId)) ?? '[]');
-    return Array.isArray(v) ? (v as SessionRecord[]) : [];
+    raw = localStorage.getItem(logKey(learnerId));
   } catch {
-    return [];
+    raw = null;
   }
+  return stableRead<SessionRecord[]>(`sessionlog:${learnerId}`, raw ?? '∅', () => {
+    try {
+      const v = JSON.parse(raw ?? '[]');
+      return Array.isArray(v) ? (v as SessionRecord[]) : [];
+    } catch {
+      return [];
+    }
+  });
 }
 
 export function logSession(learnerId: string, rec: Omit<SessionRecord, 'id'>): SessionRecord {
   const full: SessionRecord = { ...rec, id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}` };
   try {
-    const log = loadSessionLog(learnerId);
-    log.push(full);
+    // Build a new array (never mutate the cached/shared one).
+    const log = [...loadSessionLog(learnerId), full];
     localStorage.setItem(logKey(learnerId), JSON.stringify(log.slice(-MAX_RECORDS)));
   } catch {
     /* ignore */
   }
+  notifyDataChanged();
   // Queue for cloud sync (durable; no-op effect until flushed when signed in).
   // Static import is safe: cloudSync's back-reference to this module is type-only,
   // and it lazy-loads the heavy Supabase SDK itself, so this adds no bundle weight.
@@ -53,6 +65,7 @@ export function clearSessionLog(learnerId: string): void {
   } catch {
     /* ignore */
   }
+  notifyDataChanged();
 }
 
 /**

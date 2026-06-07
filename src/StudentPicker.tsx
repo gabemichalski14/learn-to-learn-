@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { loadLearners, initials, recentlyActiveOrder } from './profiles';
+import { initials, recentlyActiveOrder } from './profiles';
+import { useLearners } from './data/store';
 
 interface Props { open: boolean; onSelect: (id: string) => void; onClose: () => void }
 
@@ -7,8 +8,9 @@ interface Props { open: boolean; onSelect: (id: string) => void; onClose: () => 
  *  most-recently-active first, with a search box that appears for big rosters. */
 export function StudentPicker({ open, onSelect, onClose }: Props) {
   const [q, setQ] = useState('');
+  const learners = useLearners();
   if (!open) return null;
-  const all = recentlyActiveOrder(loadLearners());
+  const all = recentlyActiveOrder(learners);
   const list = q.trim() ? all.filter((l) => l.name.toLowerCase().includes(q.trim().toLowerCase())) : all;
   return (
     <div className="picker-overlay" role="dialog" aria-modal="true" aria-label="Choose the student playing" onClick={onClose}>

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { navigate } from './router';
 import { SessionLogPanel } from './SessionLogPanel';
 import { loadLearners, getCurrentLearnerId, getLearner, initials, renameLearner, removeLearner } from './profiles';
+import { useLearners, useDataVersion } from './data/store';
 import { loadProgress, formatTime } from './progress';
 import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
@@ -50,29 +51,24 @@ function TimeChart({ records }: { records: SessionRecord[] }) {
 
 /** Full-page tutor view: pick a student, see KPIs + charts + log + a printable report. */
 export function TutorDashboard() {
-  const [, bump] = useState(0);
   // Capture "now" once at mount rather than calling Date.now() during render
   // (keeps render pure; the week window is a snapshot, same as before).
   const [now] = useState(() => Date.now());
-  const learners = loadLearners();
+  const learners = useLearners(); // live roster (rename/remove reflect instantly)
+  const version = useDataVersion(); // re-render + refetch when any data changes
   const [sel, setSel] = useState<string>(() => getCurrentLearnerId() ?? learners[0]?.id ?? '');
 
   function renameStudent() {
     const learner = getLearner(sel);
     const name = window.prompt('Rename student:', learner?.name ?? '');
-    if (name && name.trim()) {
-      renameLearner(sel, name);
-      bump((n) => n + 1);
-    }
+    if (name && name.trim()) renameLearner(sel, name); // notifies → re-renders
   }
 
   function removeStudent() {
     const learner = getLearner(sel);
     if (window.confirm(`Remove ${learner?.name ?? 'this student'} and all of their data? This cannot be undone.`)) {
       removeLearner(sel);
-      const remaining = loadLearners();
-      setSel(remaining[0]?.id ?? '');
-      bump((n) => n + 1);
+      setSel(loadLearners()[0]?.id ?? '');
     }
   }
 
@@ -86,7 +82,7 @@ export function TutorDashboard() {
     if (!learner) return;
     void getSessions(learner).then((rows) => { if (live) setCloudLog({ id: sel, rows }); });
     return () => { live = false; };
-  }, [sel]);
+  }, [sel, version]);
   const log = cloudLog && cloudLog.id === sel ? cloudLog.rows : (sel ? loadSessionLog(sel) : []);
 
   const [cloudMastery, setCloudMastery] = useState<{ id: string; map: MasteryMap } | null>(null);
@@ -96,7 +92,7 @@ export function TutorDashboard() {
     if (!learner) return;
     void getMastery(learner).then((map) => { if (live) setCloudMastery({ id: sel, map }); });
     return () => { live = false; };
-  }, [sel]);
+  }, [sel, version]);
   const mastery: MasteryMap = cloudMastery && cloudMastery.id === sel ? cloudMastery.map : (sel ? loadMastery(sel) : {});
   const focus: FocusArea[] = rankAreas(mastery);
   const strongest = Object.entries(mastery)

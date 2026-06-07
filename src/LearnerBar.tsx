@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { loadLearners, addLearner, initials } from './profiles';
+import { addLearner, initials } from './profiles';
+import { useLearners } from './data/store';
 
 interface Props {
   learnerId: string;
@@ -8,14 +8,12 @@ interface Props {
 
 /** "Who's playing?" selector — the tutor picks/adds the student before handing over. */
 export function LearnerBar({ learnerId, onSelect }: Props) {
-  const [, bump] = useState(0);
-  const learners = loadLearners();
+  const learners = useLearners(); // live: re-renders when the roster changes
 
   function add() {
     const name = window.prompt('New player name:');
     if (name === null) return;
-    const learner = addLearner(name);
-    bump((n) => n + 1);
+    const learner = addLearner(name); // notifies → useLearners updates automatically
     onSelect(learner.id);
   }
 

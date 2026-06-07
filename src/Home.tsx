@@ -1,43 +1,109 @@
-import { LEVELS, availableCount } from './games';
+import { useEffect, useState } from 'react';
 import { navigate } from './router';
+import { getLearner, loadLearners, initials } from './profiles';
+import { loadProgress } from './progress';
+import { ACHIEVEMENTS } from './achievements';
 import { NowPlaying } from './NowPlaying';
-import { LevelEmblem } from './LevelEmblem';
+import { AreasToImprove } from './AreasToImprove';
+import { getMastery, getSessions } from './data/dataSource';
+import { rankAreas, type FocusArea } from './mastery/mastery';
+import type { SessionRecord } from './sessionLog';
 
 interface Props {
+  learnerId: string;
   onChooseLearner?: (id: string) => void;
 }
 
-/** Platform home: the 10-level curriculum. Leaderboard, Tutor Dashboard, and
- *  tutor sign-in live in the left-side menu (NavDrawer), not on this page. */
-export function Home({ onChooseLearner }: Props) {
+/** Family/student home: a warm, branded dashboard for the active student —
+ *  progress snapshot, what to practice next, and the leaderboard. The full
+ *  curriculum lives on the Levels page (in the menu). */
+export function Home({ learnerId, onChooseLearner }: Props) {
+  const [now] = useState(() => Date.now());
+  const learner = getLearner(learnerId);
+  const name = learner?.name ?? 'Explorer';
+  const prog = loadProgress(learnerId);
+  const stickers = new Set(prog.earned).size;
+
+  // Sessions + focus from cloud-or-local, keyed by learner so switching students
+  // never shows stale data (setState only in the async .then).
+  const [data, setData] = useState<{ id: string; sessions: SessionRecord[]; focus: FocusArea[] } | null>(null);
+  useEffect(() => {
+    let live = true;
+    if (!learner) return;
+    void Promise.all([getSessions(learner), getMastery(learner)]).then(([sessions, mastery]) => {
+      if (live) setData({ id: learnerId, sessions, focus: rankAreas(mastery) });
+    });
+    return () => { live = false; };
+  }, [learnerId, learner]);
+  const fresh = data && data.id === learnerId ? data : null;
+  const sessions = fresh?.sessions ?? [];
+  const focus = fresh?.focus ?? [];
+
+  const accuracy = sessions.length ? Math.round((sessions.reduce((s, r) => s + r.accuracy, 0) / sessions.length) * 100) : null;
+  const dayKeys = new Set(sessions.map((r) => r.endedAt.slice(0, 10)));
+  let streak = 0;
+  for (let i = 0; i < 90; i++) {
+    const key = new Date(now - i * 864e5).toISOString().slice(0, 10);
+    if (dayKeys.has(key)) streak++;
+    else break;
+  }
+
+  const board = loadLearners()
+    .map((l) => ({ l, p: loadProgress(l.id) }))
+    .sort((a, b) => new Set(b.p.earned).size - new Set(a.p.earned).size || b.p.sessions - a.p.sessions)
+    .slice(0, 5);
+
+  const greeting = sessions.length ? 'Welcome back' : 'Welcome';
+
   return (
-    <main className="site">
+    <main className="l2l-page home">
       <NowPlaying onChange={onChooseLearner} />
-      <section className="site__section" aria-labelledby="levels-h">
-        <h2 id="levels-h" className="site__h2">Curriculum · Levels 1–10</h2>
-        <div className="level-grid">
-          {LEVELS.map((lvl) => {
-            const ready = availableCount(lvl);
-            return (
-              <button
-                key={lvl.num}
-                type="button"
-                className={`level-card${ready ? ' level-card--ready' : ''}`}
-                onClick={() => navigate(`#/level/${lvl.num}`)}
-                aria-label={`Level ${lvl.num}: ${lvl.title}`}
-              >
-                <LevelEmblem level={lvl.num} />
-                <span className="level-card__num">Level {lvl.num}</span>
-                <span className="level-card__title">{lvl.title}</span>
-                <span className="level-card__focus">{lvl.focus}</span>
-                <span className="level-card__foot">
-                  {ready ? `${ready} game${ready === 1 ? '' : 's'} ▸` : 'Coming soon'}
-                </span>
-              </button>
-            );
-          })}
+
+      <header className="l2l-card home-hero l2l-reveal" style={{ '--i': 0 } as React.CSSProperties}>
+        <div className="l2l-leaves" aria-hidden="true"><span className="l2l-leaf" /><span className="l2l-leaf" /><span className="l2l-leaf" /><span className="l2l-leaf" /></div>
+        <div className="home-hero__content">
+          <p className="l2l-eyebrow">{greeting}</p>
+          <h1 className="l2l-display">Hi <em>{name}</em>,<br />let's keep growing.</h1>
+          <p className="l2l-lead">Every sound you practice makes reading and spelling a little easier. Pick up where you left off — your patrol is waiting.</p>
+          <div className="home-hero__cta">
+            <button type="button" className="l2l-btn" onClick={() => navigate('#/levels')}>Continue learning →</button>
+            <button type="button" className="l2l-btn l2l-btn--ghost" onClick={() => navigate('#/profile')}>My profile</button>
+          </div>
         </div>
+        <div className="home-hero__avatar" style={{ background: learner?.color ?? 'var(--teal)' }} aria-hidden="true">{initials(name)}</div>
+      </header>
+
+      <section className="home-stats" aria-label="Your progress">
+        <div className="l2l-card l2l-reveal" style={{ '--i': 1 } as React.CSSProperties}><div className="l2l-stat"><span className="l2l-stat__num">{prog.sessions}</span><span className="l2l-stat__label">Sessions played</span></div></div>
+        <div className="l2l-card l2l-reveal" style={{ '--i': 2 } as React.CSSProperties}><div className="l2l-stat"><span className="l2l-stat__num">{accuracy != null ? `${accuracy}%` : '—'}</span><span className="l2l-stat__label">Accuracy</span></div></div>
+        <div className="l2l-card l2l-reveal" style={{ '--i': 3 } as React.CSSProperties}><div className="l2l-stat"><span className="l2l-stat__num">{streak}{streak > 0 ? ' 🔥' : ''}</span><span className="l2l-stat__label">Day streak</span></div></div>
+        <div className="l2l-card l2l-reveal" style={{ '--i': 4 } as React.CSSProperties}><div className="l2l-stat"><span className="l2l-stat__num">{stickers}/{ACHIEVEMENTS.length}</span><span className="l2l-stat__label">Stickers earned</span></div></div>
       </section>
+
+      <div className="home-cols">
+        <section className="l2l-card l2l-reveal" style={{ '--i': 5 } as React.CSSProperties} aria-labelledby="focus-h">
+          <h2 id="focus-h" className="l2l-h2">What to practice next</h2>
+          <p className="home-sub">Friendly next steps based on how {name} is doing.</p>
+          <AreasToImprove learnerId={learnerId} focus={focus} />
+        </section>
+
+        <section className="l2l-card l2l-reveal" style={{ '--i': 6 } as React.CSSProperties} aria-labelledby="lb-h">
+          <h2 id="lb-h" className="l2l-h2">Leaderboard</h2>
+          <p className="home-sub">Friendly standings across players on this device.</p>
+          <ol className="lb">
+            {board.length === 0 && <li className="home-sub">No players yet.</li>}
+            {board.map(({ l, p }, i) => (
+              <li key={l.id} className={`lb-row${l.id === learnerId ? ' lb-row--me' : ''}`}>
+                <span className="lb-rank">{i + 1}</span>
+                <span className="lb-av" style={{ background: l.color }} aria-hidden="true">{initials(l.name)}</span>
+                <span className="lb-name">{l.name}</span>
+                <span className="lb-meta">{new Set(p.earned).size} ⭐ · {p.sessions} played</span>
+              </li>
+            ))}
+          </ol>
+          <button type="button" className="l2l-btn l2l-btn--ghost home-lb__more" onClick={() => navigate('#/leaderboard')}>Full leaderboard →</button>
+        </section>
+      </div>
     </main>
   );
 }

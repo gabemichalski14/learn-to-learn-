@@ -6,25 +6,26 @@ import { LogoMark } from './LogoMark';
 interface NavItem {
   label: string;
   to: string;
-  icon: string;
   /** Route names that should show this item as the active page. */
   match: RouteName[];
+  /** Visible only when a tutor account is signed in. */
+  tutorOnly?: boolean;
 }
 
 const ITEMS: NavItem[] = [
-  { label: 'Dashboard', to: '#/tutor', icon: '📊', match: ['tutor'] },
-  { label: 'Levels', to: '#/levels', icon: '📚', match: ['levels', 'level'] },
-  { label: 'Games', to: '#/games', icon: '🎮', match: ['games', 'play'] },
-  { label: 'Leaderboard', to: '#/leaderboard', icon: '🏆', match: ['leaderboard'] },
-  { label: 'Profile', to: '#/profile', icon: '👤', match: ['profile'] },
-  { label: 'Tutor sign-in', to: '#/account', icon: '🔑', match: ['account'] },
+  { label: 'Dashboard', to: '#/tutor', match: ['tutor'], tutorOnly: true },
+  { label: 'Levels', to: '#/levels', match: ['levels', 'level'] },
+  { label: 'Games', to: '#/games', match: ['games', 'play'] },
+  { label: 'Leaderboard', to: '#/leaderboard', match: ['leaderboard'] },
+  { label: 'Profile', to: '#/profile', match: ['profile'] },
+  { label: 'Tutor sign-in', to: '#/account', match: ['account'] },
 ];
 
 /**
  * Left-side hamburger menu. The burger button is fixed top-left on every
  * platform page; tapping it slides a drawer in from the left with the page list.
  */
-export function NavDrawer({ route }: { route: RouteName }) {
+export function NavDrawer({ route, isTutor = false }: { route: RouteName; isTutor?: boolean }) {
   const [open, setOpen] = useState(false);
 
   // Close on Escape and lock body scroll while open.
@@ -91,7 +92,7 @@ export function NavDrawer({ route }: { route: RouteName }) {
         </button>
 
         <ul className="drawer__list">
-          {ITEMS.map((item) => {
+          {ITEMS.filter((item) => !item.tutorOnly || isTutor).map((item) => {
             const active = item.match.includes(route);
             return (
               <li key={item.label}>
@@ -101,7 +102,6 @@ export function NavDrawer({ route }: { route: RouteName }) {
                   aria-current={active ? 'page' : undefined}
                   onClick={() => go(item.to)}
                 >
-                  <span className="drawer__icon" aria-hidden="true">{item.icon}</span>
                   <span className="drawer__label">{item.label}</span>
                 </button>
               </li>

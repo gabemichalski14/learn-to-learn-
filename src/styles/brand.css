@@ -1,0 +1,147 @@
+/* ============================================================
+   Learn to Learn — modern brand design language
+   Applies to every NON-themed screen (the immersive space world
+   keeps its own look). Built on the brand tokens in theme.css.
+   Aesthetic: warm editorial — Playfair display + Poppins body,
+   soft depth, leaf/wave motifs, generous space, gentle motion.
+   ============================================================ */
+
+:root {
+  --shadow-sm: 0 2px 8px rgba(13, 27, 42, 0.06);
+  --shadow-md: 0 12px 30px rgba(13, 27, 42, 0.08);
+  --shadow-lg: 0 26px 60px rgba(13, 27, 42, 0.12);
+  --shadow-teal: 0 14px 30px rgba(27, 154, 170, 0.28);
+  --radius-lg: 24px;
+  --radius-xl: 30px;
+  --pill: 999px;
+}
+
+/* ---- global atmosphere: a soft brand mesh behind everything ---- */
+body {
+  background:
+    radial-gradient(60vw 50vh at 12% -8%, rgba(168, 213, 194, 0.30), transparent 60%),
+    radial-gradient(55vw 45vh at 98% 6%, rgba(27, 154, 170, 0.12), transparent 55%),
+    radial-gradient(50vw 50vh at 88% 102%, rgba(245, 200, 76, 0.10), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+/* ---- page shell ---- */
+.l2l-page { max-width: 1080px; margin: 0 auto; padding: clamp(18px, 4vw, 40px) clamp(16px, 4vw, 36px) 72px; }
+.l2l-page--narrow { max-width: 760px; }
+
+/* ---- typography ---- */
+.l2l-eyebrow {
+  margin: 0 0 10px; font-weight: 700; font-size: clamp(11px, 2.4vw, 13px);
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal-deep);
+}
+.l2l-display {
+  font-family: var(--font-display); font-weight: 700; color: var(--ink);
+  font-size: clamp(30px, 6.2vw, 56px); line-height: 1.04; letter-spacing: -0.015em; margin: 0;
+}
+.l2l-display em { font-style: italic; color: var(--teal); }
+.l2l-h2 { font-family: var(--font-display); font-weight: 700; color: var(--ink); font-size: clamp(20px, 3.6vw, 28px); margin: 0; letter-spacing: -0.01em; }
+.l2l-lead { color: var(--muted); font-size: clamp(14px, 2.4vw, 17px); line-height: 1.6; margin: 14px 0 0; max-width: 56ch; }
+.l2l-kicker { font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 12px; color: var(--teal-deep); }
+
+/* ---- cards ---- */
+.l2l-card {
+  position: relative; background: var(--surface); border: 1px solid rgba(13, 27, 42, 0.06);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: clamp(18px, 3vw, 26px);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.l2l-card--interactive { cursor: pointer; }
+.l2l-card--interactive:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.l2l-card--interactive:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+.l2l-card--accent { border-top: 4px solid var(--teal); }
+
+/* ---- soft circular icon badge (the brand-element look) ---- */
+.l2l-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: clamp(48px, 11vw, 60px); height: clamp(48px, 11vw, 60px); border-radius: 50%;
+  background: var(--teal-soft); color: var(--teal-deep); font-size: clamp(22px, 5vw, 28px);
+  box-shadow: inset 0 0 0 1px rgba(27, 154, 170, 0.18);
+}
+.l2l-badge--gold { background: #fcefcb; color: #a9741a; }
+.l2l-badge--green { background: #e3f1e8; color: #3f7a55; }
+
+/* ---- buttons ---- */
+.l2l-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; border: none;
+  padding: 12px 24px; border-radius: var(--pill); color: #fff;
+  background: linear-gradient(135deg, var(--teal), var(--teal-deep)); box-shadow: var(--shadow-teal);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+}
+.l2l-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.l2l-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.l2l-btn--ghost { background: transparent; color: var(--teal-deep); box-shadow: none; border: 1.5px solid var(--teal-ring); }
+.l2l-btn--ghost:hover { background: var(--teal-soft); }
+
+/* ---- stat tile ---- */
+.l2l-stat { display: flex; flex-direction: column; gap: 2px; }
+.l2l-stat__num { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 5vw, 38px); color: var(--ink); line-height: 1; }
+.l2l-stat__label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
+
+/* ---- chips / pills ---- */
+.l2l-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--pill);
+  background: var(--teal-soft); color: var(--teal-deeper); font-size: 12.5px; font-weight: 700; }
+
+/* ---- wave divider (brand texture) ---- */
+.l2l-wave { display: block; width: 100%; height: 40px; color: var(--teal-soft);
+  background: none; -webkit-mask: var(--l2l-wave-mask) repeat-x bottom / 1200px 40px; mask: var(--l2l-wave-mask) repeat-x bottom / 1200px 40px; }
+:root { --l2l-wave-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='40' viewBox='0 0 1200 40'%3E%3Cpath d='M0 24 C 150 4 300 4 450 24 S 750 44 900 24 1050 4 1200 24 V40 H0 Z' fill='%23000'/%3E%3C/svg%3E"); }
+
+/* ---- decorative drifting leaves (hero accent; opt-in) ---- */
+.l2l-leaves { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.l2l-leaf { position: absolute; width: 16px; height: 16px; background: var(--mint); opacity: 0.5;
+  border-radius: 0 100% 0 100%; transform: rotate(35deg); animation: l2l-drift 9s ease-in-out infinite alternate; }
+.l2l-leaf:nth-child(2) { background: var(--teal); opacity: 0.28; width: 12px; height: 12px; animation-duration: 11s; }
+.l2l-leaf:nth-child(3) { background: var(--green); opacity: 0.35; width: 20px; height: 20px; animation-duration: 13s; }
+.l2l-leaf:nth-child(4) { background: var(--gold); opacity: 0.30; width: 10px; height: 10px; animation-duration: 10s; }
+@keyframes l2l-drift { from { transform: translateY(0) rotate(35deg); } to { transform: translateY(-14px) rotate(48deg); } }
+
+/* ---- page-load staggered reveal ---- */
+.l2l-reveal { opacity: 0; transform: translateY(14px); animation: l2l-rise 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; animation-delay: calc(var(--i, 0) * 80ms); }
+@keyframes l2l-rise { to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .l2l-reveal { animation: none; opacity: 1; transform: none; }
+  .l2l-leaf { animation: none; }
+  .l2l-card--interactive:hover, .l2l-btn:hover { transform: none; }
+}
+
+/* ---- Home (family/student dashboard) ---- */
+.home { padding-top: clamp(10px, 2vw, 18px); }
+.home-hero { overflow: hidden; display: grid; grid-template-columns: 1fr auto; gap: clamp(16px, 4vw, 36px); align-items: center; }
+.home-hero__content { position: relative; z-index: 1; }
+.home-hero__cta { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+.home-hero__avatar { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center;
+  width: clamp(76px, 18vw, 116px); height: clamp(76px, 18vw, 116px); border-radius: 50%; color: #fff;
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 7vw, 46px);
+  box-shadow: var(--shadow-md), inset 0 0 0 4px rgba(255, 255, 255, 0.55); }
+.l2l-leaf:nth-child(1) { top: 14%; left: 6%; }
+.l2l-leaf:nth-child(2) { top: 60%; left: 16%; }
+.l2l-leaf:nth-child(3) { top: 22%; right: 10%; }
+.l2l-leaf:nth-child(4) { top: 70%; right: 22%; }
+
+.home-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(10px, 2vw, 16px); margin: clamp(14px, 3vw, 22px) 0; }
+.home-cols { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(12px, 2.4vw, 18px); align-items: start; }
+.home-sub { margin: 2px 0 12px; color: var(--muted); font-size: 13px; }
+
+.lb { list-style: none; margin: 4px 0 0; padding: 0; }
+.lb-row { display: flex; align-items: center; gap: 10px; padding: 9px 6px; border-radius: 12px; border-bottom: 1px solid rgba(13, 27, 42, 0.06); }
+.lb-row:last-of-type { border-bottom: none; }
+.lb-row--me { background: var(--teal-soft); }
+.lb-rank { width: 22px; text-align: center; font-family: var(--font-display); font-weight: 700; color: var(--teal-deep); }
+.lb-av { width: 30px; height: 30px; flex: 0 0 auto; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 800; }
+.lb-name { flex: 1; font-weight: 700; color: var(--ink); }
+.lb-meta { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.home-lb__more { margin-top: 14px; width: 100%; }
+
+@media (max-width: 720px) {
+  .home-hero { grid-template-columns: 1fr; }
+  .home-hero__avatar { display: none; }
+  .home-stats { grid-template-columns: repeat(2, 1fr); }
+  .home-cols { grid-template-columns: 1fr; }
+}

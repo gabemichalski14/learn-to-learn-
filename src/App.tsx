@@ -13,6 +13,7 @@ import { NavDrawer } from './NavDrawer';
 import { SpaceLevelHub } from './worlds/space/SpaceLevelHub';
 import type { ThemeId } from './themes';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
+import { useTutorSignedIn } from './useAuth';
 
 function loadTheme(): ThemeId {
   try {
@@ -29,6 +30,7 @@ export default function App() {
   const route = useRoute();
   const [theme, setTheme] = useState<ThemeId>(loadTheme);
   const [learnerId, setLearnerId] = useState<string>(() => ensureLearner().id);
+  const isTutor = useTutorSignedIn();
 
   function chooseLearner(id: string) {
     setCurrentLearnerId(id);
@@ -72,7 +74,8 @@ export default function App() {
       page = <Leaderboard />;
       break;
     case 'tutor':
-      page = <TutorDashboard />;
+      // Tutor-only: parents/students land on sign-in instead.
+      page = isTutor ? <TutorDashboard /> : <Account />;
       break;
     case 'profile':
       page = <ProfilePage learnerId={learnerId} onSelectLearner={chooseLearner} />;
@@ -81,12 +84,12 @@ export default function App() {
       page = <Account />;
       break;
     default:
-      page = <Home onChooseLearner={chooseLearner} />;
+      page = <Home learnerId={learnerId} onChooseLearner={chooseLearner} />;
   }
 
   return (
     <>
-      <NavDrawer route={route.name} />
+      <NavDrawer route={route.name} isTutor={isTutor} />
       {page}
     </>
   );

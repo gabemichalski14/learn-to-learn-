@@ -218,3 +218,33 @@ body {
   box-shadow: inset 0 0 0 1px rgba(120, 220, 230, 0.4), 0 0 16px rgba(94, 240, 200, 0.22); }
 .tile-space { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 .tile-space i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #dffaff; box-shadow: 0 0 6px #bdefff; animation: lvl-tw 4s infinite ease-in-out; }
+
+/* ---- Garden-themed cards + tiles (Level 1 = Sound Garden) ---- */
+.lvl-card--garden { overflow: hidden; color: #173d2a; border-color: rgba(110, 174, 127, 0.5);
+  background: linear-gradient(180deg, #cdeffb 0%, #dff5ec 52%, #cdeecb 100%); box-shadow: 0 14px 32px rgba(78, 149, 104, 0.28); }
+.lvl-card--garden:hover { box-shadow: 0 22px 46px rgba(78, 149, 104, 0.4); }
+.lvl-card--garden .lvl-card__num { color: #2f7d56; }
+.lvl-card--garden .lvl-card__title { color: #173d2a; }
+.lvl-card--garden .lvl-card__focus { color: #3f6b51; }
+.lvl-card--garden .lvl-card__foot { color: #2f7d56; }
+.lvl-garden { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.lvl-garden__sun { position: absolute; top: 12px; right: 14px; width: 40px; height: 40px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #ffe07a, #f5c84c); box-shadow: 0 0 28px 8px rgba(245, 200, 76, 0.4); }
+.lvl-garden__hill { position: absolute; left: -10%; right: -10%; bottom: -16px; height: 48px; border-radius: 50% 50% 0 0; background: linear-gradient(180deg, #8ecf9f, #6bae7f); }
+.lvl-garden__sprout { position: absolute; bottom: 8px; left: 16px; font-size: 18px; }
+.lvl-garden__sprout--2 { left: 44px; bottom: 6px; }
+.lvl-garden__sprout--3 { left: auto; right: 22px; bottom: 7px; }
+
+.tile--garden { overflow: hidden; color: #173d2a; border-color: rgba(110, 174, 127, 0.5);
+  background: linear-gradient(180deg, #d6f1fb 0%, #e2f6ec 55%, #d2eecf 100%); box-shadow: 0 14px 32px rgba(78, 149, 104, 0.24); }
+.tile--garden:hover { box-shadow: 0 22px 46px rgba(78, 149, 104, 0.38); }
+.tile--garden .tile__title { color: #173d2a; position: relative; z-index: 1; }
+.tile--garden .tile__tagline { color: #3f6b51; position: relative; z-index: 1; }
+.tile--garden .tile__foot { position: relative; z-index: 1; }
+.tile--garden .tile__ref { color: #2f7d56; }
+.tile--garden .tile__badge--go { color: #173d2a; background: linear-gradient(90deg, #8ecf9f, #6bae7f); box-shadow: 0 6px 14px rgba(78, 149, 104, 0.35); }
+.tile__emoji--garden { background: rgba(255, 255, 255, 0.72); box-shadow: inset 0 0 0 1px rgba(110, 174, 127, 0.5), 0 0 14px rgba(110, 174, 127, 0.25); }
+.tile-garden { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.tile-garden__sun { position: absolute; top: 12px; right: 14px; width: 34px; height: 34px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #ffe07a, #f5c84c); box-shadow: 0 0 24px 6px rgba(245, 200, 76, 0.38); }
+.tile-garden__hill { position: absolute; left: -10%; right: -10%; bottom: -14px; height: 40px; border-radius: 50% 50% 0 0; background: linear-gradient(180deg, #8ecf9f, #6bae7f); }

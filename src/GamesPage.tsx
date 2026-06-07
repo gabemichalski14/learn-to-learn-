@@ -4,18 +4,20 @@ import { LEVELS } from './games';
 import type { GameInfo } from './games';
 
 /** Levels with an immersive themed "world" — their game tiles match that theme. */
-const WORLD: Record<number, 'space'> = { 2: 'space' };
+const WORLD: Record<number, 'space' | 'garden'> = { 1: 'garden', 2: 'space' };
 const TILE_STARS: Array<[number, number]> = [[16, 12], [30, 82], [60, 24], [74, 66], [46, 90], [12, 54], [84, 40]];
 
 function Tile({ game, levelNum }: { game: GameInfo; levelNum: number }) {
   const available = game.status === 'available';
-  const space = WORLD[levelNum] === 'space';
+  const world = WORLD[levelNum];
+  const space = world === 'space';
+  const garden = world === 'garden';
   // Available → play the game; coming-soon → open its level so you can still explore it.
   const go = () => navigate(available && game.route ? game.route : `#/level/${levelNum}`);
   return (
     <button
       type="button"
-      className={`l2l-card l2l-card--interactive tile${available ? '' : ' tile--soon'}${space ? ' tile--space' : ''}`}
+      className={`l2l-card l2l-card--interactive tile${available ? '' : ' tile--soon'}${space ? ' tile--space' : ''}${garden ? ' tile--garden' : ''}`}
       onClick={go}
       aria-label={available ? `Play ${game.title}` : `${game.title} — coming soon, Level ${levelNum}`}
     >
@@ -26,7 +28,10 @@ function Tile({ game, levelNum }: { game: GameInfo; levelNum: number }) {
           ))}
         </span>
       )}
-      <span className={`l2l-badge tile__emoji${space ? ' tile__emoji--space' : ''}`} aria-hidden="true">{game.emoji}</span>
+      {garden && (
+        <span className="tile-garden" aria-hidden="true"><span className="tile-garden__sun" /><span className="tile-garden__hill" /></span>
+      )}
+      <span className={`l2l-badge tile__emoji${space ? ' tile__emoji--space' : ''}${garden ? ' tile__emoji--garden' : ''}`} aria-hidden="true">{game.emoji}</span>
       <span className="tile__title">{game.title}</span>
       <span className="tile__tagline">{game.tagline}</span>
       <span className="tile__foot">

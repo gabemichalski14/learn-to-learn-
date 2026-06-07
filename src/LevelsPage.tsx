@@ -5,7 +5,7 @@ import { levelCurriculum } from './curriculum';
 import { LevelEmblem } from './LevelEmblem';
 
 /** Which levels have an immersive themed "world" (full-card treatment). */
-const WORLD: Record<number, 'space'> = { 2: 'space' };
+const WORLD: Record<number, 'space' | 'garden'> = { 1: 'garden', 2: 'space' };
 
 /** Fixed star field for the themed Level 2 card (top%, left%). */
 const SPACE_STARS: Array<[number, number]> = [
@@ -58,6 +58,26 @@ export function LevelsPage() {
                 </span>
                 <span className="lvl-card__body">
                   <span className="lvl-card__num">Level {lvl.num} · Space Patrol</span>
+                  <span className="lvl-card__title">{lvl.title}</span>
+                  <span className="lvl-card__focus">{lvl.focus}</span>
+                  <span className="lvl-card__foot">{foot}</span>
+                </span>
+              </button>
+            );
+          }
+
+          if (WORLD[lvl.num] === 'garden') {
+            return (
+              <button key={lvl.num} type="button" className="lvl-card lvl-card--garden l2l-reveal" style={style} onClick={() => navigate(`#/level/${lvl.num}`)} aria-label={`Level ${lvl.num}: ${lvl.title}`}>
+                <span className="lvl-garden" aria-hidden="true">
+                  <span className="lvl-garden__sun" />
+                  <span className="lvl-garden__hill" />
+                  <span className="lvl-garden__sprout">🌱</span>
+                  <span className="lvl-garden__sprout lvl-garden__sprout--2">🌿</span>
+                  <span className="lvl-garden__sprout lvl-garden__sprout--3">🌸</span>
+                </span>
+                <span className="lvl-card__body">
+                  <span className="lvl-card__num">Level {lvl.num} · Sound Garden</span>
                   <span className="lvl-card__title">{lvl.title}</span>
                   <span className="lvl-card__focus">{lvl.focus}</span>
                   <span className="lvl-card__foot">{foot}</span>

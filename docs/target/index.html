@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Garden home — target</title>
+<style>
+  /* ============================================================
+     STATIC VISUAL TARGET (not the app) — the cozy storybook meadow
+     the real build will aim at. Layered landscape + grounded plants
+     + board nestled in the meadow. Toggle day <-> dusk top-right.
+     ============================================================ */
+  :root{
+    --ink:#2c2a33; --muted:#6a6477;
+    --board:#f7f0de; --board2:#efe6cf; --card:#fffdf7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Poppins',-apple-system,system-ui,sans-serif;overflow:hidden;color:var(--ink)}
+
+  /* ---- the scene = layered bands, back to front ---- */
+  .scene{position:fixed;inset:0;overflow:hidden;
+    /* DAY sky: soft storybook blue -> cream -> warm near horizon */
+    background:
+      radial-gradient(60vw 30vh at 78% 8%, rgba(255,244,210,.9), transparent 60%),
+      linear-gradient(180deg,#bfe3ef 0%,#d8eee6 34%,#eef4dd 52%, #f3eecd 60%);
+    transition:background 1.2s ease;}
+  .sun{position:absolute;top:7%;right:12%;width:92px;height:92px;border-radius:50%;
+    background:radial-gradient(circle at 42% 40%,#fff6cf,#ffe79a 60%,rgba(255,231,154,0));
+    box-shadow:0 0 70px 26px rgba(255,231,154,.5);transition:all 1.2s ease}
+  .cloud{position:absolute;background:#fff;border-radius:60px;opacity:.92;
+    box-shadow:34px 10px 0 -4px #fff,-36px 12px 0 -2px #fff,10px -14px 0 -7px #fff;transition:opacity .8s}
+  .c1{top:14%;left:12%;width:120px;height:34px}
+  .c2{top:22%;left:60%;width:90px;height:26px;opacity:.8}
+
+  /* far hills sit ON the horizon (~58%), pale + hazy = atmospheric depth */
+  .hill{position:absolute;left:-8%;right:-8%;border-radius:50% 50% 0 0;transition:background 1.2s ease}
+  .hill--3{bottom:40%;height:20%;background:#c4d6b2;filter:blur(.4px);opacity:.9}
+  .hill--2{bottom:38%;height:18%;left:-20%;width:70%;background:#b6cda6}
+  .hill--2b{bottom:38%;height:16%;right:-20%;left:auto;width:70%;background:#bdd1ab}
+  .treeline{position:absolute;bottom:41%;left:0;right:0;height:60px}
+
+  /* the MEADOW ground plane — the foundation. solid field, horizon at ~58% */
+  .meadow{position:absolute;left:0;right:0;bottom:0;height:42%;
+    background:linear-gradient(180deg,#9fc977 0%,#79b465 30%,#5f9a58 70%,#4f8a50 100%);
+    border-radius:46% 54% 0 0/8% 8% 0 0;transition:background 1.2s ease}
+  .meadow::before{content:'';position:absolute;inset:0;border-radius:inherit;
+    background:radial-gradient(120% 60% at 50% 0,rgba(255,247,214,.45),transparent 55%)}
+
+  .layer{position:absolute;inset:0;pointer-events:none}
+  /* a planted thing = sprite + its contact shadow (shadow first, under it) */
+  .plant{position:absolute;transform:translateX(-50%);transform-origin:bottom center}
+  .shadow{position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);
+    border-radius:50%;background:rgba(40,46,28,.20);filter:blur(1px)}
+  .sway{animation:sway 7s ease-in-out infinite}
+  @keyframes sway{0%,100%{transform:translateX(-50%) rotate(-2.5deg)}50%{transform:translateX(-50%) rotate(2.5deg)}}
+
+  .firefly{position:absolute;width:7px;height:7px;border-radius:50%;
+    background:radial-gradient(circle,#fff6b0,#f5d24c 55%,rgba(245,210,76,0) 72%);
+    opacity:0;transition:opacity 1s}
+  .dusk .firefly{animation:glow 4s ease-in-out infinite}
+  @keyframes glow{0%,100%{opacity:0;transform:translateY(0)}45%{opacity:.95;transform:translateY(-10px)}}
+
+  /* ---- DUSK variant ---- */
+  .scene.dusk{background:
+      radial-gradient(50vw 28vh at 80% 86%, rgba(255,170,120,.55), transparent 60%),
+      linear-gradient(180deg,#33356b 0%,#5b4f86 34%,#9a6f8f 52%,#d98f6e 60%)}
+  .dusk .sun{top:auto;bottom:30%;right:16%;width:74px;height:74px;
+    background:radial-gradient(circle at 42% 40%,#ffd9a0,#ff9e63 60%,rgba(255,158,99,0));
+    box-shadow:0 0 80px 30px rgba(255,150,90,.45)}
+  .dusk .cloud{opacity:.25}
+  .dusk .hill--3{background:#6e7e8e}.dusk .hill--2{background:#5d6a82}.dusk .hill--2b{background:#65718a}
+  .dusk .meadow{background:linear-gradient(180deg,#5b7a5f 0%,#3f5f4c 40%,#2f4a3e 100%)}
+
+  /* ---- the board, nestled INTO the meadow ---- */
+  .wrap{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center;
+    padding-top:13vh}
+  .board{position:relative;width:min(900px,92vw);
+    background:
+      radial-gradient(90% 30% at 50% 0,rgba(255,246,222,.9),transparent 70%),
+      linear-gradient(180deg,#f7f0de,#efe6cf);
+    border:1px solid rgba(74,54,33,.12);border-radius:30px 30px 22px 22px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 26px 60px -16px rgba(40,40,20,.4);
+    padding:30px 34px 40px;}
+  .vine{position:absolute;top:-16px;width:150px;height:120px;pointer-events:none}
+  .vine--l{left:-26px;transform:scaleX(-1)}
+  .vine--r{right:-26px}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3f7a55}
+  h1{font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,5vw,46px);line-height:1.05;margin:6px 0 6px;color:#24201a}
+  h1 em{font-style:italic;color:#1b9aaa}
+  .lead{color:var(--muted);max-width:48ch;font-size:15px;line-height:1.5}
+  .cta{margin-top:18px;display:inline-flex;gap:10px}
+  .btn{border:none;cursor:pointer;font:inherit;font-weight:800;color:#fff;padding:12px 22px;border-radius:999px;
+    background:linear-gradient(135deg,#1b9aaa,#127a88);box-shadow:0 12px 24px rgba(27,154,170,.35)}
+  .btn.ghost{background:#fff;color:#127a88;border:1.5px solid #7fc7ce;box-shadow:none}
+  .keepsakes{margin-top:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .keep{background:var(--card);border:1px solid rgba(74,54,33,.10);border-radius:18px;padding:16px 10px;text-align:center;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 6px 14px -6px rgba(40,40,20,.22)}
+  .keep .badge{width:46px;height:46px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px}
+  .keep .num{font-family:Georgia,serif;font-size:30px;line-height:1;color:#24201a}
+  .keep .lbl{font-size:12px;color:var(--muted);font-weight:600}
+  .k1 .badge{background:#e2f1f2}.k2 .badge{background:#e6f3ea}.k3 .badge{background:#fdf0d2}.k4 .badge{background:#e9edf9}
+
+  .pip{position:absolute;right:26px;top:-58px;width:104px;height:104px}
+  .toggle{position:fixed;top:14px;right:16px;z-index:9;border:none;cursor:pointer;font:inherit;font-weight:700;
+    background:rgba(255,255,255,.85);color:#2c2a33;border-radius:999px;padding:9px 16px;box-shadow:0 6px 16px rgba(0,0,0,.15)}
+  .note{position:fixed;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:rgba(60,50,30,.55)}
+  .dusk ~ .wrap .note{color:rgba(255,255,255,.6)}
+</style>
+</head>
+<body>
+  <div class="scene" id="scene">
+    <div class="sun"></div>
+    <div class="cloud c1"></div><div class="cloud c2"></div>
+    <div class="hill hill--3"></div><div class="hill hill--2"></div><div class="hill hill--2b"></div>
+    <div class="treeline layer" id="treeline"></div>
+    <div class="meadow"></div>
+    <div class="layer" id="flora"></div>
+    <div class="layer" id="fireflies"></div>
+    <div class="layer" id="foreground"></div>
+  </div>
+
+  <button class="toggle" id="toggle">🌙 Dusk</button>
+
+  <div class="wrap">
+    <div class="board">
+      <svg class="vine vine--l" viewBox="0 0 150 120"><g fill="#5f9a58"><path d="M150 6 q-60 6 -92 60" fill="none" stroke="#4e7d49" stroke-width="5" stroke-linecap="round"/><path d="M150 6 q-34 2 -46 34 q30 2 46 -16z"/><path d="M118 30 q-30 4 -40 34 q28 4 44 -14z" fill="#6aa85f"/><path d="M92 58 q-28 8 -32 38 q26 0 40 -18z" fill="#73b066"/></g></svg>
+      <svg class="vine vine--r" viewBox="0 0 150 120"><g fill="#5f9a58"><path d="M150 6 q-60 6 -92 60" fill="none" stroke="#4e7d49" stroke-width="5" stroke-linecap="round"/><path d="M150 6 q-34 2 -46 34 q30 2 46 -16z"/><path d="M118 30 q-30 4 -40 34 q28 4 44 -14z" fill="#6aa85f"/><path d="M92 58 q-28 8 -32 38 q26 0 40 -18z" fill="#73b066"/></g></svg>
+
+      <svg class="pip" viewBox="0 0 100 100" aria-hidden="true">
+        <ellipse cx="50" cy="92" rx="26" ry="6" fill="rgba(40,46,28,.18)"/>
+        <path d="M50 14 q4 -12 12 -12 q-2 8 -6 12z" fill="#7cc36b"/>
+        <circle cx="50" cy="52" r="34" fill="#8fd07a"/>
+        <circle cx="50" cy="52" r="34" fill="none" stroke="#6bb45a" stroke-width="2"/>
+        <ellipse cx="40" cy="48" rx="6.5" ry="7.5" fill="#fff"/><circle cx="41" cy="49" r="3.4" fill="#2c3a22"/>
+        <ellipse cx="60" cy="48" rx="6.5" ry="7.5" fill="#fff"/><circle cx="61" cy="49" r="3.4" fill="#2c3a22"/>
+        <path d="M44 62 q6 5 12 0" fill="none" stroke="#2c3a22" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="34" cy="58" r="3" fill="#f2a0b0" opacity=".6"/><circle cx="66" cy="58" r="3" fill="#f2a0b0" opacity=".6"/>
+      </svg>
+
+      <p class="eyebrow">Welcome back</p>
+      <h1>Hi <em>friend</em>,<br/>come sit a while.</h1>
+      <p class="lead">Your garden grew while you were away. Every sound you practice makes reading a little easier — let's find one today.</p>
+      <div class="cta"><button class="btn">Continue learning →</button><button class="btn ghost">My garden</button></div>
+      <div class="keepsakes">
+        <div class="keep k1"><div class="badge">🎮</div><div class="num">9</div><div class="lbl">sessions</div></div>
+        <div class="keep k2"><div class="badge">🎯</div><div class="num">82%</div><div class="lbl">accuracy</div></div>
+        <div class="keep k3"><div class="badge">🌼</div><div class="num">23</div><div class="lbl">blooms</div></div>
+        <div class="keep k4"><div class="badge">⭐</div><div class="num">5</div><div class="lbl">stickers</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="note">Static target mockup · toggle day/dusk top-right · the real app will render this scene behind every page</div>
+
+<script>
+const NS='http://www.w3.org/2000/svg';
+function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstChild;}
+function rnd(a,b){return a+Math.random()*(b-a);}
+
+// flower sprite (simple, recolorable) with a contact shadow
+function flower(size, hue, depth){
+  const wrap=el(`<span class="plant"></span>`);
+  const sw=Math.round(size*0.7);
+  wrap.appendChild(el(`<span class="shadow" style="width:${sw}px;height:${Math.round(sw*0.32)}px"></span>`));
+  const petals=[0,72,144,216,288].map(a=>`<ellipse cx="22" cy="9" rx="5.5" ry="9" fill="${hue}" transform="rotate(${a} 22 22)"/>`).join('');
+  const s=el(`<svg width="${size}" height="${Math.round(size*1.5)}" viewBox="0 0 44 64" style="position:relative;display:block">
+    <path d="M22 62 V28" stroke="#3f7a4a" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M22 46 q-9 -1 -11 -8 q9 0 11 7z" fill="#6aa85f"/>
+    ${petals}<circle cx="22" cy="22" r="6" fill="#ffce44"/></svg>`);
+  s.style.opacity=String(0.55+depth*0.45); // far = paler
+  wrap.appendChild(s);
+  return wrap;
+}
+function grass(size){
+  const wrap=el(`<span class="plant"></span>`);
+  wrap.appendChild(el(`<span class="shadow" style="width:${Math.round(size*0.7)}px;height:${Math.round(size*0.22)}px"></span>`));
+  wrap.appendChild(el(`<svg width="${size}" height="${Math.round(size*0.8)}" viewBox="0 0 40 32" style="position:relative;display:block">
+    <g fill="none" stroke="#4f8a50" stroke-width="2.6" stroke-linecap="round">
+    <path d="M20 32 q-6 -18 -11 -24"/><path d="M20 32 q-2 -20 -3 -28"/><path d="M20 32 q3 -19 8 -25"/><path d="M20 32 q7 -16 13 -21"/></g></svg>`));
+  return wrap;
+}
+function tree(size, depth){
+  const wrap=el(`<span class="plant"></span>`);
+  wrap.appendChild(el(`<span class="shadow" style="width:${Math.round(size*0.7)}px;height:${Math.round(size*0.2)}px"></span>`));
+  const g=0.55+depth*0.45;
+  const s=el(`<svg width="${size}" height="${Math.round(size*1.2)}" viewBox="0 0 60 72" style="position:relative;display:block">
+    <path d="M30 72 V44" stroke="#9c6b43" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="30" cy="28" r="18" fill="#7cb86a"/><circle cx="17" cy="38" r="12" fill="#6aa85f"/><circle cx="44" cy="38" r="12" fill="#86c074"/></svg>`);
+  s.style.opacity=String(g);
+  wrap.appendChild(s); return wrap;
+}
+
+const HUES=['#e8657f','#ffd34d','#e8553f','#ffffff','#7d8ff0','#f08fb0'];
+const flora=document.getElementById('flora');
+const fg=document.getElementById('foreground');
+const tl=document.getElementById('treeline');
+const ff=document.getElementById('fireflies');
+const H=window.innerHeight, W=window.innerWidth;
+const horizon=0.58; // ground starts here
+
+// distant treeline along the horizon (small, pale, clustered)
+for(let i=0;i<7;i++){const t=tree(rnd(34,52),0.2);t.style.left=(6+i*13+rnd(-3,3))+'%';t.style.top=(horizon*100-3)+'%';tl.appendChild(t);}
+
+// flower CLUSTERS across the field (denser near horizon + foreground), grounded, depth-scaled
+const centers=[18,30,44,58,70,82,12,38,52,64,76,88];
+centers.forEach((cx)=>{
+  const cy=rnd(horizon+0.02,0.96); // vertical position in field
+  const depth=(cy-horizon)/(1-horizon); // 0 far .. 1 near
+  const n=Math.round(rnd(2,5));
+  for(let k=0;k<n;k++){
+    const size=14+depth*30; // near = bigger
+    const f=flower(size,HUES[Math.floor(rnd(0,HUES.length))],depth);
+    f.style.left=(cx+rnd(-5,5))+'%'; f.style.top=(cy*100+rnd(-3,3))+'%';
+    if(k%3===0)f.classList.add('sway');
+    flora.appendChild(f);
+    if(Math.random()<0.6){const gr=grass(16+depth*26);gr.style.left=(cx+rnd(-6,6))+'%';gr.style.top=(cy*100+rnd(-2,3))+'%';flora.appendChild(gr);}
+  }
+});
+
+// dense foreground grass + big flowers along the very bottom (overlap board)
+for(let i=0;i<22;i++){const gr=grass(rnd(34,58));gr.style.left=(i*4.6+rnd(-2,2))+'%';gr.style.bottom='-6px';gr.style.top='auto';if(i%3===0)gr.classList.add('sway');fg.appendChild(gr);}
+for(let i=0;i<7;i++){const f=flower(rnd(34,46),HUES[Math.floor(rnd(0,HUES.length))],1);f.style.left=(8+i*13+rnd(-3,3))+'%';f.style.bottom='-4px';f.style.top='auto';f.classList.add('sway');fg.appendChild(f);}
+
+// fireflies (visible at dusk)
+for(let i=0;i<14;i++){const e=el('<span class="firefly"></span>');e.style.left=rnd(4,94)+'%';e.style.top=rnd(40,92)+'%';e.style.animationDelay=rnd(0,6)+'s';ff.appendChild(e);}
+
+document.getElementById('toggle').onclick=()=>{
+  const s=document.getElementById('scene');const d=s.classList.toggle('dusk');
+  document.getElementById('toggle').textContent=d?'☀️ Day':'🌙 Dusk';
+};
+</script>
+</body>
+</html>

@@ -27,14 +27,19 @@ export function Home({ learnerId, onChooseLearner }: Props) {
   // Sessions + focus from cloud-or-local, keyed by learner so switching students
   // never shows stale data (setState only in the async .then).
   const [data, setData] = useState<{ id: string; sessions: SessionRecord[]; focus: FocusArea[] } | null>(null);
+  // Depend ONLY on the stable learnerId — `learner` is a fresh object on every
+  // render (getLearner re-parses localStorage), so using it as a dep caused an
+  // infinite render loop (effect → setData → re-render → new learner → effect…)
+  // that pegged a CPU core. Look the learner up inside the effect instead.
   useEffect(() => {
     let live = true;
-    if (!learner) return;
-    void Promise.all([getSessions(learner), getMastery(learner)]).then(([sessions, mastery]) => {
+    const lr = getLearner(learnerId);
+    if (!lr) return;
+    void Promise.all([getSessions(lr), getMastery(lr)]).then(([sessions, mastery]) => {
       if (live) setData({ id: learnerId, sessions, focus: rankAreas(mastery) });
     });
     return () => { live = false; };
-  }, [learnerId, learner]);
+  }, [learnerId]);
   const fresh = data && data.id === learnerId ? data : null;
   const sessions = fresh?.sessions ?? [];
   const focus = fresh?.focus ?? [];

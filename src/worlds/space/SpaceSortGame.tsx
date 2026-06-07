@@ -161,6 +161,10 @@ export function SpaceSortGame({
 
   const placed = total - game.remainingItems.length;
   const roundDone = game.isComplete;
+  // The character's journey home, made visible: fraction of the whole patrol
+  // helped so far. Drives the hero meter AND the scene's warmth (dark when he's
+  // lost → bright as you bring him home) — the theme follows the arc.
+  const journey = totalRounds > 0 ? Math.min(1, (roundIndex + (total > 0 ? placed / total : 0)) / totalRounds) : 0;
 
   // Hoisted named function so the impure Date.now()/new Date() aren't treated as
   // called-during-render; this only runs on the placement that finishes a round.
@@ -226,8 +230,9 @@ export function SpaceSortGame({
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <main className="sg">
+      <main className="sg" style={{ '--heal': journey } as CSSProperties}>
         <SpaceBackdrop />
+        {character && <div className="sg-warm" aria-hidden="true" />}
 
         <div className="sg-hud">
           <button type="button" className="sg-back" onClick={() => goBack(`#/level/${level}`)}>← Back</button>
@@ -244,6 +249,20 @@ export function SpaceSortGame({
 
         <div className={`sg-stage${shake ? ' sg-stage--shake' : ''}`}>
           {echoPing > 0 && <EchoTwinkle key={echoPing} className="sg-echoping" />}
+
+          {character && (
+            <div className="sg-hero">
+              <span className={`sg-hero__face${mood ? ` sg-hero__face--${mood}` : ''}`} aria-hidden="true">{character.emoji}</span>
+              <div className="sg-hero__body">
+                <p className="sg-hero__line" role="status">{charLine}</p>
+                <div className="sg-hero__meter" role="img" aria-label={`${character.name}'s journey home: ${Math.round(journey * 100)}%`}>
+                  <span className="sg-hero__fill" style={{ width: `${Math.round(journey * 100)}%` }} />
+                </div>
+                <p className="sg-hero__cap">Tap a critter to hear it, then fly it to the matching {posWord}-sound planet — every one brings {character.name} closer home.</p>
+              </div>
+            </div>
+          )}
+
           <div className="sg-planets">
             {round.baskets.map((v) => (
               <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} onReplay={() => { pingEcho(); game.replaySound(v); }} />
@@ -261,36 +280,26 @@ export function SpaceSortGame({
           </p>
         </div>
 
-        <div className="sg-scout">
-          <button
-            type="button"
-            className={`sg-scout__btn${guideOpen ? '' : ' nudge'}`}
-            onClick={() => setGuideOpen((o) => !o)}
-            aria-label={character ? `${character.name} — tap to talk` : 'Scout — tap for directions'}
-          >
-            {character
-              ? <span className={`sg-char${mood ? ` sg-char--${mood}` : ''}`} aria-hidden="true">{character.emoji}</span>
-              : <ScoutDrone mood={mood} />}
-          </button>
-          {guideOpen && (
-            <div className="sg-bubble" role="status">
-              <button type="button" className="sg-bubble__x" onClick={() => setGuideOpen(false)} aria-label="Close">✕</button>
-              {character ? (
-                <>
-                  <p className="sg-bubble__hi">{character.name} {character.emoji}</p>
-                  <p>{charLine}</p>
-                  <p className="sg-bubble__hint">Tap a critter to hear its word, then drag it to the planet with the same {posWord} sound.</p>
-                </>
-              ) : (
-                <>
-                  <p className="sg-bubble__hi">Scout here, Captain! 🛰️</p>
-                  <p>Tap a space critter to <b>hear its word</b>, then drag it to the planet with the <b>same {posWord} sound</b>.</p>
-                  <p className="sg-bubble__hint">Tap a planet to hear its sound, too.</p>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+        {!character && (
+          <div className="sg-scout">
+            <button
+              type="button"
+              className={`sg-scout__btn${guideOpen ? '' : ' nudge'}`}
+              onClick={() => setGuideOpen((o) => !o)}
+              aria-label="Scout — tap for directions"
+            >
+              <ScoutDrone mood={mood} />
+            </button>
+            {guideOpen && (
+              <div className="sg-bubble" role="status">
+                <button type="button" className="sg-bubble__x" onClick={() => setGuideOpen(false)} aria-label="Close directions">✕</button>
+                <p className="sg-bubble__hi">Scout here, Captain! 🛰️</p>
+                <p>Tap a space critter to <b>hear its word</b>, then drag it to the planet with the <b>same {posWord} sound</b>.</p>
+                <p className="sg-bubble__hint">Tap a planet to hear its sound, too.</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {roundDone && !isLast && !finish && (
           <div className="sg-finish">

@@ -15,6 +15,7 @@ import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
 import { SpaceSpecimen } from './creatureIcons';
 import { SpaceFinish } from './SpaceFinish';
 import { castFor, reactionLine } from '../../world/lore/cast';
+import { CharacterArt } from '../../world/lore/CharacterArt';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
 import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import './space.css';
@@ -252,7 +253,9 @@ export function SpaceSortGame({
 
           {character && (
             <div className="sg-hero">
-              <span className={`sg-hero__face${mood ? ` sg-hero__face--${mood}` : ''}`} aria-hidden="true">{character.emoji}</span>
+              <span className="sg-hero__face">
+                <CharacterArt emoji={character.emoji} heal={journey} mood={mood} size={64} art={character.art} label={character.name} />
+              </span>
               <div className="sg-hero__body">
                 <p className="sg-hero__line" role="status">{charLine}</p>
                 <div className="sg-hero__meter" role="img" aria-label={`${character.name}'s journey home: ${Math.round(journey * 100)}%`}>

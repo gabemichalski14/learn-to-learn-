@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine } from './cast';
+import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage } from './cast';
 import type { ReactionKind } from './cast';
 import { parseSkillKey } from '../../mastery/skills';
 import type { MasteryMap } from '../../mastery/mastery';
@@ -79,5 +79,18 @@ describe('in-game reactions', () => {
   });
   it('reactionLine is deterministic given a seeded rng', () => {
     expect(reactionLine(MOSS, 'correct', () => 0)).toBe(MOSS.reactions.correct![0]);
+  });
+});
+
+describe('healStage (transformation: scattered → whole)', () => {
+  it('maps the heal fraction to 4 stages, clamped', () => {
+    expect(healStage(-1)).toBe(0);
+    expect(healStage(0)).toBe(0);
+    expect(healStage(0.32)).toBe(0);
+    expect(healStage(0.33)).toBe(1);
+    expect(healStage(0.66)).toBe(2);
+    expect(healStage(0.99)).toBe(2);
+    expect(healStage(1)).toBe(3);
+    expect(healStage(2)).toBe(3);
   });
 });

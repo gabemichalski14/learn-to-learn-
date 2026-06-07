@@ -30,6 +30,24 @@ export interface Persona {
  *  attachment), so they live inside the game, not just on the hub. */
 export type ReactionKind = 'intro' | 'correct' | 'wrong' | 'clear' | 'win';
 
+/** Where a character's real art lives (set once a Rive file / sprites exist).
+ *  Until then `CharacterArt` renders a transforming emoji placeholder. */
+export interface ArtSource {
+  rive?: string;          // path/url to the .riv (artboard with a `heal` + `mood` state machine)
+  artboard?: string;      // default 'Moss'
+  stateMachine?: string;  // default matches artboard
+}
+
+/** Transformation stage (0 scattered → 3 whole) from a 0..1 heal fraction. Pure;
+ *  drives the placeholder art and mirrors the Rive `heal` stages in the brief. */
+export function healStage(heal: number): 0 | 1 | 2 | 3 {
+  const h = Math.max(0, Math.min(1, heal));
+  if (h >= 1) return 3;
+  if (h >= 0.66) return 2;
+  if (h >= 0.33) return 1;
+  return 0;
+}
+
 export interface LevelCharacter {
   id: string;          // 'moss'
   level: number;       // which level they belong to
@@ -50,6 +68,8 @@ export interface LevelCharacter {
   beats: Partial<Record<StoryStage, string[]>>;
   /** Authored in-game reactions (no GenAI). */
   reactions: Partial<Record<ReactionKind, string[]>>;
+  /** Real art, once it exists (Rive). Optional — placeholder until then. */
+  art?: ArtSource;
 }
 
 export const MOSS: LevelCharacter = {

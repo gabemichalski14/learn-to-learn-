@@ -1,0 +1,24 @@
+/* Character avatar that transforms with progress (placeholder until Rive).
+   Scattered → whole: grey + small + faint → full colour + bright + a soft glow. */
+.char-art {
+  display: inline-block;
+  line-height: 1;
+  transition: filter .5s ease, opacity .5s ease, transform .35s ease;
+  animation: char-bob 3.4s ease-in-out infinite;
+  will-change: transform;
+}
+.char-art--s0 { filter: grayscale(1) brightness(.85); opacity: .5; transform: scale(.82); }
+.char-art--s1 { filter: grayscale(.6) brightness(.95); opacity: .72; transform: scale(.9); }
+.char-art--s2 { filter: grayscale(.25); opacity: .9; transform: scale(.97); }
+.char-art--s3 { filter: none; opacity: 1; transform: scale(1); text-shadow: 0 0 14px rgba(255, 214, 120, .55); }
+
+.char-art--cheer { animation: char-cheer .6s ease; }
+.char-art--wobble { animation: char-wobble .6s ease; }
+
+@keyframes char-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes char-cheer { 0% { transform: scale(1); } 40% { transform: scale(1.24) rotate(-6deg); } 100% { transform: scale(1); } }
+@keyframes char-wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .char-art, .char-art--cheer, .char-art--wobble { animation: none; transition: none; }
+}

@@ -33,8 +33,31 @@
     radial-gradient(120% 80% at 78% 140%, var(--lw-land) 0%, transparent 60%);
 }
 
-/* ---- ground flora band ---- */
+/* ---- trees on the horizon (always present — gives a real outdoor scene) ---- */
+.lw-tree { position: absolute; }
+
+/* ---- drifting clouds (always present) ---- */
+.lw-cloud { position: absolute; left: -16%; opacity: 0.72; will-change: transform;
+  animation: lw-cloud-drift var(--dur, 90s) linear infinite; animation-delay: var(--delay, 0s); }
+@keyframes lw-cloud-drift {
+  0%   { transform: translateX(-16vw) scale(var(--scale, 1)); }
+  100% { transform: translateX(122vw) scale(var(--scale, 1)); }
+}
+
+/* ---- pollen / seed motes on the breeze (always a few) ---- */
+.lw-mote { position: absolute; bottom: 4%; width: 5px; height: 5px; border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, rgba(255,255,255,0) 72%);
+  opacity: 0; animation: lw-mote-rise var(--dur, 16s) linear infinite; animation-delay: var(--delay, 0s); }
+@keyframes lw-mote-rise {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  15%  { opacity: 0.7; }
+  85%  { opacity: 0.5; }
+  100% { transform: translate(var(--drift, 0), -84vh); opacity: 0; }
+}
+
+/* ---- ground: dense grass floor + flora band ---- */
 .lw-ground { position: absolute; inset: 0; }
+.lw-grass { position: absolute; bottom: 0; }
 .lw-flora { position: absolute; transform-origin: bottom center; will-change: transform; }
 .lw-flora--sway { animation: lw-sway 7s ease-in-out infinite; animation-delay: var(--delay, 0s); }
 @keyframes lw-sway { 0%,100% { transform: rotate(-2.2deg); } 50% { transform: rotate(2.2deg); } }
@@ -99,10 +122,12 @@
 @media (prefers-reduced-motion: reduce) {
   .living-world--waking { animation: none; }
   .lw-flora--sway, .lw-drift, .lw-bird, .lw-bird__wing--l, .lw-bird__wing--r,
-  .lw-firefly, .lw-petal, .lw-shooting-star { animation: none; }
-  /* Keep the world present but still: fireflies stay faintly lit, drifters parked off-stage. */
+  .lw-firefly, .lw-petal, .lw-shooting-star, .lw-cloud, .lw-mote { animation: none; }
+  /* Keep the scene present but still: park clouds in view, fireflies faintly lit,
+     drifting/falling things hidden. The meadow (trees, grass, flora) stays. */
+  .lw-cloud { transform: translateX(38vw) scale(var(--scale, 1)); }
   .lw-firefly { opacity: 0.5; }
-  .lw-drift, .lw-bird, .lw-petal, .lw-shooting-star { display: none; }
+  .lw-drift, .lw-bird, .lw-petal, .lw-shooting-star, .lw-mote { display: none; }
 }
 
 /* ============================================================================

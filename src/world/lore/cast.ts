@@ -232,7 +232,109 @@ export const MOSS: LevelCharacter = {
   },
 };
 
-export const CAST: LevelCharacter[] = [MOSS];
+/**
+ * Chip — Level 1 (Sound Garden, phonemic awareness). A DIFFERENT dyslexic
+ * strength (a musical ear) and a DIFFERENT psychology lever from Moss: the
+ * **protégé effect** — the child TEACHES Chip to tap out each beat, and teaching
+ * deepens their own phonemic awareness (teachable-agents research). Level 1 trains
+ * one PA skill, so Chip recovers in a single gentle arc (right for the first level)
+ * rather than collecting scattered hums. Art arrives in public/characters/chip/;
+ * until then CharacterArt falls back to the emoji.
+ */
+export const CHIP: LevelCharacter = {
+  id: 'chip',
+  level: 1,
+  name: 'Chip',
+  emoji: '🦗',
+  strength: 'a musical ear — he hears the whole song in a word, even when the little beats hide',
+  lever: 'the protégé effect (learning by teaching) — the child shows Chip how to tap out each beat; teaching deepens their own phonemic awareness',
+  persona: {
+    want: 'to play his whole song and join the garden chorus',
+    need: "to learn a word is made of small beats — one at a time — and that needing to count them out doesn't make him any less musical",
+    flaw: 'rushes ahead to the whole melody and tumbles over the separate beats; sure he "can\'t keep simple time"',
+    trait: 'chirps bright and his antennae perk when a beat lands; goes quiet and curls up when he loses it',
+  },
+  skillKey: 'pa:segment',
+  soundId: 'segment',
+  fragments: {
+    segment: ['…there. I caught a beat — one little tk, all on its own. You showed me how. Now I can find the rest. 🎵'],
+  },
+  storytime: [
+    'Every word is a tiny song now — and I can hear each beat. You taught me that. 🎵',
+    'I used to rush the whole tune and trip. You slowed me down, one beat at a time. Thank you.',
+    "Come keep time with me in the chorus. I never lose the beat when you're here. 💚",
+  ],
+  teaching: {
+    title: 'How to hear the beats in a word',
+    lines: [
+      'A word is a little song — and songs are made of beats. Here is how I find them.',
+      'Say the word slow, out loud.',
+      'Now tap once for each sound you hear — t… a… p.',
+      "Count the taps. That's how many beats the word has!",
+      'Hearing the whole song is my gift. Tapping the beats is just a skill — and now it\'s yours too. 🎵',
+    ],
+  },
+  playRoute: '#/play/tap-it-out',
+  art: {
+    image: '/characters/chip/calm.png',
+    frames: {
+      cheer: '/characters/chip/cheer.png',
+      wobble: '/characters/chip/wobble.png',
+      point: '/characters/chip/point.png',
+      bloom: '/characters/chip/bloom.png',
+    },
+  },
+  reactions: {
+    intro: [
+      "I'm Chip. I hear the song in every word… but the little beats hide from me. Will you show me how to catch them? 🦗",
+      "Hello! You tap out the sounds, and I'll listen close. Teach me the beats?",
+      "A teacher! I learn best when someone shows me. Let's find the beats together. 🎵",
+    ],
+    teach: [
+      "Watch — say it slow, then tap once for each sound. I'll follow you. Now you lead!",
+      'Show me first. Tap each beat… I hear it when you do. Your turn to teach me!',
+    ],
+    correct: [
+      "There! I felt that beat — tk! You're a good teacher. 🌟",
+      'Yes — I caught it because you showed me. 🎵',
+      'One more beat in my song. You did that. 💚',
+    ],
+    wrong: [
+      "Ooh — I lost the beat. That's okay, it hides from me too. Show me again? 💚",
+      'Not quite — say it slow and tap it out for me once more.',
+      "'Not yet' just means we keep the beat going. I'm listening.",
+    ],
+    clear: [
+      'A whole verse! I can almost play my song now…',
+      "Listen — it's coming together, because you taught me. 💚",
+    ],
+    win: [
+      "My whole song — every beat in its place! 🎵 I wasn't out of time. I just needed a teacher.",
+      "You taught me to keep the beat. I'll never lose it now. 💚",
+      "Let's play it in the garden together.",
+    ],
+  },
+  beats: {
+    arrived: [
+      "Oh — a friend! I'm Chip. I hear the song in every word, but the little beats slip right past me. Will you show me how to catch them? 🦗",
+      'Hello! I came to the Sound Garden to learn the beats. Teach me?',
+    ],
+    healing: [
+      "You're a good teacher — I'm catching more beats every time. Keep going! 🎵",
+      'Each word you tap out, I hear one more beat. Don\'t stop now. 💚',
+    ],
+    healed: [
+      'Listen — my whole song, every beat! 🎵 You taught me that. I can join the chorus now.',
+      'I can keep the beat at last. Truly — thank you for showing me.',
+    ],
+    resident: [
+      'I play in the garden chorus now. Come keep time with me. 🎵',
+      'Rooted here with the others, humming my little song. Visit me? 💚',
+    ],
+  },
+};
+
+export const CAST: LevelCharacter[] = [CHIP, MOSS];
 
 export function castFor(level: number): LevelCharacter | undefined {
   return CAST.find((c) => c.level === level);
@@ -289,7 +391,8 @@ export function fragmentToReveal(
 ): { soundId: string; line: string; id: string } | null {
   if (!c.fragments) return null;
   for (const k of soundsOf(c)) {
-    const sid = parseSkillKey(k)?.soundId;
+    // per-sound key → its soundId; a single-skill key (e.g. PA) → the character's soundId
+    const sid = parseSkillKey(k)?.soundId ?? c.soundId;
     if (!sid) continue;
     const lines = c.fragments[sid];
     if (!lines || !lines.length) continue;
@@ -313,7 +416,7 @@ export function storytimeScene(c: LevelCharacter, mastery: MasteryMap, rng: () =
   if (open) lines.push(open);
   if (c.fragments) {
     for (const k of soundsOf(c)) {
-      const sid = parseSkillKey(k)?.soundId;
+      const sid = parseSkillKey(k)?.soundId ?? c.soundId;
       if (!sid) continue;
       const memory = c.fragments[sid]?.[0];
       if (memory && isHumRecovered(mastery[k])) lines.push(memory);

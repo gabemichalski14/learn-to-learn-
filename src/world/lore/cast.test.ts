@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf, gardenResidents, isFullyRecovered, isHumRecovered, storytimeScene } from './cast';
+import { CAST, MOSS, CHIP, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf, gardenResidents, isFullyRecovered, isHumRecovered, storytimeScene } from './cast';
 import type { ReactionKind } from './cast';
 import { parseSkillKey } from '../../mastery/skills';
 import type { MasteryMap } from '../../mastery/mastery';
@@ -17,12 +17,14 @@ describe('cast registry', () => {
     const ids = CAST.map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (const c of CAST) {
-      expect(parseSkillKey(c.skillKey)).not.toBeNull(); // a real per-sound skill
+      // a real trainable skill — a per-sound key, or a phonemic-awareness key
+      expect(parseSkillKey(c.skillKey) !== null || c.skillKey.startsWith('pa:')).toBe(true);
       expect(c.soundId.length).toBeGreaterThan(0);
       expect(c.playRoute).toMatch(/^#\//);
     }
   });
   it('castFor finds the level character', () => {
+    expect(castFor(1)).toBe(CHIP);
     expect(castFor(2)).toBe(MOSS);
     expect(castFor(99)).toBeUndefined();
   });

@@ -12,7 +12,7 @@
  * empathy loop, Bandura self-efficacy (vicarious mastery + encouragement), growth
  * mindset. See memory `barton-games-*` + the narrative spec.
  */
-import type { SkillKey } from '../../mastery/skills';
+import { parseSkillKey, type SkillKey } from '../../mastery/skills';
 import { scoreOf, type MasteryMap, type SkillStat } from '../../mastery/mastery';
 import { isMastered } from './plantings';
 import type { LoreState, StoryStage } from './loreStore';
@@ -78,9 +78,14 @@ export interface LevelCharacter {
   lever: string;
   /** Want/need/flaw/expression — the arc spine. */
   persona: Persona;
-  /** The sound they "lost" — healed by mastering this skill in the level's game. */
+  /** The signature sound they "lost" (their hum). */
   skillKey: SkillKey;
   soundId: string;
+  /** ALL the scattered hums to recover — full recovery needs every one mastered.
+   *  More than one = a longer, harder, more story-rich arc. Defaults to [skillKey]. */
+  sounds?: SkillKey[];
+  /** A memory revealed when each sound is recovered (keyed by soundId). */
+  fragments?: Record<string, string[]>;
   /** Where helping happens (the level's game). */
   playRoute: string;
   /** Authored beat lines per story stage (hub). */
@@ -106,6 +111,14 @@ export const MOSS: LevelCharacter = {
   },
   skillKey: 'sound:first:m',
   soundId: 'm',
+  // When Moss scattered, several of his hums flew off — recover them ALL to make
+  // him whole (longer, harder arc; each one returns a memory).
+  sounds: ['sound:first:m', 'sound:first:s', 'sound:first:b'],
+  fragments: {
+    m: ['…I remember now — I used to hum to the moon-moths, low and warm. Mmm. That was me. 🌙'],
+    s: ["The sea! I'd hush along with the waves on the shore… sss. It's coming back. 🌊"],
+    b: ['And the big drum of my heart — buh, buh — I thumped it whenever I was brave. 🥁'],
+  },
   playRoute: '#/play/beginning-sounds',
   // Flat transparent PNGs dropped in public/characters/moss/ (see the README
   // there). Until the files exist, CharacterArt's onError falls back to the emoji.
@@ -168,17 +181,55 @@ export function castFor(level: number): LevelCharacter | undefined {
   return CAST.find((c) => c.level === level);
 }
 
+/** All the sounds this character must recover (defaults to the signature one). */
+export function soundsOf(c: LevelCharacter): SkillKey[] {
+  return c.sounds && c.sounds.length ? c.sounds : [c.skillKey];
+}
+
+/** Overall recovery (0..1) = average heal across ALL the character's sounds, so a
+ *  multi-sound character heals gradually as each hum comes home. */
+export function healFor(c: LevelCharacter, mastery: MasteryMap): number {
+  const sounds = soundsOf(c);
+  if (!sounds.length) return 0;
+  return sounds.reduce((sum, k) => sum + healFromMastery(mastery[k]), 0) / sounds.length;
+}
+
 /**
  * The character's current stage — pure, derived from real mastery + the persisted
- * lore record. Always at least 'arrived' (they're here, needing you); 'healing'
- * once you've started their sound; 'healed' once it's mastered; 'resident' once
- * you've welcomed them home (an acknowledged beat).
+ * lore record. 'arrived' until you start; 'healing' once any hum is in progress;
+ * 'healed' once ALL the sounds are mastered; 'resident' after you've welcomed them.
  */
 export function characterStage(c: LevelCharacter, lore: LoreState, mastery: MasteryMap): StoryStage {
-  const stat = mastery[c.skillKey];
-  if (isMastered(stat)) return lore.stories[c.id]?.stage === 'resident' ? 'resident' : 'healed';
-  if (stat && stat.attempts > 0) return 'healing';
+  const sounds = soundsOf(c);
+  if (sounds.every((k) => isMastered(mastery[k]))) {
+    return lore.stories[c.id]?.stage === 'resident' ? 'resident' : 'healed';
+  }
+  if (sounds.some((k) => (mastery[k]?.attempts ?? 0) > 0)) return 'healing';
   return 'arrived';
+}
+
+/** Acknowledgement id for a recovered-sound memory. */
+export function fragmentId(c: LevelCharacter, soundId: string): string {
+  return `fragment:${c.id}:${soundId}`;
+}
+
+/** The next memory to reveal: a sound that's now mastered but whose fragment the
+ *  learner hasn't been shown yet. Null when there's nothing new. */
+export function fragmentToReveal(
+  c: LevelCharacter, lore: LoreState, mastery: MasteryMap,
+): { soundId: string; line: string; id: string } | null {
+  if (!c.fragments) return null;
+  for (const k of soundsOf(c)) {
+    const sid = parseSkillKey(k)?.soundId;
+    if (!sid) continue;
+    const lines = c.fragments[sid];
+    if (!lines || !lines.length) continue;
+    const id = fragmentId(c, sid);
+    if (isMastered(mastery[k]) && !lore.acknowledged.includes(id)) {
+      return { soundId: sid, line: lines[0], id };
+    }
+  }
+  return null;
 }
 
 /** A beat line for a stage (deterministic given rng). Falls back to 'arrived'. */

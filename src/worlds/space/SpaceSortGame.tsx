@@ -14,9 +14,8 @@ import { goBack, navigate } from '../../router';
 import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
 import { SpaceSpecimen } from './creatureIcons';
 import { SpaceFinish } from './SpaceFinish';
-import { castFor, reactionLine, healFromMastery } from '../../world/lore/cast';
-import { isMastered } from '../../world/lore/plantings';
-import { setStoryStage } from '../../world/lore/loreStore';
+import { castFor, reactionLine, healFor, fragmentToReveal, characterStage } from '../../world/lore/cast';
+import { setStoryStage, acknowledge, loadLore } from '../../world/lore/loreStore';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import { LevelScene } from '../../world/LevelScene';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
@@ -132,7 +131,7 @@ export function SpaceSortGame({
   // Moss's REAL recovery: derived from the learner's mastery of HIS sound, so
   // playing literally heals him (intrinsic). Persists across sessions; rises as
   // correct answers raise that sound's mastery. Drives his art + the scene warmth.
-  const [heal, setHeal] = useState(() => (character ? healFromMastery(loadMastery(learnerId)[character.skillKey]) : 0));
+  const [heal, setHeal] = useState(() => (character ? healFor(character, loadMastery(learnerId)) : 0));
   // Shuffle the palette across THIS round's planets so colour never predicts the
   // vowel. Lazy init (runs once per mount; the screen remounts each round) keeps
   // colours stable mid-round and re-rolls them every new sector — no pattern.
@@ -163,9 +162,9 @@ export function SpaceSortGame({
     onItemResult: ({ skillKey, correct }) => {
       recordItem(learnerId, skillKey, correct);
       logSkillEvent(learnerId, { skillKey, correct, at: Date.now() });
-      // Recover the character from his OWN sound's real mastery (recordItem just
-      // updated it). Helping his hum heals him; other sounds don't.
-      if (character) setHeal(healFromMastery(loadMastery(learnerId)[character.skillKey]));
+      // Recover the character from his OWN sounds' real mastery (recordItem just
+      // updated them). Average across all his scattered hums.
+      if (character) setHeal(healFor(character, loadMastery(learnerId)));
     },
     onCorrect: ({ complete }) => finishRoundIfComplete(complete),
   });
@@ -197,10 +196,11 @@ export function SpaceSortGame({
     const stars = totals.wrong === 0 ? 3 : totals.wrong <= 2 ? 2 : 1;
     const title = HERO_TITLES[Math.floor(Math.random() * HERO_TITLES.length)];
     sfx.win();
-    // If the character's sound is now mastered, he's WHOLE — advance his arc and
+    // If ALL his hums are now mastered, he's WHOLE — advance his arc and offer to
     // send him home to the garden (where his named planting blooms).
-    const homecoming = !!character && isMastered(loadMastery(learnerId)[character.skillKey]);
-    if (homecoming && character) setStoryStage(learnerId, character.id, 'healed');
+    const stage = character ? characterStage(character, loadLore(learnerId), loadMastery(learnerId)) : 'arrived';
+    const homecoming = stage === 'healed' || stage === 'resident';
+    if (stage === 'healed' && character) setStoryStage(learnerId, character.id, 'healed');
     setFinish({
       ms: durationMs, best: res.isBest, stars, title,
       beat: character ? reactionLine(character, homecoming ? 'win' : 'clear') : undefined,
@@ -227,7 +227,13 @@ export function SpaceSortGame({
       setCombo(c);
       if (c >= 2) sfx.combo(c); else sfx.correct();
       setMood('cheer');
-      if (character) setCharLine(reactionLine(character, 'correct'));
+      // If a hum just came fully home (a sound newly mastered), reveal its
+      // memory — a story beat earned by real progress. Otherwise a warm cheer.
+      if (character) {
+        const frag = fragmentToReveal(character, loadLore(learnerId), loadMastery(learnerId));
+        if (frag) { setCharLine(frag.line); acknowledge(learnerId, frag.id); }
+        else setCharLine(reactionLine(character, 'correct'));
+      }
       window.setTimeout(() => setCatching((cur) => (cur === basket ? null : cur)), 520);
       window.setTimeout(() => setMood((m) => (m === 'cheer' ? null : m)), 760);
     } else {

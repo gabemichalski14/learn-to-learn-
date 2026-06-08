@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery } from './cast';
+import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf } from './cast';
 import type { ReactionKind } from './cast';
 import { parseSkillKey } from '../../mastery/skills';
 import type { MasteryMap } from '../../mastery/mastery';
@@ -28,19 +28,47 @@ describe('cast registry', () => {
   });
 });
 
-describe('characterStage', () => {
-  it('walks arrived → healing → healed → resident', () => {
-    const empty: MasteryMap = {};
-    expect(characterStage(MOSS, lore(), empty)).toBe('arrived');
+// Master every one of a character's scattered hums.
+const allMastered = (c = MOSS): MasteryMap =>
+  Object.fromEntries(soundsOf(c).map((k) => [k, stat(6, 6)]));
 
-    const started: MasteryMap = { 'sound:first:m': stat(1, 2) }; // attempts>0, not mastered
+describe('characterStage (needs ALL his sounds for healed)', () => {
+  it('walks arrived → healing → healed → resident', () => {
+    expect(characterStage(MOSS, lore(), {})).toBe('arrived');
+
+    const started: MasteryMap = { 'sound:first:m': stat(1, 2) };
     expect(characterStage(MOSS, lore(), started)).toBe('healing');
 
-    const mastered: MasteryMap = { 'sound:first:m': stat(6, 6) };
-    expect(characterStage(MOSS, lore(), mastered)).toBe('healed');
+    // only ONE of his three sounds mastered → still healing (harder arc)
+    expect(characterStage(MOSS, lore(), { 'sound:first:m': stat(6, 6) })).toBe('healing');
 
-    const welcomed = lore({ stories: { moss: { stage: 'resident' } } });
-    expect(characterStage(MOSS, welcomed, mastered)).toBe('resident');
+    const whole = allMastered();
+    expect(characterStage(MOSS, lore(), whole)).toBe('healed');
+    expect(characterStage(MOSS, lore({ stories: { moss: { stage: 'resident' } } }), whole)).toBe('resident');
+  });
+});
+
+describe('healFor (average recovery across his hums)', () => {
+  it('rises as each hum is mastered, reaching 1 when all are', () => {
+    expect(healFor(MOSS, {})).toBe(0);
+    const oneOfThree = healFor(MOSS, { 'sound:first:m': stat(6, 6) });
+    expect(oneOfThree).toBeCloseTo(1 / 3, 5);
+    expect(healFor(MOSS, allMastered())).toBe(1);
+  });
+});
+
+describe('fragmentToReveal (a memory per recovered sound)', () => {
+  it('surfaces a mastered sound\'s memory once, then not again', () => {
+    const m = { 'sound:first:m': stat(6, 6) }; // /m/ mastered
+    const got = fragmentToReveal(MOSS, lore(), m);
+    expect(got?.soundId).toBe('m');
+    expect(got?.line).toContain('moon-moths');
+    // once acknowledged, it's no longer offered
+    const seen = lore({ acknowledged: [fragmentId(MOSS, 'm')] });
+    expect(fragmentToReveal(MOSS, seen, m)).toBeNull();
+  });
+  it('returns null when nothing new is mastered', () => {
+    expect(fragmentToReveal(MOSS, lore(), {})).toBeNull();
   });
 });
 

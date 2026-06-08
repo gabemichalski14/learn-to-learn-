@@ -5,6 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type { SortRound, WordItem, SoundTarget } from '../../domain/types';
 import type { AudioPlayer } from '../../audio/audioPlayer';
 import { useSortGame } from '../../game/useSortGame';
+import { soundOf } from '../../domain/engine';
 import { recordItem, loadMastery } from '../../mastery/mastery';
 import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
@@ -59,14 +60,14 @@ const HERO_TITLES = ['GALACTIC LEGEND', 'COSMIC CHAMPION', 'STARFLEET HERO', 'NE
 const POS_WORD: Record<SoundTarget, string> = { beginning: 'first', ending: 'last', medial: 'middle' };
 
 /** A vowel "planet" — a droppable basket. Tapping it replays its sound. */
-function Planet({ vowel, color, catching, onReplay }: { vowel: string; color: string; catching: boolean; onReplay: () => void }) {
+function Planet({ vowel, color, catching, hint, onReplay }: { vowel: string; color: string; catching: boolean; hint?: boolean; onReplay: () => void }) {
   const { setNodeRef, isOver } = useDroppable({ id: vowel });
   return (
     <button
       ref={setNodeRef}
       type="button"
       style={{ background: color }}
-      className={`sg-planet${isOver ? ' sg-planet--over' : ''}${catching ? ' sg-planet--catch' : ''}`}
+      className={`sg-planet${isOver ? ' sg-planet--over' : ''}${catching ? ' sg-planet--catch' : ''}${hint ? ' sg-planet--hint' : ''}`}
       onClick={onReplay}
       aria-label={`Planet for the ${vowel} sound — tap to hear it`}
     >
@@ -118,8 +119,12 @@ export function SpaceSortGame({
   const [guideOpen, setGuideOpen] = useState(true);
   const [combo, setCombo] = useState(0);
   const comboRef = useRef(0);
-  const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
+  const [mood, setMood] = useState<'cheer' | 'wobble' | 'point' | null>(null);
   const [shake, setShake] = useState(false);
+  // The partnership: when you miss AND the character is still scattered, his
+  // spatial gift kicks in — he points to where that hum lives (a no-fail recovery
+  // scaffold, never given before you try). It fades as he recovers (harder later).
+  const [hintBasket, setHintBasket] = useState<string | null>(null);
   const [muted, setMutedState] = useState(isMuted());
   const [echoPing, setEchoPing] = useState(0); // bumps on an audio moment → Echo twinkles
   const pingEcho = () => setEchoPing((p) => p + 1);
@@ -237,15 +242,26 @@ export function SpaceSortGame({
       window.setTimeout(() => setCatching((cur) => (cur === basket ? null : cur)), 520);
       window.setTimeout(() => setMood((m) => (m === 'cheer' ? null : m)), 760);
     } else {
-      // miss — gentle shake, soft cue, Scout wobble, combo resets
+      // miss — gentle shake, soft cue, combo resets (always no-fail)
       comboRef.current = 0;
       setCombo(0);
       sfx.wrong();
-      setMood('wobble');
       if (character) setCharLine(reactionLine(character, 'wrong'));
       setShake(true);
       window.setTimeout(() => setShake(false), 420);
-      window.setTimeout(() => setMood((m) => (m === 'wobble' ? null : m)), 620);
+      // Partnership scaffold: while Moss is still scattered (heal < 0.7), his gift
+      // shows you where that hum belongs — point + glow the right planet for a
+      // moment. Fades once he's recovered, so the help tapers as you improve.
+      const item = round.items.find((i) => i.id === wordId);
+      const correctBasket = item ? soundOf(item, target) : null;
+      if (character && heal < 0.7 && correctBasket) {
+        setHintBasket(correctBasket);
+        setMood('point');
+        window.setTimeout(() => { setHintBasket(null); setMood((m) => (m === 'point' ? null : m)); }, 2400);
+      } else {
+        setMood('wobble');
+        window.setTimeout(() => setMood((m) => (m === 'wobble' ? null : m)), 620);
+      }
     }
   }
 
@@ -288,7 +304,7 @@ export function SpaceSortGame({
 
           <div className="sg-planets">
             {round.baskets.map((v) => (
-              <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} onReplay={() => { pingEcho(); game.replaySound(v); }} />
+              <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} hint={hintBasket === v} onReplay={() => { pingEcho(); game.replaySound(v); }} />
             ))}
           </div>
 
@@ -311,7 +327,7 @@ export function SpaceSortGame({
               onClick={() => setGuideOpen((o) => !o)}
               aria-label="Scout — tap for directions"
             >
-              <ScoutDrone mood={mood} />
+              <ScoutDrone mood={mood === 'point' ? null : mood} />
             </button>
             {guideOpen && (
               <div className="sg-bubble" role="status">

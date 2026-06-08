@@ -131,46 +131,50 @@ export const MOSS: LevelCharacter = {
       bloom: '/characters/moss/bloom.png',
     },
   },
+  // Voice = dyslexia-first (docs/art/moss-yarn-guide.md §0): short, plain words,
+  // no shame, growth mindset ("not yet"), credit the learner, built to be heard.
   reactions: {
     intro: [
-      "These little critters carry my lost hums, scattered across the sectors. Help me send each one home to its sound? 🌱",
-      "Will you help me? Each critter belongs with a sound. Sort them home and I get a little more… me.",
+      "I'm Moss. I came apart out here in the dark. Will you help me gather my hums? 🌱",
+      'Hello! Each little critter holds a sound of mine. Send it home, and I come back — bit by bit.',
+      "You're here! I knew someone kind would come. Let's find my sounds together.",
     ],
     correct: [
-      'Mmm — that one’s mine! I can feel it. 🌟',
-      'Yes! Home it goes. You hear it too, don’t you?',
-      'There — a hum comes back. You’re good at this.',
+      "Mmm — that one's mine! You heard it. 🌟",
+      'Yes — home it goes. That’s one hum back.',
+      'You did that. I can feel it. 💚',
     ],
     wrong: [
-      "Oh — not that sound. But you’re still here with me, and that’s what counts. Try again? 💚",
-      "Close! The little ones are slippery — they were for me too. Listen once more?",
-      "Not quite — and that’s okay. ‘Not yet’ just means we keep going.",
+      "Not that one — and that's okay. The little sounds are slippery. They were for me too.",
+      'Ooh, close. Say the word slow… catch its first sound. Try again? 💚',
+      "'Not yet' just means we keep going. I'm right here.",
     ],
     clear: [
-      "A whole sector, cleared. I’m humming a little louder already…",
-      "Look at that — you sent them all home. I feel less lost.",
+      "A whole sector, clear. I'm humming louder already…",
+      'Look what you did. I feel less lost. 💚',
     ],
     win: [
-      "You brought them ALL home — mmmmm! 🌼 I wasn’t broken… I was just waiting for you.",
-      "Every hum, home. I’m whole again — and it’s because you stayed. Let’s go to the garden.",
+      "You brought them home — mmmmm! 🌼 I wasn't broken. I was just waiting for you.",
+      "All my hums, back. I'm me again — because you stayed. 💚",
+      "We did it. Let's go to the garden together.",
     ],
   },
   beats: {
     arrived: [
-      "…oh! A friendly face. I'm Moss — a little sprout, drifted up here from a garden far below. Out in the dark I lost my hum… my /m/ sound. Could you help me find it? 🌱",
-      "Hello? I'm Moss. I floated away from my garden and dropped my /m/ somewhere out here. Will you help me catch it?",
+      "Oh — a friendly face. I'm Moss. I drifted up from a garden far below, and out here I lost my hums. Will you help me find them? 🌱",
+      "Hello! I came apart in the dark. Each sound I lost is still out there, waiting. Help me?",
     ],
     healing: [
-      "You're close — I can almost hum again… mmm… keep going! 🌟",
-      "Every critter you send home, I feel a little more like me. Don't stop now.",
+      "You're close — I can almost hum again. Keep going! 🌟",
+      'Every hum you bring back, I feel more like me. Don’t stop now. 💚',
     ],
     healed: [
-      "You FOUND it — mmmmm! 🌼 That's my hum. I feel whole. I think I can go home now…",
-      "There it is — /m/! I'm me again. You did that. Thank you, truly.",
+      'You found them all — mmmmm! 🌼 I’m whole. I think I can go home now.',
+      "I'm me again. You did that. Truly — thank you.",
     ],
     resident: [
-      "I'm home — I'm the /m/ marigold by your garden path now. Come hum with me anytime. 💚",
-      "Rooted at last, next to your other flowers. Visit me in the garden? 🌼",
+      'I live in your garden now — the marigold by the path. Come hum with me. 💚',
+      'Rooted at last, by your other flowers. Visit me anytime? 🌼',
     ],
   },
 };

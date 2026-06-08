@@ -1,0 +1,53 @@
+// Moss — Level 2 character script. Written dyslexia-first (see
+// docs/art/moss-yarn-guide.md §0): short, plain words, no shame, growth mindset,
+// credit the learner, built to be heard. Open/refine this in try.yarnspinner.dev;
+// the loader maps these node titles into Moss's reactions + memories.
+
+title: Intro
+---
+I'm Moss. I came apart out here in the dark. Will you help me gather my hums? 🌱
+Hello! Each little critter holds a sound of mine. Send it home, and I come back — bit by bit.
+You're here! I knew someone kind would come. Let's find my sounds together.
+===
+
+title: Correct
+---
+Mmm — that one's mine! You heard it. 🌟
+Yes — home it goes. That's one hum back.
+You did that. I can feel it. 💚
+===
+
+title: Wrong
+---
+Not that one — and that's okay. The little sounds are slippery. They were for me too.
+Ooh, close. Say the word slow… catch its first sound. Try again? 💚
+'Not yet' just means we keep going. I'm right here.
+===
+
+title: Clear
+---
+A whole sector, clear. I'm humming louder already…
+Look what you did. I feel less lost. 💚
+===
+
+title: Win
+---
+You brought them home — mmmmm! 🌼 I wasn't broken. I was just waiting for you.
+All my hums, back. I'm me again — because you stayed. 💚
+We did it. Let's go to the garden together.
+===
+
+title: Fragment_m
+---
+…I remember — I'd hum to the moon-moths, low and warm. Mmm. That was me. 🌙
+===
+
+title: Fragment_s
+---
+The sea! I'd hush with the waves… sss. It's coming back. 🌊
+===
+
+title: Fragment_b
+---
+The big drum of my heart — buh, buh. I'd thump it when I was brave. 🥁
+===

@@ -21,5 +21,8 @@ img.char-art { object-fit: contain; }
 @keyframes char-wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .char-art, .char-art--cheer, .char-art--wobble { animation: none; transition: none; }
+  .char-art, .char-art--cheer, .char-art--wobble, .char-art--point { animation: none; transition: none; }
 }
+
+.char-art--point { animation: char-point .5s ease; }
+@keyframes char-point { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px) rotate(4deg); } }

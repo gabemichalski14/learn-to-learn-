@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { parseYarn, yarnToContent, loadYarn } from './yarnLoader';
 
 const SAMPLE = `title: Intro
@@ -50,5 +51,25 @@ describe('yarnToContent', () => {
     const content = yarnToContent({ CORRECT: ['Yes!'], 'fragment-S': ['a memory'] });
     expect(content.reactions.correct).toEqual(['Yes!']);
     expect(content.fragments.s).toEqual(['a memory']);
+  });
+});
+
+describe('the real Moss script (content/moss.yarn)', () => {
+  const content = loadYarn(readFileSync('src/world/lore/content/moss.yarn', 'utf8'));
+  it('provides every reaction + a memory for each scattered hum', () => {
+    for (const kind of ['intro', 'correct', 'wrong', 'clear', 'win'] as const) {
+      expect(content.reactions[kind]?.length).toBeGreaterThan(0);
+    }
+    for (const sound of ['m', 's', 'b']) {
+      expect(content.fragments[sound]?.length).toBeGreaterThan(0);
+    }
+  });
+  it('has no empty/undefined lines (comments stripped)', () => {
+    const all = [...Object.values(content.reactions).flat(), ...Object.values(content.fragments).flat()];
+    for (const line of all) {
+      expect(line.length).toBeGreaterThan(0);
+      expect(line).not.toContain('undefined');
+      expect(line.startsWith('//')).toBe(false);
+    }
   });
 });

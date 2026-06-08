@@ -357,3 +357,9 @@
 @media (prefers-reduced-motion: reduce){ .sg-hero__face,.sg-warm{ animation:none; transition:none; } }
 
 .sg-win__moss{ display:flex; justify-content:center; margin:2px 0 8px; }
+
+/* Partnership scaffold: Moss points to where a missed hum belongs (fades as he
+   recovers). The right planet glows + beckons; his art shows the point frame. */
+.sg-planet--hint{ box-shadow:0 0 0 3px rgba(255,216,128,.8), 0 0 30px rgba(255,216,128,.7); animation:sg-hintpulse 1s ease-in-out infinite; }
+@keyframes sg-hintpulse{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-6px) } }
+@media (prefers-reduced-motion: reduce){ .sg-planet--hint{ animation:none; } }

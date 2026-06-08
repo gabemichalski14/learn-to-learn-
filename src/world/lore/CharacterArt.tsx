@@ -18,7 +18,7 @@ export function CharacterArt({
 }: {
   emoji: string;
   heal?: number;            // 0..1 — transformation progress
-  mood?: 'cheer' | 'wobble' | null;
+  mood?: 'cheer' | 'wobble' | 'point' | 'bloom' | null;
   size?: number;            // px
   art?: ArtSource;          // when present (future), render Rive instead of emoji
   label?: string;

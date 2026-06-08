@@ -79,7 +79,7 @@ function Planet({ vowel, hue, catching, hint, onReplay }: { vowel: string; hue: 
 }
 
 /** A space creature — a draggable picture. Tapping it replays its word. */
-function Creature({ item, onReplay }: { item: WordItem; onReplay: () => void }) {
+function Creature({ item, hint, onReplay }: { item: WordItem; hint?: boolean; onReplay: () => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: item.id });
   const style = {
     transform: isDragging
@@ -90,7 +90,7 @@ function Creature({ item, onReplay }: { item: WordItem; onReplay: () => void }) 
     <button
       ref={setNodeRef}
       style={style}
-      className={`sg-creature${isDragging ? ' is-dragging' : ''}`}
+      className={`sg-creature${isDragging ? ' is-dragging' : ''}${hint ? ' sg-creature--hint' : ''}`}
       aria-label={item.label}
       onClick={onReplay}
       {...listeners}
@@ -308,7 +308,7 @@ export function SpaceSortGame({
 
           <div className="sg-tray">
             {game.remainingItems.map((it) => (
-              <Creature key={it.id} item={it} onReplay={() => { sfx.tap(); pingEcho(); game.replayWord(it); }} />
+              <Creature key={it.id} item={it} hint={!!hintBasket && it.id === round.items[0]?.id} onReplay={() => { sfx.tap(); pingEcho(); game.replayWord(it); }} />
             ))}
           </div>
 

@@ -368,3 +368,10 @@
 .sg-planet--hint{ box-shadow:0 0 0 3px rgba(255,216,128,.8), 0 0 30px rgba(255,216,128,.7); animation:sg-hintpulse 1s ease-in-out infinite; }
 @keyframes sg-hintpulse{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-6px) } }
 @media (prefers-reduced-motion: reduce){ .sg-planet--hint{ animation:none; } }
+
+/* tutorial: the first critter glows alongside its planet ("watch, then you try") */
+.sg-creature--hint{ animation:sg-creature-hint 1.5s ease-in-out infinite; border-radius:18px;
+  box-shadow:0 0 0 4px rgba(94,240,200,.35), 0 8px 22px rgba(94,240,200,.4); }
+@keyframes sg-creature-hint{ 0%,100%{ box-shadow:0 0 0 4px rgba(94,240,200,.3), 0 8px 20px rgba(94,240,200,.35); }
+  50%{ box-shadow:0 0 0 7px rgba(94,240,200,.45), 0 10px 26px rgba(94,240,200,.55); } }
+@media (prefers-reduced-motion: reduce){ .sg-creature--hint{ animation:none; } }

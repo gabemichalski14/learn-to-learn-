@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { goBack } from '../../router';
+import { goBack, navigate } from '../../router';
 import { createStubAudioPlayer } from '../../audio/stubAudioPlayer';
 import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import { tapItOutWords, type TapWord } from '../../content/packs/tapItOut';
-import { recordItem } from '../../mastery/mastery';
+import { recordItem, loadMastery } from '../../mastery/mastery';
 import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
@@ -11,6 +11,9 @@ import { awardForSession } from '../../achievements';
 import { GardenBackdrop, SproutGuide } from './GardenArt';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
 import { MascotSpeaker } from '../../mascots/MascotSpeaker';
+import { castFor, reactionLine, healFor, characterStage, fragmentToReveal } from '../../world/lore/cast';
+import { setStoryStage, acknowledge, loadLore } from '../../world/lore/loreStore';
+import { CharacterArt } from '../../world/lore/CharacterArt';
 import './garden.css';
 
 const ROUNDS = 5;
@@ -41,8 +44,16 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const [taps, setTaps] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [phase, setPhase] = useState<Phase>('idle');
-  const [finish, setFinish] = useState<{ stars: number } | null>(null);
+  const [finish, setFinish] = useState<{ stars: number; beat?: string; homecoming?: boolean } | null>(null);
   const [guideOpen, setGuideOpen] = useState(true);
+
+  // Chip — the Level 1 companion. You TEACH him to hear the beats (protégé
+  // effect); each word you tap out, he catches another beat and heals from your
+  // REAL phonemic-awareness mastery. When the level's whole (95%), he goes home.
+  const character = castFor(1);
+  const [chipHeal, setChipHeal] = useState(() => (character ? healFor(character, loadMastery(learnerId)) : 0));
+  const [chipLine, setChipLine] = useState(() => (character ? reactionLine(character, 'teach') : ''));
+  const [chipMood, setChipMood] = useState<'cheer' | 'wobble' | 'point' | 'bloom' | null>(null);
 
   // Juice state
   const [combo, setCombo] = useState(0);
@@ -62,6 +73,10 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const word = words[round];
   const isLast = round >= ROUNDS - 1;
   const bloom = phase === 'right' || phase === 'modeled';
+  // Pre-emptive tutorial: on the very first word, before any tap, Chip shows the
+  // way — he points and the tap pad lights up ("watch, then you try"). Clears the
+  // moment you tap. No hand-holding after that.
+  const tutorial = !!character && round === 0 && taps === 0 && attempts === 0 && phase === 'idle';
 
   // Hear the word whenever it changes (and on restart).
   useEffect(() => {
@@ -85,6 +100,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
 
   function tap() {
     if (bloom) return;
+    if (chipMood === 'point') setChipMood(null); // first tap ends the tutorial point
     const next = taps + 1;
     sfx.tick(next); // pitch climbs with each sound — anticipation
     setTaps(next);
@@ -111,6 +127,16 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       setGrew((g) => g + 1); // a flower for your garden
       setMood('cheer');
       window.setTimeout(() => setMood((m) => (m === 'cheer' ? null : m)), 900);
+      // Chip catches the beat — heal from real mastery + react (reveal his memory
+      // the moment his sound is fully recovered, else a warm "I caught it").
+      if (character) {
+        setChipHeal(healFor(character, loadMastery(learnerId)));
+        const frag = fragmentToReveal(character, loadLore(learnerId), loadMastery(learnerId));
+        if (frag) { setChipLine(frag.line); acknowledge(learnerId, frag.id); }
+        else setChipLine(reactionLine(character, 'correct'));
+        setChipMood('cheer');
+        window.setTimeout(() => setChipMood((m) => (m === 'cheer' ? null : m)), 900);
+      }
       setPhase('right');
     } else {
       wrongRef.current += 1;
@@ -121,11 +147,17 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       setSway(true);
       window.setTimeout(() => setSway(false), 480);
       window.setTimeout(() => setMood((m) => (m === 'wobble' ? null : m)), 640);
+      if (character) {
+        setChipLine(reactionLine(character, 'wrong'));
+        setChipMood('wobble');
+        window.setTimeout(() => setChipMood((m) => (m === 'wobble' ? null : m)), 700);
+      }
       const next = attempts + 1;
       setAttempts(next);
       if (next >= 2) {
         recordItem(learnerId, 'pa:segment', false);
         logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: false, at: Date.now() });
+        if (character) setChipHeal(healFor(character, loadMastery(learnerId)));
         setTaps(word.sounds);
         setPhase('modeled');
       } else {
@@ -168,7 +200,16 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
     awardForSession(learnerId);
     const stars = wrongRef.current === 0 ? 3 : firstTryRef.current >= ROUNDS - 1 ? 2 : 1;
     sfx.win();
-    setFinish({ stars });
+    // If Chip's whole now (PA fully mastered at the 95% bar), advance his arc and
+    // offer to send him home to the Village.
+    const stage = character ? characterStage(character, loadLore(learnerId), loadMastery(learnerId)) : 'arrived';
+    const homecoming = stage === 'healed' || stage === 'resident';
+    if (stage === 'healed' && character) setStoryStage(learnerId, character.id, 'healed');
+    setFinish({
+      stars,
+      beat: character ? reactionLine(character, homecoming ? 'win' : 'clear') : undefined,
+      homecoming,
+    });
   }
 
   function restart() {
@@ -186,6 +227,11 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
     setCombo(0);
     setMood(null);
     setSway(false);
+    if (character) {
+      setChipHeal(healFor(character, loadMastery(learnerId)));
+      setChipLine(reactionLine(character, 'teach'));
+      setChipMood(null);
+    }
   }
 
   const status =
@@ -212,6 +258,21 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
 
       <div className={`gd-stage${sway ? ' gd-stage--sway' : ''}`}>
         {echoPing > 0 && <EchoTwinkle key={echoPing} className="gd-echoping" />}
+
+        {character && (
+          <div className="gd-hero">
+            <span className="gd-hero__face">
+              <CharacterArt emoji={character.emoji} heal={chipHeal} mood={tutorial ? 'point' : chipMood} size={62} art={character.art} label={character.name} />
+            </span>
+            <div className="gd-hero__body">
+              <p className="gd-hero__line" role="status">{chipLine}</p>
+              <div className="gd-hero__meter" role="img" aria-label={`${character.name}'s song: ${Math.round(chipHeal * 100)}% back`}>
+                <span className="gd-hero__fill" style={{ width: `${Math.round(chipHeal * 100)}%` }} />
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="gd-word">
           <span className="gd-pic" aria-hidden="true">{word.emoji}</span>
           <button type="button" className="gd-hear" onClick={() => { sfx.tap(); pingEcho(); void audio.playWord(word); }}>🔊 Hear it</button>
@@ -230,7 +291,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
           {grew > 0 && <span key={grew} className="gd-grew" aria-hidden="true">+🌷</span>}
         </div>
 
-        <button type="button" className="gd-pad" onClick={tap} disabled={bloom} aria-label="Tap for one sound">＋ tap a sound</button>
+        <button type="button" className={`gd-pad${tutorial ? ' gd-pad--hint' : ''}`} onClick={tap} disabled={bloom} aria-label="Tap for one sound">＋ tap a sound</button>
 
         {!bloom ? (
           <div className="gd-actions">
@@ -265,12 +326,13 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
           <div className="gd-finish__card">
             <MascotSpeaker className="gd-finish__pip" size={84} expression="excited" kinds={['celebrate', 'idle']} label="Pip" />
             <div className="gd-finish__bloom" aria-hidden="true">🌸🌼🌷</div>
-            <p className="gd-finish__title">Your garden is in bloom!</p>
-            <p className="gd-finish__sub">You planted every sound — beautiful listening. 🌿</p>
+            <p className="gd-finish__title">{finish.homecoming ? 'Chip can play his whole song!' : 'Your garden is in bloom!'}</p>
+            <p className="gd-finish__sub">{finish.beat ?? 'You planted every sound — beautiful listening. 🌿'}</p>
             <div className="gd-finish__stars" aria-label={`${finish.stars} of 3 stars`}>
               {[0, 1, 2].map((i) => <span key={i} className={i < finish.stars ? 'on' : undefined}>★</span>)}
             </div>
             <div className="gd-finish__btns">
+              {finish.homecoming && <button type="button" className="gd-btn" onClick={() => navigate('#/village')}>Walk Chip home 🏡</button>}
               <button type="button" className="gd-btn" onClick={restart}>Plant again 🌱</button>
               <button type="button" className="gd-ghost" onClick={() => goBack('#/level/1')}>Back to Level 1</button>
             </div>

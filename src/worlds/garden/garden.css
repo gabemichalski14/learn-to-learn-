@@ -280,3 +280,21 @@
   border-radius: 999px; padding: 9px 18px; min-height: 40px; }
 .gd-residents__village:hover { background: #fff; }
 .gd-residents__village:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+
+/* ---- Chip — the Level 1 in-game companion (you teach him the beats) ---- */
+.gd-hero { width: 100%; max-width: 560px; margin: 0 auto 4px; display: flex; align-items: center; gap: 12px;
+  background: rgba(255, 255, 255, 0.82); border: 1px solid rgba(78, 149, 104, 0.2); border-radius: 18px;
+  padding: 10px 14px; box-shadow: 0 10px 24px rgba(78, 149, 104, 0.18); }
+.gd-hero__face { flex: none; filter: drop-shadow(0 6px 10px rgba(78, 149, 104, 0.3)); }
+.gd-hero__body { flex: 1 1 auto; min-width: 0; text-align: left; }
+.gd-hero__line { margin: 0 0 7px; font-size: 14px; line-height: 1.4; font-weight: 600; color: #235c40; }
+.gd-hero__meter { height: 8px; border-radius: 999px; background: rgba(78, 149, 104, 0.18); overflow: hidden; }
+.gd-hero__fill { display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, #6bae7f, #4e9568); transition: width 0.5s cubic-bezier(0.2, 0.8, 0.3, 1); }
+
+/* tutorial: the tap pad glows while Chip shows the way (clears on first tap) */
+.gd-pad--hint { border-color: #4e9568; box-shadow: 0 0 0 4px rgba(110, 174, 127, 0.3), 0 8px 22px rgba(78, 149, 104, 0.35);
+  animation: gd-pad-pulse 1.5s ease-in-out infinite; }
+@keyframes gd-pad-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(110, 174, 127, 0.28), 0 8px 20px rgba(78, 149, 104, 0.3); }
+  50% { box-shadow: 0 0 0 7px rgba(110, 174, 127, 0.42), 0 10px 26px rgba(78, 149, 104, 0.45); } }
+@media (prefers-reduced-motion: reduce) { .gd-pad--hint { animation: none; } }

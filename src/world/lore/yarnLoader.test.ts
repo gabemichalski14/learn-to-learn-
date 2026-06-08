@@ -57,7 +57,7 @@ describe('yarnToContent', () => {
 describe('the real Moss script (content/moss.yarn)', () => {
   const content = loadYarn(readFileSync('src/world/lore/content/moss.yarn', 'utf8'));
   it('provides every reaction + a memory for each scattered hum', () => {
-    for (const kind of ['intro', 'correct', 'wrong', 'clear', 'win'] as const) {
+    for (const kind of ['intro', 'teach', 'correct', 'wrong', 'clear', 'win'] as const) {
       expect(content.reactions[kind]?.length).toBeGreaterThan(0);
     }
     for (const sound of ['m', 't', 'a']) {

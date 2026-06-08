@@ -119,19 +119,25 @@ export function SpaceSortGame({
   const [guideOpen, setGuideOpen] = useState(true);
   const [combo, setCombo] = useState(0);
   const comboRef = useRef(0);
-  const [mood, setMood] = useState<'cheer' | 'wobble' | 'point' | null>(null);
-  const [shake, setShake] = useState(false);
-  // The partnership: when you miss AND the character is still scattered, his
-  // spatial gift kicks in — he points to where that hum lives (a no-fail recovery
-  // scaffold, never given before you try). It fades as he recovers (harder later).
-  const [hintBasket, setHintBasket] = useState<string | null>(null);
-  const [muted, setMutedState] = useState(isMuted());
-  const [echoPing, setEchoPing] = useState(0); // bumps on an audio moment → Echo twinkles
-  const pingEcho = () => setEchoPing((p) => p + 1);
   // The level's character is the in-game companion — you play to help THEM, and
   // they react to every move (agency → attachment). Lines are authored/data-driven.
   const character = castFor(level);
-  const [charLine, setCharLine] = useState(() => (character ? reactionLine(character, 'intro') : ''));
+  // The partnership, as a pre-emptive tutorial: on the VERY first item of the
+  // session, Moss shows his way BEFORE you try — he points to where the first
+  // critter's hum belongs (a no-fail "watch, then you try" scaffold). Opening
+  // sector only, cleared the moment you make your first move. No hints on misses.
+  const tutorialBasket = character && roundIndex === 0 && round.items.length > 0
+    ? soundOf(round.items[0], target)
+    : null;
+  const [mood, setMood] = useState<'cheer' | 'wobble' | 'point' | null>(tutorialBasket ? 'point' : null);
+  const [shake, setShake] = useState(false);
+  const [hintBasket, setHintBasket] = useState<string | null>(tutorialBasket);
+  const [muted, setMutedState] = useState(isMuted());
+  const [echoPing, setEchoPing] = useState(0); // bumps on an audio moment → Echo twinkles
+  const pingEcho = () => setEchoPing((p) => p + 1);
+  // Opening line = his teaching line when the tutorial is showing, else his intro.
+  const [charLine, setCharLine] = useState(() =>
+    character ? reactionLine(character, tutorialBasket ? 'teach' : 'intro') : '');
   const [clearLine] = useState(() => (character ? reactionLine(character, 'clear') : '')); // stable sector-clear beat
   // Moss's REAL recovery: derived from the learner's mastery of HIS sound, so
   // playing literally heals him (intrinsic). Persists across sessions; rises as
@@ -223,6 +229,8 @@ export function SpaceSortGame({
     const wordId = String(e.active.id);
     const basket = e.over ? String(e.over.id) : null;
     if (!basket) return;
+    // Your first real move ends the tutorial point — watch, then it's your turn.
+    if (hintBasket) setHintBasket(null);
     if (game.attemptPlace(wordId, basket)) {
       // correct — pop the planet, burst sparkles, climb the combo, Scout cheers
       setCatching(basket);
@@ -242,26 +250,18 @@ export function SpaceSortGame({
       window.setTimeout(() => setCatching((cur) => (cur === basket ? null : cur)), 520);
       window.setTimeout(() => setMood((m) => (m === 'cheer' ? null : m)), 760);
     } else {
-      // miss — gentle shake, soft cue, combo resets (always no-fail)
+      // miss — gentle shake, soft cue, combo resets (always no-fail). No pointing
+      // on misses: the only scaffold is the opening tutorial. Here Moss just stays
+      // warm ("not yet, the little sounds are slippery") and you try again — which
+      // keeps the recovery honest at the 95% bar.
       comboRef.current = 0;
       setCombo(0);
       sfx.wrong();
       if (character) setCharLine(reactionLine(character, 'wrong'));
       setShake(true);
       window.setTimeout(() => setShake(false), 420);
-      // Partnership scaffold: while Moss is still scattered (heal < 0.7), his gift
-      // shows you where that hum belongs — point + glow the right planet for a
-      // moment. Fades once he's recovered, so the help tapers as you improve.
-      const item = round.items.find((i) => i.id === wordId);
-      const correctBasket = item ? soundOf(item, target) : null;
-      if (character && heal < 0.7 && correctBasket) {
-        setHintBasket(correctBasket);
-        setMood('point');
-        window.setTimeout(() => { setHintBasket(null); setMood((m) => (m === 'point' ? null : m)); }, 2400);
-      } else {
-        setMood('wobble');
-        window.setTimeout(() => setMood((m) => (m === 'wobble' ? null : m)), 620);
-      }
+      setMood('wobble');
+      window.setTimeout(() => setMood((m) => (m === 'wobble' ? null : m)), 620);
     }
   }
 

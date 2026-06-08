@@ -14,8 +14,19 @@
  */
 import { parseSkillKey, type SkillKey } from '../../mastery/skills';
 import { scoreOf, type MasteryMap, type SkillStat } from '../../mastery/mastery';
-import { isMastered } from './plantings';
 import type { LoreState, StoryStage } from './loreStore';
+
+/**
+ * Bringing a friend HOME is a higher bar than general skill "mastery" (0.8): to
+ * make a hum fully his again — and send the character home — the learner must be
+ * reliably right on that sound, **over 95%**. Stricter on purpose; homecoming
+ * should mean real, durable command of the sound, not just a passing grade.
+ */
+const RATED_MIN = 5;
+export const HUM_RECOVERED_AT = 0.95;
+export function isHumRecovered(stat: SkillStat | undefined): boolean {
+  return !!stat && stat.attempts >= RATED_MIN && scoreOf(stat) >= HUM_RECOVERED_AT;
+}
 
 /** The compelling-character spine (want vs need + a flaw + how they show emotion).
  *  Drives writing and gives the cast real arcs people follow. */
@@ -28,7 +39,7 @@ export interface Persona {
 
 /** In-game reaction moments — the character REACTS to what you do (agency →
  *  attachment), so they live inside the game, not just on the hub. */
-export type ReactionKind = 'intro' | 'correct' | 'wrong' | 'clear' | 'win';
+export type ReactionKind = 'intro' | 'teach' | 'correct' | 'wrong' | 'clear' | 'win';
 
 /** Where a character's real art lives (set once a Rive file / images exist).
  *  Until then `CharacterArt` renders a transforming emoji placeholder. */
@@ -51,9 +62,9 @@ export interface ArtSource {
  */
 export function healFromMastery(stat: SkillStat | undefined): number {
   if (!stat) return 0;
-  if (isMastered(stat)) return 1;
-  const attemptsFrac = Math.min(1, stat.attempts / 5); // RATED_MIN
-  const quality = Math.min(1, scoreOf(stat) / 0.8);     // toward the mastery bar
+  if (isHumRecovered(stat)) return 1;                          // whole only at the high bar
+  const attemptsFrac = Math.min(1, stat.attempts / RATED_MIN);
+  const quality = Math.min(1, scoreOf(stat) / HUM_RECOVERED_AT); // climbs toward the 95% bar
   return Math.max(0, Math.min(1, attemptsFrac * quality));
 }
 
@@ -149,6 +160,13 @@ export const MOSS: LevelCharacter = {
       'Hello! Each little critter holds a sound of mine. Send it home, and I come back — bit by bit.',
       "You're here! I knew someone kind would come. Let's find my sounds together.",
     ],
+    // The pre-emptive tutorial: Moss shows his WAY before you try (multisensory,
+    // structured-literacy — say it slow, feel where it sits, then plant it).
+    teach: [
+      "Watch how I do it. 🌱 Say the word slow… feel the sound… then send it to the glowing planet. Now you try!",
+      "Here's my way: hear it, say it, then plant it where it glows. I'll show you this one — then it's yours.",
+      "Let me start us off. Say it slow, catch the sound, fly it to the planet I'm pointing at. Your turn next! 💚",
+    ],
     correct: [
       "Mmm — that one's mine! You heard it. 🌟",
       'Yes — home it goes. That’s one hum back.',
@@ -211,7 +229,7 @@ export function healFor(c: LevelCharacter, mastery: MasteryMap): number {
 /** Fully recovered = every one of the character's scattered hums is mastered =
  *  their whole level is complete (you've played all its games). */
 export function isFullyRecovered(c: LevelCharacter, mastery: MasteryMap): boolean {
-  return soundsOf(c).every((k) => isMastered(mastery[k]));
+  return soundsOf(c).every((k) => isHumRecovered(mastery[k]));
 }
 
 /** The characters who now LIVE in the garden — those whose level is fully
@@ -227,7 +245,7 @@ export function gardenResidents(mastery: MasteryMap): LevelCharacter[] {
  */
 export function characterStage(c: LevelCharacter, lore: LoreState, mastery: MasteryMap): StoryStage {
   const sounds = soundsOf(c);
-  if (sounds.every((k) => isMastered(mastery[k]))) {
+  if (sounds.every((k) => isHumRecovered(mastery[k]))) {
     return lore.stories[c.id]?.stage === 'resident' ? 'resident' : 'healed';
   }
   if (sounds.some((k) => (mastery[k]?.attempts ?? 0) > 0)) return 'healing';
@@ -251,7 +269,7 @@ export function fragmentToReveal(
     const lines = c.fragments[sid];
     if (!lines || !lines.length) continue;
     const id = fragmentId(c, sid);
-    if (isMastered(mastery[k]) && !lore.acknowledged.includes(id)) {
+    if (isHumRecovered(mastery[k]) && !lore.acknowledged.includes(id)) {
       return { soundId: sid, line: lines[0], id };
     }
   }
@@ -273,7 +291,7 @@ export function storytimeScene(c: LevelCharacter, mastery: MasteryMap, rng: () =
       const sid = parseSkillKey(k)?.soundId;
       if (!sid) continue;
       const memory = c.fragments[sid]?.[0];
-      if (memory && isMastered(mastery[k])) lines.push(memory);
+      if (memory && isHumRecovered(mastery[k])) lines.push(memory);
     }
   }
   const closes = c.storytime ?? [];

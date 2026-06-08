@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf, gardenResidents, isFullyRecovered, storytimeScene } from './cast';
+import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf, gardenResidents, isFullyRecovered, isHumRecovered, storytimeScene } from './cast';
 import type { ReactionKind } from './cast';
 import { parseSkillKey } from '../../mastery/skills';
 import type { MasteryMap } from '../../mastery/mastery';
@@ -60,6 +60,22 @@ describe('garden residency (a friend moves in once their level is 100% done)', (
     // partway through Moss's level → still nobody lives here
     expect(gardenResidents({ 'sound:first:m': stat(6, 6) })).toEqual([]);
     expect(gardenResidents(allMastered())).toEqual([MOSS]);
+  });
+  it('homecoming uses a HIGH bar (>95%) — solid-but-imperfect is NOT enough', () => {
+    // /m/ is "mastered" by the general 0.8 bar but ~0.82 (a recent miss) → below
+    // 95%, so Moss is not fully home and does not move into the garden yet.
+    const solid = { 'sound:first:m': stat(9, 10), 'sound:last:t': stat(6, 6), 'sound:medial:a': stat(6, 6) };
+    expect(isFullyRecovered(MOSS, solid)).toBe(false);
+    expect(gardenResidents(solid)).toEqual([]);
+  });
+});
+
+describe('isHumRecovered (the 95% homecoming bar)', () => {
+  it('needs rated attempts AND over 95% correct', () => {
+    expect(isHumRecovered(undefined)).toBe(false);
+    expect(isHumRecovered(stat(4, 4))).toBe(false); // perfect but not yet rated (<5)
+    expect(isHumRecovered(stat(6, 6))).toBe(true);  // rated + perfect
+    expect(isHumRecovered(stat(9, 10))).toBe(false); // rated but ~0.82 — under 95%
   });
 });
 
@@ -136,7 +152,7 @@ describe('persona (want/need/flaw spine)', () => {
 });
 
 describe('in-game reactions', () => {
-  const kinds: ReactionKind[] = ['intro', 'correct', 'wrong', 'clear', 'win'];
+  const kinds: ReactionKind[] = ['intro', 'teach', 'correct', 'wrong', 'clear', 'win'];
   it('Moss reacts to every in-game moment, with no undefined leaks', () => {
     for (const kind of kinds) {
       const line = reactionLine(MOSS, kind, () => 0);

@@ -54,7 +54,7 @@ export function parseYarn(text: string): YarnNodes {
 }
 
 const KIND_BY_TITLE: Record<string, ReactionKind> = {
-  intro: 'intro', correct: 'correct', wrong: 'wrong', clear: 'clear', win: 'win',
+  intro: 'intro', teach: 'teach', correct: 'correct', wrong: 'wrong', clear: 'clear', win: 'win',
 };
 
 export interface YarnContent {

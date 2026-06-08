@@ -26,11 +26,11 @@ export interface Species {
  */
 export const SPECIES: Record<string, Species> = {
   m: { sound: 'm', plant: 'marigold', emoji: '🌼', color: '#f4c14b', image: '/characters/garden/marigold.png' },
-  s: { sound: 's', plant: 'sunflower', emoji: '🌻', color: '#f2a93b' },
+  s: { sound: 's', plant: 'sunflower', emoji: '🌻', color: '#f2a93b', image: '/characters/garden/sunflower.png' },
   t: { sound: 't', plant: 'tulip', emoji: '🌷', color: '#e86a8e', image: '/characters/garden/tulip.png' },
-  b: { sound: 'b', plant: 'bluebell', emoji: '🪻', color: '#7c83e8' },
-  p: { sound: 'p', plant: 'poppy', emoji: '🌺', color: '#e8556a' },
-  n: { sound: 'n', plant: 'narcissus', emoji: '🌼', color: '#f6e07a' },
+  b: { sound: 'b', plant: 'bluebell', emoji: '🪻', color: '#7c83e8', image: '/characters/garden/bluebell.png' },
+  p: { sound: 'p', plant: 'poppy', emoji: '🌺', color: '#e8556a', image: '/characters/garden/poppy.png' },
+  n: { sound: 'n', plant: 'narcissus', emoji: '🌼', color: '#f6e07a', image: '/characters/garden/narcissus.png' },
   f: { sound: 'f', plant: 'forget-me-not', emoji: '💠', color: '#6cb8e8' },
   d: { sound: 'd', plant: 'daisy', emoji: '🌼', color: '#f4f1e0' },
   r: { sound: 'r', plant: 'rose', emoji: '🌹', color: '#e0556a' },
@@ -39,10 +39,10 @@ export const SPECIES: Record<string, Species> = {
   g: { sound: 'g', plant: 'gardenia', emoji: '🤍', color: '#eef3ea' },
   h: { sound: 'h', plant: 'hyacinth', emoji: '🪻', color: '#8c9ce8' },
   k: { sound: 'k', plant: 'kingcup', emoji: '🌼', color: '#f4cc4b' },
-  a: { sound: 'a', plant: 'aster', emoji: '🌸', color: '#e88cb8' },
-  e: { sound: 'e', plant: 'echinacea', emoji: '🌺', color: '#d98ab0' },
-  i: { sound: 'i', plant: 'iris', emoji: '🪻', color: '#8c7ce0' },
-  o: { sound: 'o', plant: 'orchid', emoji: '🌸', color: '#e07ab8' },
+  a: { sound: 'a', plant: 'aster', emoji: '🌸', color: '#e88cb8', image: '/characters/garden/aster.png' },
+  e: { sound: 'e', plant: 'echinacea', emoji: '🌺', color: '#d98ab0', image: '/characters/garden/echinacea.png' },
+  i: { sound: 'i', plant: 'iris', emoji: '🪻', color: '#8c7ce0', image: '/characters/garden/iris.png' },
+  o: { sound: 'o', plant: 'orchid', emoji: '🌸', color: '#e07ab8', image: '/characters/garden/orchid.png' },
   u: { sound: 'u', plant: 'umbrella-flower', emoji: '🌼', color: '#f0c060' },
 };
 

@@ -5,16 +5,18 @@ import { CSS } from '@dnd-kit/utilities';
 import type { SortRound, WordItem, SoundTarget } from '../../domain/types';
 import type { AudioPlayer } from '../../audio/audioPlayer';
 import { useSortGame } from '../../game/useSortGame';
-import { recordItem } from '../../mastery/mastery';
+import { recordItem, loadMastery } from '../../mastery/mastery';
 import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession, noteRound } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
-import { goBack } from '../../router';
+import { goBack, navigate } from '../../router';
 import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
 import { SpaceSpecimen } from './creatureIcons';
 import { SpaceFinish } from './SpaceFinish';
-import { castFor, reactionLine } from '../../world/lore/cast';
+import { castFor, reactionLine, healFromMastery } from '../../world/lore/cast';
+import { isMastered } from '../../world/lore/plantings';
+import { setStoryStage } from '../../world/lore/loreStore';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import { LevelScene } from '../../world/LevelScene';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
@@ -113,7 +115,7 @@ export function SpaceSortGame({
   const posWord = POS_WORD[target];
   const [startAt] = useState(() => sessionStartAt ?? Date.now());
   const [catching, setCatching] = useState<string | null>(null);
-  const [finish, setFinish] = useState<{ ms: number; best: boolean; stars: number; title: string; beat?: string } | null>(null);
+  const [finish, setFinish] = useState<{ ms: number; best: boolean; stars: number; title: string; beat?: string; homecoming?: boolean } | null>(null);
   const [guideOpen, setGuideOpen] = useState(true);
   const [combo, setCombo] = useState(0);
   const comboRef = useRef(0);
@@ -127,6 +129,10 @@ export function SpaceSortGame({
   const character = castFor(level);
   const [charLine, setCharLine] = useState(() => (character ? reactionLine(character, 'intro') : ''));
   const [clearLine] = useState(() => (character ? reactionLine(character, 'clear') : '')); // stable sector-clear beat
+  // Moss's REAL recovery: derived from the learner's mastery of HIS sound, so
+  // playing literally heals him (intrinsic). Persists across sessions; rises as
+  // correct answers raise that sound's mastery. Drives his art + the scene warmth.
+  const [heal, setHeal] = useState(() => (character ? healFromMastery(loadMastery(learnerId)[character.skillKey]) : 0));
   // Shuffle the palette across THIS round's planets so colour never predicts the
   // vowel. Lazy init (runs once per mount; the screen remounts each round) keeps
   // colours stable mid-round and re-rolls them every new sector — no pattern.
@@ -157,16 +163,15 @@ export function SpaceSortGame({
     onItemResult: ({ skillKey, correct }) => {
       recordItem(learnerId, skillKey, correct);
       logSkillEvent(learnerId, { skillKey, correct, at: Date.now() });
+      // Recover the character from his OWN sound's real mastery (recordItem just
+      // updated it). Helping his hum heals him; other sounds don't.
+      if (character) setHeal(healFromMastery(loadMastery(learnerId)[character.skillKey]));
     },
     onCorrect: ({ complete }) => finishRoundIfComplete(complete),
   });
 
   const placed = total - game.remainingItems.length;
   const roundDone = game.isComplete;
-  // The character's journey home, made visible: fraction of the whole patrol
-  // helped so far. Drives the hero meter AND the scene's warmth (dark when he's
-  // lost → bright as you bring him home) — the theme follows the arc.
-  const journey = totalRounds > 0 ? Math.min(1, (roundIndex + (total > 0 ? placed / total : 0)) / totalRounds) : 0;
 
   // Hoisted named function so the impure Date.now()/new Date() aren't treated as
   // called-during-render; this only runs on the placement that finishes a round.
@@ -192,7 +197,15 @@ export function SpaceSortGame({
     const stars = totals.wrong === 0 ? 3 : totals.wrong <= 2 ? 2 : 1;
     const title = HERO_TITLES[Math.floor(Math.random() * HERO_TITLES.length)];
     sfx.win();
-    setFinish({ ms: durationMs, best: res.isBest, stars, title, beat: character ? reactionLine(character, 'win') : undefined });
+    // If the character's sound is now mastered, he's WHOLE — advance his arc and
+    // send him home to the garden (where his named planting blooms).
+    const homecoming = !!character && isMastered(loadMastery(learnerId)[character.skillKey]);
+    if (homecoming && character) setStoryStage(learnerId, character.id, 'healed');
+    setFinish({
+      ms: durationMs, best: res.isBest, stars, title,
+      beat: character ? reactionLine(character, homecoming ? 'win' : 'clear') : undefined,
+      homecoming,
+    });
   }
 
   function toggleMute() {
@@ -234,7 +247,7 @@ export function SpaceSortGame({
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <main className="sg">
         <SpaceBackdrop />
-        {character && <LevelScene heal={journey} />}
+        {character && <LevelScene heal={heal} />}
 
         <div className="sg-hud">
           <button type="button" className="sg-back" onClick={() => goBack(`#/level/${level}`)}>← Back</button>
@@ -255,12 +268,12 @@ export function SpaceSortGame({
           {character && (
             <div className="sg-hero">
               <span className="sg-hero__face">
-                <CharacterArt emoji={character.emoji} heal={journey} mood={mood} size={64} art={character.art} label={character.name} />
+                <CharacterArt emoji={character.emoji} heal={heal} mood={mood} size={64} art={character.art} label={character.name} />
               </span>
               <div className="sg-hero__body">
                 <p className="sg-hero__line" role="status">{charLine}</p>
-                <div className="sg-hero__meter" role="img" aria-label={`${character.name}'s journey home: ${Math.round(journey * 100)}%`}>
-                  <span className="sg-hero__fill" style={{ width: `${Math.round(journey * 100)}%` }} />
+                <div className="sg-hero__meter" role="img" aria-label={`${character.name}'s recovery: ${Math.round(heal * 100)}%`}>
+                  <span className="sg-hero__fill" style={{ width: `${Math.round(heal * 100)}%` }} />
                 </div>
                 <p className="sg-hero__cap">Tap a critter to hear it, then fly it to the matching {posWord}-sound planet — every one brings {character.name} closer home.</p>
               </div>
@@ -322,6 +335,10 @@ export function SpaceSortGame({
             stars={finish.stars}
             title={finish.title}
             beat={finish.beat}
+            homecoming={finish.homecoming}
+            characterEmoji={character?.emoji}
+            characterArt={character?.art}
+            onGarden={() => navigate('#/level/1')}
             onRestart={() => onRestart?.()}
             onBack={() => goBack(`#/level/${level}`)}
           />

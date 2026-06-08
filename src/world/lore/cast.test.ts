@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage } from './cast';
+import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery } from './cast';
 import type { ReactionKind } from './cast';
 import { parseSkillKey } from '../../mastery/skills';
 import type { MasteryMap } from '../../mastery/mastery';
@@ -79,6 +79,18 @@ describe('in-game reactions', () => {
   });
   it('reactionLine is deterministic given a seeded rng', () => {
     expect(reactionLine(MOSS, 'correct', () => 0)).toBe(MOSS.reactions.correct![0]);
+  });
+});
+
+describe('healFromMastery (playing his sound recovers him)', () => {
+  it('is 0 unseen, 1 when mastered, partial in between', () => {
+    expect(healFromMastery(undefined)).toBe(0);
+    expect(healFromMastery(stat(6, 6))).toBe(1);          // rated + solid → whole
+    expect(healFromMastery(stat(3, 3))).toBeCloseTo(0.6, 5); // 3/5 attempts, perfect → 0.6
+    expect(healFromMastery(stat(0, 0))).toBe(0);
+  });
+  it('rises monotonically with more correct practice', () => {
+    expect(healFromMastery(stat(1, 1))).toBeLessThan(healFromMastery(stat(4, 4)));
   });
 });
 

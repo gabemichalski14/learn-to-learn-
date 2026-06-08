@@ -13,7 +13,7 @@
  * mindset. See memory `barton-games-*` + the narrative spec.
  */
 import type { SkillKey } from '../../mastery/skills';
-import type { MasteryMap } from '../../mastery/mastery';
+import { scoreOf, type MasteryMap, type SkillStat } from '../../mastery/mastery';
 import { isMastered } from './plantings';
 import type { LoreState, StoryStage } from './loreStore';
 
@@ -42,6 +42,19 @@ export interface ArtSource {
   rive?: string;          // path/url to the .riv (artboard with `heal` + `mood`)
   artboard?: string;      // default 'Moss'
   stateMachine?: string;  // default matches artboard
+}
+
+/**
+ * How recovered the character is (0..1), derived from the learner's REAL mastery
+ * of the character's sound — so playing literally heals them (intrinsic fantasy):
+ * climbs with attempts + accuracy, reaches 1 (whole) once the sound is mastered.
+ */
+export function healFromMastery(stat: SkillStat | undefined): number {
+  if (!stat) return 0;
+  if (isMastered(stat)) return 1;
+  const attemptsFrac = Math.min(1, stat.attempts / 5); // RATED_MIN
+  const quality = Math.min(1, scoreOf(stat) / 0.8);     // toward the mastery bar
+  return Math.max(0, Math.min(1, attemptsFrac * quality));
 }
 
 /** Transformation stage (0 scattered → 3 whole) from a 0..1 heal fraction. Pure;

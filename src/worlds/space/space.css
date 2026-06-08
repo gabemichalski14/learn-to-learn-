@@ -355,3 +355,5 @@
 .sg-hero__fill{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#7af0d6,#f6d36b); transition:width .5s ease; }
 .sg-hero__cap{ margin:7px 0 0; font-size:12px; line-height:1.4; color:#9fc6cf; }
 @media (prefers-reduced-motion: reduce){ .sg-hero__face,.sg-warm{ animation:none; transition:none; } }
+
+.sg-win__moss{ display:flex; justify-content:center; margin:2px 0 8px; }

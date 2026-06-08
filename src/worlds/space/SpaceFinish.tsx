@@ -1,6 +1,8 @@
 import { useState, type CSSProperties } from 'react';
 import { formatTime } from '../../progress';
 import { MascotSpeaker } from '../../mascots/MascotSpeaker';
+import { CharacterArt } from '../../world/lore/CharacterArt';
+import type { ArtSource } from '../../world/lore/cast';
 
 const CONFETTI_COLORS = ['#5ef0c8', '#f7c948', '#e0683f', '#6f8ad6', '#b07cff', '#3aa0b4', '#ffffff'];
 
@@ -38,12 +40,16 @@ interface Props {
   stars: number; // 1–3
   title: string;
   beat?: string; // the level character's win line (their arc payoff)
+  homecoming?: boolean;      // the character's sound is now mastered → he's whole
+  characterEmoji?: string;
+  characterArt?: ArtSource;
+  onGarden?: () => void;     // send the healed character home to the garden
   onRestart: () => void;
   onBack: () => void;
 }
 
 /** Over-the-top "you saved the galaxy" finish overlay for a completed patrol. */
-export function SpaceFinish({ ms, best, stars, title, beat, onRestart, onBack }: Props) {
+export function SpaceFinish({ ms, best, stars, title, beat, homecoming, characterEmoji, characterArt, onGarden, onRestart, onBack }: Props) {
   const [bits] = useState(makeConfetti);
   return (
     <div className="sg-finish sg-win">
@@ -67,8 +73,10 @@ export function SpaceFinish({ ms, best, stars, title, beat, onRestart, onBack }:
 
       <div className="sg-win__card" role="dialog" aria-label="Patrol complete">
         <MascotSpeaker className="sg-win__pip" size={86} expression="excited" kinds={['celebrate', 'idle']} label="Pip" />
-        <div className="sg-win__medal"><StarMedal /></div>
-        <p className="sg-win__eyebrow">★ MISSION COMPLETE ★</p>
+        {homecoming && characterArt
+          ? <div className="sg-win__moss"><CharacterArt emoji={characterEmoji ?? '🌱'} heal={1} art={characterArt} size={120} /></div>
+          : <div className="sg-win__medal"><StarMedal /></div>}
+        <p className="sg-win__eyebrow">{homecoming ? '✦ HE’S WHOLE AGAIN ✦' : '★ MISSION COMPLETE ★'}</p>
         <h2 className="sg-win__title">{title}</h2>
         <div className="sg-win__stars" aria-label={`${stars} of 3 stars`}>
           {[0, 1, 2].map((i) => (
@@ -82,6 +90,9 @@ export function SpaceFinish({ ms, best, stars, title, beat, onRestart, onBack }:
           Patrol time <b>{formatTime(ms)}</b>{best ? ' · 🏆 NEW BEST!' : ''}
         </p>
         <div className="sg-win__btns">
+          {homecoming && onGarden && (
+            <button type="button" className="sg-btn" onClick={onGarden}>Take him home 🌼</button>
+          )}
           <button type="button" className="sg-btn" onClick={onRestart}>Fly again 🚀</button>
           <button type="button" className="sg-back" onClick={onBack}>Back to Level 2</button>
         </div>

@@ -275,3 +275,13 @@
 @media (prefers-reduced-motion: reduce){
   .lw--wake{animation:none}.lw-glow{animation:none}.lw-mote{display:none}.lw-sprout--sway{animation:none}
 }
+
+/* friend motif — a little symbol that drifts up and fades while you help a
+   friend / after they're home (skipped under reduced-motion in EasterEggs). */
+.egg--motif { position: fixed; z-index: 40; font-size: 26px; pointer-events: none;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,.2)); animation: egg-motif 5s ease-in-out forwards; }
+@keyframes egg-motif {
+  0%   { opacity: 0; transform: translateY(8px) scale(.7) rotate(0deg); }
+  18%  { opacity: .95; }
+  100% { opacity: 0; transform: translateY(-46px) scale(1.05) rotate(calc(var(--dir, 1) * 14deg)); }
+}

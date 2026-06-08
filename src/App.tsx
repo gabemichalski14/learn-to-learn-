@@ -22,12 +22,19 @@ import { GardenLevelHub } from './worlds/garden/GardenLevelHub';
 import { TapItOutGame } from './worlds/garden/TapItOutGame';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
 import { useTutorSignedIn } from './useAuth';
+import { worldMotifs } from './world/lore/cast';
+import { loadMastery } from './mastery/mastery';
 
 export default function App() {
   const route = useRoute();
   const [learnerId, setLearnerId] = useState<string>(() => ensureLearner().id);
   const isTutor = useTutorSignedIn();
   const world = useWorldTier(learnerId); // app-wide ambient richness grows with real practice
+  // Friends light up the world: their motif drifts by while you're helping them
+  // (a happy nudge) and gently after they're home. (Recomputed on navigation.)
+  const motifs = worldMotifs(loadMastery(learnerId));
+  const eggMotifs = motifs.helping.length ? motifs.helping : motifs.home;
+  const eggBoost = motifs.helping.length ? 0.3 : motifs.home.length ? 0.12 : 0;
 
   function chooseLearner(id: string) {
     setCurrentLearnerId(id);
@@ -95,7 +102,7 @@ export default function App() {
       {route.name !== 'tutor' && <MascotBuddy key={route.name} learnerId={learnerId} />}
       {/* Rare ambient surprises (Pip peek, clover, butterfly) — tier-scaled.
           Suppressed on the tutor dashboard to keep that view professional. */}
-      {route.name !== 'tutor' && <EasterEggs key={`egg-${route.name}`} tier={world.tier} />}
+      {route.name !== 'tutor' && <EasterEggs key={`egg-${route.name}`} tier={world.tier} motifs={eggMotifs} boost={eggBoost} />}
     </>
   );
 }

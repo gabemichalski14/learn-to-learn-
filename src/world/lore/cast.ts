@@ -121,6 +121,9 @@ export interface LevelCharacter {
   art?: ArtSource;
   /** Their house in the Village (a cottage PNG). Defaults to the thatched cottage. */
   house?: string;
+  /** A little symbol that drifts across the site while you're helping them /
+   *  after they're home — the world celebrates the friendship. */
+  motif?: string;
 }
 
 export const MOSS: LevelCharacter = {
@@ -180,6 +183,7 @@ export const MOSS: LevelCharacter = {
     },
   },
   house: '/characters/village/cottage.png',
+  motif: '🍃',
   // Voice = dyslexia-first (docs/art/moss-yarn-guide.md §0): short, plain words,
   // no shame, growth mindset ("not yet"), credit the learner, built to be heard.
   reactions: {
@@ -288,6 +292,7 @@ export const CHIP: LevelCharacter = {
     },
   },
   house: '/characters/village/cottage-2.png',
+  motif: '🎵',
   reactions: {
     intro: [
       "I'm Chip. I hear the song in every word… but the little beats hide from me. Will you show me how to catch them? 🦗",
@@ -367,6 +372,23 @@ export function isFullyRecovered(c: LevelCharacter, mastery: MasteryMap): boolea
  *  complete (all their hums mastered). They move in once their story is done. */
 export function gardenResidents(mastery: MasteryMap): LevelCharacter[] {
   return CAST.filter((c) => isFullyRecovered(c, mastery));
+}
+
+/**
+ * The friend symbols the world should celebrate right now: `helping` = friends
+ * you've started but not finished (their motif drifts more often, a happy nudge);
+ * `home` = fully-recovered friends (a gentler, ongoing flourish). Drives the
+ * ambient easter eggs so helping/finishing a friend literally lights up the site.
+ */
+export function worldMotifs(mastery: MasteryMap): { helping: string[]; home: string[] } {
+  const helping: string[] = [];
+  const home: string[] = [];
+  for (const c of CAST) {
+    if (!c.motif) continue;
+    if (isFullyRecovered(c, mastery)) home.push(c.motif);
+    else if (soundsOf(c).some((k) => (mastery[k]?.attempts ?? 0) > 0)) helping.push(c.motif);
+  }
+  return { helping, home };
 }
 
 /**

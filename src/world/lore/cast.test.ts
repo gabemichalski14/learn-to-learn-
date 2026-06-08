@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CAST, MOSS, CHIP, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf, gardenResidents, isFullyRecovered, isHumRecovered, storytimeScene } from './cast';
+import { CAST, MOSS, CHIP, castFor, worldMotifs, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf, gardenResidents, isFullyRecovered, isHumRecovered, storytimeScene } from './cast';
 import type { ReactionKind } from './cast';
 import { parseSkillKey } from '../../mastery/skills';
 import type { MasteryMap } from '../../mastery/mastery';
@@ -69,6 +69,16 @@ describe('garden residency (a friend moves in once their level is 100% done)', (
     const solid = { 'sound:first:m': stat(9, 10), 'sound:last:t': stat(6, 6), 'sound:medial:a': stat(6, 6) };
     expect(isFullyRecovered(MOSS, solid)).toBe(false);
     expect(gardenResidents(solid)).toEqual([]);
+  });
+});
+
+describe('worldMotifs (friends light up the world)', () => {
+  it('classifies friends as helping (in progress) vs home (recovered)', () => {
+    expect(worldMotifs({})).toEqual({ helping: [], home: [] });
+    // Chip's PA started but not done → helping
+    expect(worldMotifs({ 'pa:segment': stat(1, 2) }).helping).toContain('🎵');
+    // Moss fully recovered → home
+    expect(worldMotifs(allMastered()).home).toContain('🍃');
   });
 });
 

@@ -15,6 +15,8 @@ export interface Species {
   plant: string;
   emoji: string;
   color: string;
+  /** Painted flower art, when we have it; callers fall back to a sprout image. */
+  image?: string;
 }
 
 /**
@@ -23,9 +25,9 @@ export interface Species {
  * needs an entry — FALLBACK_SPECIES covers any gap so a planting is never unnamed.
  */
 export const SPECIES: Record<string, Species> = {
-  m: { sound: 'm', plant: 'marigold', emoji: '🌼', color: '#f4c14b' },
+  m: { sound: 'm', plant: 'marigold', emoji: '🌼', color: '#f4c14b', image: '/characters/garden/marigold.png' },
   s: { sound: 's', plant: 'sunflower', emoji: '🌻', color: '#f2a93b' },
-  t: { sound: 't', plant: 'tulip', emoji: '🌷', color: '#e86a8e' },
+  t: { sound: 't', plant: 'tulip', emoji: '🌷', color: '#e86a8e', image: '/characters/garden/tulip.png' },
   b: { sound: 'b', plant: 'bluebell', emoji: '🪻', color: '#7c83e8' },
   p: { sound: 'p', plant: 'poppy', emoji: '🌺', color: '#e8556a' },
   n: { sound: 'n', plant: 'narcissus', emoji: '🌼', color: '#f6e07a' },
@@ -44,7 +46,10 @@ export const SPECIES: Record<string, Species> = {
   u: { sound: 'u', plant: 'umbrella-flower', emoji: '🌼', color: '#f0c060' },
 };
 
-export const FALLBACK_SPECIES: Species = { sound: '', plant: 'sprout', emoji: '🌱', color: '#7bc47f' };
+export const FALLBACK_SPECIES: Species = { sound: '', plant: 'sprout', emoji: '🌱', color: '#7bc47f', image: '/characters/garden/sprout.png' };
+
+/** Painted art for a planting — its own flower if we have one, else the sprout. */
+export const PLANTING_FALLBACK_IMAGE = '/characters/garden/sprout.png';
 
 // Mirrors mastery's bar: rated (>= RATED_MIN attempts) and solid (score >= 0.8,
 // the same line areasToImprove uses to decide a skill no longer "needs work").

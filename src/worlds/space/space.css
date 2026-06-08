@@ -61,12 +61,14 @@
 /* planets (droppable baskets) */
 .sg-planets{ position:relative; z-index:3; display:flex; justify-content:center; align-items:flex-end; gap:clamp(8px,3vw,26px);
   flex-wrap:wrap; padding:8px 14px 18px; max-width:760px; margin:18px auto 0; }
-.sg-planet{ position:relative; width:clamp(56px,15vw,78px); height:clamp(56px,15vw,78px); border-radius:50%;
-  display:flex; align-items:center; justify-content:center; cursor:pointer; border:none; color:#eafcff;
-  font-weight:900; font-size:clamp(20px,5vw,26px);
-  background:radial-gradient(circle at 34% 28%, #2a6b7d 0%, #143b46 55%, #0e3340 100%);
+.sg-planet{ position:relative; width:clamp(60px,16vw,86px); height:clamp(60px,16vw,86px); border-radius:50%;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; border:none; color:#fff;
+  font-weight:900; font-size:clamp(20px,5vw,26px); background:transparent;
   transition:transform .15s ease, box-shadow .15s ease; }
-.sg-planet .lab{ position:relative; z-index:3; text-shadow:0 1px 5px rgba(0,0,0,.6); }
+/* the painted planet (hue-rotated per round in SpaceSortGame so colour never cues the vowel) */
+.sg-planet__art{ position:absolute; inset:-6%; width:112%; height:112%; object-fit:contain; z-index:1; pointer-events:none;
+  filter:hue-rotate(var(--hue, 0deg)) drop-shadow(0 4px 8px rgba(0,0,0,.35)); }
+.sg-planet .lab{ position:relative; z-index:3; text-shadow:0 1px 4px rgba(0,0,0,.85), 0 0 10px rgba(0,0,0,.6); }
 .sg-planet::before{ content:''; position:absolute; inset:-7px; border-radius:50%; border:1px solid rgba(150,230,235,.3); }
 .sg-planet::after{ content:''; position:absolute; width:130%; height:24%; border-radius:50%;
   border:1px solid rgba(150,230,235,.25); transform:rotate(-20deg); z-index:1; }

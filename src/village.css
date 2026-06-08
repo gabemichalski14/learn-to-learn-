@@ -17,6 +17,14 @@
     linear-gradient(180deg, #fdeecd 0%, #e7f5dd 100%); }
 /* the painting carries its own sky + sun, so hide the CSS ones */
 .vil-sun, .vil-cloud { display: none; }
+
+/* ambient foreground props — sit in the lower corners, behind the content */
+.vil-decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.vil-decor__lantern, .vil-decor__sign { position: absolute; bottom: 16px; height: auto; opacity: 0.96;
+  filter: drop-shadow(0 8px 14px rgba(78, 149, 104, 0.3)); }
+.vil-decor__lantern { right: 18px; width: 64px; }
+.vil-decor__sign { left: 18px; width: 84px; }
+@media (max-width: 560px) { .vil-decor__lantern { width: 48px; } .vil-decor__sign { width: 64px; } }
 .vil-sun { position: absolute; top: 5%; right: 9%; width: 76px; height: 76px; border-radius: 50%;
   background: radial-gradient(circle at 40% 40%, #ffe07a, #f5c84c);
   box-shadow: 0 0 54px 16px rgba(245, 200, 76, 0.45); animation: vil-sun 7s ease-in-out infinite alternate; }

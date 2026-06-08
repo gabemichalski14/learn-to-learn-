@@ -1,6 +1,6 @@
 import { useState, type CSSProperties } from 'react';
 import { navigate } from '../../router';
-import { plantingsFor, unacknowledgedPlantings, plantingId } from '../../world/lore/plantings';
+import { plantingsFor, unacknowledgedPlantings, plantingId, PLANTING_FALLBACK_IMAGE } from '../../world/lore/plantings';
 import { useLore, acknowledge } from '../../world/lore/loreStore';
 import { plantingPraise } from '../../world/lore/characters';
 import { masteryScore } from '../../mastery/mastery';
@@ -23,7 +23,7 @@ export function GardenPlantings({ learnerId }: { learnerId: string }) {
     <section className="gd-plantings" aria-label="Your sound flowers">
       {newest && (
         <div className="gd-bloombeat" role="status">
-          <span className="gd-bloombeat__art" aria-hidden="true">{newest.species.emoji}</span>
+          <img className="gd-bloombeat__art" src={newest.species.image ?? PLANTING_FALLBACK_IMAGE} alt="" aria-hidden="true" />
           <p className="gd-bloombeat__text">A new flower opened — <b>{newest.name}</b>. You grew that. 🌱</p>
           <button
             type="button"
@@ -56,7 +56,7 @@ export function GardenPlantings({ learnerId }: { learnerId: string }) {
                   onClick={() => setOpen(isOpen ? null : p.skillKey)}
                   aria-expanded={isOpen}
                 >
-                  <span className="gd-planting__emoji" aria-hidden="true">{p.species.emoji}</span>
+                  <img className="gd-planting__img" src={p.species.image ?? PLANTING_FALLBACK_IMAGE} alt="" aria-hidden="true" />
                   <span className="gd-planting__name">{p.name}</span>
                 </button>
                 {isOpen && (

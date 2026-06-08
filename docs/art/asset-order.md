@@ -168,3 +168,8 @@ can add whenever.
 **Later / on deck:**
 - Next character (e.g. Echo, Level 1) — design the psychology + arc first, then a 5-frame set
 - Optional: `story-moss.png` arc title card; more cottage variants
+
+**✅ Batch 2 delivered + wired:**
+- `planet.png` → Level 2 planets (hue-rotated per round; colour still never cues the vowel)
+- `marigold` / `tulip` → named garden plantings; `sprout` = fallback for any sound without its own flower
+- `lantern` / `signpost` → ambient Village props (lower corners)

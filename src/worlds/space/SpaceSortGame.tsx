@@ -43,15 +43,10 @@ interface Props {
   onRestart?: () => void;
 }
 
-/** Planet surface gradients — assigned RANDOMLY to vowels each round so colour is
- *  never a shortcut; the vowel letter (and its sound) is the only reliable cue. */
-const PLANET_GRADIENTS = [
-  'radial-gradient(circle at 34% 28%, #3aa0b4, #0e3340)',
-  'radial-gradient(circle at 34% 28%, #6f8ad6, #1d2a5a)',
-  'radial-gradient(circle at 34% 28%, #57f0c8, #0c6675)',
-  'radial-gradient(circle at 34% 28%, #d98a5a, #5e2f18)',
-  'radial-gradient(circle at 34% 28%, #b07cff, #3d1f6e)',
-];
+/** Planet hue rotations (degrees) — assigned RANDOMLY to vowels each round so
+ *  colour is never a shortcut; the vowel letter (and its sound) is the only
+ *  reliable cue. Same painted planet, recoloured. */
+const PLANET_HUES = [0, 60, 130, 200, 280];
 
 /** Over-the-top hero ranks — one picked at random when a patrol is completed. */
 const HERO_TITLES = ['GALACTIC LEGEND', 'COSMIC CHAMPION', 'STARFLEET HERO', 'NEBULA MASTER', 'SUPERNOVA STAR', 'INTERSTELLAR ACE'];
@@ -59,18 +54,20 @@ const HERO_TITLES = ['GALACTIC LEGEND', 'COSMIC CHAMPION', 'STARFLEET HERO', 'NE
 /** Human word for the sound position, used in the instructions + labels. */
 const POS_WORD: Record<SoundTarget, string> = { beginning: 'first', ending: 'last', medial: 'middle' };
 
-/** A vowel "planet" — a droppable basket. Tapping it replays its sound. */
-function Planet({ vowel, color, catching, hint, onReplay }: { vowel: string; color: string; catching: boolean; hint?: boolean; onReplay: () => void }) {
+/** A vowel "planet" — a droppable basket. Tapping it replays its sound. The
+ *  painted planet is hue-rotated per round (so colour never predicts the vowel —
+ *  the letter/sound stays the only reliable cue). */
+function Planet({ vowel, hue, catching, hint, onReplay }: { vowel: string; hue: number; catching: boolean; hint?: boolean; onReplay: () => void }) {
   const { setNodeRef, isOver } = useDroppable({ id: vowel });
   return (
     <button
       ref={setNodeRef}
       type="button"
-      style={{ background: color }}
       className={`sg-planet${isOver ? ' sg-planet--over' : ''}${catching ? ' sg-planet--catch' : ''}${hint ? ' sg-planet--hint' : ''}`}
       onClick={onReplay}
       aria-label={`Planet for the ${vowel} sound — tap to hear it`}
     >
+      <img className="sg-planet__art" src="/characters/space/planet.png" alt="" aria-hidden="true" style={{ '--hue': `${hue}deg` } as CSSProperties} />
       <span className="lab">{vowel}</span>
       {catching && (
         <span className="sg-burst" aria-hidden="true">
@@ -143,16 +140,17 @@ export function SpaceSortGame({
   // playing literally heals him (intrinsic). Persists across sessions; rises as
   // correct answers raise that sound's mastery. Drives his art + the scene warmth.
   const [heal, setHeal] = useState(() => (character ? healFor(character, loadMastery(learnerId)) : 0));
-  // Shuffle the palette across THIS round's planets so colour never predicts the
-  // vowel. Lazy init (runs once per mount; the screen remounts each round) keeps
-  // colours stable mid-round and re-rolls them every new sector — no pattern.
-  const [planetColors] = useState<Record<string, string>>(() => {
-    const pal = [...PLANET_GRADIENTS];
+  // Shuffle planet HUES across THIS round's planets so colour never predicts the
+  // vowel (the painted planet is the same art, just hue-rotated). Lazy init (runs
+  // once per mount; the screen remounts each round) keeps hues stable mid-round
+  // and re-rolls them every new sector — no pattern.
+  const [planetHues] = useState<Record<string, number>>(() => {
+    const pal = [...PLANET_HUES];
     for (let i = pal.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [pal[i], pal[j]] = [pal[j], pal[i]];
     }
-    const map: Record<string, string> = {};
+    const map: Record<string, number> = {};
     round.baskets.forEach((v, i) => { map[v] = pal[i % pal.length]; });
     return map;
   });
@@ -304,7 +302,7 @@ export function SpaceSortGame({
 
           <div className="sg-planets">
             {round.baskets.map((v) => (
-              <Planet key={v} vowel={v} color={planetColors[v]} catching={catching === v} hint={hintBasket === v} onReplay={() => { pingEcho(); game.replaySound(v); }} />
+              <Planet key={v} vowel={v} hue={planetHues[v]} catching={catching === v} hint={hintBasket === v} onReplay={() => { pingEcho(); game.replaySound(v); }} />
             ))}
           </div>
 

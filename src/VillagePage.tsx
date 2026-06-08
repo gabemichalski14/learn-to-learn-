@@ -29,6 +29,10 @@ export function VillagePage({ learnerId }: { learnerId: string }) {
         <span className="vil-cloud vil-cloud--1" />
         <span className="vil-cloud vil-cloud--2" />
       </div>
+      <div className="vil-decor" aria-hidden="true">
+        <img className="vil-decor__sign" src="/characters/village/signpost.png" alt="" />
+        <img className="vil-decor__lantern" src="/characters/village/lantern.png" alt="" />
+      </div>
 
       <header className="vil-hud">
         <button type="button" className="vil-back" onClick={() => goBack('#/')}>← Home</button>

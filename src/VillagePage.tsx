@@ -62,7 +62,7 @@ export function VillagePage({ learnerId }: { learnerId: string }) {
           {residents.map((c) => (
             <li key={c.id} className="vil-home">
               <div className="vil-home__scene">
-                <img className="vil-home__house" src="/characters/village/cottage.png" alt="" aria-hidden="true" />
+                <img className="vil-home__house" src={c.house ?? '/characters/village/cottage.png'} alt="" aria-hidden="true" />
                 <span className="vil-home__art">
                   <CharacterArt emoji={c.emoji} heal={1} size={78} art={c.art} label={c.name} />
                 </span>

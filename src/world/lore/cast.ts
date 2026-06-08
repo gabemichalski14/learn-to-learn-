@@ -119,6 +119,8 @@ export interface LevelCharacter {
   reactions: Partial<Record<ReactionKind, string[]>>;
   /** Real art, once it exists (Rive). Optional — placeholder until then. */
   art?: ArtSource;
+  /** Their house in the Village (a cottage PNG). Defaults to the thatched cottage. */
+  house?: string;
 }
 
 export const MOSS: LevelCharacter = {
@@ -177,6 +179,7 @@ export const MOSS: LevelCharacter = {
       bloom: '/characters/moss/bloom.png',
     },
   },
+  house: '/characters/village/cottage.png',
   // Voice = dyslexia-first (docs/art/moss-yarn-guide.md §0): short, plain words,
   // no shame, growth mindset ("not yet"), credit the learner, built to be heard.
   reactions: {
@@ -284,6 +287,7 @@ export const CHIP: LevelCharacter = {
       bloom: '/characters/chip/bloom.png',
     },
   },
+  house: '/characters/village/cottage-2.png',
   reactions: {
     intro: [
       "I'm Chip. I hear the song in every word… but the little beats hide from me. Will you show me how to catch them? 🦗",

@@ -41,6 +41,15 @@ export interface Persona {
  *  attachment), so they live inside the game, not just on the hub. */
 export type ReactionKind = 'intro' | 'teach' | 'correct' | 'wrong' | 'clear' | 'win';
 
+/** What a resident teaches when you visit them in the Village — a tiny authored
+ *  lesson that ties CURRICULUM (their sound + position; structured-literacy,
+ *  one-sound-at-a-time, multisensory) to RESEARCH (their dyslexic strength,
+ *  difference-not-deficit). Dyslexia-first: short steps, plain words, heard. */
+export interface Teaching {
+  title: string;
+  lines: string[];
+}
+
 /** Where a character's real art lives (set once a Rive file / images exist).
  *  Until then `CharacterArt` renders a transforming emoji placeholder. */
 export interface ArtSource {
@@ -100,6 +109,8 @@ export interface LevelCharacter {
   /** Gentle closing lines for the resident's cozy "storytime" (after they've
    *  retold their recovered memories). Authored, dyslexia-first. */
   storytime?: string[];
+  /** The little lesson they teach when you visit them in the Village. */
+  teaching?: Teaching;
   /** Where helping happens (the level's game). */
   playRoute: string;
   /** Authored beat lines per story stage (hub). */
@@ -140,6 +151,20 @@ export const MOSS: LevelCharacter = {
     "Funny thing: losing my sounds is how I found you. I'm so glad I did. 🌼",
     "I'm not lost any more. I live here now, with you. Come back soon. 🌱",
   ],
+  // The Village lesson — Moss's structured-literacy method, framed as his gift.
+  // (Curriculum: first/middle/end sound + one-at-a-time, multisensory. Research:
+  // spatial strength, difference-not-deficit, "hear it, say it, see it, plant it".)
+  teaching: {
+    title: 'How to catch a slippery sound',
+    lines: [
+      'Little sounds are slippery — they were for me, too. Here is how I hold them. 🌱',
+      'Hear it. Say the word out loud, nice and slow.',
+      'Say it. Stretch the sound you want — mmm, t, ahh.',
+      'See it. Is it at the start, the middle, or the end?',
+      'Plant it. Send it to its place. Just one sound at a time.',
+      "Big pictures come easy to me. The little sounds just need my way. That's not broken — that's how I think. 💚",
+    ],
+  },
   playRoute: '#/play/beginning-sounds',
   // Flat transparent PNGs dropped in public/characters/moss/ (see the README
   // there). Until the files exist, CharacterArt's onError falls back to the emoji.

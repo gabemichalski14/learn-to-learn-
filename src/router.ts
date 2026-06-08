@@ -11,6 +11,7 @@ export type RouteName =
   | 'levels'
   | 'play'
   | 'games'
+  | 'village'
   | 'leaderboard'
   | 'tutor'
   | 'profile'
@@ -30,6 +31,7 @@ export function parseHash(hash: string): Route {
     const focus = new URLSearchParams(query ?? '').get('focus') ?? undefined;
     return { name: 'play', game: gamePart || 'beginning-sounds', focus };
   }
+  if (h.startsWith('village')) return { name: 'village' };
   if (h.startsWith('leaderboard')) return { name: 'leaderboard' };
   if (h.startsWith('tutor')) return { name: 'tutor' };
   if (h.startsWith('account')) return { name: 'account' };

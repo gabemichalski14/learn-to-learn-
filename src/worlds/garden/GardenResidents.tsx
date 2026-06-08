@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { navigate } from '../../router';
 import { useDataVersion } from '../../data/store';
 import { loadMastery } from '../../mastery/mastery';
 import { gardenResidents, storytimeScene, type LevelCharacter } from '../../world/lore/cast';
@@ -38,6 +39,9 @@ export function GardenResidents({ learnerId }: { learnerId: string }) {
           </li>
         ))}
       </ul>
+      <button type="button" className="gd-residents__village" onClick={() => navigate('#/village')}>
+        Visit the Village 🏡 →
+      </button>
       {open && (
         <Storytime character={open.character} lines={open.lines} onClose={() => setOpen(null)} />
       )}

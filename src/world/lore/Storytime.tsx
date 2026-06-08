@@ -13,9 +13,11 @@ import './storytime.css';
  * memory-aware `storytimeScene` (their recovered hums), so it reflects what the
  * learner actually did. The last page blooms.
  */
-export function Storytime({ character, lines, onClose }: {
+export function Storytime({ character, lines, title, onClose }: {
   character: LevelCharacter;
   lines: string[];
+  /** Optional heading (e.g. a Village lesson title); omitted for plain stories. */
+  title?: string;
   onClose: () => void;
 }) {
   const audio = useMemo(() => createStubAudioPlayer(), []);
@@ -61,6 +63,7 @@ export function Storytime({ character, lines, onClose }: {
             label={character.name}
           />
           <p className="st-name">{character.name}</p>
+          {title && <p className="st-title">{title}</p>}
         </div>
 
         <p className="st-line" role="status" aria-live="polite" key={i}>{line}</p>

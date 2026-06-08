@@ -8,6 +8,7 @@ import { TutorDashboard } from './TutorDashboard';
 import { Account } from './Account';
 import { LevelsPage } from './LevelsPage';
 import { GamesPage } from './GamesPage';
+import { VillagePage } from './VillagePage';
 import { ProfilePage } from './ProfilePage';
 import { NavDrawer } from './NavDrawer';
 import { SiteFooter } from './SiteFooter';
@@ -60,6 +61,9 @@ export default function App() {
       break;
     case 'games':
       page = <GamesPage />;
+      break;
+    case 'village':
+      page = <VillagePage learnerId={learnerId} />;
       break;
     case 'leaderboard':
       page = <Leaderboard />;

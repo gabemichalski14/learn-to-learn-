@@ -1,0 +1,78 @@
+/* ============================================================
+   The Sound Garden Village — cozy home of the friends you've helped.
+   Warm meadow hamlet; each recovered friend gets a little house.
+   ============================================================ */
+.vil {
+  position: relative; min-height: 100vh; min-height: 100dvh; z-index: 1;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0 16px 64px; color: #1f4733;
+  font-family: 'Poppins', -apple-system, system-ui, sans-serif; overflow: hidden;
+}
+
+/* sky wash + drifting clouds + sun */
+.vil-sky { position: absolute; inset: 0; z-index: -1; overflow: hidden;
+  background:
+    radial-gradient(60% 40% at 82% 6%, rgba(255, 219, 150, 0.6), transparent 60%),
+    linear-gradient(180deg, #fdeecd 0%, #f3f0d9 46%, #e7f5dd 100%); }
+.vil-sun { position: absolute; top: 5%; right: 9%; width: 76px; height: 76px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #ffe07a, #f5c84c);
+  box-shadow: 0 0 54px 16px rgba(245, 200, 76, 0.45); animation: vil-sun 7s ease-in-out infinite alternate; }
+@keyframes vil-sun { from { transform: scale(1); } to { transform: scale(1.06); } }
+.vil-cloud { position: absolute; width: 120px; height: 34px; background: #fff; border-radius: 40px; opacity: 0.9;
+  box-shadow: 28px 8px 0 -4px #fff, -30px 10px 0 -2px #fff; animation: vil-drift linear infinite; }
+.vil-cloud--1 { top: 14%; animation-duration: 66s; }
+.vil-cloud--2 { top: 26%; transform: scale(1.3); opacity: 0.78; animation-duration: 92s; animation-delay: -36s; }
+@keyframes vil-drift { from { left: -22%; } to { left: 118%; } }
+
+/* HUD */
+.vil-hud { width: 100%; max-width: 860px; display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 16px 4px; }
+.vil-back { border: none; background: rgba(255, 255, 255, 0.72); color: #2f7d56; font: inherit; font-weight: 800;
+  font-size: 13px; border-radius: 999px; padding: 8px 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(78, 149, 104, 0.18); }
+.vil-back:focus-visible { outline: 3px solid #173d2a; outline-offset: 2px; }
+.vil-badge { font-weight: 800; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #2f7d56; }
+
+/* Pip host + welcome */
+.vil-host { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center;
+  max-width: 640px; margin: 8px auto 26px; text-align: left; }
+.vil-host__say {
+  flex: 1 1 280px; background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(78, 149, 104, 0.2);
+  border-radius: 20px; padding: 16px 18px; box-shadow: 0 14px 30px rgba(78, 149, 104, 0.22);
+}
+.vil-host__say p { margin: 0 0 8px; font-size: 15px; line-height: 1.5; color: #235c40; }
+.vil-host__say p:last-child { margin-bottom: 0; }
+.vil-host__hi { font-weight: 800; color: #1f5236 !important; }
+.vil-cta { margin-top: 6px; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; border: none; color: #fff;
+  min-height: 44px; background: linear-gradient(135deg, #f5b13c, #ef962a); padding: 11px 20px; border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(239, 150, 42, 0.4); }
+.vil-cta:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+
+/* the hamlet — a row of little houses */
+.vil-row { list-style: none; margin: 0 auto; padding: 0; width: 100%; max-width: 860px;
+  display: flex; flex-wrap: wrap; gap: 22px; justify-content: center; }
+.vil-home {
+  position: relative; width: 240px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 30px 18px 18px; border-radius: 22px;
+  background: linear-gradient(180deg, #fffdf6 0%, #fff4dd 100%);
+  border: 1px solid rgba(120, 86, 38, 0.16);
+  box-shadow: 0 18px 38px rgba(78, 149, 104, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+.vil-home__roof { position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0; border-left: 130px solid transparent; border-right: 130px solid transparent;
+  border-bottom: 34px solid #cf7d4a; filter: drop-shadow(0 -3px 6px rgba(0,0,0,0.12)); }
+.vil-home__art { filter: drop-shadow(0 8px 14px rgba(78, 149, 104, 0.34)); animation: vil-bob 3.8s ease-in-out infinite alternate; }
+@keyframes vil-bob { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+.vil-home__name { margin: 2px 0 0; font-weight: 800; font-size: 18px; color: #1f5236; }
+.vil-home__strength { margin: 0; font-size: 12.5px; line-height: 1.4; color: #5e8a6f; text-align: center; min-height: 2.6em; }
+.vil-home__acts { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 8px; }
+.vil-btn { font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; border: none; min-height: 44px;
+  border-radius: 999px; padding: 11px 14px; }
+.vil-btn--story { color: #fff; background: linear-gradient(135deg, #6bae7f, #4e9568); box-shadow: 0 8px 16px rgba(78, 149, 104, 0.36); }
+.vil-btn--learn { color: #2f7d56; background: rgba(255, 255, 255, 0.7); border: 1.5px solid #8ecf9f; }
+.vil-btn:active { transform: scale(0.98); }
+.vil-btn:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .vil-sun, .vil-cloud, .vil-home__art { animation: none; }
+  .vil-btn:active { transform: none; }
+}

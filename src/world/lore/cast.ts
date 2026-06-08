@@ -30,10 +30,16 @@ export interface Persona {
  *  attachment), so they live inside the game, not just on the hub. */
 export type ReactionKind = 'intro' | 'correct' | 'wrong' | 'clear' | 'win';
 
-/** Where a character's real art lives (set once a Rive file / sprites exist).
+/** Where a character's real art lives (set once a Rive file / images exist).
  *  Until then `CharacterArt` renders a transforming emoji placeholder. */
 export interface ArtSource {
-  rive?: string;          // path/url to the .riv (artboard with a `heal` + `mood` state machine)
+  /** A single base image (flat, transparent PNG). CSS does the heal transform
+   *  (grey/small → colour/whole) right on it — the simplest free route. */
+  image?: string;
+  /** Optional per-expression frames; the matching one is shown on that mood. */
+  frames?: Partial<Record<'idle' | 'cheer' | 'wobble' | 'point' | 'bloom', string>>;
+  /** Rive upgrade path (fluid vector). Takes precedence over images when present. */
+  rive?: string;          // path/url to the .riv (artboard with `heal` + `mood`)
   artboard?: string;      // default 'Moss'
   stateMachine?: string;  // default matches artboard
 }

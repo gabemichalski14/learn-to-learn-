@@ -23,11 +23,30 @@ export function CharacterArt({
   art?: ArtSource;          // when present (future), render Rive instead of emoji
   label?: string;
 }) {
-  void art; // reserved for the Rive renderer drop-in (keeps the seam explicit)
   const stage = healStage(heal);
+  const cls = `char-art char-art--s${stage}${mood ? ` char-art--${mood}` : ''}`;
+
+  // Real flat art (transparent PNG): the matching expression frame if we have
+  // one for the current mood, else the base image. CSS still does the heal
+  // transform (grey/small → colour/whole) right on the <img>. (Rive drop-in
+  // when `art.rive` lands will replace this branch.)
+  const frame = (mood && art?.frames?.[mood]) || art?.image;
+  if (frame) {
+    return (
+      <img
+        className={cls}
+        style={{ width: `${size}px`, height: 'auto', '--heal': heal } as CSSProperties}
+        src={frame}
+        alt={label ?? ''}
+        draggable={false}
+      />
+    );
+  }
+
+  // Emoji placeholder (still transforms with progress) until art exists.
   return (
     <span
-      className={`char-art char-art--s${stage}${mood ? ` char-art--${mood}` : ''}`}
+      className={cls}
       style={{ fontSize: `${size}px`, '--heal': heal } as CSSProperties}
       role="img"
       aria-label={label}

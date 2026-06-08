@@ -10,7 +10,8 @@
 .char-art--s0 { filter: grayscale(1) brightness(.85); opacity: .5; transform: scale(.82); }
 .char-art--s1 { filter: grayscale(.6) brightness(.95); opacity: .72; transform: scale(.9); }
 .char-art--s2 { filter: grayscale(.25); opacity: .9; transform: scale(.97); }
-.char-art--s3 { filter: none; opacity: 1; transform: scale(1); text-shadow: 0 0 14px rgba(255, 214, 120, .55); }
+.char-art--s3 { filter: drop-shadow(0 0 14px rgba(255, 214, 120, .55)); opacity: 1; transform: scale(1); }
+img.char-art { object-fit: contain; }
 
 .char-art--cheer { animation: char-cheer .6s ease; }
 .char-art--wobble { animation: char-wobble .6s ease; }

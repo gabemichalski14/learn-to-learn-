@@ -3,6 +3,10 @@ import { navigate } from '../../router';
 import { useLore, setStoryStage, acknowledge } from '../../world/lore/loreStore';
 import { loadMastery } from '../../mastery/mastery';
 import { castFor, characterStage, beatFor, healedBeatId } from '../../world/lore/cast';
+import { CharacterArt } from '../../world/lore/CharacterArt';
+
+/** How "whole" the character looks on the hub, by story stage. */
+const STAGE_HEAL: Record<string, number> = { arrived: 0.12, healing: 0.5, healed: 1, resident: 1 };
 
 /**
  * A level's character arc, surfaced on the level hub. The friend you meet asks
@@ -32,7 +36,9 @@ export function LevelStory({ learnerId, level }: { learnerId: string; level: num
 
   return (
     <section className={`sg-story sg-story--${stage}`} aria-label={`${character.name}'s story`}>
-      <span className="sg-story__face" aria-hidden="true">{character.emoji}</span>
+      <span className="sg-story__face">
+        <CharacterArt emoji={character.emoji} heal={STAGE_HEAL[stage] ?? 1} size={72} art={character.art} label={character.name} />
+      </span>
       <div className="sg-story__body">
         <p className="sg-story__name">{character.name}{stage === 'arrived' ? ' needs your help' : ''}</p>
         <p className="sg-story__beat" role="status">{beat}</p>

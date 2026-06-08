@@ -7,10 +7,13 @@
 
 /* ---- backdrop ---- */
 .gd-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden;
-  /* golden-hour wash to match the cozy app palette (warm sky -> warm meadow) */
+  /* painted Sound Garden backdrop + a soft warm wash for cohesion/legibility */
   background:
-    radial-gradient(70% 50% at 84% 4%, rgba(255, 214, 150, 0.6), transparent 60%),
-    linear-gradient(180deg, #fdeecd 0%, #f6f0d8 44%, #eaf6df 100%); }
+    linear-gradient(180deg, rgba(253, 238, 205, 0.28) 0%, rgba(246, 240, 216, 0.12) 50%, rgba(234, 246, 223, 0.40) 100%),
+    url('/backgrounds/garden.jpg') center / cover no-repeat,
+    linear-gradient(180deg, #fdeecd 0%, #eaf6df 100%); }
+/* the painting carries its own sky + hills, so hide the CSS scenery to avoid clashing */
+.gd-bg .gd-sun, .gd-bg .gd-cloud, .gd-bg .gd-hill { display: none; }
 .gd-sun { position: absolute; top: 6%; right: 9%; width: 84px; height: 84px; border-radius: 50%;
   background: radial-gradient(circle at 40% 40%, #ffe07a, #f5c84c); box-shadow: 0 0 60px 18px rgba(245, 200, 76, 0.45);
   animation: gd-sun 7s ease-in-out infinite alternate; }

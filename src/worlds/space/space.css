@@ -8,7 +8,10 @@
 /* decorative layer: clips the rocket/nebulae/stars that fly off-screen, so the
    .sg itself never needs overflow:hidden — gameplay can grow + the page scrolls
    on short/landscape screens instead of being cut off. */
-.sg-bg{ position:absolute; inset:0; overflow:hidden; z-index:0; }
+.sg-bg{ position:absolute; inset:0; overflow:hidden; z-index:0;
+  background: url('/backgrounds/space.jpg') center / cover no-repeat #0c1430; }
+/* the painting is the nebula now — hide the CSS blobs, keep twinkling stars + rocket for life */
+.sg-neb{ display:none; }
 /* the play area — centred vertically between HUD and footer; on a short screen
    it simply grows and the page scrolls (no clipping). */
 .sg-stage{ position:relative; z-index:1; flex:1 1 auto; min-height:0; width:100%;

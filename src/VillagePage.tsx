@@ -57,10 +57,13 @@ export function VillagePage({ learnerId }: { learnerId: string }) {
         <ul className="vil-row">
           {residents.map((c) => (
             <li key={c.id} className="vil-home">
-              <div className="vil-home__roof" aria-hidden="true" />
-              <div className="vil-home__art">
-                <CharacterArt emoji={c.emoji} heal={1} size={92} art={c.art} label={c.name} />
+              <div className="vil-home__scene">
+                <img className="vil-home__house" src="/characters/village/cottage.png" alt="" aria-hidden="true" />
+                <span className="vil-home__art">
+                  <CharacterArt emoji={c.emoji} heal={1} size={78} art={c.art} label={c.name} />
+                </span>
               </div>
+              <div className="vil-home__card">
               <p className="vil-home__name">{c.name}</p>
               <p className="vil-home__strength">{c.strength}</p>
               <div className="vil-home__acts">
@@ -80,6 +83,7 @@ export function VillagePage({ learnerId }: { learnerId: string }) {
                     ✨ Learn from {c.name}
                   </button>
                 )}
+              </div>
               </div>
             </li>
           ))}

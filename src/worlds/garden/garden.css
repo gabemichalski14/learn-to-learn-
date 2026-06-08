@@ -56,7 +56,9 @@
   border: none; color: #fff; background: linear-gradient(135deg, #6bae7f, #4e9568); padding: 9px 20px; border-radius: 999px;
   box-shadow: 0 6px 16px rgba(78, 149, 104, 0.4); }
 .gd-hear:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
-.gd-ask { margin: 2px 0; font-size: clamp(15px, 3.4vw, 18px); font-weight: 700; color: #235c40; }
+.gd-ask { margin: 2px 0; font-size: clamp(15px, 3.4vw, 18px); font-weight: 700; color: #235c40;
+  display: inline-block; background: rgba(255, 255, 255, 0.8); padding: 7px 16px; border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(78, 149, 104, 0.18); }
 
 /* sprout row */
 .gd-row { display: flex; align-items: flex-end; justify-content: center; gap: 10px; min-height: 64px; flex-wrap: wrap; }

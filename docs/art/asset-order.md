@@ -150,3 +150,21 @@ Name `story-moss.png`. Nice-to-have, not needed to ship.
 
 **Minimum to make a real difference:** the ⭐ first 5. Everything else is depth you
 can add whenever.
+
+---
+
+## Status log (keep current as we go)
+
+**✅ Delivered + wired (commit 958c59f):**
+- `village-bg` → Village backdrop · `garden-bg` (tilled rows) → Sound Garden · `space-bg` (nebula) → Vowel Patrol
+- `cottage` → village houses (friend stands in the doorway)
+- Moss redesign: `calm` (from model sheet) / `cheer` / `point` / `bloom` / `wobble` (from confused)
+
+**🎯 Next batch (requested):**
+- `planet.png` (1024², white bg) — core Level 2 polish; I tint per vowel
+- `flower-marigold.png`, `flower-sprout.png`, `flower-tulip.png` (1024², white bg) — garden plantings
+- `lantern.png`, `signpost.png` (1024², white bg) — village dressing
+
+**Later / on deck:**
+- Next character (e.g. Echo, Level 1) — design the psychology + arc first, then a 5-frame set
+- Optional: `story-moss.png` arc title card; more cottage variants

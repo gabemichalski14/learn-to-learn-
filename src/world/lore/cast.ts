@@ -111,13 +111,15 @@ export const MOSS: LevelCharacter = {
   },
   skillKey: 'sound:first:m',
   soundId: 'm',
-  // When Moss scattered, several of his hums flew off — recover them ALL to make
-  // him whole (longer, harder arc; each one returns a memory).
-  sounds: ['sound:first:m', 'sound:first:s', 'sound:first:b'],
+  // When Moss scattered, his hums flew across the WHOLE level — one into each Space
+  // game (Blast Off /m/, Touchdown /t/, Vowel Patrol /a/). Recover them ALL to make
+  // him whole, so finishing his level means playing every one of its games. Each
+  // recovered hum returns a memory.
+  sounds: ['sound:first:m', 'sound:last:t', 'sound:medial:a'],
   fragments: {
-    m: ['…I remember now — I used to hum to the moon-moths, low and warm. Mmm. That was me. 🌙'],
-    s: ["The sea! I'd hush along with the waves on the shore… sss. It's coming back. 🌊"],
-    b: ['And the big drum of my heart — buh, buh — I thumped it whenever I was brave. 🥁'],
+    m: ["…I remember — I'd hum to the moon-moths, low and warm. Mmm. That was me. 🌙"],
+    t: ['The tip-tap of rain on the leaves… t, t, t. I used to dance to it. ☔'],
+    a: ["And my warm sigh in the sun — ahh. /a/. That one's mine too. ☀️"],
   },
   playRoute: '#/play/beginning-sounds',
   // Flat transparent PNGs dropped in public/characters/moss/ (see the README
@@ -196,6 +198,18 @@ export function healFor(c: LevelCharacter, mastery: MasteryMap): number {
   const sounds = soundsOf(c);
   if (!sounds.length) return 0;
   return sounds.reduce((sum, k) => sum + healFromMastery(mastery[k]), 0) / sounds.length;
+}
+
+/** Fully recovered = every one of the character's scattered hums is mastered =
+ *  their whole level is complete (you've played all its games). */
+export function isFullyRecovered(c: LevelCharacter, mastery: MasteryMap): boolean {
+  return soundsOf(c).every((k) => isMastered(mastery[k]));
+}
+
+/** The characters who now LIVE in the garden — those whose level is fully
+ *  complete (all their hums mastered). They move in once their story is done. */
+export function gardenResidents(mastery: MasteryMap): LevelCharacter[] {
+  return CAST.filter((c) => isFullyRecovered(c, mastery));
 }
 
 /**

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf } from './cast';
+import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf, gardenResidents, isFullyRecovered } from './cast';
 import type { ReactionKind } from './cast';
 import { parseSkillKey } from '../../mastery/skills';
 import type { MasteryMap } from '../../mastery/mastery';
@@ -45,6 +45,21 @@ describe('characterStage (needs ALL his sounds for healed)', () => {
     const whole = allMastered();
     expect(characterStage(MOSS, lore(), whole)).toBe('healed');
     expect(characterStage(MOSS, lore({ stories: { moss: { stage: 'resident' } } }), whole)).toBe('resident');
+  });
+});
+
+describe('garden residency (a friend moves in once their level is 100% done)', () => {
+  it('isFullyRecovered needs every scattered hum mastered', () => {
+    expect(isFullyRecovered(MOSS, {})).toBe(false);
+    // two of three mastered → not yet home
+    expect(isFullyRecovered(MOSS, { 'sound:first:m': stat(6, 6), 'sound:last:t': stat(6, 6) })).toBe(false);
+    expect(isFullyRecovered(MOSS, allMastered())).toBe(true);
+  });
+  it('gardenResidents lists only the fully-recovered cast', () => {
+    expect(gardenResidents({})).toEqual([]);
+    // partway through Moss's level → still nobody lives here
+    expect(gardenResidents({ 'sound:first:m': stat(6, 6) })).toEqual([]);
+    expect(gardenResidents(allMastered())).toEqual([MOSS]);
   });
 });
 

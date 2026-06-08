@@ -60,7 +60,7 @@ describe('the real Moss script (content/moss.yarn)', () => {
     for (const kind of ['intro', 'correct', 'wrong', 'clear', 'win'] as const) {
       expect(content.reactions[kind]?.length).toBeGreaterThan(0);
     }
-    for (const sound of ['m', 's', 'b']) {
+    for (const sound of ['m', 't', 'a']) {
       expect(content.fragments[sound]?.length).toBeGreaterThan(0);
     }
   });

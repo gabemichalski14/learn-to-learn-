@@ -47,12 +47,13 @@ text — no need for `<<commands>>` or options; the loader ignores those.
 - `Win` — finishing the patrol (session).
 
 **Memories — one per scattered hum** (revealed the moment that sound is mastered)
-- `Fragment_m` — the memory tied to **/m/** (his hum).
-- `Fragment_s` — the memory tied to **/s/**.
-- `Fragment_b` — the memory tied to **/b/**.
+- `Fragment_m` — the memory tied to **/m/** (his hum, from Blast Off).
+- `Fragment_t` — the memory tied to **/t/** (from Touchdown).
+- `Fragment_a` — the memory tied to **/a/** (from Vowel Patrol).
 
-> These three sounds are his "scattered hums" — recovering all of them is what
-> makes him whole. (If you want a different set, tell me and I'll match it.)
+> These three sounds are his "scattered hums" — one hides in each of Level 2's
+> games, so recovering all of them (and making Moss whole) means finishing the
+> whole level. The node names must match these exact sounds.
 
 ## 3. Voice guide (so it feels like Moss)
 Shy, warm, earnest, a little funny; never babyish; growth-minded; difference-not-
@@ -88,13 +89,13 @@ title: Fragment_m
 ---
 …I remember now — I used to hum to the moon-moths, low and warm. Mmm. That was me. 🌙
 ===
-title: Fragment_s
+title: Fragment_t
 ---
-The sea! I'd hush along with the waves on the shore… sss. It's coming back. 🌊
+The tip-tap of rain on the leaves… t, t, t. I used to dance to it. ☔
 ===
-title: Fragment_b
+title: Fragment_a
 ---
-And the big drum of my heart — buh, buh — I thumped it whenever I was brave. 🥁
+And my warm sigh in the sun — ahh. /a/. That one's mine too. ☀️
 ===
 ```
 

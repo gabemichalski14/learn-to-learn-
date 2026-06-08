@@ -5,6 +5,7 @@ import { useProgress } from '../../data/store';
 import { GardenBackdrop, SproutGuide } from './GardenArt';
 import { GardenMeadow } from './GardenMeadow';
 import { GardenPlantings } from './GardenPlantings';
+import { GardenResidents } from './GardenResidents';
 import { bloomCount } from './gardenGrowth';
 import './garden.css';
 
@@ -39,6 +40,7 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
         <p className="gd-hub__lead">{lvl.focus}</p>
         <p className="gd-hub__grown">🌷 Your garden: <b>{blooms}</b> blooms — every sound you learn plants another!</p>
 
+        <GardenResidents learnerId={learnerId} />
         <GardenPlantings learnerId={learnerId} />
 
         <div className="gd-missions">

@@ -56,5 +56,6 @@ export function createStubAudioPlayer(): AudioPlayer {
   return {
     playSound: (soundId: string) => speak(soundId),
     playWord: (item: WordItem) => speak(item.label),
+    narrate: (text: string) => speak(text),
   };
 }

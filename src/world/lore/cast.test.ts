@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf, gardenResidents, isFullyRecovered } from './cast';
+import { CAST, MOSS, castFor, characterStage, beatFor, reactionLine, healStage, healFromMastery, healFor, fragmentToReveal, fragmentId, soundsOf, gardenResidents, isFullyRecovered, storytimeScene } from './cast';
 import type { ReactionKind } from './cast';
 import { parseSkillKey } from '../../mastery/skills';
 import type { MasteryMap } from '../../mastery/mastery';
@@ -84,6 +84,30 @@ describe('fragmentToReveal (a memory per recovered sound)', () => {
   });
   it('returns null when nothing new is mastered', () => {
     expect(fragmentToReveal(MOSS, lore(), {})).toBeNull();
+  });
+});
+
+describe('storytimeScene (the cozy story a resident tells)', () => {
+  it('is opening beat + every recovered memory + a gentle close', () => {
+    const scene = storytimeScene(MOSS, allMastered(), () => 0);
+    expect(scene[0]).toBe(MOSS.beats.resident![0]);        // warm opening
+    expect(scene).toContain(MOSS.fragments!.m[0]);          // each recovered hum's memory
+    expect(scene).toContain(MOSS.fragments!.t[0]);
+    expect(scene).toContain(MOSS.fragments!.a[0]);
+    expect(scene[scene.length - 1]).toBe(MOSS.storytime![0]); // gentle close
+    expect(scene.length).toBe(5); // open + 3 memories + close
+  });
+  it('is memory-aware: only includes memories for sounds actually mastered', () => {
+    const scene = storytimeScene(MOSS, { 'sound:first:m': stat(6, 6) }, () => 0);
+    expect(scene).toContain(MOSS.fragments!.m[0]);
+    expect(scene).not.toContain(MOSS.fragments!.t[0]);
+    expect(scene).not.toContain(MOSS.fragments!.a[0]);
+  });
+  it('never yields empty/undefined lines', () => {
+    for (const line of storytimeScene(MOSS, allMastered())) {
+      expect(line.length).toBeGreaterThan(0);
+      expect(line).not.toContain('undefined');
+    }
   });
 });
 

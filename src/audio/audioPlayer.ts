@@ -7,4 +7,7 @@ import type { WordItem } from '../domain/types';
 export interface AudioPlayer {
   playSound(soundId: string): Promise<void>;
   playWord(item: WordItem): Promise<void>;
+  /** Read an authored line aloud (storytime narration). Best-effort: honours the
+   *  global mute. The recorded-voice player can pre-record these fixed lines. */
+  narrate(text: string): Promise<void>;
 }

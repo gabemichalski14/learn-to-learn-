@@ -7,6 +7,7 @@ import type { AudioPlayer } from '../../audio/audioPlayer';
 const fakeAudio = (): AudioPlayer => ({
   playSound: vi.fn().mockResolvedValue(undefined),
   playWord: vi.fn().mockResolvedValue(undefined),
+  narrate: vi.fn().mockResolvedValue(undefined),
 });
 
 const round: SortRound = {

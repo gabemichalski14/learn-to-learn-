@@ -24,7 +24,7 @@ const round: SortRound = {
 };
 
 function fakeAudio(): AudioPlayer {
-  return { playSound: vi.fn().mockResolvedValue(undefined), playWord: vi.fn().mockResolvedValue(undefined) };
+  return { playSound: vi.fn().mockResolvedValue(undefined), playWord: vi.fn().mockResolvedValue(undefined), narrate: vi.fn().mockResolvedValue(undefined) };
 }
 
 describe('useSortGame', () => {

@@ -86,6 +86,9 @@ export interface LevelCharacter {
   sounds?: SkillKey[];
   /** A memory revealed when each sound is recovered (keyed by soundId). */
   fragments?: Record<string, string[]>;
+  /** Gentle closing lines for the resident's cozy "storytime" (after they've
+   *  retold their recovered memories). Authored, dyslexia-first. */
+  storytime?: string[];
   /** Where helping happens (the level's game). */
   playRoute: string;
   /** Authored beat lines per story stage (hub). */
@@ -121,6 +124,11 @@ export const MOSS: LevelCharacter = {
     t: ['The tip-tap of rain on the leaves… t, t, t. I used to dance to it. ☔'],
     a: ["And my warm sigh in the sun — ahh. /a/. That one's mine too. ☀️"],
   },
+  storytime: [
+    "That's the whole of me — every hum, home. Sit with me a while? 💚",
+    "Funny thing: losing my sounds is how I found you. I'm so glad I did. 🌼",
+    "I'm not lost any more. I live here now, with you. Come back soon. 🌱",
+  ],
   playRoute: '#/play/beginning-sounds',
   // Flat transparent PNGs dropped in public/characters/moss/ (see the README
   // there). Until the files exist, CharacterArt's onError falls back to the emoji.
@@ -248,6 +256,29 @@ export function fragmentToReveal(
     }
   }
   return null;
+}
+
+/**
+ * A cozy "storytime" a resident tells by the fire — memory-aware: a warm opening
+ * beat, then each recovered hum's memory in turn (only sounds actually mastered),
+ * then a gentle close. Pure + deterministic given rng; never yields empty lines.
+ * This is what plays when you tap a friend who lives in your garden.
+ */
+export function storytimeScene(c: LevelCharacter, mastery: MasteryMap, rng: () => number = Math.random): string[] {
+  const lines: string[] = [];
+  const open = beatFor(c, 'resident', rng);
+  if (open) lines.push(open);
+  if (c.fragments) {
+    for (const k of soundsOf(c)) {
+      const sid = parseSkillKey(k)?.soundId;
+      if (!sid) continue;
+      const memory = c.fragments[sid]?.[0];
+      if (memory && isMastered(mastery[k])) lines.push(memory);
+    }
+  }
+  const closes = c.storytime ?? [];
+  if (closes.length) lines.push(closes[Math.floor(rng() * closes.length)] ?? closes[0]);
+  return lines;
 }
 
 /** A beat line for a stage (deterministic given rng). Falls back to 'arrived'. */

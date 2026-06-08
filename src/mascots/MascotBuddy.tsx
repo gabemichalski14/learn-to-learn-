@@ -5,6 +5,7 @@ import { MascotBubble } from './MascotBubble';
 import { PipParade } from './PipParade';
 import { randomPhrase, type Phrase } from './phrases';
 import { speak } from '../world/lore/speak';
+import { bumpPipChat } from '../data/pipChats';
 import { PIP_LINES, ECHO_LINES } from '../world/lore/characters';
 import { sfx } from '../audio/sfx';
 import { useGuide } from '../world/guideContext';
@@ -134,6 +135,7 @@ export function MascotBuddy({ learnerId }: { learnerId: string }) {
     // if the pool somehow yields nothing. Read/write at click-time (no render loop).
     const pool = isEcho ? ECHO_LINES : PIP_LINES;
     setPhrase(speak(learnerId, pool) ?? randomPhrase(['nudge', 'idle', 'tip']));
+    bumpPipChat(learnerId); // a friendly tally for the leaderboard
     setExpr('excited');
     setOpen(true);
     setBurst(true);

@@ -1,4 +1,4 @@
-import { type CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { healStage, type ArtSource } from './cast';
 import './characterArt.css';
 
@@ -23,14 +23,16 @@ export function CharacterArt({
   art?: ArtSource;          // when present (future), render Rive instead of emoji
   label?: string;
 }) {
+  const [errored, setErrored] = useState(false);
   const stage = healStage(heal);
   const cls = `char-art char-art--s${stage}${mood ? ` char-art--${mood}` : ''}`;
 
   // Real flat art (transparent PNG): the matching expression frame if we have
   // one for the current mood, else the base image. CSS still does the heal
-  // transform (grey/small → colour/whole) right on the <img>. (Rive drop-in
-  // when `art.rive` lands will replace this branch.)
-  const frame = (mood && art?.frames?.[mood]) || art?.image;
+  // transform (grey/small → colour/whole) right on the <img>. If the file isn't
+  // there yet, we fall back to the emoji placeholder (so wiring real paths is
+  // always safe). (Rive drop-in when `art.rive` lands will replace this branch.)
+  const frame = errored ? undefined : (mood && art?.frames?.[mood]) || art?.image;
   if (frame) {
     return (
       <img
@@ -39,6 +41,7 @@ export function CharacterArt({
         src={frame}
         alt={label ?? ''}
         draggable={false}
+        onError={() => setErrored(true)}
       />
     );
   }

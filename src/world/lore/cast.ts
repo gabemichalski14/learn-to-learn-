@@ -94,6 +94,17 @@ export const MOSS: LevelCharacter = {
   skillKey: 'sound:first:m',
   soundId: 'm',
   playRoute: '#/play/beginning-sounds',
+  // Flat transparent PNGs dropped in public/characters/moss/ (see the README
+  // there). Until the files exist, CharacterArt's onError falls back to the emoji.
+  art: {
+    image: '/characters/moss/calm.png',
+    frames: {
+      cheer: '/characters/moss/cheer.png',
+      wobble: '/characters/moss/wobble.png',
+      point: '/characters/moss/point.png',
+      bloom: '/characters/moss/bloom.png',
+    },
+  },
   reactions: {
     intro: [
       "These little critters carry my lost hums, scattered across the sectors. Help me send each one home to its sound? 🌱",

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { CharacterArt } from './CharacterArt';
 
 describe('CharacterArt', () => {
@@ -36,5 +36,13 @@ describe('CharacterArt', () => {
     );
     const img = container.querySelector('img.char-art') as HTMLImageElement;
     expect(img.getAttribute('src')).toBe('moss.png');
+  });
+
+  it('falls back to the emoji if the image fails to load (file not dropped yet)', () => {
+    const { container } = render(<CharacterArt emoji="🌱" heal={1} art={{ image: '/missing.png' }} label="Moss" />);
+    fireEvent.error(container.querySelector('img.char-art') as HTMLImageElement);
+    const span = container.querySelector('span.char-art') as HTMLElement;
+    expect(span).toBeTruthy();
+    expect(span.textContent).toBe('🌱');
   });
 });

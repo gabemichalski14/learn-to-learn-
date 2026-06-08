@@ -54,3 +54,12 @@ You brought them ALL home — mmmmm! 🌼 I wasn't broken… I was just waiting 
 `yarnLoader.ts` → `parseYarn(text)` + `yarnToContent()` → `{ reactions, fragments }`.
 `tweeLoader.ts` → `parseTwee(text)` + `tweeToArc()` → `{ stages, fragments }`.
 Both pure + tested against sample fixtures; output merges into a `LevelCharacter`.
+
+## Writing principles (ALL character words — Yarn & Twine)
+
+Every authored line follows `docs/art/moss-yarn-guide.md` §0 (dyslexia + our
+research): difference-not-deficit · no-shame on misses · growth mindset ·
+self-efficacy (credit the learner) · strengths-led · cozy/no-FOMO — AND **low
+reading load** (short, plain, decodable, one idea, built to be heard), because the
+dyslexic learner is the one reading them. Audio voiceover is the goal so reading is
+never required.

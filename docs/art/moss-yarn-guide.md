@@ -3,6 +3,33 @@
 Author Moss's lines once in the free browser editor; I run the export through our
 loader and they replace the placeholders. ~20 minutes.
 
+## 0. Write EVERY line with dyslexia + our research in mind (read first)
+
+This applies to all characters' words, not just Moss. Two layers:
+
+**A) What it says (affirming — from our dyslexia/character research):**
+- **Difference, not deficit.** Name the gift; never imply the learner is broken.
+- **No shame on a miss.** "Not yet," warmth — and model that the hard part was
+  hard for the character too ("the little ones are slippery — they were for me too").
+- **Growth mindset.** Praise effort/the try; mistakes grow the brain.
+- **Self-efficacy.** Give the learner the credit: "you heard it," "you did that."
+- **Strengths-led + cozy.** Reflect dyslexic strengths (big-picture, spatial,
+  story, creativity); help comes from care, never pressure. No FOMO/streak-guilt.
+
+**B) How it reads (because a dyslexic child READS these):**
+- **Short.** One idea, one breath. In-game lines the shortest of all.
+- **Plain, common, decodable words.** Avoid rare/long words and jargon.
+- **No text walls** — 1–2 short sentences max; hub beats can be a touch longer.
+- **Built to be HEARD** — keep it natural for a voiceover (we'll add audio), so a
+  child never has to read to follow.
+- Let the friendly UI type do the work — no ALL-CAPS blocks or dense italics.
+
+**Quick check before you save a line:**
+- [ ] Could a 6-year-old who struggles to read get it in one listen?
+- [ ] No "wrong/bad/fail" — no shame?
+- [ ] Short — one idea, one breath, plain words?
+- [ ] Warm, hopeful, and true to the character?
+
 ## 1. Open the editor
 Go to **try.yarnspinner.dev** (free, nothing to install).
 

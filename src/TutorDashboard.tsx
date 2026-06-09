@@ -16,38 +16,75 @@ import { skillLabel } from './mastery/skills';
 import { AreasToImprove } from './AreasToImprove';
 import { TutorPip } from './world/tutor/TutorPip';
 
-const CW = 280;
-const CH = 90;
-const PAD = 8;
+const CW = 300;
+const CH = 100;
+const PADL = 30; // room for the % axis labels
+const PADR = 12;
+const PADT = 12;
+const PADB = 16;
 
-/** Accuracy (0..1) over recent sessions as a smooth area + line. */
+const GAME_TITLES: Record<string, string> = {
+  'tap-it-out': 'Tap It Out', 'beginning-sounds': 'Blast Off',
+  'ending-sounds': 'Touchdown', 'middle-sounds': 'Vowel Patrol',
+};
+
+/** Accuracy over recent sessions — true 0–100% scale with labelled axis, a 90%
+ *  mastery line, and a dot per session (the latest is called out). Honest: it
+ *  plots the real values, never a smoothed vibe. */
 function AccuracyChart({ values }: { values: number[] }) {
   const n = values.length;
   if (n < 2) return <p className="chart__empty">Two finished sessions needed for a trend.</p>;
-  const x = (i: number) => PAD + (i / (n - 1)) * (CW - 2 * PAD);
-  const y = (v: number) => PAD + (1 - v) * (CH - 2 * PAD);
-  const line = values.map((v, i) => `${x(i)},${y(v)}`).join(' ');
-  const area = `M ${x(0)},${CH - PAD} L ${line.split(' ').join(' L ')} L ${x(n - 1)},${CH - PAD} Z`;
+  const x = (i: number) => PADL + (i / (n - 1)) * (CW - PADL - PADR);
+  const y = (v: number) => PADT + (1 - v) * (CH - PADT - PADB); // 0..1 absolute
+  const pts = values.map((v, i) => ({ x: x(i), y: y(v), v }));
+  const line = pts.map((p) => `${p.x},${p.y}`).join(' ');
+  const area = `M ${pts[0].x},${CH - PADB} L ${line.split(' ').join(' L ')} L ${pts[n - 1].x},${CH - PADB} Z`;
+  const last = pts[n - 1];
   return (
-    <svg className="chart" viewBox={`0 0 ${CW} ${CH}`} preserveAspectRatio="none" role="img" aria-label="Accuracy trend">
-      <line className="chart__grid" x1={PAD} y1={y(0.9)} x2={CW - PAD} y2={y(0.9)} />
+    <svg className="chart" viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label={`Accuracy over the last ${n} sessions`}>
+      {/* y-axis reference lines + labels: 100% and the 90% mastery line */}
+      <line className="chart__axis" x1={PADL} y1={y(1)} x2={CW - PADR} y2={y(1)} />
+      <text className="chart__lbl" x={PADL - 5} y={y(1) + 3} textAnchor="end">100%</text>
+      <line className="chart__ref" x1={PADL} y1={y(0.9)} x2={CW - PADR} y2={y(0.9)} />
+      <text className="chart__lbl" x={PADL - 5} y={y(0.9) + 3} textAnchor="end">90%</text>
       <path className="chart__area" d={area} />
       <polyline className="chart__line" points={line} fill="none" />
+      {pts.map((p, i) => (
+        <circle key={i} className="chart__dot" cx={p.x} cy={p.y} r={i === n - 1 ? 3.4 : 2.4}>
+          <title>{`Session ${i + 1}: ${Math.round(p.v * 100)}%`}</title>
+        </circle>
+      ))}
+      <text className="chart__val" x={Math.min(last.x, CW - PADR - 2)} y={Math.max(last.y - 6, 9)} textAnchor="end">{Math.round(last.v * 100)}%</text>
     </svg>
   );
 }
 
-/** Time per session as bars (shorter is better). */
+/** Time per session — real proportional bars with an average line + the longest
+ *  / average called out, and the exact game + time on each bar (hover). Linear so
+ *  it's honest; the average line gives context when one session runs long. */
 function TimeChart({ records }: { records: SessionRecord[] }) {
   const n = records.length;
   if (n < 1) return <p className="chart__empty">No sessions yet.</p>;
-  const max = Math.max(...records.map((r) => r.durationMs), 1);
+  const times = records.map((r) => r.durationMs);
+  const max = Math.max(...times, 1);
+  const avg = times.reduce((s, t) => s + t, 0) / n;
   return (
-    <div className="bars" aria-hidden="true">
-      {records.map((r) => (
-        <span key={r.id} className="bars__bar" style={{ height: `${Math.max(8, Math.round((r.durationMs / max) * 100))}%` }} />
-      ))}
-    </div>
+    <>
+      <div className="barwrap" style={{ '--avg': `${Math.round((avg / max) * 100)}%` } as CSSProperties}>
+        <div className="bars">
+          {records.map((r) => (
+            <span
+              key={r.id}
+              className="bars__bar"
+              style={{ height: `${Math.max(6, Math.round((r.durationMs / max) * 100))}%` }}
+              title={`${GAME_TITLES[r.game] ?? r.game}${r.level != null ? ` · Lv ${r.level}` : ''} — ${formatTime(r.durationMs)}`}
+            />
+          ))}
+        </div>
+        {n > 1 && <span className="bars__avgline" aria-hidden="true" />}
+      </div>
+      <p className="chart__cap">Longest <b>{formatTime(max)}</b>{n > 1 ? <> · avg <b>{formatTime(Math.round(avg))}</b></> : null}</p>
+    </>
   );
 }
 
@@ -186,8 +223,8 @@ export function TutorDashboard() {
                   <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/controller.png" alt="" aria-hidden="true" /><strong>{prog.sessions}</strong><span className="kpi__label">sessions</span></div>
                   <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/bullseye.png" alt="" aria-hidden="true" /><strong>{avgAccuracy}%</strong><span className="kpi__label">avg accuracy</span></div>
                   <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/stopwatch.png" alt="" aria-hidden="true" /><strong>{prog.bestMs != null ? formatTime(prog.bestMs) : '—'}</strong><span className="kpi__label">best time</span></div>
-                  <div className="kpi"><span className="kpi__icon">⭐</span><strong>{new Set(prog.earned).size}/{ACHIEVEMENTS.length}</strong><span className="kpi__label">stickers</span></div>
-                  <div className="kpi"><span className="kpi__icon">📅</span><strong>{week}</strong><span className="kpi__label">this week</span></div>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/star.png" alt="" aria-hidden="true" /><strong>{new Set(prog.earned).size}/{ACHIEVEMENTS.length}</strong><span className="kpi__label">stickers</span></div>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/calendar.png" alt="" aria-hidden="true" /><strong>{week}</strong><span className="kpi__label">this week</span></div>
                 </div>
               </div>
 

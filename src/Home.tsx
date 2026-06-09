@@ -85,10 +85,10 @@ export function Home({ learnerId, onChooseLearner }: Props) {
       </header>
 
       <section className="home-stats" aria-label="Your progress">
-        <div className="l2l-card l2l-reveal" style={{ '--i': 1 } as React.CSSProperties}><div className="l2l-stat"><span className="l2l-stat__icon" aria-hidden="true">🎮</span><span className="l2l-stat__num">{prog.sessions}</span><span className="l2l-stat__label">Sessions played</span></div></div>
-        <div className="l2l-card l2l-reveal" style={{ '--i': 2 } as React.CSSProperties}><div className="l2l-stat"><span className="l2l-stat__icon" aria-hidden="true">🎯</span><span className="l2l-stat__num">{accuracy != null ? `${accuracy}%` : '—'}</span><span className="l2l-stat__label">Accuracy</span></div></div>
-        <div className="l2l-card l2l-reveal" style={{ '--i': 3 } as React.CSSProperties}><div className="l2l-stat"><span className="l2l-stat__icon" aria-hidden="true">🔥</span><span className="l2l-stat__num">{streak}</span><span className="l2l-stat__label">Day streak</span></div></div>
-        <div className="l2l-card l2l-reveal" style={{ '--i': 4 } as React.CSSProperties}><div className="l2l-stat"><span className="l2l-stat__icon" aria-hidden="true">⭐</span><span className="l2l-stat__num">{stickers}/{ACHIEVEMENTS.length}</span><span className="l2l-stat__label">Stickers earned</span></div></div>
+        <div className="l2l-card l2l-reveal" style={{ '--i': 1 } as React.CSSProperties}><div className="l2l-stat"><img className="l2l-stat__icon l2l-stat__icon--img" src="/images/ui/controller.png" alt="" aria-hidden="true" /><span className="l2l-stat__num">{prog.sessions}</span><span className="l2l-stat__label">Sessions played</span></div></div>
+        <div className="l2l-card l2l-reveal" style={{ '--i': 2 } as React.CSSProperties}><div className="l2l-stat"><img className="l2l-stat__icon l2l-stat__icon--img" src="/images/ui/bullseye.png" alt="" aria-hidden="true" /><span className="l2l-stat__num">{accuracy != null ? `${accuracy}%` : '—'}</span><span className="l2l-stat__label">Accuracy</span></div></div>
+        <div className="l2l-card l2l-reveal" style={{ '--i': 3 } as React.CSSProperties}><div className="l2l-stat"><img className="l2l-stat__icon l2l-stat__icon--img" src="/images/ui/campfire.png" alt="" aria-hidden="true" /><span className="l2l-stat__num">{streak}</span><span className="l2l-stat__label">Day streak</span></div></div>
+        <div className="l2l-card l2l-reveal" style={{ '--i': 4 } as React.CSSProperties}><div className="l2l-stat"><img className="l2l-stat__icon l2l-stat__icon--img" src="/images/ui/star.png" alt="" aria-hidden="true" /><span className="l2l-stat__num">{stickers}/{ACHIEVEMENTS.length}</span><span className="l2l-stat__label">Stickers earned</span></div></div>
       </section>
 
       <div className="home-cols">

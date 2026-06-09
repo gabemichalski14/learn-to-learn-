@@ -18,8 +18,9 @@
 /* the painting carries its own sky + sun, so hide the CSS ones */
 .vil-sun, .vil-cloud { display: none; }
 
-/* ambient foreground props — sit in the lower corners, behind the content */
-.vil-decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+/* ambient foreground props — sit in the lower corners of the scene (absolute, so
+   they stay inside the Village and never collide with the page footer) */
+.vil-decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .vil-decor__lantern, .vil-decor__sign { position: absolute; bottom: 16px; height: auto; opacity: 0.96;
   filter: drop-shadow(0 8px 14px rgba(78, 149, 104, 0.3)); }
 .vil-decor__lantern { right: 18px; width: 64px; }
@@ -57,6 +58,28 @@
   min-height: 44px; background: linear-gradient(135deg, #f5b13c, #ef962a); padding: 11px 20px; border-radius: 999px;
   box-shadow: 0 8px 18px rgba(239, 150, 42, 0.4); }
 .vil-cta:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+
+/* calm vertical rhythm — generous spacing, one idea at a time (dyslexia-friendly) */
+.vil-scroll { position: relative; z-index: 2; width: 100%; max-width: 880px;
+  display: flex; flex-direction: column; align-items: center; gap: 30px; }
+.vil-host { margin: 8px auto 0; }
+
+/* Pip's rotating tip — a single calm card, colour-keyed by kind */
+.vil-tip { width: 100%; max-width: 600px; text-align: left;
+  background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(78, 149, 104, 0.16);
+  border-left: 5px solid #6bae7f; border-radius: 16px; padding: 14px 18px;
+  box-shadow: 0 10px 24px rgba(78, 149, 104, 0.16); }
+.vil-tip--confidence { border-left-color: #6bae7f; }
+.vil-tip--trick { border-left-color: #f5b13c; }
+.vil-tip--fact { border-left-color: #5fb6c4; }
+.vil-tip__label { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #2f7d56; margin-bottom: 4px; }
+.vil-tip__text { margin: 0; font-size: 15px; line-height: 1.55; color: #2c5a40; }
+
+/* a titled section block */
+.vil-section { width: 100%; max-width: 880px; }
+.vil-section__h { margin: 0 0 14px; text-align: center; font-size: 14px; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase; color: #2f7d56; }
 
 /* the hamlet — a row of little houses */
 .vil-row { list-style: none; margin: 0 auto; padding: 0; width: 100%; max-width: 860px;

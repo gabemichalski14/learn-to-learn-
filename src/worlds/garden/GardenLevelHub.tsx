@@ -1,22 +1,14 @@
 import { goBack, navigate } from '../../router';
 import { findLevel } from '../../games';
-import { levelCurriculum, lessonSounds } from '../../curriculum';
-import { useProgress } from '../../data/store';
 import { GardenBackdrop, SproutGuide } from './GardenArt';
-import { GardenMeadow } from './GardenMeadow';
-import { GardenPlantings } from './GardenPlantings';
-import { GardenResidents } from './GardenResidents';
-import { bloomCount } from './gardenGrowth';
 import './garden.css';
 
-/** Immersive Sound Garden hub for Level 1 — the WHOLE screen is a living meadow
- *  that fills with flowers as the child practices, flowing straight into the
- *  games. Rendered drawer-free by App for level 1 (matches the Level 2 space hub). */
-export function GardenLevelHub({ level, learnerId }: { level: number; learnerId: string }) {
-  const prog = useProgress(learnerId);
-  const blooms = bloomCount(prog.sessions, new Set(prog.earned).size);
+/** Calm launcher for Level 1's Sound Garden games. The cozy reward space — your
+ *  friends, your bloomed sound-flowers, tips — lives in the Village now (one
+ *  tap away), so this page stays focused and uncluttered: a painted meadow, the
+ *  level's focus, and its games. Rendered drawer-free by App for level 1. */
+export function GardenLevelHub({ level }: { level: number; learnerId: string }) {
   const lvl = findLevel(level);
-  const curriculum = levelCurriculum(level);
   if (!lvl) {
     return (
       <main className="gd gd-hub">
@@ -29,7 +21,6 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
   return (
     <main className="gd gd-hub">
       <GardenBackdrop />
-      <GardenMeadow learnerId={learnerId} />
       <div className="gd-hud">
         <button type="button" className="gd-back" onClick={() => goBack('#/')}>← Home</button>
         <span className="gd-badge">🌱 Sound Garden · Level {lvl.num}</span>
@@ -38,10 +29,6 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
       <div className="gd-stage gd-hub__stage">
         <h1 className="gd-hub__title">{lvl.title}</h1>
         <p className="gd-hub__lead">{lvl.focus}</p>
-        <p className="gd-hub__grown">🌷 Your garden: <b>{blooms}</b> blooms — every sound you learn plants another!</p>
-
-        <GardenResidents learnerId={learnerId} />
-        <GardenPlantings learnerId={learnerId} />
 
         <div className="gd-missions">
           {lvl.games.map((g) => {
@@ -66,17 +53,9 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
           })}
         </div>
 
-        {curriculum && curriculum.lessons.length > 0 && (
-          <section className="gd-hub__lessons" aria-label="Lessons">
-            <h2>Garden Journal{curriculum.oral ? ' (oral)' : ''}</h2>
-            {curriculum.lessons.map((les) => (
-              <div key={les.n} className="gd-hub__lesson">
-                <b>{les.n}</b>
-                <span>{les.title}{lessonSounds(les) ? ` · ${lessonSounds(les)}` : ''}</span>
-              </div>
-            ))}
-          </section>
-        )}
+        <button type="button" className="gd-hub__village" onClick={() => navigate('#/village')}>
+          🏡 Visit your Village
+        </button>
       </div>
 
       <div className="gd-scout gd-hub__scout">

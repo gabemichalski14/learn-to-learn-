@@ -384,11 +384,15 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
 /* Site footer — copyright + independence/trademark disclaimer. Quiet by
    design: small, muted, generous top space so it never competes with play. */
 .l2l-footer{
-  max-width:720px;
-  margin:56px auto 0;
-  padding:20px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  width:100%;
+  margin:48px 0 0;
+  padding:22px 20px calc(22px + env(safe-area-inset-bottom, 0px));
   text-align:center;
+  position:relative; z-index:3;
+  background:var(--surface, #fffdf8);
   border-top:1px solid var(--teal-ring);
 }
-.l2l-footer__brand{ margin:0; font-size:13px; font-weight:600; color:var(--muted); }
+.l2l-footer__brand,
+.l2l-footer__legal{ max-width:720px; margin-left:auto; margin-right:auto; }
+.l2l-footer__brand{ margin-top:0; margin-bottom:0; font-size:13px; font-weight:600; color:var(--muted); }
 .l2l-footer__legal{ margin:6px 0 0; font-size:11px; line-height:1.5; color:var(--muted); opacity:.8; }

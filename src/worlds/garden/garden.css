@@ -205,7 +205,15 @@ img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
 /* ── Level 1 immersive hub ─────────────────────────────────── */
 .gd-hub__stage { justify-content: flex-start; padding: 8px 16px 44px; gap: 6px; overflow-y: auto; max-width: 860px; }
 .gd-hub__title { font-size: clamp(24px, 6vw, 38px); font-weight: 900; margin: 6px 0 2px; color: #1f5236; text-align: center; }
-.gd-hub__lead { max-width: 520px; text-align: center; color: #357a55; font-size: 14px; line-height: 1.45; margin: 0 0 14px; }
+.gd-hub__lead { max-width: 520px; text-align: center; color: #357a55; font-size: 14px; line-height: 1.45; margin: 0 0 22px; }
+
+/* gentle link from the level launcher into the cozy Village home */
+.gd-hub__village { margin: 22px auto 0; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer;
+  min-height: 44px; color: #2f7d56; background: rgba(255, 255, 255, 0.82); border: 1.5px solid #8ecf9f;
+  padding: 11px 22px; border-radius: 999px; box-shadow: 0 6px 14px rgba(78, 149, 104, 0.2); }
+.gd-hub__village:active { transform: scale(0.98); }
+.gd-hub__village:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .gd-hub__village:active { transform: none; } }
 
 /* the living garden — a FULL-SCREEN layer of hand-made SVG flora that fills in
    as you play. Motion is restrained: only ~a quarter sway, slowly + staggered. */

@@ -183,9 +183,9 @@ export function TutorDashboard() {
                 </div>
 
                 <div className="kpi-grid" style={{ marginTop: '16px' }}>
-                  <div className="kpi"><span className="kpi__icon">🎮</span><strong>{prog.sessions}</strong><span className="kpi__label">sessions</span></div>
-                  <div className="kpi"><span className="kpi__icon">🎯</span><strong>{avgAccuracy}%</strong><span className="kpi__label">avg accuracy</span></div>
-                  <div className="kpi"><span className="kpi__icon">⏱</span><strong>{prog.bestMs != null ? formatTime(prog.bestMs) : '—'}</strong><span className="kpi__label">best time</span></div>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/controller.png" alt="" aria-hidden="true" /><strong>{prog.sessions}</strong><span className="kpi__label">sessions</span></div>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/bullseye.png" alt="" aria-hidden="true" /><strong>{avgAccuracy}%</strong><span className="kpi__label">avg accuracy</span></div>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/stopwatch.png" alt="" aria-hidden="true" /><strong>{prog.bestMs != null ? formatTime(prog.bestMs) : '—'}</strong><span className="kpi__label">best time</span></div>
                   <div className="kpi"><span className="kpi__icon">⭐</span><strong>{new Set(prog.earned).size}/{ACHIEVEMENTS.length}</strong><span className="kpi__label">stickers</span></div>
                   <div className="kpi"><span className="kpi__icon">📅</span><strong>{week}</strong><span className="kpi__label">this week</span></div>
                 </div>

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { recordItem } from './mastery';
-import { levelGate, isLevelPassed, isLevelUnlocked, PASS_BAR } from './levelGate';
+import { levelGate, isLevelPassed, isLevelUnlocked, isGameUnlocked, PASS_BAR } from './levelGate';
+import { setLevelOverride, setGameOverride } from './tutorOverrides';
 
 const L = 'gate-learner';
 beforeEach(() => { localStorage.clear(); });
@@ -50,5 +51,34 @@ describe('level gate', () => {
     drill('sound:last:t', 6, 0);
     drill('sound:medial:a', 2, 6); // shaky
     expect(levelGate(L, 2).passed).toBe(false);
+  });
+});
+
+describe('tutor overrides', () => {
+  it('tutor unlock opens a level the mastery-gate would keep locked', () => {
+    expect(isLevelUnlocked(L, 2)).toBe(false);
+    setLevelOverride(L, 2, 'unlock');
+    expect(isLevelUnlocked(L, 2)).toBe(true);
+    setLevelOverride(L, 2, null); // back to auto
+    expect(isLevelUnlocked(L, 2)).toBe(false);
+  });
+
+  it('tutor lock closes a level that would be open', () => {
+    expect(isLevelUnlocked(L, 1)).toBe(true);
+    setLevelOverride(L, 1, 'lock');
+    expect(isLevelUnlocked(L, 1)).toBe(false);
+  });
+
+  it('a tutor game-lock blocks just that game within an open level', () => {
+    expect(isGameUnlocked(L, 'tap-it-out')).toBe(true);
+    setGameOverride(L, 'tap-it-out', 'lock');
+    expect(isGameUnlocked(L, 'tap-it-out')).toBe(false);
+    setGameOverride(L, 'tap-it-out', null);
+    expect(isGameUnlocked(L, 'tap-it-out')).toBe(true);
+  });
+
+  it('a locked level also makes its games unplayable', () => {
+    setLevelOverride(L, 1, 'lock');
+    expect(isGameUnlocked(L, 'tap-it-out')).toBe(false);
   });
 });

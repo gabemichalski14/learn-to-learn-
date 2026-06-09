@@ -15,6 +15,7 @@ import type { MasteryMap, FocusArea } from './mastery/mastery';
 import { skillLabel } from './mastery/skills';
 import { AreasToImprove } from './AreasToImprove';
 import { TutorPip } from './world/tutor/TutorPip';
+import { LevelControls } from './world/tutor/LevelControls';
 
 const CW = 300;
 const CH = 100;
@@ -267,6 +268,11 @@ export function TutorDashboard() {
               <div className="l2l-card" style={{ marginTop: '16px' }}>
                 <h3 className="chart-card__title">Focus areas</h3>
                 <AreasToImprove learnerId={sel} focus={focus} />
+              </div>
+
+              <div className="l2l-card" style={{ marginTop: '16px' }}>
+                <h3 className="chart-card__title">Levels &amp; games — access</h3>
+                <LevelControls learnerId={sel} />
               </div>
 
               <div className="l2l-card report__log" style={{ marginTop: '16px' }}>

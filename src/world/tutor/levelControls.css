@@ -1,0 +1,27 @@
+/* Tutor lock/unlock control — calm, scannable, sits in a dashboard card. */
+.lc__hint { margin: 0 0 14px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.lc__levels { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.lc__level { border: 1px solid rgba(15, 42, 40, 0.1); border-radius: 14px; padding: 12px 14px; background: rgba(255, 255, 255, 0.5); }
+.lc__head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lc__status { font-size: 16px; line-height: 1; }
+.lc__name { font-size: 14px; color: var(--ink); flex: 1; min-width: 140px; }
+.lc__auto { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: lowercase; }
+
+.lc__seg { display: inline-flex; margin-top: 10px; border: 1.5px solid var(--teal-ring, #cfe6e4); border-radius: 999px; overflow: hidden; }
+.lc__segbtn { font: inherit; font-weight: 800; font-size: 12.5px; cursor: pointer; border: none; background: transparent;
+  color: var(--teal-deep); padding: 7px 14px; min-height: 36px; }
+.lc__segbtn + .lc__segbtn { border-left: 1.5px solid var(--teal-ring, #cfe6e4); }
+.lc__segbtn.is-on { background: var(--teal-deep, #1b7f86); color: #fff; }
+.lc__segbtn:focus-visible { outline: 2px solid #173d2a; outline-offset: -2px; }
+
+.lc__games { list-style: none; margin: 10px 0 0; padding: 10px 0 0; border-top: 1px dashed rgba(15, 42, 40, 0.12);
+  display: flex; flex-direction: column; gap: 6px; }
+.lc__game { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.lc__game.is-off .lc__gname { opacity: 0.55; }
+.lc__gname { font-size: 13px; color: var(--ink); }
+.lc__gbtn { font: inherit; font-weight: 700; font-size: 12px; cursor: pointer; min-height: 32px;
+  color: var(--teal-deep); background: rgba(255, 255, 255, 0.7); border: 1.5px solid var(--teal-ring, #cfe6e4);
+  padding: 6px 12px; border-radius: 999px; }
+.lc__gbtn.is-locked { color: #b15a3e; border-color: rgba(176, 90, 62, 0.4); background: rgba(240, 160, 130, 0.14); }
+.lc__gbtn:disabled { opacity: 0.4; cursor: default; }
+.lc__gbtn:focus-visible { outline: 2px solid #173d2a; outline-offset: 2px; }

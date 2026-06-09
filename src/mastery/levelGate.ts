@@ -1,5 +1,7 @@
 import { loadMastery, scoreOf, type MasteryMap, type SkillStat } from './mastery';
 import { parseSkillKey } from './skills';
+import { levelOverrideOf, gameOverrideOf } from './tutorOverrides';
+import { levelOfGame } from '../games';
 
 /**
  * Mastery-gated progression — the Barton rule: a student starts at Level 1 and
@@ -57,8 +59,23 @@ export function isLevelPassed(learnerId: string, level: number): boolean {
   return levelGate(learnerId, level).passed;
 }
 
-/** Level 1 is always open; every later level needs the previous one passed. */
+/**
+ * Whether a level is open to the learner. A tutor override wins over the
+ * automatic mastery-gate; otherwise Level 1 is always open and every later
+ * level needs the previous one passed at mastery.
+ */
 export function isLevelUnlocked(learnerId: string, level: number): boolean {
+  const ov = levelOverrideOf(learnerId, level);
+  if (ov === 'unlock') return true;
+  if (ov === 'lock') return false;
   if (level <= 1) return true;
   return isLevelPassed(learnerId, level - 1);
+}
+
+/** Whether a specific game is playable: its level must be unlocked AND the tutor
+ *  must not have locked the game individually. */
+export function isGameUnlocked(learnerId: string, gameId: string): boolean {
+  const lvl = levelOfGame(gameId);
+  if (lvl != null && !isLevelUnlocked(learnerId, lvl)) return false;
+  return gameOverrideOf(learnerId, gameId) !== 'lock';
 }

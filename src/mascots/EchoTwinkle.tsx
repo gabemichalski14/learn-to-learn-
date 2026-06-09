@@ -1,4 +1,4 @@
-import { Echo } from './Echo';
+import { EchoArt } from './EchoArt';
 
 /**
  * A one-shot Echo sparkle for "a sound just happened" moments inside the games.
@@ -8,7 +8,7 @@ import { Echo } from './Echo';
 export function EchoTwinkle({ className = '' }: { className?: string }) {
   return (
     <span className={`echo-twinkle ${className}`} aria-hidden="true">
-      <Echo size={46} alive={false} />
+      <EchoArt size={46} alive={false} mood="ping" />
     </span>
   );
 }

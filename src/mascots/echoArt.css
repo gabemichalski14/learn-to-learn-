@@ -1,0 +1,5 @@
+/* Painted Echo — a gentle idle pulse so the sound-spark feels alive. */
+.echo-art { display: inline-block; object-fit: contain; }
+.echo-art--alive { animation: echo-art-pulse 3.2s ease-in-out infinite; will-change: transform, opacity; }
+@keyframes echo-art-pulse { 0%, 100% { transform: scale(1); opacity: 0.96; } 50% { transform: scale(1.06); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .echo-art--alive { animation: none; } }

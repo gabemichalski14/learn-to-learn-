@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { type PipExpression } from './Pip';
 import { PipArt } from './PipArt';
-import { Echo } from './Echo';
+import { EchoArt } from './EchoArt';
 import { MascotBubble } from './MascotBubble';
 import { PipParade } from './PipParade';
 import { randomPhrase, type Phrase } from './phrases';
@@ -175,7 +175,7 @@ export function MascotBuddy({ learnerId }: { learnerId: string }) {
               {SPARKS.map((a, i) => <i key={i} style={{ '--a': `${a}deg` } as CSSProperties} />)}
             </span>
           )}
-          {isEcho ? <Echo size={86} /> : <PipArt size={104} expression={open ? 'excited' : expr} />}
+          {isEcho ? <EchoArt size={86} mood={open ? 'happy' : 'calm'} /> : <PipArt size={104} expression={open ? 'excited' : expr} />}
         </button>
       </div>
       </div>

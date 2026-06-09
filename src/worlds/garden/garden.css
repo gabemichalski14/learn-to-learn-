@@ -49,9 +49,11 @@
 /* ---- stage ---- */
 .gd-stage { position: relative; z-index: 1; flex: 1 1 auto; min-height: 0; width: 100%; max-width: 620px; margin: 0 auto;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 6px 16px 40px; text-align: center; }
-.gd-word { display: inline-flex; flex-direction: column; align-items: center; gap: 12px; padding: 18px 26px; border-radius: 26px;
-  background: rgba(255, 255, 255, 0.92); box-shadow: 0 16px 36px rgba(78, 149, 104, 0.28); border: 1px solid rgba(78, 149, 104, 0.18); }
-.gd-pic { font-size: clamp(56px, 16vw, 88px); line-height: 1; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18)); }
+.gd-word { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 30px 18px; border-radius: 28px;
+  background: linear-gradient(180deg, #ffffff 0%, #fffaf0 100%); box-shadow: 0 18px 40px rgba(78, 149, 104, 0.3), inset 0 1px 0 #fff;
+  border: 1px solid rgba(78, 149, 104, 0.16); }
+.gd-pic { font-size: clamp(60px, 17vw, 96px); line-height: 1; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18)); }
+.gd-word__label { font-weight: 800; font-size: clamp(22px, 6vw, 30px); letter-spacing: 0.04em; color: #1f5236; }
 .gd-hear { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer;
   border: none; color: #fff; background: linear-gradient(135deg, #6bae7f, #4e9568); padding: 9px 20px; border-radius: 999px;
   box-shadow: 0 6px 16px rgba(78, 149, 104, 0.4); }
@@ -60,22 +62,36 @@
   display: inline-block; background: rgba(255, 255, 255, 0.8); padding: 7px 16px; border-radius: 999px;
   box-shadow: 0 4px 14px rgba(78, 149, 104, 0.18); }
 
-/* sprout row */
-.gd-row { display: flex; align-items: flex-end; justify-content: center; gap: 10px; min-height: 64px; flex-wrap: wrap; }
-.gd-row__hint { color: #5e8a6f; font-size: 13px; font-style: italic; opacity: 0.8; align-self: center; }
-.gd-grown { font-size: 40px; line-height: 1; animation: gd-pop 0.32s cubic-bezier(0.2, 1.5, 0.4, 1) both; }
+/* beat lane — big, clearly-numbered tokens fill left→right as you tap, so the
+   count is always easy to read/track. Turn to flowers on a correct "plant it". */
+.gd-beats { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  min-height: 64px; padding: 10px 18px; border-radius: 22px; position: relative;
+  background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(78, 149, 104, 0.2); }
+.gd-beats__hint { color: #5e8a6f; font-size: 13px; font-style: italic; opacity: 0.85; }
+.gd-beat { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 20px; color: #fff; flex: none;
+  background: radial-gradient(circle at 38% 30%, #7cc28e, #4e9568);
+  box-shadow: 0 6px 14px rgba(78, 149, 104, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.45);
+  animation: gd-pop 0.3s cubic-bezier(0.2, 1.5, 0.4, 1) both; }
 @keyframes gd-pop { from { transform: scale(0) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-.gd-grown.bloom { animation: gd-bloom 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.gd-beat.bloom { font-size: 32px; color: inherit; background: none; box-shadow: none;
+  animation: gd-bloom 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
 @keyframes gd-bloom { 0% { transform: scale(0.6) rotate(-12deg); } 60% { transform: scale(1.2) rotate(8deg); } 100% { transform: scale(1) rotate(0); } }
+.gd-beatcount { min-height: 20px; margin: 0; font-size: 14px; font-weight: 800; color: #2f7d56; letter-spacing: 0.02em; }
 
-/* tap pad + actions */
-.gd-pad { font: inherit; font-weight: 800; font-size: 17px; cursor: pointer; color: #235c40;
-  background: rgba(255, 255, 255, 0.85); border: 2px dashed #6bae7f; border-radius: 18px; padding: 16px 28px;
-  box-shadow: 0 6px 16px rgba(78, 149, 104, 0.18); transition: transform 0.1s ease, background 0.15s ease; min-width: 220px; }
-.gd-pad:hover { background: #fff; }
-.gd-pad:active { transform: scale(0.97); }
-.gd-pad:disabled { opacity: 0.5; cursor: default; }
-.gd-pad:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+/* the big, inviting tap target — one tap = one sound (Chip's beat) */
+.gd-tapbtn { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  width: clamp(148px, 42vw, 184px); height: clamp(148px, 42vw, 184px); border-radius: 50%; cursor: pointer; border: none; color: #fff;
+  background: radial-gradient(circle at 40% 32%, #7cc28e 0%, #4e9568 68%, #3f7f57 100%);
+  box-shadow: 0 14px 30px rgba(78, 149, 104, 0.5), inset 0 3px 8px rgba(255, 255, 255, 0.35), inset 0 -7px 16px rgba(0, 0, 0, 0.12);
+  transition: transform 0.09s ease, box-shadow 0.15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.gd-tapbtn:hover { box-shadow: 0 16px 34px rgba(78, 149, 104, 0.58), inset 0 3px 8px rgba(255, 255, 255, 0.4); }
+.gd-tapbtn:active { transform: scale(0.94); }
+.gd-tapbtn:focus-visible { outline: 4px solid #173d2a; outline-offset: 4px; }
+.gd-tapbtn__ico { font-size: 34px; line-height: 1; }
+.gd-tapbtn__label { font-size: 26px; font-weight: 900; letter-spacing: 0.05em; }
+.gd-tapbtn__sub { font-size: 12px; font-weight: 700; opacity: 0.92; }
+
 .gd-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .gd-btn { font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; border: none; color: #fff;
   background: linear-gradient(135deg, #f5b13c, #ef962a); padding: 12px 24px; border-radius: 999px; box-shadow: 0 8px 18px rgba(239, 150, 42, 0.4); }
@@ -294,9 +310,10 @@
 .gd-hero__fill { display: block; height: 100%; border-radius: 999px;
   background: linear-gradient(90deg, #6bae7f, #4e9568); transition: width 0.5s cubic-bezier(0.2, 0.8, 0.3, 1); }
 
-/* tutorial: the tap pad glows while Chip shows the way (clears on first tap) */
-.gd-pad--hint { border-color: #4e9568; box-shadow: 0 0 0 4px rgba(110, 174, 127, 0.3), 0 8px 22px rgba(78, 149, 104, 0.35);
-  animation: gd-pad-pulse 1.5s ease-in-out infinite; }
-@keyframes gd-pad-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(110, 174, 127, 0.28), 0 8px 20px rgba(78, 149, 104, 0.3); }
-  50% { box-shadow: 0 0 0 7px rgba(110, 174, 127, 0.42), 0 10px 26px rgba(78, 149, 104, 0.45); } }
-@media (prefers-reduced-motion: reduce) { .gd-pad--hint { animation: none; } }
+/* tutorial: the big tap button glows while Chip shows the way (clears on first tap) */
+.gd-tapbtn--hint { animation: gd-tap-pulse 1.4s ease-in-out infinite; }
+@keyframes gd-tap-pulse {
+  0%, 100% { box-shadow: 0 0 0 5px rgba(110, 174, 127, 0.32), 0 14px 30px rgba(78, 149, 104, 0.5), inset 0 3px 8px rgba(255, 255, 255, 0.35); }
+  50% { box-shadow: 0 0 0 12px rgba(110, 174, 127, 0.18), 0 16px 34px rgba(78, 149, 104, 0.6), inset 0 3px 8px rgba(255, 255, 255, 0.4); }
+}
+@media (prefers-reduced-motion: reduce) { .gd-tapbtn--hint { animation: none; } }

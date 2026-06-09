@@ -275,29 +275,37 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
 
         <div className="gd-word">
           <span className="gd-pic" aria-hidden="true">{word.emoji}</span>
+          <span className="gd-word__label">{cap(word.label)}</span>
           <button type="button" className="gd-hear" onClick={() => { sfx.tap(); pingEcho(); void audio.playWord(word); }}>🔊 Hear it</button>
         </div>
 
-        <p className="gd-ask">Tap a sprout for every sound you hear in <b>{word.label}</b>.</p>
+        <p className="gd-ask">How many sounds do you hear? <b>Tap a beat for each one.</b></p>
 
-        <div className="gd-row" aria-live="polite">
-          {taps === 0 && !bloom && <span className="gd-row__hint">your sprouts grow here…</span>}
+        {/* the beat lane — big, clearly-counted tokens fill left→right as you tap */}
+        <div className="gd-beats" aria-live="polite" aria-label={`${taps} ${taps === 1 ? 'beat' : 'beats'} so far`}>
+          {taps === 0 && !bloom && <span className="gd-beats__hint">your beats show here →</span>}
           {Array.from({ length: taps }).map((_, i) => (
-            <span key={i} className={`gd-grown${bloom ? ' bloom' : ''}`} aria-hidden="true">{bloom ? '🌸' : '🌱'}</span>
+            <span key={i} className={`gd-beat${bloom ? ' bloom' : ''}`} aria-hidden="true">{bloom ? '🌸' : i + 1}</span>
           ))}
           {phase === 'right' && (
             <span className="gd-burst" aria-hidden="true">{PETALS.map((a, i) => <i key={i} style={{ '--a': `${a}deg` } as CSSProperties} />)}</span>
           )}
           {grew > 0 && <span key={grew} className="gd-grew" aria-hidden="true">+🌷</span>}
         </div>
-
-        <button type="button" className={`gd-pad${tutorial ? ' gd-pad--hint' : ''}`} onClick={tap} disabled={bloom} aria-label="Tap for one sound">＋ tap a sound</button>
+        <p className="gd-beatcount" aria-hidden="true">{bloom ? `${taps} sounds 🎵` : taps > 0 ? `${taps} ${taps === 1 ? 'sound' : 'sounds'} so far` : ' '}</p>
 
         {!bloom ? (
-          <div className="gd-actions">
-            <button type="button" className="gd-ghost" onClick={undo} disabled={taps === 0}>Undo</button>
-            <button type="button" className="gd-btn" onClick={check} disabled={taps === 0}>Plant it! 🌷</button>
-          </div>
+          <>
+            <button type="button" className={`gd-tapbtn${tutorial ? ' gd-tapbtn--hint' : ''}`} onClick={tap} aria-label="Tap for one sound">
+              <span className="gd-tapbtn__ico" aria-hidden="true">👆</span>
+              <span className="gd-tapbtn__label">Tap</span>
+              <span className="gd-tapbtn__sub">one tap = one sound</span>
+            </button>
+            <div className="gd-actions">
+              <button type="button" className="gd-ghost" onClick={undo} disabled={taps === 0}>↩ Undo</button>
+              <button type="button" className="gd-btn" onClick={check} disabled={taps === 0}>Plant it! 🌷</button>
+            </div>
+          </>
         ) : (
           <div className="gd-actions">
             <button type="button" className="gd-btn" onClick={advanceNow}>{isLast ? 'See my garden 🎉' : 'Next word 🌿'}</button>

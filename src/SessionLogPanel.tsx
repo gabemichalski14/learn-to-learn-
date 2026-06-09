@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { loadSessionLog, clearSessionLog, sessionLogCsv } from './sessionLog';
 import { formatTime } from './progress';
 import { useDialog } from './ui/dialogContext';
+import './sessionLogPanel.css';
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
   return (
     d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
-    ', ' +
+    ' · ' +
     d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
   );
 }
@@ -16,8 +17,23 @@ function isThisWeek(iso: string): boolean {
   return Date.now() - new Date(iso).getTime() <= 7 * 24 * 60 * 60 * 1000;
 }
 
+/** Friendly game title for a logged session (falls back to the raw id). */
+const GAME_TITLES: Record<string, string> = {
+  'tap-it-out': 'Tap It Out',
+  'beginning-sounds': 'Blast Off',
+  'ending-sounds': 'Touchdown',
+  'middle-sounds': 'Vowel Patrol',
+};
+const gameTitle = (id: string) => GAME_TITLES[id] ?? id.replace(/-/g, ' ');
+
+/** Accuracy band → colour (dyslexia-affirming: warm amber/coral, never harsh red). */
+function accBand(acc: number): 'high' | 'mid' | 'low' {
+  const p = acc * 100;
+  return p >= 90 ? 'high' : p >= 70 ? 'mid' : 'low';
+}
+
 /**
- * Tutor progress-log content (summary + table + export/clear) for one learner.
+ * Tutor progress-log content (summary + list + export/clear) for one learner.
  * Used both by the in-game modal and the Tutor Dashboard page, so the data view
  * stays identical.
  */
@@ -64,30 +80,38 @@ export function SessionLogPanel({ learnerId, showSummary = true }: { learnerId: 
       )}
 
       {total === 0 ? (
-        <p className="log__empty">No sessions yet. Finished games will show up here.</p>
+        <p className="log__empty">No sessions yet. Finished games will show up here. 🌱</p>
       ) : (
-        <div className="log__table-wrap">
-          <table className="log__table">
-            <thead>
-              <tr><th>When</th><th>Time</th><th>Accuracy</th><th>Items</th></tr>
-            </thead>
-            <tbody>
-              {records.map((r) => (
-                <tr key={r.id}>
-                  <td>{fmtDate(r.endedAt)}</td>
-                  <td>{formatTime(r.durationMs)}</td>
-                  <td>{Math.round(r.accuracy * 100)}%</td>
-                  <td>{r.items}/{r.items + r.wrongAttempts}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="slog" role="table" aria-label="Session history">
+          <div className="slog__head" role="row">
+            <span role="columnheader">Game</span>
+            <span role="columnheader">When</span>
+            <span role="columnheader" className="slog__r">Accuracy</span>
+            <span role="columnheader" className="slog__r">Time</span>
+            <span role="columnheader" className="slog__r">Items</span>
+          </div>
+          <ul className="slog__rows">
+            {records.map((r) => (
+              <li className="slog__row" key={r.id} role="row">
+                <span className="slog__game" role="cell">
+                  {gameTitle(r.game)}
+                  {r.level != null && <i className="slog__lvl">Lv {r.level}</i>}
+                </span>
+                <span className="slog__when" role="cell">{fmtDate(r.endedAt)}</span>
+                <span className="slog__r" role="cell">
+                  <b className={`slog__acc slog__acc--${accBand(r.accuracy)}`}>{Math.round(r.accuracy * 100)}%</b>
+                </span>
+                <span className="slog__r slog__num" role="cell">{formatTime(r.durationMs)}</span>
+                <span className="slog__r slog__num" role="cell">{r.items}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
       <div className="log__actions">
-        <button type="button" className="btn-ghost" onClick={exportCsv} disabled={total === 0}>Export CSV</button>
-        <button type="button" className="log__clear" onClick={clearAll} disabled={total === 0}>Clear log</button>
+        <button type="button" className="slog__export" onClick={exportCsv} disabled={total === 0}>⬇ Export CSV</button>
+        <button type="button" className="slog__clear" onClick={clearAll} disabled={total === 0}>Clear log</button>
       </div>
     </>
   );

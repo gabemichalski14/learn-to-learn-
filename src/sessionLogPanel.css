@@ -1,0 +1,67 @@
+/* Session history — a clean, modern, scannable list (replaces the raw table). */
+.slog { width: 100%; }
+.slog__head,
+.slog__row {
+  display: grid;
+  grid-template-columns: minmax(120px, 2fr) minmax(110px, 1.6fr) 84px 70px 56px;
+  align-items: center;
+  gap: 12px;
+}
+.slog__head {
+  padding: 0 12px 8px;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--teal-deep, #1b7f86); opacity: 0.7;
+}
+.slog__r { text-align: right; }
+.slog__rows { list-style: none; margin: 0; padding: 0; }
+.slog__row {
+  padding: 11px 12px; border-radius: 12px;
+  font-size: 14px; color: #2a2622;
+  transition: background 0.12s ease;
+}
+.slog__row:nth-child(odd) { background: rgba(127, 200, 200, 0.07); }
+.slog__row:hover { background: rgba(127, 200, 200, 0.16); }
+
+.slog__game { font-weight: 700; color: #1f3b3d; display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.slog__lvl {
+  font-style: normal; font-size: 10px; font-weight: 800; letter-spacing: 0.04em;
+  color: #2f7d56; background: rgba(110, 174, 127, 0.18);
+  padding: 2px 7px; border-radius: 999px; flex: none;
+}
+.slog__when { color: #7a756e; font-size: 13px; }
+.slog__num { font-variant-numeric: tabular-nums; color: #4a4640; }
+
+/* accuracy chip — banded, warm tones (no harsh red) */
+.slog__acc {
+  display: inline-block; min-width: 46px; text-align: center;
+  font-weight: 800; font-size: 13px; padding: 3px 9px; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.slog__acc--high { color: #1d6b4f; background: rgba(110, 196, 140, 0.28); }
+.slog__acc--mid { color: #9a6312; background: rgba(245, 184, 90, 0.30); }
+.slog__acc--low { color: #b15a3e; background: rgba(240, 160, 130, 0.30); }
+
+/* actions */
+.log__actions { display: flex; gap: 10px; align-items: center; margin-top: 14px; }
+.slog__export {
+  font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; min-height: 40px;
+  color: #fff; border: none; padding: 9px 18px; border-radius: 999px;
+  background: linear-gradient(135deg, #34b6b0, #1b9aaa); box-shadow: 0 6px 14px rgba(27, 154, 170, 0.35);
+}
+.slog__export:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+.slog__clear {
+  font: inherit; font-weight: 700; font-size: 13px; cursor: pointer; min-height: 40px;
+  color: #8a6b5e; background: transparent; border: 1.5px solid rgba(138, 107, 94, 0.35);
+  padding: 8px 16px; border-radius: 999px;
+}
+.slog__clear:disabled { opacity: 0.4; cursor: default; }
+.slog__export:focus-visible, .slog__clear:focus-visible { outline: 3px solid #173d2a; outline-offset: 2px; }
+.log__empty { color: #7a756e; font-style: italic; padding: 8px 2px; }
+
+/* compact / mobile: drop the Items column + tighten */
+@media (max-width: 560px) {
+  .slog__head, .slog__row { grid-template-columns: minmax(96px, 1.7fr) 1fr 72px; gap: 8px; }
+  .slog__head span:nth-child(4), .slog__head span:nth-child(5),
+  .slog__row > :nth-child(4), .slog__row > :nth-child(5) { display: none; }
+  .slog__when { font-size: 12px; }
+}

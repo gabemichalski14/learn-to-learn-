@@ -75,6 +75,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const firstTryRef = useRef(0);
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
+  const wordShownRef = useRef(Date.now()); // when the current word appeared → response time
 
   const word = words[round];
   const isLast = round >= ROUNDS - 1;
@@ -84,9 +85,11 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   // moment you tap. No hand-holding after that.
   const tutorial = !!character && round === 0 && taps === 0 && attempts === 0 && phase === 'idle';
 
-  // Hear the word whenever it changes (and on restart).
+  // Hear the word whenever it changes (and on restart). Also (re)start the
+  // per-item clock for response-time data — never shown to the child, no timer UI.
   useEffect(() => {
     void audio.playWord(words[round]);
+    wordShownRef.current = Date.now();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round, words]);
 
@@ -123,7 +126,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
     if (taps === word.sounds) {
       const firstTry = attempts === 0;
       if (firstTry) firstTryRef.current += 1;
-      recordItem(learnerId, 'pa:segment', firstTry);
+      recordItem(learnerId, 'pa:segment', firstTry, Date.now() - wordShownRef.current);
       logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: firstTry, at: Date.now() });
       // Bloom + climbing combo + a happy Sprout.
       const c = comboRef.current + 1;

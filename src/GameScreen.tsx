@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { generateSortRound } from './domain/engine';
+import { generateSortRound, availableSounds } from './domain/engine';
 import type { Pack, SoundTarget, SortRound } from './domain/types';
 import type { AudioPlayer } from './audio/audioPlayer';
 import { everydayObjects } from './content/packs/everydayObjects';
@@ -8,6 +8,7 @@ import { shortVowelWords } from './content/packs/shortVowelWords';
 import { createRecordedAudioPlayer } from './audio/recordedAudioPlayer';
 import { SpaceSortGame } from './worlds/space/SpaceSortGame';
 import { parseSkillKey } from './mastery/skills';
+import { loadMastery, weakestSoundForTarget } from './mastery/mastery';
 import { getLearner } from './profiles';
 
 const TOTAL_ROUNDS = 5;
@@ -33,9 +34,9 @@ interface Props {
 
 /** Owns the per-session clock for a themed-world game (survives page changes,
  *  resets on a new session); inner game remounts per page to reset its state. */
-function SpacePlaySession({ round, audio, roundIndex, sessionId, learnerId, gameId, target, title, learnerName, onAdvance, onRestart }: {
+function SpacePlaySession({ round, audio, roundIndex, sessionId, learnerId, gameId, target, title, learnerName, needSound, onAdvance, onRestart }: {
   round: SortRound; audio: AudioPlayer; roundIndex: number; sessionId: number; learnerId: string; gameId: string;
-  target: SoundTarget; title: string; learnerName?: string;
+  target: SoundTarget; title: string; learnerName?: string; needSound?: string;
   onAdvance: () => void; onRestart: () => void;
 }) {
   const [sessionStartAt] = useState(() => Date.now());
@@ -53,6 +54,7 @@ function SpacePlaySession({ round, audio, roundIndex, sessionId, learnerId, game
       target={target}
       title={title}
       learnerName={learnerName}
+      needSound={needSound}
       onAdvance={onAdvance}
       onRestart={onRestart}
     />
@@ -75,10 +77,20 @@ export function GameScreen({ learnerId, gameId, focus }: Props) {
     setRoundIndex(0);
   }
 
+  // The sound this session leans on. An explicit `focus` (from "Areas to improve")
+  // wins; otherwise we gently auto-weight a NORMAL session toward the learner's
+  // weakest sound for this target — data-driven, personalized practice. Computed
+  // once per session (mastery read inside the memo, frozen by sessionId) so it
+  // never shifts the round mid-play.
   const focusSound = useMemo(() => {
-    const p = focus ? parseSkillKey(focus) : null;
-    return p && p.target === config.target ? p.soundId : undefined;
-  }, [focus, config]);
+    if (focus) {
+      const p = parseSkillKey(focus);
+      return p && p.target === config.target ? p.soundId : undefined;
+    }
+    const pool = availableSounds(config.pack, 2, config.target);
+    return weakestSoundForTarget(loadMastery(learnerId), config.target, pool);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focus, config, learnerId, sessionId]);
 
   const round = useMemo(
     () => generateSortRound({ pack: config.pack, totalItems: ITEMS_PER_ROUND, target: config.target, focusSound }),
@@ -98,6 +110,7 @@ export function GameScreen({ learnerId, gameId, focus }: Props) {
       target={config.target}
       title={config.title}
       learnerName={getLearner(learnerId)?.name}
+      needSound={focusSound}
       onAdvance={() => setRoundIndex((i) => Math.min(i + 1, TOTAL_ROUNDS - 1))}
       onRestart={() => { setSessionId((s) => s + 1); setRoundIndex(0); }}
     />

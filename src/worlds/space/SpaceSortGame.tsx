@@ -6,7 +6,8 @@ import type { SortRound, WordItem, SoundTarget } from '../../domain/types';
 import type { AudioPlayer } from '../../audio/audioPlayer';
 import { useSortGame } from '../../game/useSortGame';
 import { soundOf } from '../../domain/engine';
-import { recordItem, loadMastery } from '../../mastery/mastery';
+import { recordItem, recordReplay, loadMastery } from '../../mastery/mastery';
+import { skillKeyForSound } from '../../mastery/skills';
 import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession, noteRound } from '../../sessionLog';
@@ -39,6 +40,9 @@ interface Props {
   title?: string;
   level?: number;
   learnerName?: string;
+  /** The sound this session leans on (adaptive or explicit focus) — frames the
+   *  character's opening ask ("help me with my /t/ today"). */
+  needSound?: string;
   onAdvance?: () => void;
   onRestart?: () => void;
 }
@@ -106,7 +110,7 @@ function Creature({ item, hint, onReplay }: { item: WordItem; hint?: boolean; on
 export function SpaceSortGame({
   round, audio, roundIndex = 0, totalRounds = 1, sessionId = 0,
   learnerId = 'guest', gameId = 'middle-sounds', sessionStartAt,
-  target = 'medial', title = 'Vowel Patrol', level = 2, learnerName,
+  target = 'medial', title = 'Vowel Patrol', level = 2, learnerName, needSound,
   onAdvance, onRestart,
 }: Props) {
   const posWord = POS_WORD[target];
@@ -132,12 +136,16 @@ export function SpaceSortGame({
   const [muted, setMutedState] = useState(isMuted());
   const [echoPing, setEchoPing] = useState(0); // bumps on an audio moment → Echo twinkles
   const pingEcho = () => setEchoPing((p) => p + 1);
-  // Opening line: a returning-friend greeting once he's already home (arc done),
-  // else his teaching line during the tutorial, else his intro.
+  // Opening line: a returning-friend greeting once he's already home (arc done);
+  // else — when the data says a sound needs work — he ASKS for that sound today
+  // (data-driven + personal, in his own voice); else his teaching/intro line.
   const [charLine, setCharLine] = useState(() => {
     if (!character) return '';
     const whole = isFullyRecovered(character, loadMastery(learnerId));
     if (whole && character.revisit?.length) return character.revisit[Math.floor(Math.random() * character.revisit.length)];
+    // needSound is only set once a sound is rated weak (the learner HAS data), so
+    // this never pre-empts a brand-new learner's tutorial line.
+    if (needSound) return `My /${needSound}/ keeps slipping away today — will you help me catch it?`;
     return reactionLine(character, tutorialBasket ? 'teach' : 'intro');
   });
   const [clearLine] = useState(() => (character ? reactionLine(character, 'clear') : '')); // stable sector-clear beat
@@ -313,13 +321,13 @@ export function SpaceSortGame({
 
           <div className="sg-planets">
             {round.baskets.map((v) => (
-              <Planet key={v} vowel={v} hue={planetHues[v]} catching={catching === v} hint={hintBasket === v} onReplay={() => { pingEcho(); game.replaySound(v); }} />
+              <Planet key={v} vowel={v} hue={planetHues[v]} catching={catching === v} hint={hintBasket === v} onReplay={() => { pingEcho(); recordReplay(learnerId, skillKeyForSound(v, target)); game.replaySound(v); }} />
             ))}
           </div>
 
           <div className="sg-tray">
             {game.remainingItems.map((it) => (
-              <Creature key={it.id} item={it} hint={!!hintBasket && it.id === round.items[0]?.id} onReplay={() => { sfx.tap(); pingEcho(); game.replayWord(it); }} />
+              <Creature key={it.id} item={it} hint={!!hintBasket && it.id === round.items[0]?.id} onReplay={() => { sfx.tap(); pingEcho(); const snd = soundOf(it, target); if (snd) recordReplay(learnerId, skillKeyForSound(snd, target)); game.replayWord(it); }} />
             ))}
           </div>
 

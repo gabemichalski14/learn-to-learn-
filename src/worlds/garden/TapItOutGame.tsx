@@ -262,9 +262,14 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
 
         {character && (
           <div className="gd-hero">
-            <span className="gd-hero__face">
+            <button
+              type="button"
+              className="gd-hero__face"
+              onClick={() => { void audio.narrate(chipLine); sfx.tap(); setChipMood('cheer'); window.setTimeout(() => setChipMood((m) => (m === 'cheer' ? null : m)), 760); }}
+              aria-label={`Hear ${character.name} again`}
+            >
               <CharacterArt emoji={character.emoji} heal={chipHeal} mood={tutorial ? 'point' : chipMood} size={62} art={character.art} label={character.name} />
-            </span>
+            </button>
             <div className="gd-hero__body">
               <p className="gd-hero__line" role="status">{chipLine}</p>
               <div className="gd-hero__meter" role="img" aria-label={`${character.name}'s song: ${Math.round(chipHeal * 100)}% back`}>

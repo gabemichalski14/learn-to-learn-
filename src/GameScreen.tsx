@@ -5,7 +5,7 @@ import type { AudioPlayer } from './audio/audioPlayer';
 import { everydayObjects } from './content/packs/everydayObjects';
 import { everydayEndings } from './content/packs/everydayEndings';
 import { shortVowelWords } from './content/packs/shortVowelWords';
-import { createStubAudioPlayer } from './audio/stubAudioPlayer';
+import { createRecordedAudioPlayer } from './audio/recordedAudioPlayer';
 import { SpaceSortGame } from './worlds/space/SpaceSortGame';
 import { parseSkillKey } from './mastery/skills';
 import { getLearner } from './profiles';
@@ -63,7 +63,7 @@ function SpacePlaySession({ round, audio, roundIndex, sessionId, learnerId, game
  *  game renders in its themed full-screen world (the only render path). */
 export function GameScreen({ learnerId, gameId, focus }: Props) {
   const config = GAMES[gameId] ?? GAMES['beginning-sounds'];
-  const audio = useMemo(() => createStubAudioPlayer(), []);
+  const audio = useMemo(() => createRecordedAudioPlayer(), []);
   const [sessionId, setSessionId] = useState(0);
   const [roundIndex, setRoundIndex] = useState(0);
 

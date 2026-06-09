@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { goBack, navigate } from '../../router';
-import { createStubAudioPlayer } from '../../audio/stubAudioPlayer';
+import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
 import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import { tapItOutWords, type TapWord } from '../../content/packs/tapItOut';
 import { recordItem, loadMastery } from '../../mastery/mastery';
@@ -38,7 +38,7 @@ function pickWords(n: number): TapWord[] {
  * organic to match the garden world (vs. the bigger, dramatic space games).
  */
 export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
-  const audio = useMemo(() => createStubAudioPlayer(), []);
+  const audio = useMemo(() => createRecordedAudioPlayer(), []);
   const [words, setWords] = useState<TapWord[]>(() => pickWords(ROUNDS));
   const [round, setRound] = useState(0);
   const [taps, setTaps] = useState(0);

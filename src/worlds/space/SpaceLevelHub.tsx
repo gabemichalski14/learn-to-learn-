@@ -1,6 +1,8 @@
 import { navigate } from '../../router';
 import { findLevel } from '../../games';
 import { levelCurriculum, lessonSounds } from '../../curriculum';
+import { useDataVersion } from '../../data/store';
+import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { SpaceBackdrop } from './SpaceArt';
 import { LevelStory } from './LevelStory';
 import './space.css';
@@ -8,6 +10,7 @@ import './space.css';
 /** Immersive Space Patrol hub for Level 2 — a themed landing that flows straight
  *  into the space games. Rendered drawer-free by App for level 2. */
 export function SpaceLevelHub({ level, learnerId }: { level: number; learnerId: string }) {
+  useDataVersion();
   const lvl = findLevel(level);
   const curriculum = levelCurriculum(level);
   if (!lvl) {
@@ -52,6 +55,16 @@ export function SpaceLevelHub({ level, learnerId }: { level: number; learnerId: 
             );
           })}
         </div>
+        {isLevelPassed(learnerId, level) ? (
+          <button type="button" className="gd-hub__check gd-hub__check--done" onClick={() => navigate(`#/checkpoint/${level}`)}>
+            ✓ Level {level} passed — retake the checkpoint
+          </button>
+        ) : isLevelReady(learnerId, level) ? (
+          <button type="button" className="gd-hub__check" onClick={() => navigate(`#/checkpoint/${level}`)}>
+            ✨ Take the Checkpoint — show what you learned!
+          </button>
+        ) : null}
+
         {curriculum && curriculum.lessons.length > 0 && (
           <section className="sg-hub__lessons" aria-label="Lessons">
             <h2>Mission Log{curriculum.oral ? ' (oral)' : ''}</h2>

@@ -20,6 +20,7 @@ import { MascotBuddy } from './mascots/MascotBuddy';
 import { SpaceLevelHub } from './worlds/space/SpaceLevelHub';
 import { GardenLevelHub } from './worlds/garden/GardenLevelHub';
 import { TapItOutGame } from './worlds/garden/TapItOutGame';
+import { CheckpointGame } from './CheckpointGame';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
 import { useTutorSignedIn } from './useAuth';
 import { worldMotifs } from './world/lore/cast';
@@ -54,6 +55,11 @@ export default function App() {
   }
   if (route.name === 'level' && !isLevelUnlocked(learnerId, route.level ?? 1)) {
     return <LockedScreen level={route.level ?? 1} learnerId={learnerId} />;
+  }
+  if (route.name === 'checkpoint') {
+    const lvl = route.level ?? 1;
+    if (!isLevelUnlocked(learnerId, lvl)) return <LockedScreen level={lvl} learnerId={learnerId} />;
+    return <CheckpointGame level={lvl} learnerId={learnerId} />;
   }
 
   // The game screens stay immersive (their own back button); every other page

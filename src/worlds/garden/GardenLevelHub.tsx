@@ -1,5 +1,7 @@
 import { goBack, navigate } from '../../router';
 import { findLevel } from '../../games';
+import { useDataVersion } from '../../data/store';
+import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { GardenBackdrop, SproutGuide } from './GardenArt';
 import './garden.css';
 
@@ -7,7 +9,8 @@ import './garden.css';
  *  friends, your bloomed sound-flowers, tips — lives in the Village now (one
  *  tap away), so this page stays focused and uncluttered: a painted meadow, the
  *  level's focus, and its games. Rendered drawer-free by App for level 1. */
-export function GardenLevelHub({ level }: { level: number; learnerId: string }) {
+export function GardenLevelHub({ level, learnerId }: { level: number; learnerId: string }) {
+  useDataVersion();
   const lvl = findLevel(level);
   if (!lvl) {
     return (
@@ -52,6 +55,16 @@ export function GardenLevelHub({ level }: { level: number; learnerId: string }) 
             );
           })}
         </div>
+
+        {isLevelPassed(learnerId, level) ? (
+          <button type="button" className="gd-hub__check gd-hub__check--done" onClick={() => navigate(`#/checkpoint/${level}`)}>
+            ✓ Level {level} passed — retake the checkpoint
+          </button>
+        ) : isLevelReady(learnerId, level) ? (
+          <button type="button" className="gd-hub__check" onClick={() => navigate(`#/checkpoint/${level}`)}>
+            ✨ Take the Checkpoint — show what you learned!
+          </button>
+        ) : null}
 
         <button type="button" className="gd-hub__village" onClick={() => navigate('#/village')}>
           🏡 Visit your Village

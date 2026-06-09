@@ -1,6 +1,6 @@
 import { LEVELS } from '../../games';
 import { useDataVersion } from '../../data/store';
-import { isLevelUnlocked, isGameUnlocked, levelGate } from '../../mastery/levelGate';
+import { isLevelUnlocked, isGameUnlocked, isLevelPassed } from '../../mastery/levelGate';
 import {
   levelOverrideOf, gameOverrideOf, setLevelOverride, setGameOverride, type LockState,
 } from '../../mastery/tutorOverrides';
@@ -25,7 +25,7 @@ export function LevelControls({ learnerId }: { learnerId: string }) {
         {LEVELS.map((lvl) => {
           const ov = levelOverrideOf(learnerId, lvl.num);
           const open = isLevelUnlocked(learnerId, lvl.num);
-          const auto = lvl.num <= 1 || levelGate(learnerId, lvl.num - 1).passed; // what the gate alone would say
+          const auto = lvl.num <= 1 || isLevelPassed(learnerId, lvl.num - 1); // what the gate alone would say
           const current: LockState | 'auto' = ov ?? 'auto';
           return (
             <li key={lvl.num} className="lc__level">

@@ -207,6 +207,17 @@ img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
 .gd-hub__title { font-size: clamp(24px, 6vw, 38px); font-weight: 900; margin: 6px 0 2px; color: #1f5236; text-align: center; }
 .gd-hub__lead { max-width: 520px; text-align: center; color: #357a55; font-size: 14px; line-height: 1.45; margin: 0 0 22px; }
 
+/* end-of-level checkpoint CTA — appears once mastery hits 95% */
+.gd-hub__check { margin: 24px auto 0; display: block; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer;
+  min-height: 48px; color: #fff; background: linear-gradient(135deg, #f5b13c, #ef962a); border: none;
+  padding: 13px 24px; border-radius: 999px; box-shadow: 0 10px 22px rgba(239, 150, 42, 0.4);
+  animation: gd-check-pulse 2.4s ease-in-out infinite; }
+.gd-hub__check--done { background: rgba(255, 255, 255, 0.85); color: #2f7d56; border: 1.5px solid #8ecf9f;
+  box-shadow: 0 6px 14px rgba(78, 149, 104, 0.2); animation: none; font-size: 14px; }
+.gd-hub__check:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+@keyframes gd-check-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+@media (prefers-reduced-motion: reduce) { .gd-hub__check { animation: none; } }
+
 /* gentle link from the level launcher into the cozy Village home */
 .gd-hub__village { margin: 22px auto 0; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer;
   min-height: 44px; color: #2f7d56; background: rgba(255, 255, 255, 0.82); border: 1.5px solid #8ecf9f;

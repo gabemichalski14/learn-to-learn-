@@ -9,6 +9,7 @@ export type RouteName =
   | 'home'
   | 'level'
   | 'levels'
+  | 'checkpoint'
   | 'play'
   | 'games'
   | 'village'
@@ -38,6 +39,10 @@ export function parseHash(hash: string): Route {
   if (h.startsWith('profile')) return { name: 'profile' };
   if (h.startsWith('games')) return { name: 'games' };
   if (h.startsWith('levels')) return { name: 'levels' };
+  if (h.startsWith('checkpoint/')) {
+    const n = parseInt(h.split('/')[1] ?? '', 10);
+    return { name: 'checkpoint', level: Number.isFinite(n) ? n : 1 };
+  }
   if (h.startsWith('level/')) {
     const n = parseInt(h.split('/')[1] ?? '', 10);
     return { name: 'level', level: Number.isFinite(n) ? n : 1 };

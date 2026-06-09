@@ -1,4 +1,4 @@
-import { Pip } from '../../mascots/Pip';
+import { PipArt } from '../../mascots/PipArt';
 import { tutorTipsFor } from './tutorTips';
 import type { MasteryMap } from '../../mastery/mastery';
 import './tutorPip.css';
@@ -13,7 +13,7 @@ export function TutorPip({ mastery, name }: { mastery: MasteryMap; name: string 
   return (
     <div className="l2l-card tutorpip" aria-labelledby="tutorpip-h">
       <div className="tutorpip__head">
-        <span className="tutorpip__pip" aria-hidden="true"><Pip size={60} expression="happy" /></span>
+        <span className="tutorpip__pip" aria-hidden="true"><PipArt size={60} expression="happy" /></span>
         <div>
           <p className="l2l-eyebrow">Pip's coaching corner</p>
           <h3 id="tutorpip-h" className="chart-card__title" style={{ margin: 0 }}>How to help {name} next</h3>

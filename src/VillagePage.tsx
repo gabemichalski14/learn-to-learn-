@@ -5,7 +5,7 @@ import { loadMastery } from './mastery/mastery';
 import { gardenResidents, storytimeScene, type LevelCharacter } from './world/lore/cast';
 import { CharacterArt } from './world/lore/CharacterArt';
 import { Storytime } from './world/lore/Storytime';
-import { Pip } from './mascots/Pip';
+import { PipArt } from './mascots/PipArt';
 import './village.css';
 
 type Scene = { character: LevelCharacter; lines: string[]; title?: string };
@@ -40,7 +40,7 @@ export function VillagePage({ learnerId }: { learnerId: string }) {
       </header>
 
       <section className="vil-host">
-        <Pip size={92} expression="happy" />
+        <PipArt size={92} expression="happy" />
         <div className="vil-host__say" role="status">
           {residents.length === 0 ? (
             <>

@@ -1,0 +1,5 @@
+/* Painted Pip — a gentle idle "breathing" bob so he feels alive everywhere. */
+.pip-art { display: inline-block; object-fit: contain; }
+.pip-art--alive { animation: pip-art-bob 3.6s ease-in-out infinite; will-change: transform; }
+@keyframes pip-art-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .pip-art--alive { animation: none; } }

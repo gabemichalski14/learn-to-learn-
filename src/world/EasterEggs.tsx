@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { Pip } from '../mascots/Pip';
+import { PipArt } from '../mascots/PipArt';
 import { sfx } from '../audio/sfx';
 import './living-world.css';
 
@@ -98,7 +98,7 @@ export function EasterEggs({ tier, motifs = [], boost = 0 }: { tier: number; mot
     const fromRight = egg.side === 1;
     return (
       <div className={`egg egg--peek ${fromRight ? 'egg--right' : 'egg--left'}`} style={{ top: `${egg.top}%` }} aria-hidden="true">
-        <Pip size={92} expression="wink" />
+        <PipArt size={92} expression="wink" />
       </div>
     );
   }

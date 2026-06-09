@@ -1,5 +1,6 @@
 import { type CSSProperties } from 'react';
-import { Pip, type PipExpression } from './Pip';
+import { type PipExpression } from './Pip';
+import { PipArt } from './PipArt';
 
 /** The gag: a whole conga line of Pips waddles across the bottom of the screen,
  *  staggered so they stream in one after another, then march off. Decorative +
@@ -20,7 +21,7 @@ export function PipParade() {
       {MARCHERS.map((m, i) => (
         <span key={i} className="pip-parade__one" style={{ '--delay': `${m.delay}s` } as CSSProperties}>
           <span className="pip-parade__waddle">
-            <Pip size={m.size} expression={m.expr} />
+            <PipArt size={m.size} expression={m.expr} />
           </span>
         </span>
       ))}

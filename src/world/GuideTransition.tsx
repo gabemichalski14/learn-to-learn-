@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, type ReactNode, type CSSProperties } from 'react';
-import { Pip } from '../mascots/Pip';
+import { PipArt } from '../mascots/PipArt';
 import { navigate } from '../router';
 import { sfx } from '../audio/sfx';
 import { GuideCtx, type GuideApi } from './guideContext';
@@ -43,7 +43,7 @@ export function GuideProvider({ children }: { children: ReactNode }) {
         <div className={`guide guide--${active.dir}`} key={active.key} style={{ '--total': `${TOTAL_MS}ms` } as CSSProperties} aria-hidden="true">
           <div className="guide__curtain" />
           <div className="guide__pip">
-            <Pip size={120} expression="excited" />
+            <PipArt size={120} expression="excited" />
           </div>
         </div>
       )}

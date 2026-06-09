@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pip, type PipExpression } from './Pip';
+import { type PipExpression } from './Pip';
+import { PipArt } from './PipArt';
 import { MascotBubble } from './MascotBubble';
 import { randomPhrase, type Phrase, type PhraseKind } from './phrases';
 import { sfx } from '../audio/sfx';
@@ -64,7 +65,7 @@ export function MascotSpeaker({
     <span ref={rootRef} className={`mascot-speaker ${className}`}>
       {open && phrase && <MascotBubble phrase={phrase} onCta={go} onDismiss={() => setOpen(false)} />}
       <button type="button" className="mascot-speaker__btn" onClick={poke} aria-label={label}>
-        <Pip size={size} expression={open ? 'excited' : expression} />
+        <PipArt size={size} expression={open ? 'excited' : expression} />
       </button>
     </span>
   );

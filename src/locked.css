@@ -1,0 +1,16 @@
+/* Locked-level redirect — cozy, no-shame, sits on the warm app surface. */
+.locked { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+  padding: 24px; background: var(--bg, #f6efe1); }
+.locked__card { max-width: 460px; text-align: center; background: var(--surface, #fffdf7);
+  border: 1px solid rgba(78, 149, 104, 0.16); border-radius: 24px; padding: 32px 28px;
+  box-shadow: 0 18px 40px rgba(80, 70, 40, 0.12); }
+.locked__lock { font-size: 44px; line-height: 1; display: inline-block; margin-bottom: 8px; }
+.locked__title { margin: 6px 0 10px; font-size: clamp(20px, 5vw, 26px); font-weight: 800; color: #1f5236; }
+.locked__body { margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #3a463f; }
+.locked__btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.locked__go { font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; min-height: 44px; border: none;
+  color: #fff; background: linear-gradient(135deg, #6bae7f, #4e9568); padding: 12px 22px; border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(78, 149, 104, 0.36); }
+.locked__home { font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; min-height: 44px;
+  color: #2f7d56; background: transparent; border: 1.5px solid #8ecf9f; padding: 12px 20px; border-radius: 999px; }
+.locked__go:focus-visible, .locked__home:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }

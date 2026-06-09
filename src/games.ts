@@ -132,6 +132,11 @@ export function findLevel(num: number): LevelInfo | undefined {
   return LEVELS.find((l) => l.num === num);
 }
 
+/** The level number a game id belongs to (for mastery-gating game routes). */
+export function levelOfGame(gameId: string): number | undefined {
+  return LEVELS.find((l) => l.games.some((g) => g.id === gameId))?.num;
+}
+
 export function availableCount(level: LevelInfo): number {
   return level.games.filter((g) => g.status === 'available').length;
 }

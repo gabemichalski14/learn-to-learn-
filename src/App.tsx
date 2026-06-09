@@ -24,6 +24,9 @@ import { ensureLearner, setCurrentLearnerId } from './profiles';
 import { useTutorSignedIn } from './useAuth';
 import { worldMotifs } from './world/lore/cast';
 import { loadMastery } from './mastery/mastery';
+import { isLevelUnlocked } from './mastery/levelGate';
+import { levelOfGame } from './games';
+import { LockedScreen } from './LockedScreen';
 
 export default function App() {
   const route = useRoute();
@@ -39,6 +42,16 @@ export default function App() {
   function chooseLearner(id: string) {
     setCurrentLearnerId(id);
     setLearnerId(id);
+  }
+
+  // Mastery-gate: Barton is strictly sequential — you can't enter a level (or its
+  // games) until the previous level is passed at ~95%. Guard the immersive routes.
+  if (route.name === 'play') {
+    const lvl = levelOfGame(route.game ?? 'beginning-sounds') ?? 1;
+    if (!isLevelUnlocked(learnerId, lvl)) return <LockedScreen level={lvl} learnerId={learnerId} />;
+  }
+  if (route.name === 'level' && !isLevelUnlocked(learnerId, route.level ?? 1)) {
+    return <LockedScreen level={route.level ?? 1} learnerId={learnerId} />;
   }
 
   // The game screens stay immersive (their own back button); every other page
@@ -64,7 +77,7 @@ export default function App() {
       page = <LevelPage level={route.level ?? 1} />;
       break;
     case 'levels':
-      page = <LevelsPage />;
+      page = <LevelsPage learnerId={learnerId} />;
       break;
     case 'games':
       page = <GamesPage />;

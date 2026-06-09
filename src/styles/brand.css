@@ -226,6 +226,13 @@ body::before {
 .lvl-card--std:not(.is-ready) .lvl-card__foot { color: var(--muted); }
 .lvl-card--std .level-emblem { margin-bottom: 8px; }
 
+/* locked level — calm, dimmed, not playable (mastery-gated) */
+.lvl-card--locked { cursor: default; opacity: 0.72; align-items: flex-start;
+  background: repeating-linear-gradient(135deg, rgba(120,110,90,0.04) 0 10px, transparent 10px 20px), var(--surface); }
+.lvl-card--locked .lvl-lock { font-size: 26px; line-height: 1; margin-bottom: 6px; filter: grayscale(0.2); }
+.lvl-card--locked .lvl-card__title { color: var(--muted); }
+.lvl-card--locked .lvl-card__foot { color: var(--teal-deep); opacity: 0.8; }
+
 /* themed Level 2 (Space Patrol) full card */
 .lvl-card--space { color: #eafcff; border-color: rgba(120, 220, 230, 0.4);
   background: radial-gradient(135% 130% at 78% -12%, #16455a 0%, #0c2a39 46%, #071821 82%); box-shadow: 0 16px 36px rgba(8, 30, 40, 0.42); }

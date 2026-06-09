@@ -2,6 +2,8 @@ import type { CSSProperties } from 'react';
 import { navigate } from './router';
 import { LEVELS, availableCount } from './games';
 import { levelCurriculum } from './curriculum';
+import { isLevelUnlocked } from './mastery/levelGate';
+import { useDataVersion } from './data/store';
 import { LevelEmblem } from './LevelEmblem';
 
 /** Which levels have an immersive themed "world" (full-card treatment). */
@@ -21,7 +23,8 @@ function footText(num: number, games: number): string {
 
 /** Index of all 10 structured-literacy levels. Themed levels (Level 2 = Space Patrol) render
  *  as a fully themed, animated card; the rest use the brand standard card. */
-export function LevelsPage() {
+export function LevelsPage({ learnerId }: { learnerId: string }) {
+  useDataVersion(); // re-check unlocks when mastery changes
   return (
     <main className="l2l-page">
       <button type="button" className="l2l-back" onClick={() => navigate('#/')}>← Home</button>
@@ -37,6 +40,20 @@ export function LevelsPage() {
           const ready = games > 0;
           const foot = footText(lvl.num, games);
           const style = { '--i': idx + 1 } as CSSProperties;
+
+          // Mastery-gate: a level you haven't unlocked shows a calm locked card
+          // (not a themed, playable one) — you reach it by passing the level before.
+          if (!isLevelUnlocked(learnerId, lvl.num)) {
+            return (
+              <div key={lvl.num} className="lvl-card lvl-card--locked l2l-reveal" style={style} aria-label={`Level ${lvl.num}: ${lvl.title} — locked`}>
+                <span className="lvl-lock" aria-hidden="true">🔒</span>
+                <span className="lvl-card__num">Level {lvl.num}</span>
+                <span className="lvl-card__title">{lvl.title}</span>
+                <span className="lvl-card__focus">{lvl.focus}</span>
+                <span className="lvl-card__foot">Pass Level {lvl.num - 1} to unlock</span>
+              </div>
+            );
+          }
 
           if (WORLD[lvl.num] === 'space') {
             return (

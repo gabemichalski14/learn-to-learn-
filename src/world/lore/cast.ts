@@ -57,7 +57,7 @@ export interface ArtSource {
    *  (grey/small → colour/whole) right on it — the simplest free route. */
   image?: string;
   /** Optional per-expression frames; the matching one is shown on that mood. */
-  frames?: Partial<Record<'idle' | 'cheer' | 'wobble' | 'point' | 'bloom', string>>;
+  frames?: Partial<Record<'idle' | 'cheer' | 'wobble' | 'point' | 'bloom' | 'talk', string>>;
   /** Rive upgrade path (fluid vector). Takes precedence over images when present. */
   rive?: string;          // path/url to the .riv (artboard with `heal` + `mood`)
   artboard?: string;      // default 'Moss'
@@ -180,6 +180,7 @@ export const MOSS: LevelCharacter = {
       wobble: '/characters/moss/wobble.png',
       point: '/characters/moss/point.png',
       bloom: '/characters/moss/bloom.png',
+      talk: '/characters/moss/talk.png',
     },
   },
   house: '/characters/village/cottage.png',
@@ -289,6 +290,7 @@ export const CHIP: LevelCharacter = {
       wobble: '/characters/chip/wobble.png',
       point: '/characters/chip/point.png',
       bloom: '/characters/chip/bloom.png',
+      talk: '/characters/chip/talk.png',
     },
   },
   house: '/characters/village/cottage-2.png',

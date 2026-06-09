@@ -57,7 +57,7 @@ export function Storytime({ character, lines, title, onClose }: {
           <CharacterArt
             emoji={character.emoji}
             heal={1}
-            mood={last ? 'bloom' : null}
+            mood={last ? 'bloom' : 'talk'}
             size={120}
             art={character.art}
             label={character.name}

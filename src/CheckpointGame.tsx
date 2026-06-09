@@ -7,12 +7,14 @@ import { CharacterArt } from './world/lore/CharacterArt';
 import { WordPicture } from './world/WordPicture';
 import { findLevel } from './games';
 import { markCheckpointPassed } from './mastery/levelProgress';
+import { loadMastery, skillInsights } from './mastery/mastery';
+import { parseSkillKey } from './mastery/skills';
 import { tapItOutWords } from './content/packs/tapItOut';
 import { everydayObjects } from './content/packs/everydayObjects';
 import { everydayEndings } from './content/packs/everydayEndings';
 import { shortVowelWords } from './content/packs/shortVowelWords';
 import { soundOf } from './domain/engine';
-import type { SoundTarget } from './domain/types';
+import type { Pack, SoundTarget } from './domain/types';
 import './checkpoint.css';
 
 const N = 8;                  // questions in a checkpoint
@@ -24,28 +26,62 @@ type Question =
 
 function shuffle<T>(a: T[]): T[] { const x = [...a]; for (let i = x.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [x[i], x[j]] = [x[j], x[i]]; } return x; }
 
-function buildQuestions(level: number): Question[] {
+const PACK_BY_TARGET: Record<SoundTarget, Pack> = {
+  beginning: everydayObjects, ending: everydayEndings, medial: shortVowelWords,
+};
+
+/** One L2 sound question for a target + sound (undefined if no word has it). */
+function soundQuestion(target: SoundTarget, sound: string): Question | undefined {
+  const pack = PACK_BY_TARGET[target];
+  const w = shuffle(pack.words.filter((x) => soundOf(x, target) === sound))[0];
+  if (!w) return undefined;
+  const others = [...new Set(pack.words.map((x) => soundOf(x, target)).filter((s): s is string => !!s && s !== sound))];
+  return { kind: 'sound', label: w.label, emoji: w.emoji, target, answer: sound, choices: shuffle([sound, ...shuffle(others).slice(0, 2)]) };
+}
+
+/**
+ * Build the checkpoint, PERSONALIZED to this learner. Level 2 samples the sounds
+ * the learner has actually practised, over-weighting the shakier ones — so the
+ * post-test confirms exactly what they worked on and re-checks their soft spots.
+ * Falls back to a representative pack mix when there's no data yet.
+ */
+function buildQuestions(level: number, learnerId: string): Question[] {
   if (level === 1) {
+    // Level 1 is a single PA skill — a representative spread of segmenting words.
     return shuffle(tapItOutWords).slice(0, N).map((w) => ({
       kind: 'count' as const, label: w.label, emoji: w.emoji, answer: w.sounds, choices: [2, 3, 4],
     }));
   }
-  // Level 2 — mix the three sound positions across the test.
-  const sources: { words: typeof everydayObjects.words; target: SoundTarget }[] = [
-    { words: everydayObjects.words, target: 'beginning' },
-    { words: everydayEndings.words, target: 'ending' },
-    { words: shortVowelWords.words, target: 'medial' },
-  ];
+
+  const practised = skillInsights(loadMastery(learnerId))
+    .map((s) => ({ p: parseSkillKey(s.skillKey), score: s.score }))
+    .filter((x): x is { p: NonNullable<ReturnType<typeof parseSkillKey>>; score: number } =>
+      x.p != null && (x.p.target === 'beginning' || x.p.target === 'ending' || x.p.target === 'medial'));
+
+  if (practised.length >= 3) {
+    // weighted pool — weaker sounds appear more often (1–5×)
+    const pool: { target: SoundTarget; sound: string }[] = [];
+    for (const s of practised) {
+      const weight = Math.min(5, Math.max(1, Math.round((1 - s.score) * 4) + 1));
+      for (let i = 0; i < weight; i++) pool.push({ target: s.p.target, sound: s.p.soundId });
+    }
+    const qs: Question[] = [];
+    for (let guard = 0; qs.length < N && guard < 120; guard++) {
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      const q = soundQuestion(pick.target, pick.sound);
+      if (q) qs.push(q);
+    }
+    if (qs.length >= 3) return qs;
+  }
+
+  // Fallback: a representative mix across the three sound positions.
+  const targets: SoundTarget[] = ['beginning', 'ending', 'medial'];
   const qs: Question[] = [];
   for (let i = 0; i < N; i++) {
-    const src = sources[i % sources.length];
-    const words = shuffle(src.words.filter((w) => soundOf(w, src.target)));
-    const w = words[0];
-    if (!w) continue;
-    const answer = soundOf(w, src.target)!;
-    const others = [...new Set(src.words.map((x) => soundOf(x, src.target)).filter((s): s is string => !!s && s !== answer))];
-    const choices = shuffle([answer, ...shuffle(others).slice(0, 2)]);
-    qs.push({ kind: 'sound', label: w.label, emoji: w.emoji, target: src.target, answer, choices });
+    const target = targets[i % targets.length];
+    const sound = soundOf(shuffle(PACK_BY_TARGET[target].words.filter((w) => soundOf(w, target)))[0], target);
+    const q = sound ? soundQuestion(target, sound) : undefined;
+    if (q) qs.push(q);
   }
   return qs;
 }
@@ -58,7 +94,7 @@ function buildQuestions(level: number): Question[] {
  */
 export function CheckpointGame({ level, learnerId }: { level: number; learnerId: string }) {
   const audio = useMemo(() => createRecordedAudioPlayer(), []);
-  const [questions] = useState(() => buildQuestions(level));
+  const [questions] = useState(() => buildQuestions(level, learnerId));
   const [i, setI] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [picked, setPicked] = useState<string | number | null>(null);
@@ -150,7 +186,10 @@ export function CheckpointGame({ level, learnerId }: { level: number; learnerId:
               ))}
         </div>
       </div>
-      <button type="button" className="cp__leave" onClick={() => navigate(`#/level/${level}`)}>← Not yet</button>
+      <div className="cp__exits">
+        <button type="button" className="cp__leave" onClick={() => navigate(`#/level/${level}`)}>← Practice more</button>
+        <button type="button" className="cp__leave" onClick={() => navigate('#/')}>Home</button>
+      </div>
     </main>
   );
 }

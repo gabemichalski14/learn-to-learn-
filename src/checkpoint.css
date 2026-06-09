@@ -30,9 +30,11 @@
 .cp__choice.is-wrong { background: rgba(240, 160, 130, 0.3); border-color: rgba(176, 90, 62, 0.5); color: #b15a3e; }
 .cp__choice:focus-visible { outline: 3px solid #173d2a; outline-offset: 2px; }
 
-.cp__leave { position: absolute; top: 16px; left: 16px; font: inherit; font-weight: 800; font-size: 13px;
+.cp__exits { position: absolute; top: 16px; left: 16px; display: flex; gap: 8px; }
+.cp__leave { font: inherit; font-weight: 800; font-size: 13px; min-height: 36px;
   cursor: pointer; color: #2f7d56; background: rgba(255, 255, 255, 0.85); border: none; border-radius: 999px;
   padding: 8px 16px; box-shadow: 0 2px 8px rgba(78, 149, 104, 0.18); }
+.cp__leave:focus-visible { outline: 3px solid #173d2a; outline-offset: 2px; }
 
 /* result */
 .cp__hero { margin-bottom: 6px; }

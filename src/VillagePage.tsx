@@ -27,20 +27,19 @@ export function VillagePage({ learnerId }: { learnerId: string }) {
 
   return (
     <main className="vil">
-      <div className="vil-sky" aria-hidden="true" />
-      <div className="vil-decor" aria-hidden="true">
-        <img className="vil-decor__sign" src="/characters/village/signpost.png" alt="" />
-        <img className="vil-decor__lantern" src="/characters/village/lantern.png" alt="" />
-      </div>
-
       <header className="vil-hud">
         <button type="button" className="vil-back" onClick={() => goBack('#/')}>← Home</button>
         <span className="vil-badge">🏡 Sound Garden Village</span>
       </header>
 
+      {/* the village illustration as a bounded hero that melts into the page */}
+      <div className="vil-hero" role="img" aria-label="The Sound Garden Village">
+        <h1 className="vil-hero__title">Sound Garden Village</h1>
+      </div>
+
       <div className="vil-scroll">
         <section className="vil-host">
-          <PipArt size={88} expression="happy" />
+          <PipArt size={104} expression="happy" className="vil-host__pip" />
           <div className="vil-host__say" role="status">
             {residents.length === 0 ? (
               <>

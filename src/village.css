@@ -5,51 +5,35 @@
 .vil {
   position: relative; min-height: 100vh; min-height: 100dvh; z-index: 1;
   display: flex; flex-direction: column; align-items: center;
-  padding: 0 16px 64px; color: #1f4733;
-  font-family: 'Poppins', -apple-system, system-ui, sans-serif; overflow: hidden;
+  padding: 0 16px 48px; color: #1f4733; background: var(--bg, #f6efe1);
+  font-family: 'Poppins', -apple-system, system-ui, sans-serif;
 }
 
-/* sky wash + drifting clouds + sun */
-.vil-sky { position: absolute; inset: 0; z-index: -1; overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(253, 238, 205, 0.22) 0%, rgba(231, 245, 221, 0.30) 100%),
-    url('/backgrounds/village.jpg') center top / cover no-repeat,
-    linear-gradient(180deg, #fdeecd 0%, #e7f5dd 100%); }
-/* the painting carries its own sky + sun, so hide the CSS ones */
-.vil-sun, .vil-cloud { display: none; }
-
-/* ambient foreground props — sit in the lower corners of the scene (absolute, so
-   they stay inside the Village and never collide with the page footer) */
-.vil-decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-.vil-decor__lantern, .vil-decor__sign { position: absolute; bottom: 16px; height: auto; opacity: 0.96;
-  filter: drop-shadow(0 8px 14px rgba(78, 149, 104, 0.3)); }
-.vil-decor__lantern { right: 18px; width: 64px; }
-.vil-decor__sign { left: 18px; width: 84px; }
-@media (max-width: 560px) { .vil-decor__lantern { width: 48px; } .vil-decor__sign { width: 64px; } }
-.vil-sun { position: absolute; top: 5%; right: 9%; width: 76px; height: 76px; border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, #ffe07a, #f5c84c);
-  box-shadow: 0 0 54px 16px rgba(245, 200, 76, 0.45); animation: vil-sun 7s ease-in-out infinite alternate; }
-@keyframes vil-sun { from { transform: scale(1); } to { transform: scale(1.06); } }
-.vil-cloud { position: absolute; width: 120px; height: 34px; background: #fff; border-radius: 40px; opacity: 0.9;
-  box-shadow: 28px 8px 0 -4px #fff, -30px 10px 0 -2px #fff; animation: vil-drift linear infinite; }
-.vil-cloud--1 { top: 14%; animation-duration: 66s; }
-.vil-cloud--2 { top: 26%; transform: scale(1.3); opacity: 0.78; animation-duration: 92s; animation-delay: -36s; }
-@keyframes vil-drift { from { left: -22%; } to { left: 118%; } }
-
 /* HUD */
-.vil-hud { width: 100%; max-width: 860px; display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; padding: 16px 4px; }
-.vil-back { border: none; background: rgba(255, 255, 255, 0.72); color: #2f7d56; font: inherit; font-weight: 800;
+.vil-hud { width: 100%; max-width: 880px; display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 16px 4px 12px; }
+.vil-back { border: none; background: rgba(255, 255, 255, 0.85); color: #2f7d56; font: inherit; font-weight: 800;
   font-size: 13px; border-radius: 999px; padding: 8px 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(78, 149, 104, 0.18); }
 .vil-back:focus-visible { outline: 3px solid #173d2a; outline-offset: 2px; }
 .vil-badge { font-weight: 800; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #2f7d56; }
 
-/* Pip host + welcome */
-.vil-host { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center;
-  max-width: 640px; margin: 8px auto 26px; text-align: left; }
+/* HERO — the village illustration, bounded, melting into the cream page (no seam) */
+.vil-hero { position: relative; width: 100%; max-width: 880px;
+  height: clamp(220px, 34vw, 320px); border-radius: 26px 26px 0 0; overflow: hidden;
+  background: url('/backgrounds/village.jpg') center 30% / cover no-repeat;
+  box-shadow: 0 18px 40px rgba(80, 70, 40, 0.14); }
+.vil-hero::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 58%;
+  background: linear-gradient(180deg, rgba(246, 239, 225, 0) 0%, rgba(246, 239, 225, 0.45) 55%, var(--bg, #f6efe1) 100%); }
+.vil-hero__title { position: absolute; top: 20px; left: 0; right: 0; z-index: 2; margin: 0; text-align: center;
+  font-weight: 800; font-size: clamp(20px, 4.5vw, 26px); color: #1f5236; text-shadow: 0 2px 12px rgba(255, 255, 255, 0.75); }
+
+/* Pip host — stands where the illustration dissolves into the page (in the world AND on the page) */
+.vil-host { position: relative; z-index: 3; margin-top: -84px; display: flex; flex-direction: column;
+  align-items: center; gap: 10px; text-align: center; max-width: 560px; }
+.vil-host__pip { filter: drop-shadow(0 10px 16px rgba(78, 149, 104, 0.34)); }
 .vil-host__say {
-  flex: 1 1 280px; background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(78, 149, 104, 0.2);
-  border-radius: 20px; padding: 16px 18px; box-shadow: 0 14px 30px rgba(78, 149, 104, 0.22);
+  background: var(--surface, #fffdf7); border: 1px solid rgba(78, 149, 104, 0.16);
+  border-radius: 18px; padding: 14px 18px; box-shadow: 0 12px 26px rgba(80, 70, 40, 0.12);
 }
 .vil-host__say p { margin: 0 0 8px; font-size: 15px; line-height: 1.5; color: #235c40; }
 .vil-host__say p:last-child { margin-bottom: 0; }
@@ -62,7 +46,6 @@
 /* calm vertical rhythm — generous spacing, one idea at a time (dyslexia-friendly) */
 .vil-scroll { position: relative; z-index: 2; width: 100%; max-width: 880px;
   display: flex; flex-direction: column; align-items: center; gap: 30px; }
-.vil-host { margin: 8px auto 0; }
 
 /* Pip's rotating tip — a single calm card, colour-keyed by kind */
 .vil-tip { width: 100%; max-width: 600px; text-align: left;

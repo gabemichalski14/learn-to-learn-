@@ -111,6 +111,9 @@ export interface LevelCharacter {
   storytime?: string[];
   /** The little lesson they teach when you visit them in the Village. */
   teaching?: Teaching;
+  /** Opening line when you return AFTER they're already whole + home (arc done):
+   *  a returning friend, not "I'm broken, help me" — so the arc reads as finished. */
+  revisit?: string[];
   /** Where helping happens (the level's game). */
   playRoute: string;
   /** Authored beat lines per story stage (hub). */
@@ -159,6 +162,10 @@ export const MOSS: LevelCharacter = {
   // The Village lesson — Moss's structured-literacy method, framed as his gift.
   // (Curriculum: first/middle/end sound + one-at-a-time, multisensory. Research:
   // spatial strength, difference-not-deficit, "hear it, say it, see it, plant it".)
+  revisit: [
+    "Back for more? I'm whole now — but I love practising with you. Let's keep my sounds sharp! 🌱",
+    'Just visiting from the Village! Say them with me again? 💚',
+  ],
   teaching: {
     title: 'How to catch a slippery sound',
     lines: [
@@ -271,6 +278,10 @@ export const CHIP: LevelCharacter = {
     'Every word is a tiny song now — and I can hear each beat. You taught me that. 🎵',
     'I used to rush the whole tune and trip. You slowed me down, one beat at a time. Thank you.',
     "Come keep time with me in the chorus. I never lose the beat when you're here. 💚",
+  ],
+  revisit: [
+    'Hi again! I live in the Village now — but let\'s keep the beat together. 🎵',
+    "Back for a tune-up? I never lose the beat when you're here. 💚",
   ],
   teaching: {
     title: 'How to hear the beats in a word',

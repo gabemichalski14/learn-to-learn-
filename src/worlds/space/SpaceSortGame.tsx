@@ -15,7 +15,7 @@ import { goBack, navigate } from '../../router';
 import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
 import { SpaceSpecimen } from './creatureIcons';
 import { SpaceFinish } from './SpaceFinish';
-import { castFor, reactionLine, healFor, fragmentToReveal, characterStage } from '../../world/lore/cast';
+import { castFor, reactionLine, healFor, fragmentToReveal, characterStage, isFullyRecovered } from '../../world/lore/cast';
 import { setStoryStage, acknowledge, loadLore } from '../../world/lore/loreStore';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import { LevelScene } from '../../world/LevelScene';
@@ -132,9 +132,14 @@ export function SpaceSortGame({
   const [muted, setMutedState] = useState(isMuted());
   const [echoPing, setEchoPing] = useState(0); // bumps on an audio moment → Echo twinkles
   const pingEcho = () => setEchoPing((p) => p + 1);
-  // Opening line = his teaching line when the tutorial is showing, else his intro.
-  const [charLine, setCharLine] = useState(() =>
-    character ? reactionLine(character, tutorialBasket ? 'teach' : 'intro') : '');
+  // Opening line: a returning-friend greeting once he's already home (arc done),
+  // else his teaching line during the tutorial, else his intro.
+  const [charLine, setCharLine] = useState(() => {
+    if (!character) return '';
+    const whole = isFullyRecovered(character, loadMastery(learnerId));
+    if (whole && character.revisit?.length) return character.revisit[Math.floor(Math.random() * character.revisit.length)];
+    return reactionLine(character, tutorialBasket ? 'teach' : 'intro');
+  });
   const [clearLine] = useState(() => (character ? reactionLine(character, 'clear') : '')); // stable sector-clear beat
   // Moss's REAL recovery: derived from the learner's mastery of HIS sound, so
   // playing literally heals him (intrinsic). Persists across sessions; rises as
@@ -205,10 +210,11 @@ export function SpaceSortGame({
     const stars = totals.wrong === 0 ? 3 : totals.wrong <= 2 ? 2 : 1;
     const title = HERO_TITLES[Math.floor(Math.random() * HERO_TITLES.length)];
     sfx.win();
-    // If ALL his hums are now mastered, he's WHOLE — advance his arc and offer to
-    // send him home to the garden (where his named planting blooms).
+    // If ALL his hums are now mastered, he's WHOLE — the arc's payoff. Show the
+    // homecoming finale ONLY the first time (stage 'healed'); once he's been
+    // walked to the Village ('resident') it's a normal win, no repeat homecoming.
     const stage = character ? characterStage(character, loadLore(learnerId), loadMastery(learnerId)) : 'arrived';
-    const homecoming = stage === 'healed' || stage === 'resident';
+    const homecoming = stage === 'healed';
     if (stage === 'healed' && character) setStoryStage(learnerId, character.id, 'healed');
     setFinish({
       ms: durationMs, best: res.isBest, stars, title,
@@ -363,7 +369,7 @@ export function SpaceSortGame({
             homecoming={finish.homecoming}
             characterEmoji={character?.emoji}
             characterArt={character?.art}
-            onGarden={() => navigate('#/level/1')}
+            onGarden={() => { if (character) setStoryStage(learnerId, character.id, 'resident'); navigate('#/village'); }}
             onRestart={() => onRestart?.()}
             onBack={() => goBack(`#/level/${level}`)}
           />

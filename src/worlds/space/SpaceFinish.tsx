@@ -91,7 +91,7 @@ export function SpaceFinish({ ms, best, stars, title, beat, homecoming, characte
         </p>
         <div className="sg-win__btns">
           {homecoming && onGarden && (
-            <button type="button" className="sg-btn" onClick={onGarden}>Take him home 🌼</button>
+            <button type="button" className="sg-btn" onClick={onGarden}>Walk him to the Village 🏡</button>
           )}
           <button type="button" className="sg-btn" onClick={onRestart}>Fly again 🚀</button>
           <button type="button" className="sg-back" onClick={onBack}>Back to Level 2</button>

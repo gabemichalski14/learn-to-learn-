@@ -11,7 +11,7 @@ import { awardForSession } from '../../achievements';
 import { GardenBackdrop, SproutGuide } from './GardenArt';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
 import { MascotSpeaker } from '../../mascots/MascotSpeaker';
-import { castFor, reactionLine, healFor, characterStage, fragmentToReveal } from '../../world/lore/cast';
+import { castFor, reactionLine, healFor, characterStage, fragmentToReveal, isFullyRecovered } from '../../world/lore/cast';
 import { setStoryStage, acknowledge, loadLore } from '../../world/lore/loreStore';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import { WordPicture } from '../../world/WordPicture';
@@ -53,7 +53,12 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   // REAL phonemic-awareness mastery. When the level's whole (95%), he goes home.
   const character = castFor(1);
   const [chipHeal, setChipHeal] = useState(() => (character ? healFor(character, loadMastery(learnerId)) : 0));
-  const [chipLine, setChipLine] = useState(() => (character ? reactionLine(character, 'teach') : ''));
+  const [chipLine, setChipLine] = useState(() => {
+    if (!character) return '';
+    const whole = isFullyRecovered(character, loadMastery(learnerId));
+    if (whole && character.revisit?.length) return character.revisit[Math.floor(Math.random() * character.revisit.length)];
+    return reactionLine(character, 'teach');
+  });
   const [chipMood, setChipMood] = useState<'cheer' | 'wobble' | 'point' | 'bloom' | null>(null);
 
   // Juice state
@@ -204,7 +209,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
     // If Chip's whole now (PA fully mastered at the 95% bar), advance his arc and
     // offer to send him home to the Village.
     const stage = character ? characterStage(character, loadLore(learnerId), loadMastery(learnerId)) : 'arrived';
-    const homecoming = stage === 'healed' || stage === 'resident';
+    const homecoming = stage === 'healed'; // finale only the first time he's whole
     if (stage === 'healed' && character) setStoryStage(learnerId, character.id, 'healed');
     setFinish({
       stars,
@@ -346,7 +351,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
               {[0, 1, 2].map((i) => <span key={i} className={i < finish.stars ? 'on' : undefined}>★</span>)}
             </div>
             <div className="gd-finish__btns">
-              {finish.homecoming && <button type="button" className="gd-btn" onClick={() => navigate('#/village')}>Walk Chip home 🏡</button>}
+              {finish.homecoming && <button type="button" className="gd-btn" onClick={() => { if (character) setStoryStage(learnerId, character.id, 'resident'); navigate('#/village'); }}>Walk Chip home 🏡</button>}
               <button type="button" className="gd-btn" onClick={restart}>Plant again 🌱</button>
               <button type="button" className="gd-ghost" onClick={() => goBack('#/level/1')}>Back to Level 1</button>
             </div>

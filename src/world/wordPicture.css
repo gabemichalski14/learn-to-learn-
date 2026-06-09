@@ -1,0 +1,5 @@
+/* Word pictures — painted illustration (img) or emoji fallback (span). Sizing is
+   owned by the host context (.gd-pic in Tap It Out, .sg-spec__art in Space). */
+.wpic { display: block; object-fit: contain; }
+img.wpic { filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.18)); }
+.wpic--emoji { display: inline-flex; align-items: center; justify-content: center; line-height: 1; }

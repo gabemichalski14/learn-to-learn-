@@ -7,20 +7,23 @@ import { everydayEndings } from '../../content/packs/everydayEndings';
 
 const packs = [shortVowelWords, everydayObjects, everydayEndings];
 
-describe('SpaceSpecimen / creature icons', () => {
-  it('has a bespoke SVG icon for every Level 2 word (no emoji fallback)', () => {
+describe('SpaceSpecimen', () => {
+  it('renders a painted word picture inside the holo-capsule for every Level 2 word', () => {
     for (const pack of packs) {
       for (const w of pack.words) {
         const { container } = render(<SpaceSpecimen id={w.id} label={w.label} emoji={w.emoji} />);
-        expect(container.querySelector('svg.sg-spec__art'), `missing icon for "${w.id}" (${w.label})`).toBeTruthy();
-        expect(container.querySelector('.sg-spec__emoji')).toBeNull();
+        expect(container.querySelector('.sg-spec'), `no capsule for "${w.id}"`).toBeTruthy();
+        const img = container.querySelector('img.sg-spec__art') as HTMLImageElement | null;
+        expect(img, `no picture for "${w.id}" (${w.label})`).toBeTruthy();
+        // keyed by the spoken word (label), matching the audio clips
+        expect(img!.getAttribute('src')).toContain('/images/words/');
       }
     }
   });
 
-  it('falls back to the emoji for an unknown word', () => {
-    const { container } = render(<SpaceSpecimen id="__nope__" label="__nope__" emoji="🛸" />);
-    expect(container.querySelector('svg.sg-spec__art')).toBeNull();
-    expect(container.querySelector('.sg-spec__emoji')?.textContent).toBe('🛸');
+  it('keys the image by the spoken word (so e-cat and cat share one cat.png)', () => {
+    const { container } = render(<SpaceSpecimen id="e-cat" label="cat" emoji="🐱" />);
+    const img = container.querySelector('img.sg-spec__art') as HTMLImageElement;
+    expect(img.getAttribute('src')).toBe('/images/words/cat.png');
   });
 });

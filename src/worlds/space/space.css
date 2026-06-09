@@ -105,7 +105,9 @@
   background:radial-gradient(circle, rgba(255,255,255,.65), transparent 70%); }
 .sg-spec__orbit{ position:absolute; inset:-4px; border-radius:50%; border:1px dashed rgba(150,230,235,.4);
   transform:rotateX(62deg); }
-.sg-spec__art{ width:64%; height:64%; position:relative; z-index:1; filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
+.sg-spec__art{ width:72%; height:72%; position:relative; z-index:1; filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
+/* emoji fallback (when a word has no painted picture yet) sizes by font, not box */
+.sg-spec__art.wpic--emoji{ width:auto; height:auto; font-size:clamp(26px,7vw,32px); }
 .sg-spec__emoji{ font-size:clamp(26px,7vw,32px); position:relative; z-index:1; }
 @keyframes sg-specbob{ from{transform:translateY(0)} to{transform:translateY(-4px)} }
 .sg-creature.is-dragging .sg-spec{ animation:none;

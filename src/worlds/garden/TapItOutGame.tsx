@@ -14,6 +14,7 @@ import { MascotSpeaker } from '../../mascots/MascotSpeaker';
 import { castFor, reactionLine, healFor, characterStage, fragmentToReveal } from '../../world/lore/cast';
 import { setStoryStage, acknowledge, loadLore } from '../../world/lore/loreStore';
 import { CharacterArt } from '../../world/lore/CharacterArt';
+import { WordPicture } from '../../world/WordPicture';
 import './garden.css';
 
 const ROUNDS = 5;
@@ -274,7 +275,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
         )}
 
         <div className="gd-word">
-          <span className="gd-pic" aria-hidden="true">{word.emoji}</span>
+          <WordPicture label={word.label} emoji={word.emoji} className="gd-pic" />
           <span className="gd-word__label">{cap(word.label)}</span>
           <button type="button" className="gd-hear" onClick={() => { sfx.tap(); pingEcho(); void audio.playWord(word); }}>🔊 Hear it</button>
         </div>

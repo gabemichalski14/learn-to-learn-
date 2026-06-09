@@ -86,7 +86,7 @@
 /* creatures (draggable) in the cargo tray */
 .sg-tray{ position:relative; z-index:3; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
   padding:10px 14px 30px; max-width:560px; margin:6px auto 0; }
-.sg-creature{ width:clamp(56px,15vw,68px); height:clamp(56px,15vw,68px); cursor:grab;
+.sg-creature{ width:clamp(74px,19vw,94px); height:clamp(74px,19vw,94px); cursor:grab;
   display:flex; align-items:center; justify-content:center; border:none; background:none; padding:0;
   color:#eafcff; touch-action:none; -webkit-tap-highlight-color:transparent; }
 .sg-creature.is-dragging{ z-index:50; }
@@ -94,18 +94,20 @@
 .sg-creature:focus-visible .sg-spec{ outline:2px solid #eafcff; outline-offset:3px; }
 
 /* holo-capsule: a glowing specimen orb that houses the object icon */
+/* a LIGHT frosted-glass bubble so the painted picture is the focus + easy to
+   recognize (the old dark orb shrank + darkened the art). */
 .sg-spec{ position:relative; width:100%; height:100%; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  background:radial-gradient(circle at 38% 30%, rgba(150,235,245,.32), rgba(12,40,52,.96) 72%);
-  border:1px solid rgba(120,220,230,.5);
-  box-shadow:inset 0 2px 9px rgba(190,245,255,.3), inset 0 -9px 16px rgba(0,0,0,.5),
-    0 8px 18px rgba(0,0,0,.45), 0 0 14px rgba(94,240,200,.18);
+  background:radial-gradient(circle at 42% 34%, rgba(236,252,255,.94), rgba(180,234,246,.62) 66%, rgba(132,205,228,.44) 100%);
+  border:1px solid rgba(150,225,240,.7);
+  box-shadow:inset 0 2px 10px rgba(255,255,255,.55), inset 0 -8px 14px rgba(60,130,150,.2),
+    0 8px 18px rgba(0,40,55,.35), 0 0 16px rgba(120,225,235,.28);
   animation:sg-specbob 3s ease-in-out infinite alternate; }
 .sg-spec::after{ content:''; position:absolute; top:13%; left:21%; width:30%; height:18%; border-radius:50%;
   background:radial-gradient(circle, rgba(255,255,255,.65), transparent 70%); }
 .sg-spec__orbit{ position:absolute; inset:-4px; border-radius:50%; border:1px dashed rgba(150,230,235,.4);
   transform:rotateX(62deg); }
-.sg-spec__art{ width:72%; height:72%; position:relative; z-index:1; filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
+.sg-spec__art{ width:88%; height:88%; position:relative; z-index:1; filter:drop-shadow(0 2px 5px rgba(0,40,55,.45)); }
 /* emoji fallback (when a word has no painted picture yet) sizes by font, not box */
 .sg-spec__art.wpic--emoji{ width:auto; height:auto; font-size:clamp(26px,7vw,32px); }
 .sg-spec__emoji{ font-size:clamp(26px,7vw,32px); position:relative; z-index:1; }

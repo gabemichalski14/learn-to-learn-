@@ -136,6 +136,22 @@ export function weakestSoundForTarget(map: MasteryMap, target: SoundTarget, pool
   return cands[0]?.sound;
 }
 
+export interface SkillInsight {
+  skillKey: SkillKey;
+  score: number;       // 0..1 recency-weighted accuracy
+  attempts: number;
+  replays: number;     // times re-heard (uncertainty signal)
+  avgMs?: number;      // typical response time, if timed
+}
+
+/** Rated skills with their full gameplay signals — feeds the tutor's
+ *  strengths/needs view (accuracy + re-hears + response time). */
+export function skillInsights(map: MasteryMap, minAttempts = RATED_MIN): SkillInsight[] {
+  return Object.entries(map)
+    .filter(([, s]) => s.attempts >= minAttempts)
+    .map(([skillKey, s]) => ({ skillKey, score: scoreOf(s), attempts: s.attempts, replays: s.replays ?? 0, avgMs: s.avgMs }));
+}
+
 export function clearMastery(learnerId: string): void {
   try {
     localStorage.removeItem(key(learnerId));

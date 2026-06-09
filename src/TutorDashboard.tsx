@@ -10,12 +10,12 @@ import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
 import { getSessions, getMastery } from './data/dataSource';
 import { ACHIEVEMENTS } from './achievements';
-import { loadMastery, rankAreas, scoreOf } from './mastery/mastery';
+import { loadMastery, rankAreas } from './mastery/mastery';
 import type { MasteryMap, FocusArea } from './mastery/mastery';
-import { skillLabel } from './mastery/skills';
 import { AreasToImprove } from './AreasToImprove';
 import { TutorPip } from './world/tutor/TutorPip';
 import { LevelControls } from './world/tutor/LevelControls';
+import { StrengthsPanel } from './world/tutor/StrengthsPanel';
 
 const CW = 300;
 const CH = 100;
@@ -141,11 +141,6 @@ export function TutorDashboard() {
   }, [sel, version]);
   const mastery: MasteryMap = cloudMastery && cloudMastery.id === sel ? cloudMastery.map : (sel ? loadMastery(sel) : {});
   const focus: FocusArea[] = rankAreas(mastery);
-  const strongest = Object.entries(mastery)
-    .filter(([, s]) => s.attempts >= 5)
-    .map(([skillKey, s]) => ({ skillKey, score: scoreOf(s), attempts: s.attempts }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 4);
   const dayKeys = new Set(log.map((r) => r.endedAt.slice(0, 10)));
   const days = Array.from({ length: 14 }, (_, i) => {
     const key = new Date(now - (13 - i) * 864e5).toISOString().slice(0, 10);
@@ -242,21 +237,12 @@ export function TutorDashboard() {
                 </div>
               </div>
 
+              <div className="l2l-card" style={{ marginTop: '16px' }}>
+                <h3 className="chart-card__title">Strengths &amp; needs — from gameplay</h3>
+                <StrengthsPanel mastery={mastery} />
+              </div>
+
               <div className="chart-grid" style={{ marginTop: '16px' }}>
-                {strongest.length > 0 && (
-                  <div className="l2l-card chart-card">
-                    <h3 className="chart-card__title">Sound mastery — strongest</h3>
-                    <ul className="mastery-list">
-                      {strongest.map((a) => (
-                        <li key={a.skillKey} className="mastery-row">
-                          <span className="mastery-row__label">{skillLabel(a.skillKey)}</span>
-                          <span className="mastery-bar"><span className="mastery-bar__fill" style={{ width: `${Math.round(a.score * 100)}%` }} /></span>
-                          <span className="mastery-row__pct">{Math.round(a.score * 100)}%</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
                 <div className="l2l-card chart-card">
                   <h3 className="chart-card__title">Activity — last 14 days{streak > 1 ? ` · ${streak}-day streak 🔥` : ''}</h3>
                   <div className="activity-strip" aria-label={`${activeIn14} active days in the last 14`}>

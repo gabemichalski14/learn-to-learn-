@@ -1,0 +1,16 @@
+/* Strengths & needs — two calm columns synthesised from gameplay data. */
+.sp { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px 24px; }
+.sp-col__h { margin: 0 0 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+.sp-col__h--strength { color: #2f7d56; }
+.sp-col__h--need { color: #9a6312; }
+.sp-col__none { margin: 0; font-size: 13px; color: var(--muted); }
+.sp-empty { margin: 0; font-size: 13px; color: var(--muted); }
+.sp-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.sp-row { display: grid; grid-template-columns: 1fr 64px 38px; grid-template-areas: 'label bar pct' 'note note note'; align-items: center; gap: 2px 8px; }
+.sp-row__label { grid-area: label; font-size: 13.5px; font-weight: 700; color: var(--ink, #24201a); }
+.sp-bar { grid-area: bar; height: 7px; border-radius: 999px; background: rgba(15, 42, 40, 0.1); overflow: hidden; }
+.sp-bar__fill { display: block; height: 100%; border-radius: 999px; }
+.sp-bar--strength .sp-bar__fill { background: linear-gradient(90deg, #6bae7f, #4e9568); }
+.sp-bar--need .sp-bar__fill { background: linear-gradient(90deg, #f5b13c, #ef962a); }
+.sp-row__pct { grid-area: pct; text-align: right; font-size: 12.5px; font-weight: 800; color: var(--teal-deep, #1b7f86); font-variant-numeric: tabular-nums; }
+.sp-row__note { grid-area: note; font-size: 11.5px; color: var(--muted); font-style: italic; }

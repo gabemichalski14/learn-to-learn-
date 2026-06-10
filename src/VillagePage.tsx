@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { goBack, navigate } from './router';
 import { useDataVersion } from './data/store';
 import { loadMastery } from './mastery/mastery';
+import { isLevelUnlocked } from './mastery/levelGate';
+import { LEVELS } from './games';
 import { gardenResidents, storytimeScene, type LevelCharacter } from './world/lore/cast';
 import { CharacterArt } from './world/lore/CharacterArt';
 import { Storytime } from './world/lore/Storytime';
@@ -25,6 +27,8 @@ export function VillagePage({ learnerId }: { learnerId: string }) {
   const residents = gardenResidents(loadMastery(learnerId));
   const [scene, setScene] = useState<Scene | null>(null);
   const [tip] = useState(() => pickTip(Math.floor(Math.random() * 1e6)));
+  // The level the player is currently working on = the highest one open to them.
+  const currentLevel = [...LEVELS].reverse().find((l) => isLevelUnlocked(learnerId, l.num))?.num ?? 1;
 
   return (
     <main className="vil">
@@ -51,7 +55,7 @@ export function VillagePage({ learnerId }: { learnerId: string }) {
               <>
                 <p className="vil-host__hi">Welcome to your Village! 🌿</p>
                 <p>Help a friend all the way home and they'll move right in — then you can visit any time.</p>
-                <button type="button" className="vil-cta" onClick={() => navigate('#/levels')}>Go help a friend →</button>
+                <button type="button" className="vil-cta" onClick={() => navigate(`#/level/${currentLevel}`)}>Go help a friend →</button>
               </>
             ) : (
               <>

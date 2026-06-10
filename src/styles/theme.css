@@ -397,9 +397,12 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
   margin:48px 0 0;
   padding:22px 20px calc(22px + env(safe-area-inset-bottom, 0px));
   text-align:center;
-  position:relative; z-index:3;
+  /* Sit ABOVE the roaming mascot (z-45) + pip-parade (z-44) + ambient frame so
+     nothing ever overlaps the footer text — an opaque "ground" band. */
+  position:relative; z-index:50;
   background:var(--surface, #fffdf8);
   border-top:1px solid var(--teal-ring);
+  box-shadow:0 -12px 26px rgba(80,70,40,0.10);
 }
 .l2l-footer__brand,
 .l2l-footer__legal{ max-width:720px; margin-left:auto; margin-right:auto; }

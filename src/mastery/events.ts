@@ -1,11 +1,27 @@
 import { K } from './mastery';
 import type { MasteryMap, SkillStat } from './mastery';
 
-/** One answered item, as logged to the cloud (append-only). `at` is epoch ms. */
+/** One answered item, as logged to the cloud (append-only). `at` is epoch ms.
+ *  Fields after `at` are optional enrichment (added incrementally by each game):
+ *  confusion analysis, true first-try accuracy, fluency, curriculum alignment.
+ *  masteryFromEvents ignores them (only needs correct + at). */
 export interface SkillEvent {
   skillKey: string;
   correct: boolean;
   at: number;
+  /** Which game produced this (e.g. 'tap-it-out'). */
+  game?: string;
+  /** What the learner picked when wrong — the confusion (e.g. 'd' for a /b/). */
+  chosen?: string;
+  /** Correct on the FIRST attempt (un-inflated accuracy). */
+  firstTry?: boolean;
+  /** Time to answer in ms (kept raw; interpreted as buckets, never shown raw). */
+  latencyMs?: number;
+  /** Times the learner re-heard the sound for this item (uncertainty signal). */
+  replays?: number;
+  /** Curriculum level / lesson for this item (Barton-sequence alignment). */
+  level?: number;
+  lesson?: number;
 }
 
 /**

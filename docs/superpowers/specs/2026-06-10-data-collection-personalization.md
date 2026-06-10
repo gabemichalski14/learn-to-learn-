@@ -41,6 +41,26 @@ Status: approved 2026-06-10. Build the tracking gaps into both **collection** an
 - **P6 — Abandonment + tutor notes.** Log quit sessions; a per-student note field
   (small table/column + UI).
 
+## Research-grounded interpretation rules (how to keep signals valid)
+- **Two-tier mastery, accuracy before speed.** Ready → Practicing → Accurate
+  (first-try ≥90% sustained across ≥2 sessions) → Automatic (accurate + fast).
+  Mastery is FIRST-TRY accuracy, never inflated by retries; require multiple
+  sessions so one lucky run isn't "mastered".
+- **Latency = buckets, never raw ms.** On a touch UI a 5-year-old's ms is
+  confounded by motor/UI; show quick / typical / takes-time relative to the
+  child's own baseline, and only as the fluency tier after accuracy is solid.
+- **Confusions are PATTERNS.** Surface a confusion only after the same swap ≥3×.
+  **b/d, p/q reversals are developmentally normal under ~age 7–8 and are NOT a
+  dyslexia flag** — frame as "still sorting out b vs d (very common at this
+  age)", never deficit/clinical language.
+- **Retention via spaced + cumulative + interleaved review** (evidence-backed):
+  re-test mastered-but-stale items; interleave a few mastered items into new
+  practice.
+- **Display by audience:** tutor = skill detail + actionable; parent = simple
+  growth story (no skill map / no confusion detail, the child's own growth, no
+  peer ranking); admin = triage roll-up (who's stalled/regressing).
+  Plain language, visual, contextual, actionable, never overwhelming.
+
 ## Design boundaries
 - All new aggregation lives in pure, tested helpers (`dashboardData.ts` +
   a `personalization` module) reused across tutor/parent/admin.

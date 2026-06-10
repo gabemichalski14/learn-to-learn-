@@ -75,7 +75,17 @@ export function flushOutbox(): Promise<void> {
         if (!learnerId) return false;
         if (item.kind === 'skill_event') {
           const ev = item.payload as SkillEvent;
-          await cloud.insertSkillEvents([{ learner_id: learnerId, skill_key: ev.skillKey, correct: ev.correct, at: new Date(ev.at).toISOString() }]);
+          // Base columns always; enrichment only when the game supplied it — so
+          // rows stay valid even before the enrichment migration is applied.
+          const row: cloud.CloudSkillEvent = { learner_id: learnerId, skill_key: ev.skillKey, correct: ev.correct, at: new Date(ev.at).toISOString() };
+          if (ev.game != null) row.game = ev.game;
+          if (ev.chosen != null) row.chosen = ev.chosen;
+          if (ev.firstTry != null) row.first_try = ev.firstTry;
+          if (ev.latencyMs != null) row.latency_ms = ev.latencyMs;
+          if (ev.replays != null) row.replays = ev.replays;
+          if (ev.level != null) row.level = ev.level;
+          if (ev.lesson != null) row.lesson = ev.lesson;
+          await cloud.insertSkillEvents([row]);
           return true;
         }
         if (item.kind === 'session') {

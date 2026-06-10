@@ -235,6 +235,13 @@ export interface CloudSkillEvent {
   correct: boolean;
   game?: string;
   at: string; // ISO
+  // optional enrichment (nullable columns — see 2026-06-10-skill-events-enrichment.sql)
+  chosen?: string;
+  first_try?: boolean;
+  latency_ms?: number;
+  replays?: number;
+  level?: number;
+  lesson?: number;
 }
 
 export async function insertSkillEvents(rows: CloudSkillEvent[]) {

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
 import {
-  listTutors, listAssignments, listLearners, createInviteCode,
+  listTutors, listAssignments, listLearners, createInviteCode, assignTutor, unassignTutor,
   type CloudTutor, type CloudAssignment, type CloudLearner,
 } from './data/cloud';
 import './admin.css';
@@ -34,6 +34,22 @@ export function TutorsAdminPage() {
 
   const learnerName = (id: string) => learners.find((l) => l.id === id)?.display_name ?? 'Student';
   const studentsOf = (tutorId: string) => assigns.filter((a) => a.tutor_id === tutorId);
+  const unassignedFor = (tutorId: string) => learners.filter((l) => !assigns.some((a) => a.tutor_id === tutorId && a.learner_id === l.id));
+
+  /** Make this tutor the student's primary (one primary per student). */
+  async function assignToTutor(learnerId: string, tutorId: string) {
+    try {
+      for (const old of assigns.filter((a) => a.learner_id === learnerId && a.relation === 'primary' && a.tutor_id !== tutorId)) {
+        await unassignTutor(learnerId, old.tutor_id);
+      }
+      await assignTutor(learnerId, tutorId, 'primary');
+      await load();
+    } catch (e) { setErr(e instanceof Error ? e.message : 'Could not assign the student.'); }
+  }
+  async function unassign(learnerId: string, tutorId: string) {
+    try { await unassignTutor(learnerId, tutorId); await load(); }
+    catch (e) { setErr(e instanceof Error ? e.message : 'Could not unassign.'); }
+  }
 
   async function inviteTutor() {
     const email = inviteEmail.trim();
@@ -98,20 +114,27 @@ export function TutorsAdminPage() {
                     </button>
                     {open && (
                       <div className="admin__session">
-                        {mine.length === 0 ? (
-                          <p className="admin__empty" style={{ margin: 0 }}>No students assigned yet — assign on the Students page.</p>
-                        ) : (
+                        {mine.length > 0 && (
                           <ul className="admin__items" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
                             {mine.map((a) => (
-                              <li key={a.learner_id}>
-                                <button type="button" className="admin__linkbtn" style={{ width: '100%', textAlign: 'left', justifyContent: 'space-between' }} onClick={() => navigate(`#/admin/student/${a.learner_id}`)}>
+                              <li key={a.learner_id} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <button type="button" className="admin__linkbtn" style={{ flex: 1, textAlign: 'left', justifyContent: 'space-between' }} onClick={() => navigate(`#/admin/student/${a.learner_id}`)}>
                                   {learnerName(a.learner_id)}
                                   <span style={{ opacity: 0.7 }}>{a.relation === 'substitute' ? 'substitute' : 'primary'} ›</span>
                                 </button>
+                                <button type="button" className="admin__remove" onClick={() => void unassign(a.learner_id, t.id)} aria-label={`Unassign ${learnerName(a.learner_id)}`}>remove</button>
                               </li>
                             ))}
                           </ul>
                         )}
+                        {unassignedFor(t.id).length > 0 ? (
+                          <select className="admin__subadd" style={{ marginTop: mine.length ? 10 : 0 }} value="" onChange={(e) => { if (e.target.value) void assignToTutor(e.target.value, t.id); }} aria-label="Assign a student to this tutor">
+                            <option value="">+ Assign a student…</option>
+                            {unassignedFor(t.id).map((l) => <option key={l.id} value={l.id}>{l.display_name}</option>)}
+                          </select>
+                        ) : mine.length === 0 ? (
+                          <p className="admin__empty" style={{ margin: 0 }}>No students yet — add students on the Students page first.</p>
+                        ) : null}
                       </div>
                     )}
                   </li>

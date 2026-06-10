@@ -5,7 +5,8 @@ import { useDialog } from './ui/dialogContext';
 import {
   listLearners, listTutors, listAssignments, listGuardians, listSessions, listSkillEvents,
   assignTutor, unassignTutor, createInviteCode, renameLearner, deleteGuardian, deleteLearner, getLearnerNote, setLearnerNote,
-  type CloudLearner, type CloudTutor, type CloudAssignment, type CloudGuardian,
+  listPendingInvites, deleteInviteCode,
+  type CloudLearner, type CloudTutor, type CloudAssignment, type CloudGuardian, type CloudInvite,
 } from './data/cloud';
 import { masteryFromEvents } from './mastery/events';
 import type { MasteryMap } from './mastery/mastery';
@@ -39,6 +40,7 @@ export function StudentAdminPage({ id }: { id: string }) {
   const [tutors, setTutors] = useState<CloudTutor[]>([]);
   const [assigns, setAssigns] = useState<CloudAssignment[]>([]);
   const [guardians, setGuardians] = useState<CloudGuardian[]>([]);
+  const [pendingParents, setPendingParents] = useState<CloudInvite[]>([]);
   const [sessions, setSessions] = useState<SessionRecord[]>([]);
   const [events, setEvents] = useState<{ skillKey: string; correct: boolean; at: number; game: string | null; firstTry?: boolean }[]>([]);
   const [mastery, setMastery] = useState<MasteryMap>({});
@@ -53,12 +55,12 @@ export function StudentAdminPage({ id }: { id: string }) {
 
   const load = useCallback(async () => {
     try {
-      const [ls, t, a, g, s, ev] = await Promise.all([
-        listLearners(), listTutors(), listAssignments(), listGuardians(id), listSessions(id), listSkillEvents(id),
+      const [ls, t, a, g, s, ev, p] = await Promise.all([
+        listLearners(), listTutors(), listAssignments(), listGuardians(id), listSessions(id), listSkillEvents(id), listPendingInvites('parent', id),
       ]);
       const found = ls.find((l) => l.id === id) ?? null;
       setLearner(found); setName(found?.display_name ?? '');
-      setTutors(t); setAssigns(a.filter((x) => x.learner_id === id)); setGuardians(g);
+      setTutors(t); setAssigns(a.filter((x) => x.learner_id === id)); setGuardians(g); setPendingParents(p);
       setSessions((s as CloudSessionRow[]).map(toRecord));
       const evs = ev.map((e) => ({ skillKey: e.skill_key, correct: e.correct, at: new Date(e.at).getTime(), game: e.game, firstTry: e.first_try ?? undefined }));
       setEvents(evs);
@@ -106,7 +108,7 @@ export function StudentAdminPage({ id }: { id: string }) {
   async function inviteParent() {
     const email = inviteEmail.trim();
     try {
-      const c = await createInviteCode('parent', id);
+      const c = await createInviteCode('parent', id, email);
       const link = `${window.location.origin}${window.location.pathname}#/account?invite=${encodeURIComponent(c)}&as=parent`;
       setCode(link);
       if (email) {
@@ -116,7 +118,12 @@ export function StudentAdminPage({ id }: { id: string }) {
         window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; // opens YOUR mail app, pre-filled
         setInviteEmail('');
       }
+      await load(); // show it under "Pending" right away
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not create an invite.'); }
+  }
+  async function cancelInvite(c: string) {
+    try { await deleteInviteCode(c); await load(); }
+    catch (e) { setErr(e instanceof Error ? e.message : 'Could not cancel the invite.'); }
   }
   async function removeParent(userId: string) {
     const ok = await dialog.confirm({ title: 'Remove parent access?', message: 'This parent will no longer be able to see this child. Continue?', okLabel: 'Remove', danger: true });
@@ -227,6 +234,20 @@ export function StudentAdminPage({ id }: { id: string }) {
                   </span>
                 ))}
               </div>
+            )}
+            {pendingParents.length > 0 && (
+              <>
+                <h3 className="admin__subh">⏳ Pending · {pendingParents.length}</h3>
+                <p className="admin__hint" style={{ marginTop: 0 }}>Invite sent — waiting for them to confirm. They move up to Parents once they make an account.</p>
+                <div className="admin__subs">
+                  {pendingParents.map((p) => (
+                    <span key={p.code} className="admin__subchip">
+                      {p.email || 'invite sent'} · expires {new Date(p.expires_at).toLocaleDateString()}
+                      <button type="button" onClick={() => void cancelInvite(p.code)} aria-label="Cancel invite">×</button>
+                    </span>
+                  ))}
+                </div>
+              </>
             )}
           </section>
 

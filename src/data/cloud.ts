@@ -297,16 +297,44 @@ function randCode(): string {
   return `${s.slice(0, 4)}-${s.slice(4, 8)}`;
 }
 
-/** Owner issues a one-time invite. `learnerId` required for kind='parent'. */
-export async function createInviteCode(kind: 'parent' | 'tutor', learnerId?: string, ttlDays = 14): Promise<string> {
+/** Owner issues a one-time invite. `learnerId` required for kind='parent';
+ *  `email` (the destination) is remembered so it can show in the pending list. */
+export async function createInviteCode(kind: 'parent' | 'tutor', learnerId?: string, email?: string, ttlDays = 14): Promise<string> {
   const centerId = await currentCenterId();
   if (!centerId) throw new Error('No center');
   const code = randCode();
   const expires_at = new Date(Date.now() + ttlDays * 86_400_000).toISOString();
-  const { error } = await (await client()).from('invite_codes')
-    .insert({ code, kind, center_id: centerId, learner_id: learnerId ?? null, expires_at });
+  const base = { code, kind, center_id: centerId, learner_id: learnerId ?? null, expires_at };
+  const supabase = await client();
+  let { error } = await supabase.from('invite_codes').insert({ ...base, email: email?.trim() || null });
+  // Pre-migration fallback: if the email column doesn't exist yet, store without it.
+  if (error && /email/i.test(error.message)) ({ error } = await supabase.from('invite_codes').insert(base));
   if (error) throw error;
   return code;
+}
+
+export interface CloudInvite { code: string; kind: 'parent' | 'tutor'; email: string | null; learner_id: string | null; expires_at: string }
+/** Pending (unredeemed, unexpired) invites for the owner's center. Filter by
+ *  kind and/or learner. Drops off automatically once redeem sets used_at. */
+export async function listPendingInvites(kind?: 'parent' | 'tutor', learnerId?: string): Promise<CloudInvite[]> {
+  const supabase = await client();
+  const nowISO = new Date().toISOString();
+  const run = (cols: string) => {
+    let q = supabase.from('invite_codes').select(cols).is('used_at', null).gt('expires_at', nowISO);
+    if (kind) q = q.eq('kind', kind);
+    if (learnerId) q = q.eq('learner_id', learnerId);
+    return q.order('expires_at', { ascending: true });
+  };
+  let { data, error } = await run('code, kind, email, learner_id, expires_at');
+  if (error && /email/i.test(error.message)) ({ data, error } = await run('code, kind, learner_id, expires_at'));
+  if (error) throw error;
+  return (data ?? []) as unknown as CloudInvite[];
+}
+
+/** Owner cancels a pending invite (revoke / before resending). */
+export async function deleteInviteCode(code: string) {
+  const { error } = await (await client()).from('invite_codes').delete().eq('code', code);
+  if (error) throw error;
 }
 
 // ---------- assignment (owner) ----------

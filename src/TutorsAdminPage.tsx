@@ -3,7 +3,8 @@ import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
 import {
   listTutors, listAssignments, listLearners, createInviteCode, assignTutor, unassignTutor,
-  type CloudTutor, type CloudAssignment, type CloudLearner,
+  listPendingInvites, deleteInviteCode,
+  type CloudTutor, type CloudAssignment, type CloudLearner, type CloudInvite,
 } from './data/cloud';
 import './admin.css';
 
@@ -21,11 +22,12 @@ export function TutorsAdminPage() {
   const [err, setErr] = useState<string | null>(null);
   const [code, setCode] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
+  const [pending, setPending] = useState<CloudInvite[]>([]);
 
   const load = useCallback(async () => {
     try {
-      const [t, a, l] = await Promise.all([listTutors(), listAssignments(), listLearners()]);
-      setTutors(t); setAssigns(a); setLearners(l); setErr(null);
+      const [t, a, l, p] = await Promise.all([listTutors(), listAssignments(), listLearners(), listPendingInvites('tutor')]);
+      setTutors(t); setAssigns(a); setLearners(l); setPending(p); setErr(null);
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not load tutors.'); }
     finally { setLoading(false); }
   }, []);
@@ -54,7 +56,7 @@ export function TutorsAdminPage() {
   async function inviteTutor() {
     const email = inviteEmail.trim();
     try {
-      const c = await createInviteCode('tutor');
+      const c = await createInviteCode('tutor', undefined, email);
       const link = `${window.location.origin}${window.location.pathname}#/account?invite=${encodeURIComponent(c)}&as=tutor`;
       setCode(link);
       if (email) {
@@ -63,7 +65,12 @@ export function TutorsAdminPage() {
         window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; // opens YOUR mail app, pre-filled
         setInviteEmail('');
       }
+      await load(); // show it in "Pending" right away
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not create an invite.'); }
+  }
+  async function cancelInvite(c: string) {
+    try { await deleteInviteCode(c); await load(); }
+    catch (e) { setErr(e instanceof Error ? e.message : 'Could not cancel the invite.'); }
   }
 
   return (
@@ -99,6 +106,20 @@ export function TutorsAdminPage() {
               <button type="submit" className="admin__cta">Send invite</button>
             </form>
             <p className="admin__hint">Enter their email — your mail app opens with the invite ready to send. (No email? Tap Send to get a copyable link.)</p>
+            {pending.length > 0 && (
+              <>
+                <h3 className="admin__subh">⏳ Pending · {pending.length}</h3>
+                <p className="admin__hint" style={{ marginTop: 0 }}>Invite sent — waiting for them to confirm. They move up to the list above once they make an account.</p>
+                <div className="admin__subs">
+                  {pending.map((p) => (
+                    <span key={p.code} className="admin__subchip">
+                      {p.email || 'invite sent'} · expires {new Date(p.expires_at).toLocaleDateString()}
+                      <button type="button" onClick={() => void cancelInvite(p.code)} aria-label="Cancel invite">×</button>
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
             <ul className="admin__students">
               {tutors.map((t) => {
                 const open = expanded === t.id;

@@ -15,9 +15,10 @@ describe('TutorDashboard', () => {
     expect(screen.getByText(/avg accuracy/i)).toBeTruthy();
   });
 
-  it('renders the Activity section when a learner exists', async () => {
+  it('renders the Sound map + Engagement sections when a learner exists', async () => {
     addLearner('Mia');
     render(<TutorDashboard />);
-    expect(await screen.findByText(/Activity/i)).toBeTruthy();
+    expect((await screen.findAllByText(/Sound map/i)).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Engagement/i)).toBeTruthy();
   });
 });

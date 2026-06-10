@@ -9,87 +9,16 @@ import { loadProgress, formatTime } from './progress';
 import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
 import { getSessions, getMastery } from './data/dataSource';
-import { ACHIEVEMENTS } from './achievements';
-import { loadMastery, rankAreas } from './mastery/mastery';
-import type { MasteryMap, FocusArea } from './mastery/mastery';
-import { AreasToImprove } from './AreasToImprove';
+import { loadMastery } from './mastery/mastery';
+import type { MasteryMap } from './mastery/mastery';
+import { skillLabel } from './mastery/skills';
 import { TutorPip } from './world/tutor/TutorPip';
 import { LevelControls } from './world/tutor/LevelControls';
-import { StrengthsPanel } from './world/tutor/StrengthsPanel';
+import { SoundMap } from './world/tutor/SoundMap';
+import { summarize, insightLine, whyNote } from './world/tutor/dashboardData';
 
-const CW = 300;
-const CH = 100;
-const PADL = 30; // room for the % axis labels
-const PADR = 12;
-const PADT = 12;
-const PADB = 16;
-
-const GAME_TITLES: Record<string, string> = {
-  'tap-it-out': 'Tap It Out', 'beginning-sounds': 'Blast Off',
-  'ending-sounds': 'Touchdown', 'middle-sounds': 'Vowel Patrol',
-};
-
-/** Accuracy over recent sessions — true 0–100% scale with labelled axis, a 90%
- *  mastery line, and a dot per session (the latest is called out). Honest: it
- *  plots the real values, never a smoothed vibe. */
-function AccuracyChart({ values }: { values: number[] }) {
-  const n = values.length;
-  if (n < 2) return <p className="chart__empty">Two finished sessions needed for a trend.</p>;
-  const x = (i: number) => PADL + (i / (n - 1)) * (CW - PADL - PADR);
-  const y = (v: number) => PADT + (1 - v) * (CH - PADT - PADB); // 0..1 absolute
-  const pts = values.map((v, i) => ({ x: x(i), y: y(v), v }));
-  const line = pts.map((p) => `${p.x},${p.y}`).join(' ');
-  const area = `M ${pts[0].x},${CH - PADB} L ${line.split(' ').join(' L ')} L ${pts[n - 1].x},${CH - PADB} Z`;
-  const last = pts[n - 1];
-  return (
-    <svg className="chart" viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label={`Accuracy over the last ${n} sessions`}>
-      {/* y-axis reference lines + labels: 100% and the 90% mastery line */}
-      <line className="chart__axis" x1={PADL} y1={y(1)} x2={CW - PADR} y2={y(1)} />
-      <text className="chart__lbl" x={PADL - 5} y={y(1) + 3} textAnchor="end">100%</text>
-      <line className="chart__ref" x1={PADL} y1={y(0.9)} x2={CW - PADR} y2={y(0.9)} />
-      <text className="chart__lbl" x={PADL - 5} y={y(0.9) + 3} textAnchor="end">90%</text>
-      <path className="chart__area" d={area} />
-      <polyline className="chart__line" points={line} fill="none" />
-      {pts.map((p, i) => (
-        <circle key={i} className="chart__dot" cx={p.x} cy={p.y} r={i === n - 1 ? 3.4 : 2.4}>
-          <title>{`Session ${i + 1}: ${Math.round(p.v * 100)}%`}</title>
-        </circle>
-      ))}
-      <text className="chart__val" x={Math.min(last.x, CW - PADR - 2)} y={Math.max(last.y - 6, 9)} textAnchor="end">{Math.round(last.v * 100)}%</text>
-    </svg>
-  );
-}
-
-/** Time per session — real proportional bars with an average line + the longest
- *  / average called out, and the exact game + time on each bar (hover). Linear so
- *  it's honest; the average line gives context when one session runs long. */
-function TimeChart({ records }: { records: SessionRecord[] }) {
-  const n = records.length;
-  if (n < 1) return <p className="chart__empty">No sessions yet.</p>;
-  const times = records.map((r) => r.durationMs);
-  const max = Math.max(...times, 1);
-  const avg = times.reduce((s, t) => s + t, 0) / n;
-  return (
-    <>
-      <div className="barwrap" style={{ '--avg': `${Math.round((avg / max) * 100)}%` } as CSSProperties}>
-        <div className="bars">
-          {records.map((r) => (
-            <span
-              key={r.id}
-              className="bars__bar"
-              style={{ height: `${Math.max(6, Math.round((r.durationMs / max) * 100))}%` }}
-              title={`${GAME_TITLES[r.game] ?? r.game}${r.level != null ? ` · Lv ${r.level}` : ''} — ${formatTime(r.durationMs)}`}
-            />
-          ))}
-        </div>
-        {n > 1 && <span className="bars__avgline" aria-hidden="true" />}
-      </div>
-      <p className="chart__cap">Longest <b>{formatTime(max)}</b>{n > 1 ? <> · avg <b>{formatTime(Math.round(avg))}</b></> : null}</p>
-    </>
-  );
-}
-
-/** Full-page tutor view: pick a student, see KPIs + charts + log + a printable report. */
+/** Full-page tutor view: mastery-first — what each student has learned, what to
+ *  teach next, and the supporting record. */
 export function TutorDashboard() {
   // Capture "now" once at mount rather than calling Date.now() during render
   // (keeps render pure; the week window is a snapshot, same as before).
@@ -140,7 +69,8 @@ export function TutorDashboard() {
     return () => { live = false; };
   }, [sel, version]);
   const mastery: MasteryMap = cloudMastery && cloudMastery.id === sel ? cloudMastery.map : (sel ? loadMastery(sel) : {});
-  const focus: FocusArea[] = rankAreas(mastery);
+  const summary = summarize(mastery);
+  const topNeed = summary.working[0];
   const dayKeys = new Set(log.map((r) => r.endedAt.slice(0, 10)));
   const days = Array.from({ length: 14 }, (_, i) => {
     const key = new Date(now - (13 - i) * 864e5).toISOString().slice(0, 10);
@@ -152,8 +82,8 @@ export function TutorDashboard() {
 
   const learner = getLearner(sel);
   const prog = sel ? loadProgress(sel) : null;
-  const recent = log.slice(-12);
   const avgAccuracy = log.length ? Math.round((log.reduce((s, r) => s + r.accuracy, 0) / log.length) * 100) : 0;
+  const avgMs = log.length ? Math.round(log.reduce((s, r) => s + r.durationMs, 0) / log.length) : 0;
   const lastPlayed = log.length ? new Date(log[log.length - 1].endedAt) : null;
   const activeDays = new Set(log.map((r) => r.endedAt.slice(0, 10))).size;
   const week = log.filter((r) => now - new Date(r.endedAt).getTime() <= 7 * 864e5).length;
@@ -215,48 +145,51 @@ export function TutorDashboard() {
                   </div>
                 </div>
 
-                <div className="kpi-grid" style={{ marginTop: '16px' }}>
-                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/controller.png" alt="" aria-hidden="true" /><strong>{prog.sessions}</strong><span className="kpi__label">sessions</span></div>
+                {/* BLUF — the takeaway before any detail */}
+                <p className="dash-insight">{insightLine(learner.name, mastery)}</p>
+
+                <div className="kpi-grid" style={{ marginTop: '14px' }}>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/star.png" alt="" aria-hidden="true" /><strong>{summary.mastered.length}</strong><span className="kpi__label">sounds mastered</span></div>
                   <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/bullseye.png" alt="" aria-hidden="true" /><strong>{avgAccuracy}%</strong><span className="kpi__label">avg accuracy</span></div>
-                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/stopwatch.png" alt="" aria-hidden="true" /><strong>{prog.bestMs != null ? formatTime(prog.bestMs) : '—'}</strong><span className="kpi__label">best time</span></div>
-                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/star.png" alt="" aria-hidden="true" /><strong>{new Set(prog.earned).size}/{ACHIEVEMENTS.length}</strong><span className="kpi__label">stickers</span></div>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/controller.png" alt="" aria-hidden="true" /><strong>{prog.sessions}</strong><span className="kpi__label">sessions</span></div>
                   <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/calendar.png" alt="" aria-hidden="true" /><strong>{week}</strong><span className="kpi__label">this week</span></div>
                 </div>
               </div>
 
+              {/* Work on next — the single instructional move */}
+              <div className="l2l-card dash-next" style={{ marginTop: '16px' }}>
+                {topNeed ? (
+                  <>
+                    <p className="dash-next__eyebrow">🎯 Work on next</p>
+                    <h3 className="dash-next__skill">{skillLabel(topNeed.skillKey)}</h3>
+                    <p className="dash-next__why">{whyNote(topNeed)} · {Math.round(topNeed.score * 100)}% so far</p>
+                    <button type="button" className="l2l-btn no-print" onClick={() => navigate('#/levels')}>Practice this →</button>
+                  </>
+                ) : (
+                  <p className="dash-next__done">{summary.total > 0
+                    ? `🌟 Nothing needs work right now — ${learner.name} is on top of every sound they've practised.`
+                    : 'Play a few rounds and the next focus to teach shows up here.'}</p>
+                )}
+              </div>
+
+              {/* Sound map — replaces the noisy accuracy line */}
+              <div className="l2l-card" style={{ marginTop: '16px' }}>
+                <h3 className="chart-card__title">Sound map — mastered &amp; what's next</h3>
+                <SoundMap map={mastery} />
+              </div>
+
               <TutorPip mastery={mastery} name={learner.name} />
 
-              <div className="chart-grid" style={{ marginTop: '16px' }}>
-                <div className="l2l-card chart-card">
-                  <h3 className="chart-card__title">Accuracy over time</h3>
-                  <AccuracyChart values={recent.map((r) => r.accuracy)} />
-                </div>
-                <div className="l2l-card chart-card">
-                  <h3 className="chart-card__title">Time per session</h3>
-                  <TimeChart records={recent} />
+              {/* Engagement — demoted to a quiet line + activity dots */}
+              <div className="l2l-card" style={{ marginTop: '16px' }}>
+                <h3 className="chart-card__title">Engagement{streak > 1 ? ` · ${streak}-day streak 🔥` : ''}</h3>
+                <p className="dash-engage">{prog.sessions} session{prog.sessions === 1 ? '' : 's'} total{avgMs ? ` · ~${formatTime(avgMs)}/session` : ''} · {week} this week{lastPlayed ? ` · last played ${lastPlayed.toLocaleDateString()}` : ''}</p>
+                <div className="activity-strip" aria-label={`${activeIn14} active days in the last 14`}>
+                  {days.map((d) => <span key={d.key} className={`activity-dot${d.active ? ' on' : ''}`} title={d.key} />)}
                 </div>
               </div>
 
-              <div className="l2l-card" style={{ marginTop: '16px' }}>
-                <h3 className="chart-card__title">Strengths &amp; needs — from gameplay</h3>
-                <StrengthsPanel mastery={mastery} />
-              </div>
-
-              <div className="chart-grid" style={{ marginTop: '16px' }}>
-                <div className="l2l-card chart-card">
-                  <h3 className="chart-card__title">Activity — last 14 days{streak > 1 ? ` · ${streak}-day streak 🔥` : ''}</h3>
-                  <div className="activity-strip" aria-label={`${activeIn14} active days in the last 14`}>
-                    {days.map((d) => <span key={d.key} className={`activity-dot${d.active ? ' on' : ''}`} title={d.key} />)}
-                  </div>
-                </div>
-              </div>
-
-              <div className="l2l-card" style={{ marginTop: '16px' }}>
-                <h3 className="chart-card__title">Focus areas</h3>
-                <AreasToImprove learnerId={sel} focus={focus} />
-              </div>
-
-              <div className="l2l-card" style={{ marginTop: '16px' }}>
+              <div className="l2l-card no-print" style={{ marginTop: '16px' }}>
                 <h3 className="chart-card__title">Levels &amp; games — access</h3>
                 <LevelControls learnerId={sel} />
               </div>

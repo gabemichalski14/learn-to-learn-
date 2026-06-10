@@ -1,0 +1,26 @@
+/* Sound map — practised sounds grouped by mastery state, tap to expand. */
+.smap { display: flex; flex-direction: column; gap: 16px; }
+.smap-empty { color: var(--muted); font-style: italic; margin: 0; }
+.smap-band__h { margin: 0 0 8px; font-size: 13px; font-weight: 800; color: var(--ink); }
+.smap-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+
+.smap-chip { display: flex; align-items: center; gap: 10px; width: 100%; cursor: pointer; font: inherit; text-align: left;
+  background: rgba(127, 200, 200, 0.08); border: 1px solid rgba(27, 154, 170, 0.16); border-radius: 12px; padding: 10px 12px; color: var(--ink); min-height: 44px; }
+.smap-chip:hover { background: rgba(127, 200, 200, 0.16); }
+.smap-chip:focus-visible { outline: 2px solid #173d2a; outline-offset: 2px; }
+.smap-chip__label { flex: 1 1 auto; min-width: 0; font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.smap-chip__bar { flex: 0 0 54px; height: 7px; border-radius: 999px; background: rgba(74, 54, 33, 0.12); overflow: hidden; }
+.smap-chip__bar > span { display: block; height: 100%; border-radius: 999px; background: currentColor; }
+.smap-chip__pct { flex: none; font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; opacity: 0.8; }
+
+/* state tones color the label + bar fill */
+.smap-band--ok  .smap-chip { color: #3c6b4e; }  .smap-band--ok  .smap-chip__bar > span { background: #6bae7f; }
+.smap-band--mid .smap-chip { color: #8a6a1f; }  .smap-band--mid .smap-chip__bar > span { background: #e0a14a; }
+.smap-band--go  .smap-chip { color: #14808f; }  .smap-band--go  .smap-chip__bar > span { background: #1b9aaa; }
+
+.smap-detail { display: flex; flex-direction: column; gap: 5px; padding: 7px 12px 3px; }
+.smap-dots { display: inline-flex; gap: 3px; flex-wrap: wrap; }
+.smap-dots span { width: 17px; height: 17px; border-radius: 5px; display: grid; place-items: center; font-size: 10px; font-weight: 900; }
+.smap-dots .ok { background: rgba(107, 174, 127, 0.25); color: #3c6b4e; }
+.smap-dots .no { background: rgba(225, 120, 90, 0.18); color: #a4472e; }
+.smap-detail__meta { font-size: 11px; color: var(--muted); }

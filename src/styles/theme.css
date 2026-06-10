@@ -421,3 +421,13 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
 
 /* account hub — quick links once signed in */
 .auth-links{ display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 10px; }
+
+/* mastery-first tutor dashboard */
+.dash-insight { margin: 14px 0 0; font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.45; }
+.dash-next { border-color: rgba(245, 200, 76, 0.45) !important;
+  background: linear-gradient(180deg, rgba(245, 200, 76, 0.10), var(--surface)); }
+.dash-next__eyebrow { margin: 0; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--warn, #a9741a); }
+.dash-next__skill { margin: 6px 0 2px; font-size: 20px; color: var(--ink); font-family: var(--font-display, Georgia, serif); }
+.dash-next__why { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+.dash-next__done { margin: 0; font-size: 15px; font-weight: 700; color: var(--ink); }
+.dash-engage { margin: 0 0 12px; font-size: 13px; color: var(--muted); }

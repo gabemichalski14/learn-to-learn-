@@ -39,7 +39,7 @@ export function buildStarRounds(n: number, rng: () => number = Math.random): Bui
   return rounds;
 }
 
-/** Barton-style sound position for an index in a CVC word. */
+/** Structured-literacy sound position for an index in a CVC word. */
 export function positionTarget(index: number, length: number): 'beginning' | 'medial' | 'ending' {
   if (index === 0) return 'beginning';
   if (index === length - 1) return 'ending';

@@ -12,6 +12,9 @@ export interface SkillStat {
   avgMs?: number;
   /** How many attempts contributed to avgMs. */
   timed?: number;
+  /** Wrong choices for this skill → count (local mirror of the cloud `chosen`),
+   *  so in-game round generation can drill the confused contrast (minimal pairs). */
+  confusions?: Record<string, number>;
 }
 
 export type MasteryMap = Record<SkillKey, SkillStat>;
@@ -48,7 +51,7 @@ function save(learnerId: string, map: MasteryMap): void {
  *  `ms` (optional) is the learner's response time for this item; when present and
  *  sane it folds into a rolling-mean `avgMs` (used by the tutor view, never to
  *  pressure the learner — we have no timers in the kid UI). */
-export function recordItem(learnerId: string, skillKey: SkillKey, correct: boolean, ms?: number): void {
+export function recordItem(learnerId: string, skillKey: SkillKey, correct: boolean, ms?: number, chosen?: string): void {
   const map = loadMastery(learnerId);
   const s = map[skillKey] ?? { attempts: 0, correct: 0, recent: [], lastSeen: 0 };
   s.attempts += 1;
@@ -56,6 +59,7 @@ export function recordItem(learnerId: string, skillKey: SkillKey, correct: boole
   s.recent.push(correct ? 1 : 0);
   if (s.recent.length > K) s.recent = s.recent.slice(-K);
   s.lastSeen = Date.now();
+  if (!correct && chosen) { s.confusions = { ...(s.confusions ?? {}) }; s.confusions[chosen] = (s.confusions[chosen] ?? 0) + 1; }
   if (typeof ms === 'number' && isFinite(ms) && ms > 0 && ms < 120000) {
     const timed = (s.timed ?? 0) + 1;
     const prev = s.avgMs ?? ms;
@@ -91,6 +95,18 @@ export function scoreOf(s: SkillStat | undefined): number {
 
 export function masteryScore(learnerId: string, skillKey: SkillKey): number {
   return scoreOf(loadMastery(learnerId)[skillKey]);
+}
+
+/** The choice this skill is most often confused WITH (local), once it's a small
+ *  pattern (>= min). Drives the minimal-pair contrast in round generation. */
+export function confusionPartner(s: SkillStat | undefined, min = 2): string | undefined {
+  if (!s?.confusions) return undefined;
+  let best: string | undefined;
+  let bestN = min - 1;
+  for (const [choice, n] of Object.entries(s.confusions)) {
+    if (n > bestN) { best = choice; bestN = n; }
+  }
+  return best;
 }
 
 /** Rank a mastery map's rated, weak skills (weakest first), capped at n. */

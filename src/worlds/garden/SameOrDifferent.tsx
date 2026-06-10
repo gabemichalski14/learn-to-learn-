@@ -72,7 +72,7 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
       if (character) setLine(reactionLine(character, 'wrong'));
     }
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct);
+      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : (saidSame ? 'same' : 'different'));
       logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'same-or-different', level: 1, firstTry: correct, chosen: correct ? undefined : (saidSame ? 'same' : 'different') });
       setMood(null); setPicked(null); setPhase('idle');
       if (i + 1 >= ROUNDS) finishSession();

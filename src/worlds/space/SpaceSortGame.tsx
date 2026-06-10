@@ -182,7 +182,7 @@ export function SpaceSortGame({
     round,
     audio,
     onItemResult: ({ skillKey, correct, chosen }) => {
-      recordItem(learnerId, skillKey, correct);
+      recordItem(learnerId, skillKey, correct, undefined, correct ? undefined : chosen);
       logSkillEvent(learnerId, {
         skillKey, correct, at: Date.now(), game: gameId, level,
         firstTry: correct,                       // hook reports the first attempt

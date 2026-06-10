@@ -1,8 +1,21 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { recordItem, recordReplay, loadMastery, masteryScore, areasToImprove, weakestSoundForTarget, clearMastery } from './mastery';
+import { recordItem, recordReplay, loadMastery, masteryScore, areasToImprove, weakestSoundForTarget, confusionPartner, clearMastery } from './mastery';
 
 const L = 'test-learner';
 beforeEach(() => { localStorage.clear(); });
+
+describe('confusion capture + partner', () => {
+  it('records the chosen wrong answer and surfaces the repeated partner', () => {
+    recordItem(L, 'sound:first:b', false, undefined, 'd');
+    recordItem(L, 'sound:first:b', false, undefined, 'd');
+    recordItem(L, 'sound:first:b', false, undefined, 'p'); // a one-off, below threshold
+    recordItem(L, 'sound:first:b', true, undefined, undefined); // correct → no confusion
+    const s = loadMastery(L)['sound:first:b'];
+    expect(s.confusions).toEqual({ d: 2, p: 1 });
+    expect(confusionPartner(s)).toBe('d');           // 2 ≥ min(2)
+    expect(confusionPartner(s, 3)).toBeUndefined();  // none reaches 3
+  });
+});
 
 describe('mastery store', () => {
   it('accumulates attempts and correct counts', () => {

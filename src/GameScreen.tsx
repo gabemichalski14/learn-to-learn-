@@ -7,8 +7,8 @@ import { everydayEndings } from './content/packs/everydayEndings';
 import { shortVowelWords } from './content/packs/shortVowelWords';
 import { createRecordedAudioPlayer } from './audio/recordedAudioPlayer';
 import { SpaceSortGame } from './worlds/space/SpaceSortGame';
-import { parseSkillKey } from './mastery/skills';
-import { loadMastery, weakestSoundForTarget } from './mastery/mastery';
+import { parseSkillKey, skillKeyForSound } from './mastery/skills';
+import { loadMastery, weakestSoundForTarget, confusionPartner } from './mastery/mastery';
 import { getLearner } from './profiles';
 
 const TOTAL_ROUNDS = 5;
@@ -92,10 +92,23 @@ export function GameScreen({ learnerId, gameId, focus }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focus, config, learnerId, sessionId]);
 
-  const round = useMemo(
-    () => generateSortRound({ pack: config.pack, totalItems: ITEMS_PER_ROUND, target: config.target, focusSound }),
+  // Minimal-pair contrast: if the learner keeps confusing the focus sound with a
+  // specific other sound (and it's in this pack), build the round around BOTH so
+  // the contrast itself teaches — the evidence-based fix for a b/d-type mix-up.
+  const contrastSound = useMemo(() => {
+    if (!focusSound) return undefined;
+    const partner = confusionPartner(loadMastery(learnerId)[skillKeyForSound(focusSound, config.target)]);
+    return partner && partner !== focusSound && availableSounds(config.pack, 1, config.target).includes(partner) ? partner : undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sessionId, roundIndex, config, focusSound],
+  }, [focusSound, config, learnerId, sessionId]);
+
+  const round = useMemo(
+    () => generateSortRound({
+      pack: config.pack, totalItems: ITEMS_PER_ROUND, target: config.target, focusSound,
+      sounds: contrastSound && focusSound ? [focusSound, contrastSound] : undefined,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sessionId, roundIndex, config, focusSound, contrastSound],
   );
 
   return (

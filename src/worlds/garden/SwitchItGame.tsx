@@ -15,7 +15,19 @@ import './garden.css';
 
 const ROUNDS = 8;
 const SKILL = 'pa:manipulate';
-const BEAD_COLORS = ['#6bae7f', '#6f8ad6', '#e0a14a', '#c879b0']; // one hue per sound slot
+const BEAD_COLORS = ['#3f8f5e', '#4f6fc0', '#c47f1e', '#a8569c']; // one hue per sound slot (deepened for contrast)
+
+/** Render a word with each letter tinted to match its sound-bead, so the child
+ *  can map "which letter changed" → "which colored bead to tap". */
+function ColoredWord({ word }: { word: string }) {
+  return (
+    <>
+      {Array.from(word).map((ch, i) => (
+        <span key={i} className="si-cw" style={{ color: BEAD_COLORS[i % BEAD_COLORS.length] } as CSSProperties}>{ch}</span>
+      ))}
+    </>
+  );
+}
 
 /**
  * Switch It — Chip's Level 1 phoneme-manipulation game. Hear a word, then a new
@@ -138,8 +150,8 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
           )}
 
           {round && (
-            <>
-              <p className="sd-q">Make <b>{round.source}</b> into <b>{round.target}</b> — tap the sound that switched.</p>
+            <div className="gd-panel">
+              <p className="sd-q">Make <ColoredWord word={round.source} /> into <ColoredWord word={round.target} /> — tap the sound that switched.</p>
               <div className="si-beads" role="group" aria-label="sounds">
                 {Array.from(round.source).map((_, idx) => {
                   const isAnswer = idx === round.changeIndex;
@@ -161,7 +173,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
                 <button type="button" className="sd-listen__btn" onClick={() => say(round.source)}>🔈 {round.source}</button>
                 <button type="button" className="sd-listen__btn" onClick={() => say(round.target)}>🔈 {round.target}</button>
               </div>
-            </>
+            </div>
           )}
         </div>
       )}

@@ -396,3 +396,11 @@ img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
 @keyframes si-switch { 0% { transform: scale(1) rotate(0); } 45% { transform: scale(1.25) rotate(-14deg); } 100% { transform: scale(1) rotate(0); } }
 .si-bead.is-wrong { box-shadow: 0 0 0 4px rgba(225,150,120,0.55); filter: grayscale(0.3); }
 @media (prefers-reduced-motion: reduce) { .si-bead.is-answer { animation: none; } .si-bead:hover, .si-bead:active { transform: none; } }
+
+/* ============ Cozy storybook panel — keeps game content legible over the
+   painted garden backdrop (a warm "page" the activity sits on) ============ */
+.gd-panel { display: flex; flex-direction: column; align-items: center; gap: 18px; width: 100%; max-width: 540px;
+  background: rgba(255, 250, 240, 0.95); border: 2px solid rgba(159, 122, 60, 0.20); border-radius: 28px;
+  padding: 24px 26px 26px; box-shadow: 0 16px 38px rgba(80, 70, 40, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.7); }
+.gd-panel .sd-q { color: #2a4a33; }
+.si-cw { font-weight: 900; }

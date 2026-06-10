@@ -142,17 +142,19 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
             </div>
           )}
 
-          <p className="sd-q">Are these two words the <b>same</b>?</p>
-          <div className="sd-listen">
-            <button type="button" className="sd-listen__btn" onClick={() => round && playWord(round.a)}>🔊 First word</button>
-            <button type="button" className="sd-listen__btn" onClick={() => round && playWord(round.b)}>🔊 Second word</button>
-          </div>
+          <div className="gd-panel">
+            <p className="sd-q">Are these two words the <b>same</b>?</p>
+            <div className="sd-listen">
+              <button type="button" className="sd-listen__btn" onClick={() => round && playWord(round.a)}>🔊 First word</button>
+              <button type="button" className="sd-listen__btn" onClick={() => round && playWord(round.b)}>🔊 Second word</button>
+            </div>
 
-          <div className="sd-choices">
-            <button type="button" className={`sd-choice sd-choice--same${picked === true ? (round?.same ? ' is-right' : ' is-wrong') : ''}`} disabled={picked !== null} onClick={() => choose(true)}>🟰 Same</button>
-            <button type="button" className={`sd-choice sd-choice--diff${picked === false ? (!round?.same ? ' is-right' : ' is-wrong') : ''}`} disabled={picked !== null} onClick={() => choose(false)}>✳️ Different</button>
+            <div className="sd-choices">
+              <button type="button" className={`sd-choice sd-choice--same${picked === true ? (round?.same ? ' is-right' : ' is-wrong') : ''}`} disabled={picked !== null} onClick={() => choose(true)}>🟰 Same</button>
+              <button type="button" className={`sd-choice sd-choice--diff${picked === false ? (!round?.same ? ' is-right' : ' is-wrong') : ''}`} disabled={picked !== null} onClick={() => choose(false)}>✳️ Different</button>
+            </div>
+            {phase !== 'idle' && <p className={`sd-feedback sd-feedback--${phase}`} role="status">{phase === 'right' ? 'Yes! 🎉' : 'Listen again 💛'}</p>}
           </div>
-          {phase !== 'idle' && <p className={`sd-feedback sd-feedback--${phase}`} role="status">{phase === 'right' ? 'Yes! 🎉' : 'Listen again 💛'}</p>}
         </div>
       )}
 

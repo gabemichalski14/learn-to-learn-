@@ -46,6 +46,7 @@ function redeemResultMsg(res: string): string {
     case 'used': return 'That invite link was already used — ask your center for a fresh one.';
     case 'expired': return 'That invite link has expired — ask your center for a new one.';
     case 'invalid': return 'That invite link wasn’t recognized — ask your center for a new one.';
+    case 'already_owner': return ''; // an owner clicked an invite — ignore it silently
     default: return '';
   }
 }
@@ -87,18 +88,24 @@ export function Account() {
 
   useEffect(() => {
     if (!configured) return;
-    const handle = (u: { email?: string } | null) => {
+    const handle = async (u: { email?: string } | null) => {
       setUser(u?.email ?? null);
-      if (u) {
-        void getRole().then(setAcctRole);
+      if (!u) { setAcctRole(null); return; }
+      const r = await getRole();
+      setAcctRole(r);
+      // SAFETY: an owner must never auto-redeem a pending invite — that's what
+      // demoted an admin to a tutor. Drop any stray code and skip redemption.
+      if (r === 'owner') {
+        try { localStorage.removeItem(PENDING_KEY); } catch { /* ignore */ }
+      } else {
         let hadPending = false;
         try { hadPending = !!localStorage.getItem(PENDING_KEY); } catch { /* ignore */ }
-        void redeemPendingInvite().then((res) => {
-          // surface the outcome so a failed link isn't silent ("I signed up but I'm not showing")
-          if (hadPending && res) { setMsg(redeemResultMsg(res)); if (res === 'ok') void getRole().then(setAcctRole); }
-          return reconcileRoster();
-        }).then(() => flushOutbox());
-      } else { setAcctRole(null); }
+        const res = await redeemPendingInvite();
+        // surface the outcome so a failed link isn't silent ("I signed up but I'm not showing")
+        if (hadPending && res) { setMsg(redeemResultMsg(res)); if (res === 'ok') setAcctRole(await getRole()); }
+      }
+      await reconcileRoster();
+      await flushOutbox();
     };
     getCurrentUser().then(handle);
     return onAuthChange(() => getCurrentUser().then(handle));

@@ -44,19 +44,20 @@ export default function App() {
   const isTutor = useTutorSignedIn();
   const role = useRole();
 
-  // On startup, mirror the signed-in account's cloud roster into local profiles
-  // (a no-op when signed out). Covers reload-while-signed-in; the Account page
-  // also reconciles at the moment of sign-in. Deferred to avoid setState-in-render.
+  // Reconcile the roster on startup AND on every sign-in/out: while signed in we
+  // show only this account's cloud roster (device-local guests are stashed); on
+  // sign-out the guests come back and the account's students are dropped. Keyed on
+  // isTutor so it re-runs the moment auth flips. Deferred to avoid setState-in-render.
   useEffect(() => {
     const t = setTimeout(() => {
       void reconcileRoster().then(() => {
         void flushOutbox();
-        // reconcile may have pruned the profile we initially picked → re-point to a valid one
+        // reconcile may have stashed/added profiles → re-point to a valid one
         setLearnerId(getCurrentLearnerId() ?? ensureLearner().id);
       });
     }, 0);
     return () => clearTimeout(t);
-  }, []);
+  }, [isTutor]);
 
   // Every navigation starts at the top of the page (SPA hash changes otherwise
   // keep the previous scroll position — why Levels appeared to "load near the bottom").

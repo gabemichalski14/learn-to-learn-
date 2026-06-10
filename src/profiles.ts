@@ -16,6 +16,7 @@ export interface Learner {
 }
 
 const LEARNERS_KEY = 'll-learners';
+const GUEST_KEY = 'll-guest-learners'; // device-local players, parked here while an account is signed in
 const CURRENT_KEY = 'll-current';
 const COLORS = ['#12b3a8', '#ff7aa2', '#8a6bff', '#2bb8e6', '#ffb01f', '#33c27a', '#ff7a4d', '#d069e0'];
 
@@ -154,6 +155,41 @@ export function removeLearner(id: string): void {
   } catch {
     /* ignore */
   }
+}
+
+// ---------- guest-vs-account roster separation ----------
+// Device-local players (no cloudId) belong to whoever is using this browser as a
+// guest. When an account signs in we show ONLY that account's roster, so we park
+// the guests in a stash (their data keys are untouched) and bring them back on
+// sign-out. Account (cloudId) profiles are mirrored from the cloud, so they can
+// be dropped on sign-out and re-fetched next sign-in — no data loss either way.
+function readGuestStash(): Learner[] {
+  try {
+    const r = localStorage.getItem(GUEST_KEY);
+    return r ? (JSON.parse(r) as Learner[]).filter((l) => l && typeof l.id === 'string') : [];
+  } catch { return []; }
+}
+
+/** Hide device-local players while an account is signed in (move them to the
+ *  stash; keep only account/cloud profiles in the active roster). */
+export function stashGuestLearners(): void {
+  const active = loadLearners();
+  const guests = active.filter((l) => !l.cloudId);
+  if (guests.length === 0) return;
+  const stash = readGuestStash();
+  const have = new Set(stash.map((l) => l.id));
+  try { localStorage.setItem(GUEST_KEY, JSON.stringify([...stash, ...guests.filter((g) => !have.has(g.id))])); } catch { /* ignore */ }
+  persist(active.filter((l) => !!l.cloudId));
+}
+
+/** Bring the stashed device-local players back into the active roster (on sign-out). */
+export function restoreGuestLearners(): void {
+  const stash = readGuestStash();
+  if (stash.length === 0) return;
+  const active = loadLearners();
+  const have = new Set(active.map((l) => l.id));
+  persist([...active, ...stash.filter((g) => !have.has(g.id))]);
+  try { localStorage.removeItem(GUEST_KEY); } catch { /* ignore */ }
 }
 
 /** Ensure at least one learner exists; returns the current learner. */

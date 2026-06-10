@@ -9,9 +9,25 @@ vi.mock('./cloud', () => ({
 vi.mock('./supabase', () => ({ getSupabase: vi.fn().mockResolvedValue({ auth: { getSession: async () => ({ data: { session: {} } }) } }) }));
 
 import { reconcileRoster } from './identity';
-import { loadLearners, addLearner, setCloudId } from '../profiles';
+import { loadLearners, addLearner, setCloudId, stashGuestLearners, restoreGuestLearners } from '../profiles';
 
 beforeEach(() => localStorage.clear());
+
+describe('guest stash / restore (hide device players while signed in)', () => {
+  it('stashes guests (no cloudId) while keeping account profiles, then restores them', () => {
+    const guest = addLearner('Tommy');                 // device-local guest
+    const student = addLearner('Mia'); setCloudId(student.id, 'cloud-A'); // account profile
+
+    stashGuestLearners();
+    let list = loadLearners();
+    expect(list.some((l) => l.id === guest.id)).toBe(false);      // guest hidden
+    expect(list.some((l) => l.cloudId === 'cloud-A')).toBe(true); // account stays
+
+    restoreGuestLearners();
+    list = loadLearners();
+    expect(list.some((l) => l.name === 'Tommy')).toBe(true);      // guest came back (not deleted)
+  });
+});
 
 describe('reconcileRoster', () => {
   it('creates local profiles for cloud learners with cloudId set', async () => {

@@ -117,3 +117,18 @@
 .admin__recent-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px;
   padding: 8px 10px; border-radius: 10px; background: rgba(127, 200, 200, 0.07); }
 .admin__recent-meta { color: var(--muted, #6a6253); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* session row → expandable per-answer detail (admin student page) */
+button.admin__recent-row { width: 100%; border: none; font: inherit; cursor: pointer; }
+.admin__recent-row--btn:hover { background: rgba(127, 200, 200, 0.16); }
+.admin__recent-row--btn:focus-visible { outline: 2px solid #173d2a; outline-offset: 2px; }
+.admin__caret { font-style: normal; color: var(--teal-deep, #14808f); margin-left: 4px; }
+.admin__session { margin: 4px 0 8px; padding: 10px 12px; border-radius: 10px;
+  background: rgba(127, 200, 200, 0.07); border: 1px solid rgba(27, 154, 170, 0.12); }
+.admin__session-sum { margin: 0 0 8px; font-size: 12px; font-weight: 700; color: var(--muted, #6a6253); }
+.admin__items { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.admin__item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+.admin__item.is-ok { background: rgba(107, 174, 127, 0.18); color: #3c6b4e; }
+.admin__item.is-no { background: rgba(225, 120, 90, 0.16); color: #a4472e; }
+.admin__item-mark { font-weight: 900; }
+.admin__item-time { font-weight: 600; opacity: 0.55; font-size: 10px; }

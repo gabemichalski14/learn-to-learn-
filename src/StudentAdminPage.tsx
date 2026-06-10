@@ -9,6 +9,7 @@ import {
 } from './data/cloud';
 import { masteryFromEvents } from './mastery/events';
 import type { MasteryMap } from './mastery/mastery';
+import { skillLabel } from './mastery/skills';
 import { StrengthsPanel } from './world/tutor/StrengthsPanel';
 import { formatTime } from './progress';
 import type { SessionRecord } from './sessionLog';
@@ -39,7 +40,9 @@ export function StudentAdminPage({ id }: { id: string }) {
   const [assigns, setAssigns] = useState<CloudAssignment[]>([]);
   const [guardians, setGuardians] = useState<CloudGuardian[]>([]);
   const [sessions, setSessions] = useState<SessionRecord[]>([]);
+  const [events, setEvents] = useState<{ skillKey: string; correct: boolean; at: number; game: string | null }[]>([]);
   const [mastery, setMastery] = useState<MasteryMap>({});
+  const [expanded, setExpanded] = useState<string | null>(null); // which session row is open
   const [loading, setLoading] = useState(() => isCloudConfigured());
   const [err, setErr] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -54,7 +57,9 @@ export function StudentAdminPage({ id }: { id: string }) {
       setLearner(found); setName(found?.display_name ?? '');
       setTutors(t); setAssigns(a.filter((x) => x.learner_id === id)); setGuardians(g);
       setSessions((s as CloudSessionRow[]).map(toRecord));
-      setMastery(masteryFromEvents(ev.map((e) => ({ skillKey: e.skill_key, correct: e.correct, at: new Date(e.at).getTime() }))));
+      const evs = ev.map((e) => ({ skillKey: e.skill_key, correct: e.correct, at: new Date(e.at).getTime(), game: e.game }));
+      setEvents(evs);
+      setMastery(masteryFromEvents(evs));
       setErr(null);
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not load this student.'); }
     finally { setLoading(false); }
@@ -105,6 +110,13 @@ export function StudentAdminPage({ id }: { id: string }) {
   const last = n ? new Date(sessions[n - 1].endedAt) : null;
   const totalMin = Math.round(sessions.reduce((s, r) => s + r.durationMs, 0) / 60000);
   const recent = sessions.slice().reverse().slice(0, 8);
+  // The per-answer events captured during a given session (matched by time
+  // window + game, since events carry only a timestamp). 2s buffer for skew.
+  const sessionItems = (r: SessionRecord) => {
+    const end = new Date(r.endedAt).getTime();
+    const start = end - r.durationMs - 2000;
+    return events.filter((e) => e.at >= start && e.at <= end + 2000 && (!e.game || !r.game || e.game === r.game));
+  };
 
   return (
     <main className="l2l-page">
@@ -202,12 +214,39 @@ export function StudentAdminPage({ id }: { id: string }) {
             <StrengthsPanel mastery={mastery} />
             {recent.length > 0 ? (
               <ul className="admin__recent">
-                {recent.map((r) => (
-                  <li key={r.id} className="admin__recent-row">
-                    <span>{gameTitle(r.game)}{r.level != null ? ` · Lv ${r.level}` : ''}</span>
-                    <span className="admin__recent-meta">{Math.round(r.accuracy * 100)}% · {formatTime(r.durationMs)} · {new Date(r.endedAt).toLocaleDateString()}</span>
-                  </li>
-                ))}
+                {recent.map((r) => {
+                  const open = expanded === r.id;
+                  const items = open ? sessionItems(r) : [];
+                  const right = items.filter((i) => i.correct).length;
+                  return (
+                    <li key={r.id}>
+                      <button type="button" className="admin__recent-row admin__recent-row--btn" aria-expanded={open} onClick={() => setExpanded(open ? null : r.id)}>
+                        <span>{gameTitle(r.game)}{r.level != null ? ` · Lv ${r.level}` : ''}</span>
+                        <span className="admin__recent-meta">{Math.round(r.accuracy * 100)}% · {formatTime(r.durationMs)} · {new Date(r.endedAt).toLocaleDateString()} <i className="admin__caret" aria-hidden="true">{open ? '▴' : '▾'}</i></span>
+                      </button>
+                      {open && (
+                        <div className="admin__session">
+                          {items.length === 0 ? (
+                            <p className="admin__empty" style={{ margin: 0 }}>No per-answer data was captured for this session.</p>
+                          ) : (
+                            <>
+                              <p className="admin__session-sum">{right}/{items.length} correct — every sound this session:</p>
+                              <ul className="admin__items">
+                                {items.map((e, i) => (
+                                  <li key={i} className={`admin__item ${e.correct ? 'is-ok' : 'is-no'}`}>
+                                    <span className="admin__item-mark" aria-hidden="true">{e.correct ? '✓' : '✗'}</span>
+                                    <span className="admin__item-skill">{skillLabel(e.skillKey)}</span>
+                                    <span className="admin__item-time">{new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             ) : <p className="admin__empty">No sessions played yet.</p>}
           </section>

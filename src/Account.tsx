@@ -10,6 +10,23 @@ type Mode = 'in' | 'up';
 
 const PENDING_KEY = 'll-pending-invite';
 
+/** Reject if an auth call doesn't return in time, so the button can never spin
+ *  forever (network stall / unexpected hang). */
+function withTimeout<T>(p: Promise<T>, ms = 12000): Promise<T> {
+  return Promise.race([p, new Promise<never>((_, reject) => setTimeout(() => reject(new Error('__timeout__')), ms))]);
+}
+
+/** Turn auth errors into plain, actionable language (incl. "not registered"). */
+function friendly(err: unknown): string {
+  const m = err instanceof Error ? err.message : String(err);
+  if (m === '__timeout__') return 'That took too long — check your connection and try again.';
+  if (/invalid login credentials/i.test(m)) return 'We couldn’t sign you in: that email isn’t registered, or the password is wrong. New here? Tap “Create one”.';
+  if (/email not confirmed/i.test(m)) return 'Please confirm your email first (check your inbox). For testing, you can turn off email confirmation in Supabase → Authentication → Providers → Email.';
+  if (/already registered|already.*exists/i.test(m)) return 'That email already has an account — try signing in instead.';
+  if (/password/i.test(m) && /(short|least|6)/i.test(m)) return 'Password must be at least 6 characters.';
+  return m;
+}
+
 /** Redeem a stashed invite once a session exists (covers email-confirmation flows:
  *  the code is kept until the user is actually signed in, then consumed once). */
 async function redeemPendingInvite(): Promise<string | null> {
@@ -59,10 +76,10 @@ export function Account() {
     try {
       if (mode === 'up') {
         const intent: SignUpIntent = role;
-        const { error } = await signUp(email, password, {
+        const { error } = await withTimeout(signUp(email, password, {
           centerName: intent === 'new_center' ? (centerName || undefined) : undefined,
           intent,
-        });
+        }));
         if (error) throw error;
         if (intent === 'new_center') {
           setMsg('Account created — your center is set up. If email confirmation is on, confirm first, then sign in.');
@@ -74,12 +91,13 @@ export function Account() {
             : 'Account created. If email confirmation is on, confirm it, then sign in — your code finishes linking automatically.');
         }
       } else {
-        const { error } = await signIn(email, password);
+        const { error } = await withTimeout(signIn(email, password));
         if (error) throw error;
-        setMsg('Signed in — your students and sessions sync to this account.');
+        setMsg('Signed in! Taking you home…');
+        navigate('#/');
       }
     } catch (err) {
-      setMsg(err instanceof Error ? err.message : 'Something went wrong.');
+      setMsg(friendly(err));
     } finally {
       setBusy(false);
     }

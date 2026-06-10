@@ -431,3 +431,9 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
 .dash-next__why { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
 .dash-next__done { margin: 0; font-size: 15px; font-weight: 700; color: var(--ink); }
 .dash-engage { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+
+/* dashboard "keep fresh" spaced-review chips */
+.dash-fresh { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.dash-fresh__chip { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #8a6a1f;
+  background: rgba(245, 200, 76, 0.18); border: 1px solid rgba(169, 116, 26, 0.3); border-radius: 999px; padding: 6px 12px; }
+.dash-fresh__chip i { font-style: normal; font-size: 11px; font-weight: 600; opacity: 0.7; }

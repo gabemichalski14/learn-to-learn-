@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { summarize, insightLine, whyNote } from './dashboardData';
+import { summarize, insightLine, whyNote, retention } from './dashboardData';
 import type { MasteryMap, SkillStat } from '../../mastery/mastery';
 
 const stat = (recent: number[], extra: Partial<SkillStat> = {}): SkillStat => ({
@@ -56,5 +56,26 @@ describe('dashboardData.whyNote', () => {
   it('flags re-hears and slow responses', () => {
     expect(whyNote({ skillKey: 'x', score: 0.5, attempts: 8, replays: 4, avgMs: 3000 })).toBe('often re-hears it');
     expect(whyNote({ skillKey: 'x', score: 0.7, attempts: 8, replays: 0, avgMs: 8000 })).toBe('takes some thought');
+  });
+});
+
+describe('dashboardData.retention', () => {
+  const now = 1_000_000_000_000;
+  const DAY = 86_400_000;
+
+  it('flags mastered-but-stale sounds (not fresh ones)', () => {
+    const map: MasteryMap = {
+      'sound:m': stat([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], { lastSeen: now - 20 * DAY }), // mastered + stale
+      'sound:a': stat([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], { lastSeen: now }),            // mastered + fresh
+    };
+    const r = retention(map, now);
+    expect(r.keepFresh.map((x) => x.skillKey)).toEqual(['sound:m']);
+  });
+
+  it('flags a historically-solid sound that is now slipping', () => {
+    const map: MasteryMap = {
+      'first:b': stat([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], { attempts: 20, correct: 18, lastSeen: now }),
+    };
+    expect(retention(map, now).slipping.map((x) => x.skillKey)).toContain('first:b');
   });
 });

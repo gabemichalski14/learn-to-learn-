@@ -1,4 +1,4 @@
-import { skillInsights, type MasteryMap, type SkillInsight } from '../../mastery/mastery';
+import { skillInsights, scoreOf, type MasteryMap, type SkillInsight } from '../../mastery/mastery';
 import { skillLabel } from '../../mastery/skills';
 
 /**
@@ -25,6 +25,39 @@ export function summarize(map: MasteryMap): MasterySummary {
     working: all.filter((s) => s.score < PRACTICING).sort((a, b) => a.score - b.score),
     total: all.length,
   };
+}
+
+// ---------- retention / regression (computed from existing data) ----------
+const RATED = 5;            // attempts before a skill is judged
+export const STALE_DAYS = 10; // a mastered sound unseen this long → worth a re-test
+
+export interface RetentionItem { skillKey: string; score: number; lastSeen: number; days: number }
+export interface Retention {
+  keepFresh: RetentionItem[]; // mastered but going stale — re-test to keep it
+  slipping: RetentionItem[];  // was reliably right, recently missing — quick re-test
+}
+
+/** Spaced-review heart of Barton: surface mastered-but-stale + freshly-slipping
+ *  sounds. Pure (pass `now` for stable render). No new collection — uses the
+ *  rolling score, lifetime rate, and lastSeen we already keep. */
+export function retention(map: MasteryMap, now = Date.now()): Retention {
+  const keepFresh: RetentionItem[] = [];
+  const slipping: RetentionItem[] = [];
+  for (const [skillKey, s] of Object.entries(map)) {
+    if (s.attempts < RATED) continue;
+    const score = scoreOf(s);
+    const days = (now - s.lastSeen) / 86_400_000;
+    const lifetime = s.correct / s.attempts;
+    if (score >= MASTERED && days >= STALE_DAYS) {
+      keepFresh.push({ skillKey, score, lastSeen: s.lastSeen, days });
+    } else if (lifetime >= 0.85 && score < PRACTICING) {
+      // historically solid, recently missing → a real dip, not a chronically-weak skill
+      slipping.push({ skillKey, score, lastSeen: s.lastSeen, days });
+    }
+  }
+  keepFresh.sort((a, b) => b.days - a.days);   // most stale first
+  slipping.sort((a, b) => a.score - b.score);  // worst dip first
+  return { keepFresh, slipping };
 }
 
 /** A short, no-shame "why this is the next focus" note, from gameplay signals. */

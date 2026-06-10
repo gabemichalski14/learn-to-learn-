@@ -15,7 +15,7 @@ import { skillLabel } from './mastery/skills';
 import { TutorPip } from './world/tutor/TutorPip';
 import { LevelControls } from './world/tutor/LevelControls';
 import { SoundMap } from './world/tutor/SoundMap';
-import { summarize, insightLine, whyNote } from './world/tutor/dashboardData';
+import { summarize, insightLine, whyNote, retention } from './world/tutor/dashboardData';
 
 /** Full-page tutor view: mastery-first — what each student has learned, what to
  *  teach next, and the supporting record. */
@@ -71,6 +71,8 @@ export function TutorDashboard() {
   const mastery: MasteryMap = cloudMastery && cloudMastery.id === sel ? cloudMastery.map : (sel ? loadMastery(sel) : {});
   const summary = summarize(mastery);
   const topNeed = summary.working[0];
+  const ret = retention(mastery, now);
+  const fresh = [...ret.slipping, ...ret.keepFresh].slice(0, 10); // slipping first (more urgent)
   const dayKeys = new Set(log.map((r) => r.endedAt.slice(0, 10)));
   const days = Array.from({ length: 14 }, (_, i) => {
     const key = new Date(now - (13 - i) * 864e5).toISOString().slice(0, 10);
@@ -171,6 +173,22 @@ export function TutorDashboard() {
                     : 'Play a few rounds and the next focus to teach shows up here.'}</p>
                 )}
               </div>
+
+              {/* Keep fresh — spaced review: mastered-but-stale + freshly slipping */}
+              {fresh.length > 0 && (
+                <div className="l2l-card" style={{ marginTop: '16px' }}>
+                  <h3 className="chart-card__title">🔁 Keep fresh — a quick re-test</h3>
+                  <p className="dash-engage">Solid a while ago or just starting to slip — a one-round refresher locks it back in.</p>
+                  <ul className="dash-fresh">
+                    {fresh.map((it) => (
+                      <li key={it.skillKey} className="dash-fresh__chip">
+                        {skillLabel(it.skillKey)}
+                        <i>{it.days >= 1 ? `${Math.round(it.days)}d ago` : 'today'}</i>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Sound map — replaces the noisy accuracy line */}
               <div className="l2l-card" style={{ marginTop: '16px' }}>

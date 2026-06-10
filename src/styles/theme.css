@@ -192,10 +192,12 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(74, 54, 33, 0.18)); }
 .kpi strong { font-size: clamp(17px, 4.6vw, 22px); color: var(--teal-deep); }
 .kpi__label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 18px; }
-.chart-card { background: var(--surface); border-radius: 16px; padding: 14px 16px; box-shadow: 0 8px 20px rgba(15, 151, 143, .10); }
-.chart-card__title { margin: 0 0 10px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--teal-deep); }
-.chart { width: 100%; height: auto; aspect-ratio: 300 / 100; display: block; }
+/* One chart per row (full width) so the data has room to breathe — the 2-up
+   grid made them tiny + dense. */
+.chart-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 18px; }
+.chart-card { background: var(--surface); border-radius: 16px; padding: 18px 20px; box-shadow: 0 8px 20px rgba(15, 151, 143, .10); }
+.chart-card__title { margin: 0 0 12px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--teal-deep); }
+.chart { width: 100%; height: auto; aspect-ratio: 5 / 2; display: block; }
 .chart__grid { stroke: rgba(15, 42, 40, .12); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
 .chart__axis { stroke: rgba(15, 42, 40, .18); stroke-width: 1; }
 .chart__ref { stroke: rgba(15, 151, 143, .35); stroke-width: 1; stroke-dasharray: 3 3; }
@@ -204,9 +206,9 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
 .chart__area { fill: rgba(18, 179, 168, .16); stroke: none; }
 .chart__line { stroke: var(--teal-deep); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
 .chart__dot { fill: #fff; stroke: var(--teal-deep); stroke-width: 1.8; }
-.chart__empty { font-size: 12px; color: var(--muted); margin: 0; height: 90px; display: flex; align-items: center; }
+.chart__empty { font-size: 12px; color: var(--muted); margin: 0; height: 150px; display: flex; align-items: center; }
 .barwrap { position: relative; }
-.bars { display: flex; align-items: flex-end; gap: 4px; height: 90px; }
+.bars { display: flex; align-items: flex-end; gap: 6px; height: 150px; }
 .bars__bar { flex: 1; min-width: 6px; background: linear-gradient(180deg, var(--teal), var(--teal-deep)); border-radius: 4px 4px 0 0; }
 .bars__avgline { position: absolute; left: 0; right: 0; bottom: var(--avg, 50%); border-top: 1.5px dashed rgba(15, 151, 143, .5); pointer-events: none; }
 .chart__cap { margin: 8px 0 0; font-size: 11px; color: var(--muted); }

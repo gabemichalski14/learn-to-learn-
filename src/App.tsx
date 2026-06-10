@@ -58,6 +58,12 @@ export default function App() {
     return () => clearTimeout(t);
   }, []);
 
+  // Every navigation starts at the top of the page (SPA hash changes otherwise
+  // keep the previous scroll position — why Levels appeared to "load near the bottom").
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [route.name, route.level, route.game]);
+
   const world = useWorldTier(learnerId); // app-wide ambient richness grows with real practice
   // Friends light up the world: their motif drifts by while you're helping them
   // (a happy nudge) and gently after they're home. (Recomputed on navigation.)

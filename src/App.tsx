@@ -157,23 +157,25 @@ export default function App() {
       page = <Home learnerId={learnerId} onChooseLearner={chooseLearner} />;
   }
 
-  // Operator surfaces (admin, tutor dashboard, account) are professional consoles —
-  // no kid-world chrome (Living World ambient, garden frame, roaming mascot, eggs).
-  const operator = route.name === 'admin' || route.name === 'admin-student' || route.name === 'admin-tutors' || route.name === 'tutor' || route.name === 'account';
+  // The OWNER's control consoles (Center admin + its sub-pages + Account) are bare
+  // by design — no kid-world chrome. The tutor dashboard, by contrast, KEEPS the
+  // warm themed backdrop (so the theme stays consistent as a tutor moves between
+  // it and Games/Levels) — only the roaming mascot/eggs stay off it, to stay calm.
+  const bareConsole = route.name === 'admin' || route.name === 'admin-student' || route.name === 'admin-tutors' || route.name === 'account';
+  const noMascot = bareConsole || route.name === 'tutor';
 
   return (
     <>
-      {!operator && <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />}
-      {!operator && <GardenFrame />}
+      {!bareConsole && <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />}
+      {!bareConsole && <GardenFrame />}
       <NavDrawer route={route.name} role={role ?? null} />
       {page}
-      {/* Footer (brand + legal disclaimer) is public/kid-facing chrome — off the
-          operator consoles, which should read as clean control surfaces. */}
-      {!operator && <SiteFooter />}
-      {/* Roaming buddy + ambient surprises — child-facing only; off the operator
-          consoles (admin/tutor/account) to keep them clean and professional. */}
-      {!operator && <MascotBuddy key={route.name} learnerId={learnerId} />}
-      {!operator && <EasterEggs key={`egg-${route.name}`} tier={world.tier} motifs={eggMotifs} boost={eggBoost} />}
+      {/* Footer (brand + legal disclaimer): off only the bare control consoles. */}
+      {!bareConsole && <SiteFooter />}
+      {/* Roaming buddy + ambient surprises — child-facing; off the consoles AND the
+          tutor dashboard (calm/professional), kept on kid + family pages. */}
+      {!noMascot && <MascotBuddy key={route.name} learnerId={learnerId} />}
+      {!noMascot && <EasterEggs key={`egg-${route.name}`} tier={world.tier} motifs={eggMotifs} boost={eggBoost} />}
     </>
   );
 }

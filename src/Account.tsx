@@ -2,21 +2,41 @@ import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
-import { signIn, signUp, signOut, getCurrentUser, onAuthChange } from './data/cloud';
+import { signIn, signUp, signOut, getCurrentUser, onAuthChange, redeemInvite, type SignUpIntent } from './data/cloud';
 import { reconcileRoster } from './data/identity';
 import { flushOutbox } from './data/cloudSync';
 
 type Mode = 'in' | 'up';
 
+const PENDING_KEY = 'll-pending-invite';
+
+/** Redeem a stashed invite once a session exists (covers email-confirmation flows:
+ *  the code is kept until the user is actually signed in, then consumed once). */
+async function redeemPendingInvite(): Promise<string | null> {
+  let code: string | null = null;
+  try { code = localStorage.getItem(PENDING_KEY); } catch { /* ignore */ }
+  if (!code) return null;
+  try {
+    const res = await redeemInvite(code);
+    try { localStorage.removeItem(PENDING_KEY); } catch { /* ignore */ } // terminal: clear
+    return res;
+  } catch {
+    return null; // network error — keep the code for the next sign-in
+  }
+}
+
 /**
- * Tutor account / cloud sync sign-in. Until a Supabase project is configured
- * (env keys absent) this shows the setup note and the app stays fully local.
+ * Account / cloud sign-in with role-aware sign-up: set up a new center (owner),
+ * or join an existing center as a tutor or parent with a one-time invite code.
+ * Until Supabase is configured the app stays fully on-device.
  */
 export function Account() {
   const configured = isCloudConfigured();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [centerName, setCenterName] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [role, setRole] = useState<SignUpIntent>('new_center');
   const [mode, setMode] = useState<Mode>('in');
   const [user, setUser] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -24,16 +44,12 @@ export function Account() {
 
   useEffect(() => {
     if (!configured) return;
-    getCurrentUser().then((u) => {
+    const handle = (u: { email?: string } | null) => {
       setUser(u?.email ?? null);
-      if (u) void reconcileRoster().then(() => flushOutbox());
-    });
-    return onAuthChange(() =>
-      getCurrentUser().then((u) => {
-        setUser(u?.email ?? null);
-        if (u) void reconcileRoster().then(() => flushOutbox());
-      }),
-    );
+      if (u) void redeemPendingInvite().then(() => reconcileRoster()).then(() => flushOutbox());
+    };
+    getCurrentUser().then(handle);
+    return onAuthChange(() => getCurrentUser().then(handle));
   }, [configured]);
 
   async function submit(e: React.FormEvent) {
@@ -42,13 +58,25 @@ export function Account() {
     setMsg(null);
     try {
       if (mode === 'up') {
-        const { error } = await signUp(email, password, centerName || undefined);
+        const intent: SignUpIntent = role;
+        const { error } = await signUp(email, password, {
+          centerName: intent === 'new_center' ? (centerName || undefined) : undefined,
+          intent,
+        });
         if (error) throw error;
-        setMsg('Account created — your center is set up. If email confirmation is on, confirm first, then sign in.');
+        if (intent === 'new_center') {
+          setMsg('Account created — your center is set up. If email confirmation is on, confirm first, then sign in.');
+        } else {
+          try { localStorage.setItem(PENDING_KEY, inviteCode.trim().toUpperCase()); } catch { /* ignore */ }
+          const res = await redeemPendingInvite();
+          setMsg(res === 'ok'
+            ? 'Account created and linked! Sign in to begin.'
+            : 'Account created. If email confirmation is on, confirm it, then sign in — your code finishes linking automatically.');
+        }
       } else {
         const { error } = await signIn(email, password);
         if (error) throw error;
-        setMsg('Signed in — your students and sessions will sync to this account.');
+        setMsg('Signed in — your students and sessions sync to this account.');
       }
     } catch (err) {
       setMsg(err instanceof Error ? err.message : 'Something went wrong.');
@@ -57,35 +85,49 @@ export function Account() {
     }
   }
 
+  const joining = mode === 'up' && role !== 'new_center';
+
   return (
     <main className="l2l-page l2l-page--narrow">
       <button type="button" className="l2l-back" onClick={() => navigate('#/')}>← Home</button>
 
       <div className="l2l-reveal" style={{ '--i': 0 } as CSSProperties}>
         <p className="l2l-eyebrow">Settings</p>
-        <h1 className="l2l-display">Tutor <em>account</em></h1>
+        <h1 className="l2l-display">Your <em>account</em></h1>
       </div>
 
       {!configured ? (
         <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>
           <p className="l2l-lead">Cloud sync isn't set up yet — the app is running in on-device mode.</p>
           <p className="page__note" style={{ marginTop: 0 }}>
-            To enable center-wide accounts &amp; leaderboards: create a Supabase project, run
-            <code> supabase/schema.sql</code>, then add the project URL + anon key to a local
-            <code> .env.local</code> (see <code>.env.example</code>). Sign-in appears here automatically.
+            To enable accounts &amp; sync: create a Supabase project, run <code>supabase/schema.sql</code> then the
+            latest file in <code>supabase/migrations/</code>, and add the project URL + anon key to a local
+            <code> .env.local</code> (see <code>.env.example</code>).
           </p>
         </div>
       ) : user ? (
         <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>
-          <p className="l2l-lead">Signed in as <strong>{user}</strong>. Students &amp; sessions sync to your center.</p>
+          <p className="l2l-lead">Signed in as <strong>{user}</strong>. Your students &amp; sessions sync to this account.</p>
           <button type="button" className="l2l-btn l2l-btn--ghost" style={{ marginTop: '12px' }} onClick={() => signOut()}>Sign out</button>
         </div>
       ) : (
         <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>
-          <p className="l2l-lead">{mode === 'in' ? 'Sign in to sync your students across devices.' : 'Create a center account.'}</p>
+          <p className="l2l-lead">{mode === 'in' ? 'Sign in to sync across devices.' : 'Create an account.'}</p>
+
+          {mode === 'up' && (
+            <div className="auth-roles" role="radiogroup" aria-label="Account type">
+              <button type="button" role="radio" aria-checked={role === 'new_center'} className={`auth-role${role === 'new_center' ? ' is-on' : ''}`} onClick={() => setRole('new_center')}>🏫 Set up my center</button>
+              <button type="button" role="radio" aria-checked={role === 'join_tutor'} className={`auth-role${role === 'join_tutor' ? ' is-on' : ''}`} onClick={() => setRole('join_tutor')}>🧑‍🏫 I'm a tutor</button>
+              <button type="button" role="radio" aria-checked={role === 'join_parent'} className={`auth-role${role === 'join_parent' ? ' is-on' : ''}`} onClick={() => setRole('join_parent')}>👪 I'm a parent</button>
+            </div>
+          )}
+
           <form onSubmit={submit} className="auth-form">
-            {mode === 'up' && (
+            {mode === 'up' && role === 'new_center' && (
               <input className="l2l-input auth-input" placeholder="Center / tutor name" value={centerName} onChange={(e) => setCenterName(e.target.value)} />
+            )}
+            {joining && (
+              <input className="l2l-input auth-input" placeholder="Invite code (e.g. ABCD-2345)" value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} required autoCapitalize="characters" />
             )}
             <input className="l2l-input auth-input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <input className="l2l-input auth-input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />

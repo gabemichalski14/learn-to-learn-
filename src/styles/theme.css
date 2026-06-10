@@ -408,3 +408,11 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
 .l2l-footer__legal{ max-width:720px; margin-left:auto; margin-right:auto; }
 .l2l-footer__brand{ margin-top:0; margin-bottom:0; font-size:13px; font-weight:600; color:var(--muted); }
 .l2l-footer__legal{ margin:6px 0 0; font-size:11px; line-height:1.5; color:var(--muted); opacity:.8; }
+
+/* account role chooser (owner / tutor / parent) */
+.auth-roles{ display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 14px; }
+.auth-role{ flex:1 1 30%; min-height:44px; cursor:pointer; font:inherit; font-weight:700; font-size:13px;
+  padding:9px 10px; border-radius:12px; border:1.5px solid var(--teal-ring, rgba(27,154,170,.28));
+  background:rgba(127,200,200,.08); color:#2a4a4f; transition:background .12s ease, border-color .12s ease; }
+.auth-role.is-on{ background:linear-gradient(135deg,#34b6b0,#1b9aaa); color:#fff; border-color:transparent; box-shadow:0 6px 14px rgba(27,154,170,.3); }
+.auth-role:focus-visible{ outline:3px solid #173d2a; outline-offset:2px; }

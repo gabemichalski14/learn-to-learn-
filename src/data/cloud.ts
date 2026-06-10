@@ -25,12 +25,41 @@ export async function signIn(email: string, password: string) {
   return (await client()).auth.signInWithPassword({ email, password });
 }
 
-export async function signUp(email: string, password: string, centerName?: string) {
-  return (await client()).auth.signUp({
-    email,
-    password,
-    options: centerName ? { data: { center_name: centerName } } : undefined,
-  });
+/** Intent decides what the signup trigger does: make a new center (owner), or
+ *  join an existing center as a tutor/parent (no center — redeem a code after). */
+export type SignUpIntent = 'new_center' | 'join_tutor' | 'join_parent';
+
+export async function signUp(
+  email: string,
+  password: string,
+  opts?: { centerName?: string; intent?: SignUpIntent },
+) {
+  const intent: SignUpIntent = opts?.intent ?? 'new_center';
+  const data: Record<string, string> = { intent };
+  if (opts?.centerName) data.center_name = opts.centerName;
+  return (await client()).auth.signUp({ email, password, options: { data } });
+}
+
+/** Redeem a one-time invite code (server-validated, single-use, expiring).
+ *  Returns 'ok' | 'invalid' | 'used' | 'expired'. Call after sign-up/in for a
+ *  joining tutor or parent. */
+export async function redeemInvite(code: string): Promise<string> {
+  const { data, error } = await (await client()).rpc('redeem_invite', { p_code: code.trim().toUpperCase() });
+  if (error) throw error;
+  return (data as string) ?? 'invalid';
+}
+
+/** The signed-in user's role, derived from server tables (never JWT metadata). */
+export async function getRole(): Promise<'owner' | 'tutor' | 'parent' | null> {
+  const supabase = await getSupabase();
+  if (!supabase) return null;
+  const { data: u } = await supabase.auth.getUser();
+  const uid = u.user?.id;
+  if (!uid) return null;
+  const { data: t } = await supabase.from('tutors').select('role').eq('id', uid).maybeSingle();
+  if (t?.role) return t.role === 'owner' ? 'owner' : 'tutor';
+  const { data: g } = await supabase.from('guardians').select('user_id').eq('user_id', uid).limit(1);
+  return g && g.length > 0 ? 'parent' : null;
 }
 
 export async function signOut() {
@@ -146,4 +175,64 @@ export async function leaderboard() {
   const { data, error } = await (await client()).from('learner_stats').select('*');
   if (error) throw error;
   return data ?? [];
+}
+
+// ---------- invites (owner issues; parent/tutor redeems) ----------
+/** A short, human-shareable, unguessable code (no ambiguous chars). */
+function randCode(): string {
+  const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  const arr = new Uint32Array(8);
+  crypto.getRandomValues(arr);
+  let s = '';
+  for (const n of arr) s += alphabet[n % alphabet.length];
+  return `${s.slice(0, 4)}-${s.slice(4, 8)}`;
+}
+
+/** Owner issues a one-time invite. `learnerId` required for kind='parent'. */
+export async function createInviteCode(kind: 'parent' | 'tutor', learnerId?: string, ttlDays = 14): Promise<string> {
+  const centerId = await currentCenterId();
+  if (!centerId) throw new Error('No center');
+  const code = randCode();
+  const expires_at = new Date(Date.now() + ttlDays * 86_400_000).toISOString();
+  const { error } = await (await client()).from('invite_codes')
+    .insert({ code, kind, center_id: centerId, learner_id: learnerId ?? null, expires_at });
+  if (error) throw error;
+  return code;
+}
+
+// ---------- assignment (owner) ----------
+export async function assignTutor(learnerId: string, tutorId: string, relation: 'primary' | 'substitute' = 'primary', expiresAt?: string) {
+  const { error } = await (await client()).from('learner_tutors')
+    .upsert({ learner_id: learnerId, tutor_id: tutorId, relation, expires_at: expiresAt ?? null });
+  if (error) throw error;
+}
+
+export async function unassignTutor(learnerId: string, tutorId: string) {
+  const { error } = await (await client()).from('learner_tutors').delete().eq('learner_id', learnerId).eq('tutor_id', tutorId);
+  if (error) throw error;
+}
+
+// ---------- deletion requests (COPPA — easy to find for both parties) ----------
+export interface DeletionRequest { id: string; learner_id: string; requested_at: string; status: string; note?: string }
+
+/** Parent asks for their child's data to be deleted (owner confirms the actual delete). */
+export async function requestDeletion(learnerId: string, note?: string) {
+  const { error } = await (await client()).from('deletion_requests').insert({ learner_id: learnerId, note: note ?? null });
+  if (error) throw error;
+}
+
+/** Owner inbox: open deletion requests for the center. */
+export async function listDeletionRequests(): Promise<DeletionRequest[]> {
+  const { data, error } = await (await client()).from('deletion_requests')
+    .select('id, learner_id, requested_at, status, note').eq('status', 'open').order('requested_at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as DeletionRequest[];
+}
+
+/** Owner resolves a request (done = actioned, dismissed = declined). */
+export async function resolveDeletion(id: string, status: 'done' | 'dismissed') {
+  const { data: u } = await (await client()).auth.getUser();
+  const { error } = await (await client()).from('deletion_requests')
+    .update({ status, resolved_by: u.user?.id, resolved_at: new Date().toISOString() }).eq('id', id);
+  if (error) throw error;
 }

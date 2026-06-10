@@ -40,7 +40,7 @@ export function StudentAdminPage({ id }: { id: string }) {
   const [assigns, setAssigns] = useState<CloudAssignment[]>([]);
   const [guardians, setGuardians] = useState<CloudGuardian[]>([]);
   const [sessions, setSessions] = useState<SessionRecord[]>([]);
-  const [events, setEvents] = useState<{ skillKey: string; correct: boolean; at: number; game: string | null }[]>([]);
+  const [events, setEvents] = useState<{ skillKey: string; correct: boolean; at: number; game: string | null; firstTry?: boolean }[]>([]);
   const [mastery, setMastery] = useState<MasteryMap>({});
   const [expanded, setExpanded] = useState<string | null>(null); // which session row is open
   const [loading, setLoading] = useState(() => isCloudConfigured());
@@ -60,7 +60,7 @@ export function StudentAdminPage({ id }: { id: string }) {
       setLearner(found); setName(found?.display_name ?? '');
       setTutors(t); setAssigns(a.filter((x) => x.learner_id === id)); setGuardians(g);
       setSessions((s as CloudSessionRow[]).map(toRecord));
-      const evs = ev.map((e) => ({ skillKey: e.skill_key, correct: e.correct, at: new Date(e.at).getTime(), game: e.game }));
+      const evs = ev.map((e) => ({ skillKey: e.skill_key, correct: e.correct, at: new Date(e.at).getTime(), game: e.game, firstTry: e.first_try ?? undefined }));
       setEvents(evs);
       setMastery(masteryFromEvents(evs));
       setErr(null);

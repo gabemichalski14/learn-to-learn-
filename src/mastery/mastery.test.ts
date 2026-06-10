@@ -15,6 +15,14 @@ describe('confusion capture + partner', () => {
     expect(confusionPartner(s)).toBe('d');           // 2 ≥ min(2)
     expect(confusionPartner(s, 3)).toBeUndefined();  // none reaches 3
   });
+
+  it('ignores retries (firstTry=false) so the score is first-try only', () => {
+    recordItem(L, 'sound:first:b', false, undefined, undefined, true);  // first attempt: miss → counts
+    recordItem(L, 'sound:first:b', true, undefined, undefined, false);  // retry success → ignored
+    const s = loadMastery(L)['sound:first:b'];
+    expect(s.attempts).toBe(1);
+    expect(s.correct).toBe(0);
+  });
 });
 
 describe('mastery store', () => {

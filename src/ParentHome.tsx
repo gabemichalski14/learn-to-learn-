@@ -48,7 +48,7 @@ function ChildCard({ child }: { child: CloudLearner }) {
     void listSkillEvents(child.id)
       .then((ev) => {
         if (!live) return;
-        const sum = summarize(masteryFromEvents(ev.map((e) => ({ skillKey: e.skill_key, correct: e.correct, at: Date.parse(e.at) }))));
+        const sum = summarize(masteryFromEvents(ev.map((e) => ({ skillKey: e.skill_key, correct: e.correct, at: Date.parse(e.at), firstTry: e.first_try ?? undefined }))));
         setGrown({ mastered: sum.mastered.length, practising: sum.practicing.length + sum.working.length });
       })
       .catch(() => { if (live) setGrown({ mastered: 0, practising: 0 }); });

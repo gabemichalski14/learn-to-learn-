@@ -51,7 +51,10 @@ function save(learnerId: string, map: MasteryMap): void {
  *  `ms` (optional) is the learner's response time for this item; when present and
  *  sane it folds into a rolling-mean `avgMs` (used by the tutor view, never to
  *  pressure the learner — we have no timers in the kid UI). */
-export function recordItem(learnerId: string, skillKey: SkillKey, correct: boolean, ms?: number, chosen?: string): void {
+export function recordItem(learnerId: string, skillKey: SkillKey, correct: boolean, ms?: number, chosen?: string, firstTry?: boolean): void {
+  // Mastery = FIRST-TRY accuracy: a retry (firstTry === false) must not touch the
+  // score. Once-per-item games omit firstTry (every record IS a first attempt).
+  if (firstTry === false) return;
   const map = loadMastery(learnerId);
   const s = map[skillKey] ?? { attempts: 0, correct: 0, recent: [], lastSeen: 0 };
   s.attempts += 1;

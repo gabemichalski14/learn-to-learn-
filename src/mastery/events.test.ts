@@ -24,6 +24,16 @@ describe('masteryFromEvents', () => {
     }
   });
 
+  it('counts first attempts only — skips retries (first-try mastery)', () => {
+    const map = masteryFromEvents([
+      { skillKey: 'x', correct: false, at: 1, firstTry: true },  // first attempt: a miss → counts
+      { skillKey: 'x', correct: true, at: 2, firstTry: false },  // retry success → ignored
+      { skillKey: 'y', correct: true, at: 3 },                   // legacy (no firstTry) → counts
+    ]);
+    expect(map['x']).toMatchObject({ attempts: 1, correct: 0 });
+    expect(map['y']).toMatchObject({ attempts: 1, correct: 1 });
+  });
+
   it('caps the recent window at K and sorts events by time first', () => {
     const events: SkillEvent[] = Array.from({ length: 14 }, (_, i) => ({
       skillKey: 's', correct: i % 2 === 0, at: 14 - i,

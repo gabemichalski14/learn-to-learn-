@@ -185,7 +185,7 @@ export function SpaceSortGame({
       recordItem(learnerId, skillKey, correct, undefined, correct ? undefined : chosen);
       logSkillEvent(learnerId, {
         skillKey, correct, at: Date.now(), game: gameId, level,
-        firstTry: correct,                       // hook reports the first attempt
+        firstTry: true,                          // hook reports the first (only) attempt at this item
         chosen: correct ? undefined : chosen,    // the confusion (which sound they picked)
       });
       // Recover the character from his OWN sounds' real mastery (recordItem just

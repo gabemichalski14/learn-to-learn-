@@ -123,11 +123,15 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
     if (bloom || taps === 0) return;
     void audio.playWord(word);
     pingEcho();
-    if (taps === word.sounds) {
-      const firstTry = attempts === 0;
-      if (firstTry) firstTryRef.current += 1;
-      recordItem(learnerId, 'pa:segment', firstTry, Date.now() - wordShownRef.current);
-      logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: firstTry, at: Date.now(), game: 'tap-it-out', level: 1, firstTry, latencyMs: Date.now() - wordShownRef.current });
+    const isCorrect = taps === word.sounds;
+    // Record the FIRST attempt's outcome ONCE → first-try mastery. Retries are
+    // practice, not the assessment, so they must not touch the score.
+    if (attempts === 0) {
+      if (isCorrect) firstTryRef.current += 1;
+      recordItem(learnerId, 'pa:segment', isCorrect, Date.now() - wordShownRef.current);
+      logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: isCorrect, at: Date.now(), game: 'tap-it-out', level: 1, firstTry: true, latencyMs: Date.now() - wordShownRef.current });
+    }
+    if (isCorrect) {
       // Bloom + climbing combo + a happy Sprout.
       const c = comboRef.current + 1;
       comboRef.current = c;
@@ -164,8 +168,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       const next = attempts + 1;
       setAttempts(next);
       if (next >= 2) {
-        recordItem(learnerId, 'pa:segment', false);
-        logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: false, at: Date.now(), game: 'tap-it-out', level: 1, firstTry: false });
+        // First-attempt outcome already recorded above; the give-up is just modeling.
         if (character) setChipHeal(healFor(character, loadMastery(learnerId)));
         setTaps(word.sounds);
         setPhase('modeled');

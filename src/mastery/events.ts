@@ -33,6 +33,9 @@ export function masteryFromEvents(events: SkillEvent[]): MasteryMap {
   const map: MasteryMap = {};
   const ordered = [...events].sort((a, b) => a.at - b.at);
   for (const e of ordered) {
+    // Mastery = FIRST-TRY accuracy (research): count first attempts only, skip
+    // retries. Events without first_try (legacy) are kept.
+    if (e.firstTry === false) continue;
     const s: SkillStat = map[e.skillKey] ?? { attempts: 0, correct: 0, recent: [], lastSeen: 0 };
     s.attempts += 1;
     if (e.correct) s.correct += 1;

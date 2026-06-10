@@ -78,7 +78,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
     window.setTimeout(() => {
       const now = Date.now();
       recordItem(learnerId, SKILL, correct);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: now, game: 'switch-it', level: 1, firstTry: correct });
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: now, game: 'switch-it', level: 1, firstTry: true });
       setMood(null); setPicked(null);
       if (i + 1 >= ROUNDS) finishSession(now);
       else setI((n) => n + 1);

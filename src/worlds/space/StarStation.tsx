@@ -59,7 +59,7 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
     const firstTry = !attemptedRef.current.has(fkey); // first tap at this slot
     attemptedRef.current.add(fkey);
     window.setTimeout(() => {
-      recordItem(learnerId, key, correct, undefined, correct ? undefined : chosen);
+      recordItem(learnerId, key, correct, undefined, correct ? undefined : chosen, firstTry);
       logSkillEvent(learnerId, {
         skillKey: key, correct, at: Date.now(), game: 'star-station', level: 2, firstTry,
         chosen: correct ? undefined : chosen, // the letter they tapped instead (confusion)

@@ -58,7 +58,7 @@ export async function getMastery(learner: Learner): Promise<MasteryMap> {
     try {
       const rows = await cloud.listSkillEvents(cloudId);
       return masteryFromEvents(
-        rows.map((r) => ({ skillKey: r.skill_key, correct: r.correct, at: Date.parse(r.at) })),
+        rows.map((r) => ({ skillKey: r.skill_key, correct: r.correct, at: Date.parse(r.at), firstTry: r.first_try ?? undefined })),
       );
     } catch {
       /* fall through to local */

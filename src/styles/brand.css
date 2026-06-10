@@ -251,15 +251,18 @@ body::before {
 @keyframes lvl-nextup { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .lvl-card--nextup::after { animation: none; opacity: 0.7; } }
 
-/* pressing a locked card: a gentle shake + a "why it's locked" bubble */
-.lvl-card--knock { animation: lvl-shake 0.4s ease; }
-@keyframes lvl-shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+/* pressing a locked card: a "why it's locked" bubble + a wiggle of the lock
+   badge. NB: the shake goes on the badge (a child), NEVER the card itself —
+   the card carries .l2l-reveal whose animation is the only thing holding it
+   visible (base opacity:0), so animating the card would make it vanish. */
+.lvl-card--knock .lvl-veil__badge { display: inline-block; animation: lvl-shake 0.5s ease; }
+@keyframes lvl-shake { 0%, 100% { transform: translateX(0) rotate(0); } 20% { transform: translateX(-4px) rotate(-8deg); } 40% { transform: translateX(4px) rotate(8deg); } 60% { transform: translateX(-3px) rotate(-5deg); } 80% { transform: translateX(3px) rotate(5deg); } }
 .lvl-knock { position: absolute; top: 38px; left: 10px; right: 10px; z-index: 6; margin: 0;
   background: rgba(40, 32, 20, 0.92); color: #fff7e6; font-size: 12px; font-weight: 700; line-height: 1.35;
   padding: 8px 12px; border-radius: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28); text-align: center;
   animation: lvl-knock-in 0.18s ease; }
 @keyframes lvl-knock-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-@media (prefers-reduced-motion: reduce) { .lvl-card--knock { animation: none; } .lvl-knock { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .lvl-card--knock .lvl-veil__badge { animation: none; } .lvl-knock { animation: none; } }
 
 /* themed Level 2 (Space Patrol) full card */
 .lvl-card--space { color: #eafcff; border-color: rgba(120, 220, 230, 0.4);

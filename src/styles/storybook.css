@@ -55,3 +55,44 @@
 /* Operator consoles (admin/tutor/account) ride on the paper base and get the
    same page-frame cards, so the storybook feel stays consistent — just calmer
    (no garden / mascot). Nothing extra needed here; the rules above cover them. */
+
+/* ---- storybook polish ---------------------------------------------------- */
+
+/* Gentle page-turn: each route's page container fades + lifts in on mount.
+   (App swaps the page component per route, so this replays on navigation.) */
+@keyframes book-turn {
+  from { opacity: 0; transform: translateY(10px) scale(0.996); }
+  to   { opacity: 1; transform: none; }
+}
+.l2l-page, .site { animation: book-turn 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+
+/* Section dividers — a small printer's-leaf ornament before section headings. */
+.site__h2::before, .admin__h::before, .l2l-h2::before {
+  content: '❧';
+  font-family: var(--font-display, Georgia, serif);
+  font-style: normal; font-weight: 700;
+  color: var(--gold, #f5c84c);
+  margin-right: 9px;
+}
+
+/* Drop-cap on a page intro (a lead paragraph that follows the title). */
+.l2l-display + .l2l-lead::first-letter {
+  float: left;
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 700;
+  font-size: 3em;
+  line-height: 0.78;
+  margin: 6px 10px 0 0;
+  color: var(--teal-deep, #14808f);
+}
+
+/* Faint deckled page corners on cards (thin L-ticks at two corners). */
+.l2l-card::before, .l2l-card::after {
+  content: '';
+  position: absolute;
+  width: 13px; height: 13px;
+  border: 0 solid rgba(120, 84, 38, 0.26);
+  pointer-events: none;
+}
+.l2l-card::before { top: 9px; left: 9px; border-top-width: 1.5px; border-left-width: 1.5px; border-top-left-radius: 4px; }
+.l2l-card::after { bottom: 9px; right: 9px; border-bottom-width: 1.5px; border-right-width: 1.5px; border-bottom-right-radius: 4px; }

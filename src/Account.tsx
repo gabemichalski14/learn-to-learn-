@@ -39,6 +39,17 @@ function readInvite(): { code: string; as: string } {
 
 /** Redeem a stashed invite once a session exists (covers email-confirmation flows:
  *  the code is kept until the user is actually signed in, then consumed once). */
+/** Plain-language outcome of an invite redemption (server returns these codes). */
+function redeemResultMsg(res: string): string {
+  switch (res) {
+    case 'ok': return '✅ Linked to your center!';
+    case 'used': return 'That invite link was already used — ask your center for a fresh one.';
+    case 'expired': return 'That invite link has expired — ask your center for a new one.';
+    case 'invalid': return 'That invite link wasn’t recognized — ask your center for a new one.';
+    default: return '';
+  }
+}
+
 async function redeemPendingInvite(): Promise<string | null> {
   let code: string | null = null;
   try { code = localStorage.getItem(PENDING_KEY); } catch { /* ignore */ }
@@ -79,7 +90,13 @@ export function Account() {
       setUser(u?.email ?? null);
       if (u) {
         void getRole().then(setAcctRole);
-        void redeemPendingInvite().then(() => reconcileRoster()).then(() => flushOutbox());
+        let hadPending = false;
+        try { hadPending = !!localStorage.getItem(PENDING_KEY); } catch { /* ignore */ }
+        void redeemPendingInvite().then((res) => {
+          // surface the outcome so a failed link isn't silent ("I signed up but I'm not showing")
+          if (hadPending && res) { setMsg(redeemResultMsg(res)); if (res === 'ok') void getRole().then(setAcctRole); }
+          return reconcileRoster();
+        }).then(() => flushOutbox());
       } else { setAcctRole(null); }
     };
     getCurrentUser().then(handle);
@@ -104,8 +121,10 @@ export function Account() {
           try { localStorage.setItem(PENDING_KEY, inviteCode.trim().toUpperCase()); } catch { /* ignore */ }
           const res = await redeemPendingInvite();
           setMsg(res === 'ok'
-            ? 'Account created and linked! Sign in to begin.'
-            : 'Account created. If email confirmation is on, confirm it, then sign in — your code finishes linking automatically.');
+            ? 'Account created and linked to your center! Sign in to begin.'
+            : res && res !== 'ok'
+              ? `Account created, but couldn’t link: ${redeemResultMsg(res)}`
+              : 'Account created. If email confirmation is on, confirm it, then sign in — your link connects you automatically.');
         }
       } else {
         const { error } = await withTimeout(signIn(email, password));

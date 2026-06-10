@@ -11,8 +11,9 @@ export interface ComparePair {
   same: boolean;
 }
 
-/** Pairs that differ by exactly one sound — the heart of the skill. */
-const MINIMAL_PAIRS: Array<[string, string]> = [
+/** Pairs that differ by exactly one sound — the heart of the skill. Shared with
+ *  Switch It (phoneme manipulation), which changes the one differing sound. */
+export const MINIMAL_PAIRS: Array<[string, string]> = [
   ['cat', 'cap'], ['pin', 'pig'], ['sun', 'sub'], ['ten', 'hen'], ['map', 'mop'],
   ['bed', 'bad'], ['big', 'bug'], ['cup', 'cut'], ['fan', 'van'], ['dog', 'dot'],
   ['hat', 'ham'], ['top', 'tap'], ['net', 'nut'], ['pen', 'pet'], ['mat', 'man'],

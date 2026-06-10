@@ -21,6 +21,7 @@ import { SpaceLevelHub } from './worlds/space/SpaceLevelHub';
 import { GardenLevelHub } from './worlds/garden/GardenLevelHub';
 import { TapItOutGame } from './worlds/garden/TapItOutGame';
 import { SameOrDifferent } from './worlds/garden/SameOrDifferent';
+import { SwitchItGame } from './worlds/garden/SwitchItGame';
 import { CheckpointGame } from './CheckpointGame';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
 import { useTutorSignedIn } from './useAuth';
@@ -70,6 +71,9 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'same-or-different') {
     return <SameOrDifferent learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'switch-it') {
+    return <SwitchItGame learnerId={learnerId} />;
   }
   if (route.name === 'play') {
     return <GameScreen learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} focus={route.focus} />;

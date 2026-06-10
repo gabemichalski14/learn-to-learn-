@@ -381,3 +381,18 @@ img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
 .gd-btn--ghost { color: #2f7d56; background: rgba(255, 255, 255, 0.8); border: 1.5px solid #8ecf9f; box-shadow: none; }
 
 @media (prefers-reduced-motion: reduce) { .sd-listen__btn:active, .sd-choice:active { transform: none; } }
+
+/* ============ Switch It (Level 1 · Chip · phoneme manipulation) ============ */
+.si-beads { display: flex; gap: 16px; justify-content: center; align-items: center; min-height: 96px; }
+.si-bead { width: 72px; height: 72px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.7); cursor: pointer;
+  background: radial-gradient(circle at 38% 30%, color-mix(in srgb, var(--bead) 75%, white), var(--bead));
+  box-shadow: 0 8px 18px rgba(78,149,104,0.32), inset 0 2px 5px rgba(255,255,255,0.5);
+  transition: transform 0.1s ease, box-shadow 0.15s ease; -webkit-tap-highlight-color: transparent; }
+.si-bead:hover { transform: translateY(-2px); }
+.si-bead:active { transform: scale(0.94); }
+.si-bead:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+.si-bead:disabled { cursor: default; }
+.si-bead.is-answer { animation: si-switch 0.6s cubic-bezier(0.2,1.4,0.4,1) both; box-shadow: 0 0 0 4px rgba(110,196,140,0.6), 0 10px 22px rgba(78,149,104,0.4); }
+@keyframes si-switch { 0% { transform: scale(1) rotate(0); } 45% { transform: scale(1.25) rotate(-14deg); } 100% { transform: scale(1) rotate(0); } }
+.si-bead.is-wrong { box-shadow: 0 0 0 4px rgba(225,150,120,0.55); filter: grayscale(0.3); }
+@media (prefers-reduced-motion: reduce) { .si-bead.is-answer { animation: none; } .si-bead:hover, .si-bead:active { transform: none; } }

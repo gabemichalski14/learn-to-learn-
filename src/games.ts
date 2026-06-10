@@ -48,7 +48,7 @@ export const LEVELS: LevelInfo[] = [
       { id: 'beginning-sounds', title: 'Blast Off', emoji: '🚀', tagline: 'Launch each space critter by its first sound.', status: 'available', route: '#/play/beginning-sounds' },
       { id: 'ending-sounds', title: 'Touchdown', emoji: '🛬', tagline: 'Land each space critter by its last sound.', status: 'available', route: '#/play/ending-sounds' },
       { id: 'middle-sounds', title: 'Vowel Patrol', emoji: '🛸', tagline: 'Sort space critters by their middle vowel.', status: 'available', route: '#/play/middle-sounds' },
-      soon('l2-build', 'Star Station', '🛰️', 'Build the word you hear, brick by brick.'),
+      { id: 'star-station', title: 'Star Station', emoji: '🛰️', tagline: 'Build the word you hear, letter by letter.', status: 'available', route: '#/play/star-station' },
     ],
   },
   {

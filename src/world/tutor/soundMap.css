@@ -24,3 +24,6 @@
 .smap-dots .ok { background: rgba(107, 174, 127, 0.25); color: #3c6b4e; }
 .smap-dots .no { background: rgba(225, 120, 90, 0.18); color: #a4472e; }
 .smap-detail__meta { font-size: 11px; color: var(--muted); }
+
+/* automatic (fast + sure) marker on mastered sounds */
+.smap-chip__auto { flex: none; font-size: 12px; line-height: 1; filter: saturate(1.2); }

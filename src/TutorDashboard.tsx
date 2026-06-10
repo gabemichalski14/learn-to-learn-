@@ -10,7 +10,7 @@ import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
 import { getSessions, getMastery, getEnrichedEvents } from './data/dataSource';
 import type { EnrichedSkillEvent } from './data/cloud';
-import { confusions, confusionPhrase } from './world/tutor/personalization';
+import { confusions, confusionPhrase, fluency } from './world/tutor/personalization';
 import { loadMastery } from './mastery/mastery';
 import type { MasteryMap } from './mastery/mastery';
 import { skillLabel } from './mastery/skills';
@@ -81,7 +81,9 @@ export function TutorDashboard() {
     void getEnrichedEvents(l).then((rows) => { if (live) setCloudEvents({ id: sel, rows }); });
     return () => { live = false; };
   }, [sel, version]);
-  const mixUps = confusions(cloudEvents && cloudEvents.id === sel ? cloudEvents.rows : []);
+  const events = cloudEvents && cloudEvents.id === sel ? cloudEvents.rows : [];
+  const mixUps = confusions(events);
+  const automatic = new Set([...fluency(events)].filter(([, v]) => v === 'automatic').map(([k]) => k));
 
   const summary = summarize(mastery);
   const topNeed = summary.working[0];
@@ -218,7 +220,7 @@ export function TutorDashboard() {
               {/* Sound map — replaces the noisy accuracy line */}
               <div className="l2l-card" style={{ marginTop: '16px' }}>
                 <h3 className="chart-card__title">Sound map — mastered &amp; what's next</h3>
-                <SoundMap map={mastery} />
+                <SoundMap map={mastery} automatic={automatic} />
               </div>
 
               <TutorPip mastery={mastery} name={learner.name} />

@@ -4,7 +4,7 @@ import { isCloudConfigured } from './data/supabase';
 import { useDialog } from './ui/dialogContext';
 import {
   listLearners, listTutors, listAssignments, listDeletionRequests,
-  createInviteCode, createLearner, assignTutor, deleteLearner, resolveDeletion,
+  createLearner, assignTutor, deleteLearner, resolveDeletion,
   type CloudLearner, type CloudTutor, type CloudAssignment, type DeletionRequest,
 } from './data/cloud';
 import './admin.css';
@@ -26,7 +26,6 @@ export function AdminPage() {
   const [requests, setRequests] = useState<DeletionRequest[]>([]);
   const [loading, setLoading] = useState(() => isCloudConfigured());
   const [err, setErr] = useState<string | null>(null);
-  const [code, setCode] = useState<{ label: string; value: string } | null>(null);
   const [newName, setNewName] = useState('');
   const [adding, setAdding] = useState(false);
 
@@ -68,16 +67,6 @@ export function AdminPage() {
     finally { setAdding(false); }
   }
 
-  /** Create an invite and hand back a CLICKABLE link (carries the code + role). */
-  async function invite(kind: 'tutor' | 'parent', learnerId?: string, label?: string) {
-    try {
-      const codeVal = await createInviteCode(kind, learnerId);
-      const base = `${window.location.origin}${window.location.pathname}`;
-      const url = `${base}#/account?invite=${encodeURIComponent(codeVal)}&as=${kind}`;
-      setCode({ label: label ?? (kind === 'tutor' ? 'New tutor' : 'Parent'), value: url });
-    } catch (e) { setErr(e instanceof Error ? e.message : 'Could not create an invite.'); }
-  }
-
   async function onDelete(req: DeletionRequest) {
     const ok = await dialog.confirm({
       title: 'Delete this student’s data?',
@@ -97,8 +86,8 @@ export function AdminPage() {
     <main className="l2l-page">
       <header className="l2l-reveal" style={{ '--i': 0 } as CSSProperties}>
         <p className="l2l-eyebrow">Center admin</p>
-        <h1 className="l2l-display">Your <em>center</em></h1>
-        <p className="l2l-lead">Assign students to tutors, invite staff and parents, and handle data-deletion requests.</p>
+        <h1 className="l2l-display">Your <em>students</em></h1>
+        <p className="l2l-lead">Add students and set their tutor. Open any student to edit info, manage parents, and see their data.</p>
       </header>
 
       {!configured ? (
@@ -108,14 +97,6 @@ export function AdminPage() {
       ) : (
         <div className="admin">
           {err && <p className="admin__err" role="alert">{err}</p>}
-          {code && (
-            <div className="admin__code" role="status">
-              <span><strong>{code.label}</strong> invite link — send it once; it opens sign-up with everything filled in:</span>
-              <code className="admin__codeval">{code.value}</code>
-              <button type="button" className="admin__copy" onClick={() => navigator.clipboard?.writeText(code.value).catch(() => {})}>Copy</button>
-              <button type="button" className="admin__codex" aria-label="dismiss" onClick={() => setCode(null)}>×</button>
-            </div>
-          )}
 
           {/* deletion requests — easy to find for the owner */}
           {requests.length > 0 && (
@@ -167,15 +148,6 @@ export function AdminPage() {
               </ul>
             )}
             <p className="admin__hint">Tap a student to edit their info, manage tutors &amp; parents, and see all their data.</p>
-          </section>
-
-          {/* staff */}
-          <section className="l2l-card admin__sec">
-            <div className="admin__sechead">
-              <h2 className="admin__h">Tutors · {tutors.length}</h2>
-              <button type="button" className="admin__cta" onClick={() => invite('tutor')}>+ Invite tutor</button>
-            </div>
-            <ul className="admin__chips">{tutors.map((t) => <li key={t.id} className="admin__chip">{tutorName(t)}{t.role === 'owner' && <i> · owner</i>}</li>)}</ul>
           </section>
         </div>
       )}

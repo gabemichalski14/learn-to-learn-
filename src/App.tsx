@@ -8,6 +8,7 @@ import { TutorDashboard } from './TutorDashboard';
 import { Account } from './Account';
 import { AdminPage } from './AdminPage';
 import { StudentAdminPage } from './StudentAdminPage';
+import { TutorsAdminPage } from './TutorsAdminPage';
 import { ParentHome } from './ParentHome';
 import { LevelsPage } from './LevelsPage';
 import { GamesPage } from './GamesPage';
@@ -123,6 +124,9 @@ export default function App() {
     case 'admin-student':
       page = role === 'owner' ? <StudentAdminPage id={route.studentId ?? ''} /> : <Account />;
       break;
+    case 'admin-tutors':
+      page = role === 'owner' ? <TutorsAdminPage /> : <Account />;
+      break;
     case 'family':
       page = <ParentHome />;
       break;
@@ -138,7 +142,7 @@ export default function App() {
 
   // Operator surfaces (admin, tutor dashboard, account) are professional consoles —
   // no kid-world chrome (Living World ambient, garden frame, roaming mascot, eggs).
-  const operator = route.name === 'admin' || route.name === 'admin-student' || route.name === 'tutor' || route.name === 'account';
+  const operator = route.name === 'admin' || route.name === 'admin-student' || route.name === 'admin-tutors' || route.name === 'tutor' || route.name === 'account';
 
   return (
     <>

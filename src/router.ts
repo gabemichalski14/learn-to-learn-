@@ -16,6 +16,7 @@ export type RouteName =
   | 'leaderboard'
   | 'tutor'
   | 'admin'
+  | 'admin-tutors'
   | 'admin-student'
   | 'family'
   | 'profile'
@@ -43,6 +44,7 @@ export function parseHash(hash: string): Route {
     const id = (h.split('/')[2] || '').split('?')[0];
     return { name: 'admin-student', studentId: id };
   }
+  if (h.startsWith('admin/tutors')) return { name: 'admin-tutors' };
   if (h.startsWith('admin')) return { name: 'admin' };
   if (h.startsWith('family')) return { name: 'family' };
   if (h.startsWith('account')) return { name: 'account' };

@@ -19,13 +19,14 @@ interface NavItem {
 // pages. Tutors get teaching tools; parents get their child; the shared-device
 // guest gets the full kid world.
 const ITEMS: NavItem[] = [
-  { label: 'Center admin', to: '#/admin', match: ['admin'], roles: ['owner'] },
+  { label: 'Students', to: '#/admin', match: ['admin', 'admin-student'], roles: ['owner'] },
+  { label: 'Tutors', to: '#/admin/tutors', match: ['admin-tutors'], roles: ['owner'] },
   { label: 'Dashboard', to: '#/tutor', match: ['tutor'], roles: ['tutor'] },
   { label: 'My child', to: '#/family', match: ['family'], roles: ['parent'] },
-  { label: 'Levels', to: '#/levels', match: ['levels', 'level'], roles: ['guest', 'tutor'] },
+  { label: 'Levels', to: '#/levels', match: ['levels', 'level'], roles: ['guest', 'tutor', 'owner'] },
   { label: 'Games', to: '#/games', match: ['games', 'play'], roles: ['guest', 'tutor'] },
   { label: 'Village', to: '#/village', match: ['village'], roles: ['guest'] },
-  { label: 'Leaderboard', to: '#/leaderboard', match: ['leaderboard'], roles: ['guest'] },
+  { label: 'Leaderboard', to: '#/leaderboard', match: ['leaderboard'], roles: ['guest', 'owner'] },
   { label: 'Profile', to: '#/profile', match: ['profile'], roles: ['guest', 'tutor'] },
   { label: 'Account', to: '#/account', match: ['account'], roles: ['guest', 'owner', 'tutor', 'parent'] },
 ];

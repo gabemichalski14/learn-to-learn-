@@ -181,9 +181,13 @@ export function SpaceSortGame({
   const game = useSortGame({
     round,
     audio,
-    onItemResult: ({ skillKey, correct }) => {
+    onItemResult: ({ skillKey, correct, chosen }) => {
       recordItem(learnerId, skillKey, correct);
-      logSkillEvent(learnerId, { skillKey, correct, at: Date.now() });
+      logSkillEvent(learnerId, {
+        skillKey, correct, at: Date.now(), game: gameId, level,
+        firstTry: correct,                       // hook reports the first attempt
+        chosen: correct ? undefined : chosen,    // the confusion (which sound they picked)
+      });
       // Recover the character from his OWN sounds' real mastery (recordItem just
       // updated them). Average across all his scattered hums.
       if (character) setHeal(healFor(character, loadMastery(learnerId)));

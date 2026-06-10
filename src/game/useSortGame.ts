@@ -19,7 +19,10 @@ export interface UseSortGame {
 export function useSortGame(opts: {
   round: SortRound;
   audio: AudioPlayer;
-  onItemResult?: (r: { skillKey: string; correct: boolean }) => void;
+  /** Fired ONCE per word, on its first attempt (so `correct` is the first-try
+   *  result). `chosen` is the basket sound dropped into — the confusion when
+   *  wrong; `sound` is the correct sound. */
+  onItemResult?: (r: { skillKey: string; correct: boolean; chosen: string; sound: string }) => void;
   /** Fired on each correct placement; `complete` is true when it finishes the round. */
   onCorrect?: (r: { complete: boolean }) => void;
   /** Fired on each wrong attempt (including retries). */
@@ -45,7 +48,7 @@ export function useSortGame(opts: {
       reported.current.add(wordId);
       const sound = soundOf(item, target);
       const correct = isCorrectPlacement(item, basketSound, target);
-      if (sound) onItemResult?.({ skillKey: skillKeyForSound(sound, target), correct });
+      if (sound) onItemResult?.({ skillKey: skillKeyForSound(sound, target), correct, chosen: basketSound, sound });
     }
     if (isCorrectPlacement(item, basketSound, target)) {
       const next = { ...placements, [wordId]: basketSound };

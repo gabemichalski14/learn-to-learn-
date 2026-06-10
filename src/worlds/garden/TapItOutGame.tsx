@@ -127,7 +127,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       const firstTry = attempts === 0;
       if (firstTry) firstTryRef.current += 1;
       recordItem(learnerId, 'pa:segment', firstTry, Date.now() - wordShownRef.current);
-      logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: firstTry, at: Date.now() });
+      logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: firstTry, at: Date.now(), game: 'tap-it-out', level: 1, firstTry, latencyMs: Date.now() - wordShownRef.current });
       // Bloom + climbing combo + a happy Sprout.
       const c = comboRef.current + 1;
       comboRef.current = c;
@@ -165,7 +165,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       setAttempts(next);
       if (next >= 2) {
         recordItem(learnerId, 'pa:segment', false);
-        logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: false, at: Date.now() });
+        logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: false, at: Date.now(), game: 'tap-it-out', level: 1, firstTry: false });
         if (character) setChipHeal(healFor(character, loadMastery(learnerId)));
         setTaps(word.sounds);
         setPhase('modeled');

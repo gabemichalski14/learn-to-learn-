@@ -70,7 +70,7 @@ describe('useSortGame', () => {
 
 describe('useSortGame onItemResult', () => {
   it('emits one result per item on the FIRST attempt only', () => {
-    const results: Array<{ skillKey: string; correct: boolean }> = [];
+    const results: Array<{ skillKey: string; correct: boolean; chosen: string; sound: string }> = [];
     const { result } = renderHook(() =>
       useSortGame({ round: roundOf(), audio: fakeAudio(), onItemResult: (r) => results.push(r) }),
     );
@@ -79,8 +79,8 @@ describe('useSortGame onItemResult', () => {
     act(() => { result.current.attemptPlace('sun', 's'); });  // correct first attempt
 
     expect(results).toEqual([
-      { skillKey: 'sound:first:m', correct: false },
-      { skillKey: 'sound:first:s', correct: true },
+      { skillKey: 'sound:first:m', correct: false, chosen: 's', sound: 'm' }, // chosen = the basket dropped into
+      { skillKey: 'sound:first:s', correct: true, chosen: 's', sound: 's' },
     ]);
   });
 });

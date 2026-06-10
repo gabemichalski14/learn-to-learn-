@@ -38,6 +38,7 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
   const wrongRef = useRef(0);
   const advancingRef = useRef(false);
   const handledRef = useRef(false);
+  const attemptedRef = useRef<Set<string>>(new Set()); // slots tapped → first-try detection
 
   const round = rounds[ri];
   const word = round?.word ?? '';
@@ -52,11 +53,17 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
-  function logPlacement(index: number, correct: boolean) {
+  function logPlacement(index: number, correct: boolean, chosen?: string) {
     const key = skillKeyForSound(word[index], positionTarget(index, word.length));
+    const fkey = `${ri}:${index}`;
+    const firstTry = !attemptedRef.current.has(fkey); // first tap at this slot
+    attemptedRef.current.add(fkey);
     window.setTimeout(() => {
       recordItem(learnerId, key, correct);
-      logSkillEvent(learnerId, { skillKey: key, correct, at: Date.now() });
+      logSkillEvent(learnerId, {
+        skillKey: key, correct, at: Date.now(), game: 'star-station', level: 2, firstTry,
+        chosen: correct ? undefined : chosen, // the letter they tapped instead (confusion)
+      });
     }, 0);
   }
 
@@ -83,7 +90,7 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
       }
     } else {
       wrongRef.current += 1;
-      logPlacement(p, false);
+      logPlacement(p, false, letter);
       sfx.wrong();
       setMood('wobble');
       setWrongTile(tileIdx);
@@ -110,6 +117,7 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
 
   function restart() {
     handledRef.current = false; advancingRef.current = false; wrongRef.current = 0;
+    attemptedRef.current.clear();
     startRef.current = Date.now();
     setRounds(buildStarRounds(ROUNDS));
     setFinish(null); setRi(0); setPlaced(0); setUsed(new Set());

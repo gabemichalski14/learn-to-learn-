@@ -167,15 +167,17 @@ export async function renameLearner(id: string, displayName: string) {
   if (error) throw error;
 }
 
-/** A free-text note on the student's record (owner-authored). Isolated so the
- *  rest of the app is unaffected before the note migration is applied. */
+/** A free-text, STAFF-ONLY note on a student (owner or assigned tutor). Lives in
+ *  its own `staff_notes` table so guardians can't read it (the learners read
+ *  policy includes guardians; see the migration). Isolated so the rest of the
+ *  app is unaffected before that migration runs. */
 export async function getLearnerNote(id: string): Promise<string> {
-  const { data, error } = await (await client()).from('learners').select('note').eq('id', id).maybeSingle();
+  const { data, error } = await (await client()).from('staff_notes').select('body').eq('learner_id', id).maybeSingle();
   if (error) throw error;
-  return (data?.note as string | null) ?? '';
+  return (data?.body as string | null) ?? '';
 }
 export async function setLearnerNote(id: string, note: string) {
-  const { error } = await (await client()).from('learners').update({ note }).eq('id', id);
+  const { error } = await (await client()).from('staff_notes').upsert({ learner_id: id, body: note }, { onConflict: 'learner_id' });
   if (error) throw error;
 }
 

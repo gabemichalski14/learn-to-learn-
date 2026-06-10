@@ -28,6 +28,15 @@ function friendly(err: unknown): string {
   return m;
 }
 
+/** Read an invite link's params from the hash (#/account?invite=CODE&as=tutor). */
+function readInvite(): { code: string; as: string } {
+  try {
+    const q = (typeof window !== 'undefined' ? window.location.hash : '').split('?')[1] || '';
+    const p = new URLSearchParams(q);
+    return { code: (p.get('invite') || '').trim(), as: p.get('as') || '' };
+  } catch { return { code: '', as: '' }; }
+}
+
 /** Redeem a stashed invite once a session exists (covers email-confirmation flows:
  *  the code is kept until the user is actually signed in, then consumed once). */
 async function redeemPendingInvite(): Promise<string | null> {
@@ -50,12 +59,15 @@ async function redeemPendingInvite(): Promise<string | null> {
  */
 export function Account() {
   const configured = isCloudConfigured();
+  // An invite LINK lands here as #/account?invite=CODE&as=tutor|parent — prefill
+  // the code + role + jump to sign-up so the invitee just adds email + password.
+  const [inv] = useState(readInvite);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [centerName, setCenterName] = useState('');
-  const [inviteCode, setInviteCode] = useState('');
-  const [role, setRole] = useState<SignUpIntent>('new_center');
-  const [mode, setMode] = useState<Mode>('in');
+  const [inviteCode, setInviteCode] = useState(inv.code);
+  const [role, setRole] = useState<SignUpIntent>(inv.as === 'parent' ? 'join_parent' : inv.as === 'tutor' ? 'join_tutor' : 'new_center');
+  const [mode, setMode] = useState<Mode>(inv.code ? 'up' : 'in');
   const [user, setUser] = useState<string | null>(null);
   const [acctRole, setAcctRole] = useState<Role | null>(null);
   const [msg, setMsg] = useState<string | null>(null);

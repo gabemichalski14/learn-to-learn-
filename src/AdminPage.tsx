@@ -9,9 +9,6 @@ import {
 } from './data/cloud';
 import './admin.css';
 
-type Rel = 'none' | 'primary' | 'substitute';
-const NEXT: Record<Rel, Rel> = { none: 'primary', primary: 'substitute', substitute: 'none' };
-const GLYPH: Record<Rel, string> = { none: '·', primary: 'P', substitute: 'S' };
 const tutorName = (t: CloudTutor) => t.name || (t.role === 'owner' ? 'You (owner)' : 'Tutor');
 const STUDENT_COLORS = ['#1b9aaa', '#6bae7f', '#e0a14a', '#a8569c', '#5570c0', '#c0573c'];
 
@@ -52,10 +49,32 @@ export function AdminPage() {
     return () => clearTimeout(id);
   }, [configured, load]);
 
-  const relOf = (learnerId: string, tutorId: string): Rel =>
-    (assigns.find((x) => x.learner_id === learnerId && x.tutor_id === tutorId)?.relation as Rel) ?? 'none';
   const learnerName = (id: string) => learners.find((l) => l.id === id)?.display_name ?? 'this student';
   const ownerId = tutors.find((t) => t.role === 'owner')?.id;
+  const tutorById = (id: string) => tutors.find((t) => t.id === id);
+  const nameOf = (id: string) => { const t = tutorById(id); return t ? tutorName(t) : 'Tutor'; };
+  const primaryOf = (learnerId: string) => assigns.find((a) => a.learner_id === learnerId && a.relation === 'primary')?.tutor_id ?? '';
+  const subsOf = (learnerId: string) => assigns.filter((a) => a.learner_id === learnerId && a.relation === 'substitute').map((a) => a.tutor_id);
+
+  /** Set (or clear, with '') the student's one primary tutor. */
+  async function setPrimary(learnerId: string, tutorId: string) {
+    try {
+      for (const old of assigns.filter((a) => a.learner_id === learnerId && a.relation === 'primary' && a.tutor_id !== tutorId)) {
+        await unassignTutor(learnerId, old.tutor_id);
+      }
+      if (tutorId) await assignTutor(learnerId, tutorId, 'primary');
+      await load();
+    } catch (e) { setErr(e instanceof Error ? e.message : 'Could not update the tutor.'); }
+  }
+  async function addSub(learnerId: string, tutorId: string) {
+    if (!tutorId) return;
+    try { await assignTutor(learnerId, tutorId, 'substitute'); await load(); }
+    catch (e) { setErr(e instanceof Error ? e.message : 'Could not add the substitute.'); }
+  }
+  async function removeAssign(learnerId: string, tutorId: string) {
+    try { await unassignTutor(learnerId, tutorId); await load(); }
+    catch (e) { setErr(e instanceof Error ? e.message : 'Could not update the assignment.'); }
+  }
 
   async function addStudent() {
     const name = newName.trim();
@@ -71,19 +90,13 @@ export function AdminPage() {
     finally { setAdding(false); }
   }
 
-  async function cycle(learnerId: string, tutorId: string) {
-    const next = NEXT[relOf(learnerId, tutorId)];
-    try {
-      if (next === 'none') await unassignTutor(learnerId, tutorId);
-      else await assignTutor(learnerId, tutorId, next);
-      await load();
-    } catch (e) { setErr(e instanceof Error ? e.message : 'Could not update assignment.'); }
-  }
-
+  /** Create an invite and hand back a CLICKABLE link (carries the code + role). */
   async function invite(kind: 'tutor' | 'parent', learnerId?: string, label?: string) {
     try {
-      const value = await createInviteCode(kind, learnerId);
-      setCode({ label: label ?? (kind === 'tutor' ? 'New tutor' : 'Parent'), value });
+      const codeVal = await createInviteCode(kind, learnerId);
+      const base = `${window.location.origin}${window.location.pathname}`;
+      const url = `${base}#/account?invite=${encodeURIComponent(codeVal)}&as=${kind}`;
+      setCode({ label: label ?? (kind === 'tutor' ? 'New tutor' : 'Parent'), value: url });
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not create an invite.'); }
   }
 
@@ -120,7 +133,7 @@ export function AdminPage() {
           {err && <p className="admin__err" role="alert">{err}</p>}
           {code && (
             <div className="admin__code" role="status">
-              <span><strong>{code.label}</strong> invite code — share it once:</span>
+              <span><strong>{code.label}</strong> invite link — send it once; it opens sign-up with everything filled in:</span>
               <code className="admin__codeval">{code.value}</code>
               <button type="button" className="admin__copy" onClick={() => navigator.clipboard?.writeText(code.value).catch(() => {})}>Copy</button>
               <button type="button" className="admin__codex" aria-label="dismiss" onClick={() => setCode(null)}>×</button>
@@ -157,28 +170,45 @@ export function AdminPage() {
             {learners.length === 0 ? (
               <p className="admin__empty">No students yet — add your first one above.</p>
             ) : (
-              <>
-                <p className="admin__hint">Assign tutors — tap a cell to cycle · none → <b>P</b> primary → <b>S</b> substitute. New students start assigned to you.</p>
-                <div className="admin__gridwrap">
-                  <table className="admin__grid">
-                    <thead><tr><th></th>{tutors.map((t) => <th key={t.id} title={tutorName(t)}>{tutorName(t).split(' ')[0]}</th>)}</tr></thead>
-                    <tbody>
-                      {learners.map((l) => (
-                        <tr key={l.id}>
-                          <th scope="row" className="admin__rowh">
-                            {l.display_name}
-                            <button type="button" className="admin__mini" onClick={() => invite('parent', l.id, `${l.display_name}'s parent`)}>invite parent</button>
-                          </th>
-                          {tutors.map((t) => {
-                            const rel = relOf(l.id, t.id);
-                            return <td key={t.id}><button type="button" className={`admin__cell admin__cell--${rel}`} onClick={() => cycle(l.id, t.id)} aria-label={`${l.display_name} ↔ ${tutorName(t)}: ${rel}`}>{GLYPH[rel]}</button></td>;
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
+              <ul className="admin__students">
+                {learners.map((l) => {
+                  const primary = primaryOf(l.id);
+                  const subs = subsOf(l.id);
+                  const subOptions = tutors.filter((t) => t.id !== primary && !subs.includes(t.id));
+                  return (
+                    <li key={l.id} className="admin__student">
+                      <span className="admin__avatar" style={{ background: l.color }} aria-hidden="true">{l.display_name.slice(0, 1).toUpperCase()}</span>
+                      <div className="admin__student-main">
+                        <strong className="admin__student-name">{l.display_name}</strong>
+                        <div className="admin__student-controls">
+                          <label className="admin__field">Tutor
+                            <select value={primary} onChange={(e) => void setPrimary(l.id, e.target.value)}>
+                              <option value="">— Unassigned —</option>
+                              {tutors.map((t) => <option key={t.id} value={t.id}>{tutorName(t)}</option>)}
+                            </select>
+                          </label>
+                          <button type="button" className="admin__linkbtn" onClick={() => invite('parent', l.id, `${l.display_name}'s parent`)}>Invite parent</button>
+                        </div>
+                        {(subs.length > 0 || subOptions.length > 0) && (
+                          <div className="admin__subs">
+                            {subs.map((id) => (
+                              <span key={id} className="admin__subchip">{nameOf(id)} · sub
+                                <button type="button" onClick={() => void removeAssign(l.id, id)} aria-label="remove substitute">×</button>
+                              </span>
+                            ))}
+                            {subOptions.length > 0 && (
+                              <select className="admin__subadd" value="" onChange={(e) => { if (e.target.value) void addSub(l.id, e.target.value); }} aria-label="Add a substitute tutor">
+                                <option value="">+ substitute</option>
+                                {subOptions.map((t) => <option key={t.id} value={t.id}>{tutorName(t)}</option>)}
+                              </select>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
             )}
           </section>
 

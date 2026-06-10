@@ -32,11 +32,12 @@ export type SignUpIntent = 'new_center' | 'join_tutor' | 'join_parent';
 export async function signUp(
   email: string,
   password: string,
-  opts?: { centerName?: string; intent?: SignUpIntent },
+  opts?: { centerName?: string; intent?: SignUpIntent; name?: string },
 ) {
   const intent: SignUpIntent = opts?.intent ?? 'new_center';
   const data: Record<string, string> = { intent };
   if (opts?.centerName) data.center_name = opts.centerName;
+  if (opts?.name) data.name = opts.name; // → redeem_invite stores it on tutors/guardians
   return (await client()).auth.signUp({ email, password, options: { data } });
 }
 
@@ -147,9 +148,9 @@ export async function deleteLearner(id: string) {
 }
 
 // ---------- guardians (a student's linked parents) ----------
-export interface CloudGuardian { user_id: string; created_at: string }
+export interface CloudGuardian { user_id: string; created_at: string; name: string | null }
 export async function listGuardians(learnerId: string): Promise<CloudGuardian[]> {
-  const { data, error } = await (await client()).from('guardians').select('user_id, created_at').eq('learner_id', learnerId);
+  const { data, error } = await (await client()).from('guardians').select('user_id, created_at, name').eq('learner_id', learnerId);
   if (error) throw error;
   return (data ?? []) as CloudGuardian[];
 }

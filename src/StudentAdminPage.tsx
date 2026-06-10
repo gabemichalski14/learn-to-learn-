@@ -194,7 +194,7 @@ export function StudentAdminPage({ id }: { id: string }) {
             ) : (
               <div className="admin__subs">
                 {guardians.map((g) => (
-                  <span key={g.user_id} className="admin__subchip">Parent · {new Date(g.created_at).toLocaleDateString()}
+                  <span key={g.user_id} className="admin__subchip">{g.name || 'Parent'} · {new Date(g.created_at).toLocaleDateString()}
                     <button type="button" onClick={() => void removeParent(g.user_id)} aria-label="remove parent">×</button>
                   </span>
                 ))}

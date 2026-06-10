@@ -76,6 +76,7 @@ export function Account() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [centerName, setCenterName] = useState('');
+  const [personName, setPersonName] = useState('');
   const [inviteCode, setInviteCode] = useState(inv.code);
   const [role, setRole] = useState<SignUpIntent>(inv.as === 'parent' ? 'join_parent' : inv.as === 'tutor' ? 'join_tutor' : 'new_center');
   const [mode, setMode] = useState<Mode>(inv.code ? 'up' : 'in');
@@ -112,6 +113,7 @@ export function Account() {
         const intent: SignUpIntent = role;
         const { error } = await withTimeout(signUp(email, password, {
           centerName: intent === 'new_center' ? (centerName || undefined) : undefined,
+          name: intent === 'new_center' ? undefined : (personName.trim() || undefined),
           intent,
         }));
         if (error) throw error;
@@ -204,6 +206,10 @@ export function Account() {
           <form onSubmit={submit} className="auth-form">
             {mode === 'up' && role === 'new_center' && (
               <input className="l2l-input auth-input" placeholder="Center / tutor name" value={centerName} onChange={(e) => setCenterName(e.target.value)} />
+            )}
+            {/* Joining (tutor or parent) names themselves, so the center sees who they are. */}
+            {joining && (
+              <input className="l2l-input auth-input" placeholder="Your name" value={personName} onChange={(e) => setPersonName(e.target.value)} required autoComplete="name" />
             )}
             {/* Manual join needs a code field; an invite link carries the code itself. */}
             {joining && !fromLink && (

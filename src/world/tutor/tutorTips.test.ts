@@ -43,3 +43,19 @@ describe('tutorTipsFor', () => {
     for (const t of tips) expect(`${t.title} ${t.body}`).not.toContain('undefined');
   });
 });
+
+describe('tutorTipsFor — research grounding', () => {
+  it('closes with a research-backed principle carrying a "why" when there is data', () => {
+    const m: MasteryMap = { 'sound:first:b': stat(1, 6) };
+    const tips = tutorTipsFor(m, 'Mira');
+    const last = tips[tips.length - 1];
+    expect(last.id).toMatch(/^principle:/);
+    expect(last.why && last.why.length).toBeGreaterThan(20);
+  });
+
+  it('every tip with data carries a "why it works" grounding', () => {
+    const m: MasteryMap = { 'sound:first:b': stat(1, 6), 'sound:first:m': stat(10, 10) };
+    const tips = tutorTipsFor(m, 'Sam');
+    for (const t of tips) expect(typeof t.why).toBe('string');
+  });
+});

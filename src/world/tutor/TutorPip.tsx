@@ -24,6 +24,7 @@ export function TutorPip({ mastery, name }: { mastery: MasteryMap; name: string 
           <li key={t.id} className="tutorpip__tip">
             <strong className="tutorpip__title">{t.title}</strong>
             <p className="tutorpip__body">{t.body}</p>
+            {t.why && <p className="tutorpip__why"><span>Why it works:</span> {t.why}</p>}
           </li>
         ))}
       </ul>

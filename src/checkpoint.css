@@ -7,7 +7,7 @@
 .cp__pip.done { background: #6bae7f; }
 .cp__pip.on { background: var(--teal-deep, #1b7f86); }
 
-.cp__card { width: 100%; max-width: 460px; text-align: center; background: var(--surface, #fffdf7);
+.cp__card { position: relative; width: 100%; max-width: 460px; text-align: center; background: var(--surface, #fffdf7);
   border: 1px solid rgba(78, 149, 104, 0.16); border-radius: 26px; padding: 22px 24px 26px;
   box-shadow: 0 18px 40px rgba(80, 70, 40, 0.12); }
 

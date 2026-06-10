@@ -5,6 +5,7 @@ import { sfx } from './audio/sfx';
 import { castFor } from './world/lore/cast';
 import { CharacterArt } from './world/lore/CharacterArt';
 import { WordPicture } from './world/WordPicture';
+import { LottieFX } from './mascots/LottieFX';
 import { findLevel } from './games';
 import { markCheckpointPassed } from './mastery/levelProgress';
 import { loadMastery, skillInsights } from './mastery/mastery';
@@ -133,6 +134,7 @@ export function CheckpointGame({ level, learnerId }: { level: number; learnerId:
     return (
       <main className="cp">
         <div className={`cp__card cp__result cp__result--${passed ? 'pass' : 'retry'}`}>
+          {passed && <LottieFX src="/lottie/celebrate.json" loop={false} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 5 }} />}
           <div className="cp__hero"><CharacterArt emoji={character?.emoji ?? '🌱'} heal={1} mood={passed ? 'bloom' : undefined} size={108} art={character?.art} label={character?.name} /></div>
           <p className="cp__score">{correct} / {total}</p>
           {passed ? (

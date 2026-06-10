@@ -170,6 +170,12 @@ create policy "achievements write" on achievements for insert with check (
   is_owner() and exists (select 1 from learners l where l.id = learner_id and l.center_id = (select current_center_id()))
   or is_assigned_tutor(learner_id));
 
+-- owner can read every tutor in their center (for the admin page); the existing
+-- "self tutor" policy still lets a plain tutor read their own row (policies OR).
+drop policy if exists "tutors by center (owner)" on tutors;
+create policy "tutors by center (owner)" on tutors for select
+  using (is_owner() and center_id = (select current_center_id()));
+
 -- ---------- signup branching: only 'new_center' (or no intent) makes a center ----------
 create or replace function public.handle_new_user() returns trigger
   language plpgsql security definer set search_path = public as $$

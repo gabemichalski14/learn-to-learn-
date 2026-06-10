@@ -15,6 +15,8 @@ export type RouteName =
   | 'village'
   | 'leaderboard'
   | 'tutor'
+  | 'admin'
+  | 'family'
   | 'profile'
   | 'account';
 export interface Route {
@@ -35,6 +37,8 @@ export function parseHash(hash: string): Route {
   if (h.startsWith('village')) return { name: 'village' };
   if (h.startsWith('leaderboard')) return { name: 'leaderboard' };
   if (h.startsWith('tutor')) return { name: 'tutor' };
+  if (h.startsWith('admin')) return { name: 'admin' };
+  if (h.startsWith('family')) return { name: 'family' };
   if (h.startsWith('account')) return { name: 'account' };
   if (h.startsWith('profile')) return { name: 'profile' };
   if (h.startsWith('games')) return { name: 'games' };

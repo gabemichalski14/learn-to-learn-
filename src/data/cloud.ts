@@ -120,6 +120,28 @@ export async function archiveLearner(id: string) {
   if (error) throw error;
 }
 
+/** Hard-delete a learner + all their data (cascades to sessions/skill_events/
+ *  achievements/assignments). Used by the owner to honor a deletion request. */
+export async function deleteLearner(id: string) {
+  const { error } = await (await client()).from('learners').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// ---------- tutors + assignments (owner admin) ----------
+export interface CloudTutor { id: string; name: string | null; role: string }
+export async function listTutors(): Promise<CloudTutor[]> {
+  const { data, error } = await (await client()).from('tutors').select('id, name, role');
+  if (error) throw error;
+  return (data ?? []) as CloudTutor[];
+}
+
+export interface CloudAssignment { learner_id: string; tutor_id: string; relation: 'primary' | 'substitute'; expires_at: string | null }
+export async function listAssignments(): Promise<CloudAssignment[]> {
+  const { data, error } = await (await client()).from('learner_tutors').select('learner_id, tutor_id, relation, expires_at');
+  if (error) throw error;
+  return (data ?? []) as CloudAssignment[];
+}
+
 // ---------- sessions ----------
 export interface CloudSession {
   learner_id: string;

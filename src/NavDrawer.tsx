@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { navigate } from './router';
 import type { RouteName } from './router';
+import type { Role } from './useAuth';
 import { LogoMark } from './LogoMark';
 
 interface NavItem {
@@ -10,23 +11,28 @@ interface NavItem {
   match: RouteName[];
   /** Visible only when a tutor account is signed in. */
   tutorOnly?: boolean;
+  /** Visible only to the center owner / a signed-in parent. */
+  ownerOnly?: boolean;
+  parentOnly?: boolean;
 }
 
 const ITEMS: NavItem[] = [
   { label: 'Dashboard', to: '#/tutor', match: ['tutor'], tutorOnly: true },
+  { label: 'Center admin', to: '#/admin', match: ['admin'], ownerOnly: true },
+  { label: 'My child', to: '#/family', match: ['family'], parentOnly: true },
   { label: 'Levels', to: '#/levels', match: ['levels', 'level'] },
   { label: 'Games', to: '#/games', match: ['games', 'play'] },
   { label: 'Village', to: '#/village', match: ['village'] },
   { label: 'Leaderboard', to: '#/leaderboard', match: ['leaderboard'] },
   { label: 'Profile', to: '#/profile', match: ['profile'] },
-  { label: 'Tutor sign-in', to: '#/account', match: ['account'] },
+  { label: 'Account', to: '#/account', match: ['account'] },
 ];
 
 /**
  * Left-side hamburger menu. The burger button is fixed top-left on every
  * platform page; tapping it slides a drawer in from the left with the page list.
  */
-export function NavDrawer({ route, isTutor = false }: { route: RouteName; isTutor?: boolean }) {
+export function NavDrawer({ route, isTutor = false, role = null }: { route: RouteName; isTutor?: boolean; role?: Role | null }) {
   const [open, setOpen] = useState(false);
 
   // Close on Escape and lock body scroll while open.
@@ -93,7 +99,7 @@ export function NavDrawer({ route, isTutor = false }: { route: RouteName; isTuto
         </button>
 
         <ul className="drawer__list">
-          {ITEMS.filter((item) => !item.tutorOnly || isTutor).map((item) => {
+          {ITEMS.filter((item) => (!item.tutorOnly || isTutor) && (!item.ownerOnly || role === 'owner') && (!item.parentOnly || role === 'parent')).map((item) => {
             const active = item.match.includes(route);
             return (
               <li key={item.label}>

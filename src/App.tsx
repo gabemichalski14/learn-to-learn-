@@ -6,6 +6,8 @@ import { LevelPage } from './LevelPage';
 import { Leaderboard } from './Leaderboard';
 import { TutorDashboard } from './TutorDashboard';
 import { Account } from './Account';
+import { AdminPage } from './AdminPage';
+import { ParentHome } from './ParentHome';
 import { LevelsPage } from './LevelsPage';
 import { GamesPage } from './GamesPage';
 import { VillagePage } from './VillagePage';
@@ -25,7 +27,7 @@ import { SwitchItGame } from './worlds/garden/SwitchItGame';
 import { StarStation } from './worlds/space/StarStation';
 import { CheckpointGame } from './CheckpointGame';
 import { ensureLearner, setCurrentLearnerId } from './profiles';
-import { useTutorSignedIn } from './useAuth';
+import { useTutorSignedIn, useRole } from './useAuth';
 import { worldMotifs } from './world/lore/cast';
 import { loadMastery } from './mastery/mastery';
 import { isLevelUnlocked, isGameUnlocked } from './mastery/levelGate';
@@ -36,6 +38,7 @@ export default function App() {
   const route = useRoute();
   const [learnerId, setLearnerId] = useState<string>(() => ensureLearner().id);
   const isTutor = useTutorSignedIn();
+  const role = useRole();
   const world = useWorldTier(learnerId); // app-wide ambient richness grows with real practice
   // Friends light up the world: their motif drifts by while you're helping them
   // (a happy nudge) and gently after they're home. (Recomputed on navigation.)
@@ -112,6 +115,13 @@ export default function App() {
       // Tutor-only: parents/students land on sign-in instead.
       page = isTutor ? <TutorDashboard /> : <Account />;
       break;
+    case 'admin':
+      // Owner/admin only — everyone else is bounced to sign-in.
+      page = role === 'owner' ? <AdminPage /> : <Account />;
+      break;
+    case 'family':
+      page = <ParentHome />;
+      break;
     case 'profile':
       page = <ProfilePage learnerId={learnerId} onSelectLearner={chooseLearner} />;
       break;
@@ -126,7 +136,7 @@ export default function App() {
     <>
       <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />
       <GardenFrame />
-      <NavDrawer route={route.name} isTutor={isTutor} />
+      <NavDrawer route={route.name} isTutor={isTutor} role={role ?? null} />
       {page}
       <SiteFooter />
       {/* Roaming easter-egg buddy — keyed by route so each page gets a fresh

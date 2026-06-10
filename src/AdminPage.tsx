@@ -4,7 +4,7 @@ import { isCloudConfigured } from './data/supabase';
 import { useDialog } from './ui/dialogContext';
 import {
   listLearners, listTutors, listAssignments, listDeletionRequests,
-  createInviteCode, assignTutor, unassignTutor, deleteLearner, resolveDeletion,
+  createInviteCode, createLearner, assignTutor, unassignTutor, deleteLearner, resolveDeletion,
   type CloudLearner, type CloudTutor, type CloudAssignment, type DeletionRequest,
 } from './data/cloud';
 import './admin.css';
@@ -13,6 +13,7 @@ type Rel = 'none' | 'primary' | 'substitute';
 const NEXT: Record<Rel, Rel> = { none: 'primary', primary: 'substitute', substitute: 'none' };
 const GLYPH: Record<Rel, string> = { none: '·', primary: 'P', substitute: 'S' };
 const tutorName = (t: CloudTutor) => t.name || (t.role === 'owner' ? 'You (owner)' : 'Tutor');
+const STUDENT_COLORS = ['#1b9aaa', '#6bae7f', '#e0a14a', '#a8569c', '#5570c0', '#c0573c'];
 
 /**
  * Owner/admin control center: who teaches whom, parent + staff invites, and the
@@ -29,6 +30,8 @@ export function AdminPage() {
   const [loading, setLoading] = useState(() => isCloudConfigured());
   const [err, setErr] = useState<string | null>(null);
   const [code, setCode] = useState<{ label: string; value: string } | null>(null);
+  const [newName, setNewName] = useState('');
+  const [adding, setAdding] = useState(false);
 
   const load = useCallback(async () => {
     // NB: no synchronous setState here — the effect calls this, and the initial
@@ -52,6 +55,21 @@ export function AdminPage() {
   const relOf = (learnerId: string, tutorId: string): Rel =>
     (assigns.find((x) => x.learner_id === learnerId && x.tutor_id === tutorId)?.relation as Rel) ?? 'none';
   const learnerName = (id: string) => learners.find((l) => l.id === id)?.display_name ?? 'this student';
+  const ownerId = tutors.find((t) => t.role === 'owner')?.id;
+
+  async function addStudent() {
+    const name = newName.trim();
+    if (!name || adding) return;
+    setAdding(true);
+    try {
+      const color = STUDENT_COLORS[learners.length % STUDENT_COLORS.length];
+      const id = await createLearner(name, color);
+      if (ownerId) await assignTutor(id, ownerId, 'primary'); // assigned to you to start; reassign on the grid
+      setNewName('');
+      await load();
+    } catch (e) { setErr(e instanceof Error ? e.message : 'Could not add the student.'); }
+    finally { setAdding(false); }
+  }
 
   async function cycle(learnerId: string, tutorId: string) {
     const next = NEXT[relOf(learnerId, tutorId)];
@@ -127,40 +145,50 @@ export function AdminPage() {
             </section>
           )}
 
-          {/* tutors */}
+          {/* students — add + assign (admin controls, not a progress view) */}
+          <section className="l2l-card admin__sec">
+            <div className="admin__sechead">
+              <h2 className="admin__h">Students · {learners.length}</h2>
+            </div>
+            <form className="admin__add" onSubmit={(e) => { e.preventDefault(); void addStudent(); }}>
+              <input className="admin__addinput" placeholder="New student’s first name" value={newName} onChange={(e) => setNewName(e.target.value)} maxLength={40} aria-label="New student first name" />
+              <button type="submit" className="admin__cta" disabled={!newName.trim() || adding}>{adding ? '…' : '+ Add student'}</button>
+            </form>
+            {learners.length === 0 ? (
+              <p className="admin__empty">No students yet — add your first one above.</p>
+            ) : (
+              <>
+                <p className="admin__hint">Assign tutors — tap a cell to cycle · none → <b>P</b> primary → <b>S</b> substitute. New students start assigned to you.</p>
+                <div className="admin__gridwrap">
+                  <table className="admin__grid">
+                    <thead><tr><th></th>{tutors.map((t) => <th key={t.id} title={tutorName(t)}>{tutorName(t).split(' ')[0]}</th>)}</tr></thead>
+                    <tbody>
+                      {learners.map((l) => (
+                        <tr key={l.id}>
+                          <th scope="row" className="admin__rowh">
+                            {l.display_name}
+                            <button type="button" className="admin__mini" onClick={() => invite('parent', l.id, `${l.display_name}'s parent`)}>invite parent</button>
+                          </th>
+                          {tutors.map((t) => {
+                            const rel = relOf(l.id, t.id);
+                            return <td key={t.id}><button type="button" className={`admin__cell admin__cell--${rel}`} onClick={() => cycle(l.id, t.id)} aria-label={`${l.display_name} ↔ ${tutorName(t)}: ${rel}`}>{GLYPH[rel]}</button></td>;
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </section>
+
+          {/* staff */}
           <section className="l2l-card admin__sec">
             <div className="admin__sechead">
               <h2 className="admin__h">Tutors · {tutors.length}</h2>
               <button type="button" className="admin__cta" onClick={() => invite('tutor')}>+ Invite tutor</button>
             </div>
             <ul className="admin__chips">{tutors.map((t) => <li key={t.id} className="admin__chip">{tutorName(t)}{t.role === 'owner' && <i> · owner</i>}</li>)}</ul>
-          </section>
-
-          {/* assignment grid: who teaches whom */}
-          <section className="l2l-card admin__sec">
-            <h2 className="admin__h">Who teaches whom</h2>
-            <p className="admin__hint">Tap a cell to cycle: · none → <b>P</b> primary → <b>S</b> substitute.</p>
-            {learners.length === 0 ? <p className="admin__empty">No students yet.</p> : (
-              <div className="admin__gridwrap">
-                <table className="admin__grid">
-                  <thead><tr><th></th>{tutors.map((t) => <th key={t.id} title={tutorName(t)}>{tutorName(t).split(' ')[0]}</th>)}</tr></thead>
-                  <tbody>
-                    {learners.map((l) => (
-                      <tr key={l.id}>
-                        <th scope="row" className="admin__rowh">
-                          {l.display_name}
-                          <button type="button" className="admin__mini" onClick={() => invite('parent', l.id, `${l.display_name}'s parent`)}>invite parent</button>
-                        </th>
-                        {tutors.map((t) => {
-                          const rel = relOf(l.id, t.id);
-                          return <td key={t.id}><button type="button" className={`admin__cell admin__cell--${rel}`} onClick={() => cycle(l.id, t.id)} aria-label={`${l.display_name} ↔ ${tutorName(t)}: ${rel}`}>{GLYPH[rel]}</button></td>;
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
           </section>
         </div>
       )}

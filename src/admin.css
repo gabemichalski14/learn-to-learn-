@@ -60,3 +60,9 @@
 .parent__stats { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
 .parent__acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
 .parent__msg { margin: 10px 0 0; font-size: 13px; font-weight: 700; color: var(--teal-deep); }
+
+/* add-student control (admin) */
+.admin__add { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.admin__addinput { flex: 1 1 220px; min-height: 44px; font: inherit; font-size: 15px; padding: 10px 14px;
+  border-radius: 12px; border: 1.5px solid var(--teal-ring, rgba(27, 154, 170, 0.3)); background: #fff; color: var(--ink, #24201a); }
+.admin__addinput:focus-visible { outline: 2px solid #173d2a; outline-offset: 2px; }

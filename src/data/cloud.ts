@@ -115,6 +115,13 @@ export async function listLearners(): Promise<CloudLearner[]> {
   return (data ?? []) as CloudLearner[];
 }
 
+/** Owner creates a new student in their center (first name / initials only). */
+export async function createLearner(displayName: string, color: string): Promise<string> {
+  const centerId = await currentCenterId();
+  if (!centerId) throw new Error('No center');
+  return upsertLearner(centerId, { display_name: displayName, color });
+}
+
 export async function upsertLearner(centerId: string, learner: { id?: string; display_name: string; color: string }) {
   const { data, error } = await (await client()).from('learners').upsert({ center_id: centerId, ...learner }).select('id').single();
   if (error) throw error;

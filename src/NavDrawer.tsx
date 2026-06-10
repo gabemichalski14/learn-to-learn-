@@ -4,36 +4,39 @@ import type { RouteName } from './router';
 import type { Role } from './useAuth';
 import { LogoMark } from './LogoMark';
 
+/** Who sees a nav item. `guest` = nobody signed in (a child on a shared device). */
+type Audience = 'guest' | 'owner' | 'tutor' | 'parent';
+
 interface NavItem {
   label: string;
   to: string;
   /** Route names that should show this item as the active page. */
   match: RouteName[];
-  /** Visible only when a tutor account is signed in. */
-  tutorOnly?: boolean;
-  /** Visible only to the center owner / a signed-in parent. */
-  ownerOnly?: boolean;
-  parentOnly?: boolean;
+  roles: Audience[];
 }
 
+// The OWNER account is control-only (Center admin + Account) — no kid/family
+// pages. Tutors get teaching tools; parents get their child; the shared-device
+// guest gets the full kid world.
 const ITEMS: NavItem[] = [
-  { label: 'Dashboard', to: '#/tutor', match: ['tutor'], tutorOnly: true },
-  { label: 'Center admin', to: '#/admin', match: ['admin'], ownerOnly: true },
-  { label: 'My child', to: '#/family', match: ['family'], parentOnly: true },
-  { label: 'Levels', to: '#/levels', match: ['levels', 'level'] },
-  { label: 'Games', to: '#/games', match: ['games', 'play'] },
-  { label: 'Village', to: '#/village', match: ['village'] },
-  { label: 'Leaderboard', to: '#/leaderboard', match: ['leaderboard'] },
-  { label: 'Profile', to: '#/profile', match: ['profile'] },
-  { label: 'Account', to: '#/account', match: ['account'] },
+  { label: 'Center admin', to: '#/admin', match: ['admin'], roles: ['owner'] },
+  { label: 'Dashboard', to: '#/tutor', match: ['tutor'], roles: ['tutor'] },
+  { label: 'My child', to: '#/family', match: ['family'], roles: ['parent'] },
+  { label: 'Levels', to: '#/levels', match: ['levels', 'level'], roles: ['guest', 'tutor'] },
+  { label: 'Games', to: '#/games', match: ['games', 'play'], roles: ['guest', 'tutor'] },
+  { label: 'Village', to: '#/village', match: ['village'], roles: ['guest'] },
+  { label: 'Leaderboard', to: '#/leaderboard', match: ['leaderboard'], roles: ['guest'] },
+  { label: 'Profile', to: '#/profile', match: ['profile'], roles: ['guest', 'tutor'] },
+  { label: 'Account', to: '#/account', match: ['account'], roles: ['guest', 'owner', 'tutor', 'parent'] },
 ];
 
 /**
  * Left-side hamburger menu. The burger button is fixed top-left on every
  * platform page; tapping it slides a drawer in from the left with the page list.
  */
-export function NavDrawer({ route, isTutor = false, role = null }: { route: RouteName; isTutor?: boolean; role?: Role | null }) {
+export function NavDrawer({ route, role = null }: { route: RouteName; role?: Role | null }) {
   const [open, setOpen] = useState(false);
+  const audience: Audience = role ?? 'guest';
 
   // Close on Escape and lock body scroll while open.
   useEffect(() => {
@@ -99,7 +102,7 @@ export function NavDrawer({ route, isTutor = false, role = null }: { route: Rout
         </button>
 
         <ul className="drawer__list">
-          {ITEMS.filter((item) => (!item.tutorOnly || isTutor) && (!item.ownerOnly || role === 'owner') && (!item.parentOnly || role === 'parent')).map((item) => {
+          {ITEMS.filter((item) => item.roles.includes(audience)).map((item) => {
             const active = item.match.includes(route);
             return (
               <li key={item.label}>

@@ -110,8 +110,10 @@ export function Account() {
       } else {
         const { error } = await withTimeout(signIn(email, password));
         if (error) throw error;
-        setMsg('Signed in! Taking you home…');
-        navigate('#/');
+        await redeemPendingInvite(); // link recipients who already had an account
+        const r = await getRole();
+        setMsg('Signed in!');
+        navigate(r === 'owner' ? '#/admin' : r === 'parent' ? '#/family' : r === 'tutor' ? '#/tutor' : '#/');
       }
     } catch (err) {
       setMsg(friendly(err));
@@ -121,6 +123,14 @@ export function Account() {
   }
 
   const joining = mode === 'up' && role !== 'new_center';
+  const fromLink = inv.code !== '';
+  const joinKind = role === 'join_parent' ? 'parent' : 'tutor';
+
+  // Arrived via an invite link → stash the code now so it links them whether they
+  // sign up OR sign in (covers "I already have an account").
+  useEffect(() => {
+    if (inv.code) { try { localStorage.setItem(PENDING_KEY, inv.code.toUpperCase()); } catch { /* ignore */ } }
+  }, [inv.code]);
 
   return (
     <main className="l2l-page l2l-page--narrow">
@@ -148,10 +158,7 @@ export function Account() {
           </p>
           <p className="page__note" style={{ marginTop: 0 }}>Your students &amp; sessions sync to this account across devices.</p>
           <div className="auth-links">
-            {acctRole === 'owner' && <>
-              <button type="button" className="l2l-btn" onClick={() => navigate('#/admin')}>Center admin →</button>
-              <button type="button" className="l2l-btn l2l-btn--ghost" onClick={() => navigate('#/tutor')}>Tutor dashboard →</button>
-            </>}
+            {acctRole === 'owner' && <button type="button" className="l2l-btn" onClick={() => navigate('#/admin')}>Open Center admin →</button>}
             {acctRole === 'tutor' && <button type="button" className="l2l-btn" onClick={() => navigate('#/tutor')}>Tutor dashboard →</button>}
             {acctRole === 'parent' && <button type="button" className="l2l-btn" onClick={() => navigate('#/family')}>My child →</button>}
             {!acctRole && <button type="button" className="l2l-btn" onClick={() => navigate('#/')}>Go home →</button>}
@@ -160,9 +167,14 @@ export function Account() {
         </div>
       ) : (
         <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>
-          <p className="l2l-lead">{mode === 'in' ? 'Sign in to sync across devices.' : 'Create an account.'}</p>
+          <p className="l2l-lead">
+            {mode === 'in' ? 'Sign in to sync across devices.'
+              : fromLink ? `You're invited to join as a ${joinKind}. Create your account to continue.`
+              : 'Create an account.'}
+          </p>
 
-          {mode === 'up' && (
+          {/* Role chooser only for a manual sign-up — an invite link already decides the role. */}
+          {mode === 'up' && !fromLink && (
             <div className="auth-roles" role="radiogroup" aria-label="Account type">
               <button type="button" role="radio" aria-checked={role === 'new_center'} className={`auth-role${role === 'new_center' ? ' is-on' : ''}`} onClick={() => setRole('new_center')}>🏫 Set up my center</button>
               <button type="button" role="radio" aria-checked={role === 'join_tutor'} className={`auth-role${role === 'join_tutor' ? ' is-on' : ''}`} onClick={() => setRole('join_tutor')}>🧑‍🏫 I'm a tutor</button>
@@ -174,7 +186,8 @@ export function Account() {
             {mode === 'up' && role === 'new_center' && (
               <input className="l2l-input auth-input" placeholder="Center / tutor name" value={centerName} onChange={(e) => setCenterName(e.target.value)} />
             )}
-            {joining && (
+            {/* Manual join needs a code field; an invite link carries the code itself. */}
+            {joining && !fromLink && (
               <input className="l2l-input auth-input" placeholder="Invite code (e.g. ABCD-2345)" value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} required autoCapitalize="characters" />
             )}
             <input className="l2l-input auth-input" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />

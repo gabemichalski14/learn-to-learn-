@@ -140,7 +140,7 @@ export default function App() {
     <>
       {!operator && <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />}
       {!operator && <GardenFrame />}
-      <NavDrawer route={route.name} isTutor={isTutor} role={role ?? null} />
+      <NavDrawer route={route.name} role={role ?? null} />
       {page}
       <SiteFooter />
       {/* Roaming buddy + ambient surprises — child-facing only; off the operator

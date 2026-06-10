@@ -74,24 +74,6 @@ export function ProfilePage({ learnerId, onSelectLearner }: Props) {
           <LearnerBar learnerId={learnerId} onSelect={onSelectLearner} />
         </div>
       </section>
-
-      <section className="l2l-reveal" style={{ marginTop: '16px', '--i': 4 } as CSSProperties} aria-labelledby="acct-h">
-        <div className="l2l-card">
-          <h2 id="acct-h" className="l2l-h2" style={{ marginBottom: '16px' }}>Tutor account</h2>
-          <div className="panel-grid">
-            <button type="button" className="panel-card" onClick={() => navigate('#/account')}>
-              <span className="panel-card__emoji" aria-hidden="true">🔐</span>
-              <span className="panel-card__title">Account &amp; cloud sync</span>
-              <span className="panel-card__sub">Sign in to sync students across devices</span>
-            </button>
-            <button type="button" className="panel-card" onClick={() => navigate('#/tutor')}>
-              <span className="panel-card__emoji" aria-hidden="true">📊</span>
-              <span className="panel-card__title">Dashboard</span>
-              <span className="panel-card__sub">Per-student progress &amp; reports</span>
-            </button>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

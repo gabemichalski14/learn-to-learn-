@@ -1,27 +1,38 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
-import { listTutors, createInviteCode, type CloudTutor } from './data/cloud';
+import {
+  listTutors, listAssignments, listLearners, createInviteCode,
+  type CloudTutor, type CloudAssignment, type CloudLearner,
+} from './data/cloud';
 import './admin.css';
 
 const tutorName = (t: CloudTutor) => t.name || (t.role === 'owner' ? 'You (owner)' : 'Tutor');
 
-/** Owner's staff page: the tutors at the center + invite-by-link. Students live
- *  on the Students page; this is just the people who teach. */
+/** Owner's staff page: the tutors at the center + invite-by-link. Tap a tutor to
+ *  see the students assigned to them; tap a student to open their record. */
 export function TutorsAdminPage() {
   const configured = isCloudConfigured();
   const [tutors, setTutors] = useState<CloudTutor[]>([]);
+  const [assigns, setAssigns] = useState<CloudAssignment[]>([]);
+  const [learners, setLearners] = useState<CloudLearner[]>([]);
+  const [expanded, setExpanded] = useState<string | null>(null);
   const [loading, setLoading] = useState(() => isCloudConfigured());
   const [err, setErr] = useState<string | null>(null);
   const [code, setCode] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    try { setTutors(await listTutors()); setErr(null); }
-    catch (e) { setErr(e instanceof Error ? e.message : 'Could not load tutors.'); }
+    try {
+      const [t, a, l] = await Promise.all([listTutors(), listAssignments(), listLearners()]);
+      setTutors(t); setAssigns(a); setLearners(l); setErr(null);
+    } catch (e) { setErr(e instanceof Error ? e.message : 'Could not load tutors.'); }
     finally { setLoading(false); }
   }, []);
 
   useEffect(() => { if (!configured) return; const t = setTimeout(() => void load(), 0); return () => clearTimeout(t); }, [configured, load]);
+
+  const learnerName = (id: string) => learners.find((l) => l.id === id)?.display_name ?? 'Student';
+  const studentsOf = (tutorId: string) => assigns.filter((a) => a.tutor_id === tutorId);
 
   async function inviteTutor() {
     try {
@@ -36,7 +47,7 @@ export function TutorsAdminPage() {
       <header className="l2l-reveal" style={{ '--i': 0 } as CSSProperties}>
         <p className="l2l-eyebrow">Center admin</p>
         <h1 className="l2l-display">Your <em>tutors</em></h1>
-        <p className="l2l-lead">The staff who teach at your center. Invite a tutor with a link, then assign them to students on the Students page.</p>
+        <p className="l2l-lead">Invite a tutor with a link, then assign them to students on the Students page. Tap a tutor to see who they teach.</p>
       </header>
 
       {!configured ? (
@@ -59,8 +70,40 @@ export function TutorsAdminPage() {
               <h2 className="admin__h">Tutors · {tutors.length}</h2>
               <button type="button" className="admin__cta" onClick={() => void inviteTutor()}>+ Invite tutor</button>
             </div>
-            <ul className="admin__chips">
-              {tutors.map((t) => <li key={t.id} className="admin__chip">{tutorName(t)}{t.role === 'owner' && <i> · owner</i>}</li>)}
+            <ul className="admin__students">
+              {tutors.map((t) => {
+                const open = expanded === t.id;
+                const mine = studentsOf(t.id);
+                return (
+                  <li key={t.id}>
+                    <button type="button" className="admin__studentrow" aria-expanded={open} onClick={() => setExpanded(open ? null : t.id)}>
+                      <span className="admin__studentrow-main">
+                        <strong className="admin__studentrow-name">{tutorName(t)}{t.role === 'owner' && <i style={{ fontStyle: 'normal', color: 'var(--teal-deep)' }}> · owner</i>}</strong>
+                        <span className="admin__studentrow-sub">{mine.length === 0 ? 'No students assigned' : `${mine.length} student${mine.length === 1 ? '' : 's'}`}</span>
+                      </span>
+                      <span className="admin__chev" aria-hidden="true">{open ? '▴' : '▾'}</span>
+                    </button>
+                    {open && (
+                      <div className="admin__session">
+                        {mine.length === 0 ? (
+                          <p className="admin__empty" style={{ margin: 0 }}>No students assigned yet — assign on the Students page.</p>
+                        ) : (
+                          <ul className="admin__items" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+                            {mine.map((a) => (
+                              <li key={a.learner_id}>
+                                <button type="button" className="admin__linkbtn" style={{ width: '100%', textAlign: 'left', justifyContent: 'space-between' }} onClick={() => navigate(`#/admin/student/${a.learner_id}`)}>
+                                  {learnerName(a.learner_id)}
+                                  <span style={{ opacity: 0.7 }}>{a.relation === 'substitute' ? 'substitute' : 'primary'} ›</span>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </section>
         </div>

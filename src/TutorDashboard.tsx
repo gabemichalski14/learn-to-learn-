@@ -263,7 +263,7 @@ export function TutorDashboard() {
 
               <div className="l2l-card report__log" style={{ marginTop: '16px' }}>
                 <h3 className="chart-card__title">Session history</h3>
-                <SessionLogPanel learnerId={sel} showSummary={false} />
+                <SessionLogPanel learnerId={sel} showSummary={false} collapsible />
               </div>
             </div>
           )}

@@ -166,6 +166,9 @@ export default function App() {
 
   return (
     <>
+      {/* Storybook paper base — always present, behind everything (incl. the
+          Living World garden on kid pages and the bare consoles). */}
+      <div className="book-paper" aria-hidden="true" />
       {!bareConsole && <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />}
       {!bareConsole && <GardenFrame />}
       <NavDrawer route={route.name} role={role ?? null} />

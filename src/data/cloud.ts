@@ -133,10 +133,28 @@ export async function archiveLearner(id: string) {
   if (error) throw error;
 }
 
+/** Rename a learner (owner edits a student's display name). */
+export async function renameLearner(id: string, displayName: string) {
+  const { error } = await (await client()).from('learners').update({ display_name: displayName }).eq('id', id);
+  if (error) throw error;
+}
+
 /** Hard-delete a learner + all their data (cascades to sessions/skill_events/
  *  achievements/assignments). Used by the owner to honor a deletion request. */
 export async function deleteLearner(id: string) {
   const { error } = await (await client()).from('learners').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// ---------- guardians (a student's linked parents) ----------
+export interface CloudGuardian { user_id: string; created_at: string }
+export async function listGuardians(learnerId: string): Promise<CloudGuardian[]> {
+  const { data, error } = await (await client()).from('guardians').select('user_id, created_at').eq('learner_id', learnerId);
+  if (error) throw error;
+  return (data ?? []) as CloudGuardian[];
+}
+export async function deleteGuardian(userId: string, learnerId: string) {
+  const { error } = await (await client()).from('guardians').delete().eq('user_id', userId).eq('learner_id', learnerId);
   if (error) throw error;
 }
 

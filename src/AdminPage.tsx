@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
+import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
 import { useDialog } from './ui/dialogContext';
 import {
   listLearners, listTutors, listAssignments, listDeletionRequests,
-  createInviteCode, createLearner, assignTutor, unassignTutor, deleteLearner, resolveDeletion,
+  createInviteCode, createLearner, assignTutor, deleteLearner, resolveDeletion,
   type CloudLearner, type CloudTutor, type CloudAssignment, type DeletionRequest,
 } from './data/cloud';
 import './admin.css';
@@ -51,29 +52,7 @@ export function AdminPage() {
   const learnerName = (id: string) => learners.find((l) => l.id === id)?.display_name ?? 'this student';
   const ownerId = tutors.find((t) => t.role === 'owner')?.id;
   const tutorById = (id: string) => tutors.find((t) => t.id === id);
-  const nameOf = (id: string) => { const t = tutorById(id); return t ? tutorName(t) : 'Tutor'; };
   const primaryOf = (learnerId: string) => assigns.find((a) => a.learner_id === learnerId && a.relation === 'primary')?.tutor_id ?? '';
-  const subsOf = (learnerId: string) => assigns.filter((a) => a.learner_id === learnerId && a.relation === 'substitute').map((a) => a.tutor_id);
-
-  /** Set (or clear, with '') the student's one primary tutor. */
-  async function setPrimary(learnerId: string, tutorId: string) {
-    try {
-      for (const old of assigns.filter((a) => a.learner_id === learnerId && a.relation === 'primary' && a.tutor_id !== tutorId)) {
-        await unassignTutor(learnerId, old.tutor_id);
-      }
-      if (tutorId) await assignTutor(learnerId, tutorId, 'primary');
-      await load();
-    } catch (e) { setErr(e instanceof Error ? e.message : 'Could not update the tutor.'); }
-  }
-  async function addSub(learnerId: string, tutorId: string) {
-    if (!tutorId) return;
-    try { await assignTutor(learnerId, tutorId, 'substitute'); await load(); }
-    catch (e) { setErr(e instanceof Error ? e.message : 'Could not add the substitute.'); }
-  }
-  async function removeAssign(learnerId: string, tutorId: string) {
-    try { await unassignTutor(learnerId, tutorId); await load(); }
-    catch (e) { setErr(e instanceof Error ? e.message : 'Could not update the assignment.'); }
-  }
 
   async function addStudent() {
     const name = newName.trim();
@@ -112,17 +91,6 @@ export function AdminPage() {
   async function onDismiss(req: DeletionRequest) {
     try { await resolveDeletion(req.id, 'dismissed'); await load(); }
     catch (e) { setErr(e instanceof Error ? e.message : 'Could not update the request.'); }
-  }
-
-  async function removeStudent(l: CloudLearner) {
-    const ok = await dialog.confirm({
-      title: `Remove ${l.display_name}?`,
-      message: `Permanently delete ${l.display_name} and all of their data? This can’t be undone.`,
-      okLabel: 'Remove', danger: true,
-    });
-    if (!ok) return;
-    try { await deleteLearner(l.id); await load(); }
-    catch (e) { setErr(e instanceof Error ? e.message : 'Could not remove the student.'); }
   }
 
   return (
@@ -181,45 +149,24 @@ export function AdminPage() {
             ) : (
               <ul className="admin__students">
                 {learners.map((l) => {
-                  const primary = primaryOf(l.id);
-                  const subs = subsOf(l.id);
-                  const subOptions = tutors.filter((t) => t.id !== primary && !subs.includes(t.id));
+                  const pid = primaryOf(l.id);
+                  const t = pid ? tutorById(pid) : undefined;
                   return (
-                    <li key={l.id} className="admin__student">
-                      <span className="admin__avatar" style={{ background: l.color }} aria-hidden="true">{l.display_name.slice(0, 1).toUpperCase()}</span>
-                      <div className="admin__student-main">
-                        <strong className="admin__student-name">{l.display_name}</strong>
-                        <div className="admin__student-controls">
-                          <label className="admin__field">Tutor
-                            <select value={primary} onChange={(e) => void setPrimary(l.id, e.target.value)}>
-                              <option value="">— Unassigned —</option>
-                              {tutors.map((t) => <option key={t.id} value={t.id}>{tutorName(t)}</option>)}
-                            </select>
-                          </label>
-                          <button type="button" className="admin__linkbtn" onClick={() => invite('parent', l.id, `${l.display_name}'s parent`)}>Invite parent</button>
-                          <button type="button" className="admin__remove" onClick={() => void removeStudent(l)} aria-label={`Remove ${l.display_name}`}>Remove</button>
-                        </div>
-                        {(subs.length > 0 || subOptions.length > 0) && (
-                          <div className="admin__subs">
-                            {subs.map((id) => (
-                              <span key={id} className="admin__subchip">{nameOf(id)} · sub
-                                <button type="button" onClick={() => void removeAssign(l.id, id)} aria-label="remove substitute">×</button>
-                              </span>
-                            ))}
-                            {subOptions.length > 0 && (
-                              <select className="admin__subadd" value="" onChange={(e) => { if (e.target.value) void addSub(l.id, e.target.value); }} aria-label="Add a substitute tutor">
-                                <option value="">+ substitute</option>
-                                {subOptions.map((t) => <option key={t.id} value={t.id}>{tutorName(t)}</option>)}
-                              </select>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                    <li key={l.id}>
+                      <button type="button" className="admin__studentrow" onClick={() => navigate(`#/admin/student/${l.id}`)}>
+                        <span className="admin__avatar" style={{ background: l.color }} aria-hidden="true">{l.display_name.slice(0, 1).toUpperCase()}</span>
+                        <span className="admin__studentrow-main">
+                          <strong className="admin__studentrow-name">{l.display_name}</strong>
+                          <span className="admin__studentrow-sub">{t ? `Tutor: ${tutorName(t)}` : 'No tutor assigned'}</span>
+                        </span>
+                        <span className="admin__chev" aria-hidden="true">›</span>
+                      </button>
                     </li>
                   );
                 })}
               </ul>
             )}
+            <p className="admin__hint">Tap a student to edit their info, manage tutors &amp; parents, and see all their data.</p>
           </section>
 
           {/* staff */}

@@ -16,6 +16,7 @@ export type RouteName =
   | 'leaderboard'
   | 'tutor'
   | 'admin'
+  | 'admin-student'
   | 'family'
   | 'profile'
   | 'account';
@@ -24,6 +25,7 @@ export interface Route {
   level?: number;
   game?: string;
   focus?: string;
+  studentId?: string;
 }
 
 export function parseHash(hash: string): Route {
@@ -37,6 +39,10 @@ export function parseHash(hash: string): Route {
   if (h.startsWith('village')) return { name: 'village' };
   if (h.startsWith('leaderboard')) return { name: 'leaderboard' };
   if (h.startsWith('tutor')) return { name: 'tutor' };
+  if (h.startsWith('admin/student/')) {
+    const id = (h.split('/')[2] || '').split('?')[0];
+    return { name: 'admin-student', studentId: id };
+  }
   if (h.startsWith('admin')) return { name: 'admin' };
   if (h.startsWith('family')) return { name: 'family' };
   if (h.startsWith('account')) return { name: 'account' };

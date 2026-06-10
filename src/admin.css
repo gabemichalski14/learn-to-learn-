@@ -95,3 +95,25 @@
   background: none; border: none; padding: 7px 8px; min-height: 36px; }
 .admin__remove:hover { text-decoration: underline; }
 .admin__remove:focus-visible { outline: 2px solid #173d2a; outline-offset: 2px; }
+
+/* clickable student rows (open the detail) */
+.admin__studentrow { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; cursor: pointer;
+  background: rgba(127, 200, 200, 0.07); border: 1px solid rgba(27, 154, 170, 0.14); border-radius: 14px; padding: 12px;
+  font: inherit; color: var(--ink, #24201a); transition: background 0.12s ease; }
+.admin__studentrow:hover { background: rgba(127, 200, 200, 0.16); }
+.admin__studentrow:focus-visible { outline: 2px solid #173d2a; outline-offset: 2px; }
+.admin__studentrow-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.admin__studentrow-name { font-size: 15px; }
+.admin__studentrow-sub { font-size: 12px; color: var(--muted, #6a6253); margin-top: 2px; }
+.admin__chev { font-size: 22px; color: var(--teal-deep, #14808f); flex: none; }
+
+/* detail: KPIs + recent sessions */
+.admin__kpis { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.admin__kpi { display: flex; flex-direction: column; min-width: 78px; background: rgba(127, 200, 200, 0.1);
+  border: 1px solid rgba(27, 154, 170, 0.14); border-radius: 12px; padding: 9px 12px; }
+.admin__kpi b { font-size: 17px; color: var(--ink, #24201a); font-variant-numeric: tabular-nums; }
+.admin__kpi i { font-style: normal; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted, #6a6253); margin-top: 2px; }
+.admin__recent { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.admin__recent-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px;
+  padding: 8px 10px; border-radius: 10px; background: rgba(127, 200, 200, 0.07); }
+.admin__recent-meta { color: var(--muted, #6a6253); font-variant-numeric: tabular-nums; white-space: nowrap; }

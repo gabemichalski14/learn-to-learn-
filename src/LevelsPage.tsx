@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import { navigate } from './router';
 import { LEVELS, availableCount } from './games';
 import { levelCurriculum } from './curriculum';
@@ -71,6 +71,12 @@ function GardenVisual() {
 export function LevelsPage({ learnerId }: { learnerId: string }) {
   useDataVersion(); // re-check unlocks when mastery changes
   const firstLocked = LEVELS.find((l) => !isLevelUnlocked(learnerId, l.num))?.num ?? Infinity;
+  // pressing a locked card "knocks" — a friendly shake + a why-it's-locked bubble
+  const [knocked, setKnocked] = useState<number | null>(null);
+  function knock(num: number) {
+    setKnocked(num);
+    window.setTimeout(() => setKnocked((k) => (k === num ? null : k)), 2600);
+  }
 
   return (
     <main className="l2l-page">
@@ -129,23 +135,26 @@ export function LevelsPage({ learnerId }: { learnerId: string }) {
             );
           }
 
-          const veil = (
-            <span className="lvl-veil" aria-hidden="true">
-              <span className="lvl-veil__badge">{nextUp ? '✨' : '🔒'}</span>
-            </span>
-          );
-          // The next goal is tappable → it sends you to the level you must pass.
-          if (nextUp) {
-            return (
-              <button key={num} type="button" className={cls} style={style} onClick={() => navigate(`#/level/${prereq}`)} aria-label={`Level ${num}: ${lvl.title} — almost unlocked`}>
-                {visual}{body}{veil}
-              </button>
-            );
-          }
+          // Locked cards are tappable — pressing them says (kindly) WHY they're
+          // locked: a gentle shake + a bubble, instead of silently doing nothing
+          // or whisking you away.
+          const knockedNow = knocked === num;
+          const knockMsg = nextUp
+            ? (prereqReady ? `🔒 Almost! Pass the Level ${prereq} Checkpoint to open me.` : `🔒 Almost there — keep practising Level ${prereq} to open me.`)
+            : `🔒 Finish Level ${prereq} first to open me.`;
           return (
-            <div key={num} className={cls} style={style} role="img" aria-label={`Level ${num}: ${lvl.title} — locked`}>
-              {visual}{body}{veil}
-            </div>
+            <button
+              key={num}
+              type="button"
+              className={`${cls}${knockedNow ? ' lvl-card--knock' : ''}`}
+              style={style}
+              onClick={() => knock(num)}
+              aria-label={`Level ${num}: ${lvl.title} — locked. ${knockMsg.replace('🔒 ', '')}`}
+            >
+              {visual}{body}
+              <span className="lvl-veil" aria-hidden="true"><span className="lvl-veil__badge">{nextUp ? '✨' : '🔒'}</span></span>
+              {knockedNow && <span className="lvl-knock" role="status">{knockMsg}</span>}
+            </button>
           );
         })}
       </div>

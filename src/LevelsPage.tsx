@@ -1,8 +1,8 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { navigate } from './router';
 import { LEVELS, availableCount } from './games';
 import { levelCurriculum } from './curriculum';
-import { isLevelUnlocked } from './mastery/levelGate';
+import { isLevelUnlocked, isLevelReady } from './mastery/levelGate';
 import { useDataVersion } from './data/store';
 import { LevelEmblem } from './LevelEmblem';
 
@@ -14,6 +14,19 @@ const SPACE_STARS: Array<[number, number]> = [
   [14, 10], [22, 78], [34, 30], [12, 52], [60, 16], [72, 64], [48, 86], [82, 38], [28, 92], [66, 44], [88, 12], [40, 60],
 ];
 
+/** A teasing one-liner for a still-locked level — enough to spark curiosity (the
+ *  "what's in there?" pull) without giving the lesson away. Original flavor text. */
+const LEVEL_TEASER: Record<number, string> = {
+  3: 'A hush of little cabins, every door latched tight. Who lives behind them?',
+  4: 'The path forks at the big hill — two secret ways into longer words.',
+  5: 'A friendly train that grows new cars at the front… and the back.',
+  6: 'A quiet little e, hiding six secrets. Shh — can you find them all?',
+  7: 'A crowned R who bosses every vowel it meets. Fancy meeting them?',
+  8: 'Two vowels team up to make one brand-new sound. Who joins forces?',
+  9: 'Words that sailed in from faraway lands, with curious spellings.',
+  10: 'Giant words, built brick by brick from ancient roots.',
+};
+
 function footText(num: number, games: number): string {
   const cur = levelCurriculum(num);
   const lessons = cur?.lessons.length ?? 0;
@@ -21,10 +34,44 @@ function footText(num: number, games: number): string {
   return games > 0 ? `${lessonStr} · ${games} game${games === 1 ? '' : 's'} ▸` : lessonStr;
 }
 
-/** Index of all 10 structured-literacy levels. Themed levels (Level 2 = Space Patrol) render
- *  as a fully themed, animated card; the rest use the brand standard card. */
+function SpaceVisual() {
+  return (
+    <span className="lvl-space" aria-hidden="true">
+      {SPACE_STARS.map(([t, l], i) => (
+        <i key={i} style={{ top: `${t}%`, left: `${l}%`, animationDelay: `${(i % 5) * 0.5}s` } as CSSProperties} />
+      ))}
+      <span className="lvl-space__planet" />
+      <span className="lvl-space__rocket">
+        <svg viewBox="0 0 36 36" width="34" height="34">
+          <path d="M25 6 q3 0 3 6 v8 h-6 v-8 q0-6 3-6z" fill="#eaf6f8" />
+          <circle cx="25" cy="13" r="1.8" fill="#2b6f8a" />
+          <path d="M22 20 l-3 5 3 -1 z" fill="#22c1d6" />
+          <path d="M28 20 l3 5 -3 -1 z" fill="#22c1d6" />
+          <path d="M23 20 h4 l-2 6 z" className="lvl-space__flame" fill="#ffb24a" />
+        </svg>
+      </span>
+    </span>
+  );
+}
+
+function GardenVisual() {
+  return (
+    <span className="lvl-garden" aria-hidden="true">
+      <span className="lvl-garden__sun" />
+      <span className="lvl-garden__hill" />
+      <span className="lvl-garden__sprout">🌱</span>
+      <span className="lvl-garden__sprout lvl-garden__sprout--2">🌿</span>
+      <span className="lvl-garden__sprout lvl-garden__sprout--3">🌸</span>
+    </span>
+  );
+}
+
+/** Index of all 10 levels. Each keeps its own themed world even when locked — a
+ *  veiled, "sleeping" version with a teaser, so the child *wants* to wake it. */
 export function LevelsPage({ learnerId }: { learnerId: string }) {
   useDataVersion(); // re-check unlocks when mastery changes
+  const firstLocked = LEVELS.find((l) => !isLevelUnlocked(learnerId, l.num))?.num ?? Infinity;
+
   return (
     <main className="l2l-page">
       <button type="button" className="l2l-back" onClick={() => navigate('#/')}>← Home</button>
@@ -36,81 +83,69 @@ export function LevelsPage({ learnerId }: { learnerId: string }) {
 
       <div className="levels-grid">
         {LEVELS.map((lvl, idx) => {
+          const num = lvl.num;
           const games = availableCount(lvl);
           const ready = games > 0;
-          const foot = footText(lvl.num, games);
+          const unlocked = isLevelUnlocked(learnerId, num);
+          const nextUp = !unlocked && num === firstLocked; // the immediate goal
+          const prereq = num - 1;
+          const prereqReady = isLevelReady(learnerId, prereq);
+          const world = WORLD[num];
           const style = { '--i': idx + 1 } as CSSProperties;
 
-          // Mastery-gate: a level you haven't unlocked shows a calm locked card
-          // (not a themed, playable one) — you reach it by passing the level before.
-          if (!isLevelUnlocked(learnerId, lvl.num)) {
-            return (
-              <div key={lvl.num} className="lvl-card lvl-card--locked l2l-reveal" style={style} aria-label={`Level ${lvl.num}: ${lvl.title} — locked`}>
-                <span className="lvl-lock" aria-hidden="true">🔒</span>
-                <span className="lvl-card__num">Level {lvl.num}</span>
-                <span className="lvl-card__title">{lvl.title}</span>
-                <span className="lvl-card__focus">{lvl.focus}</span>
-                <span className="lvl-card__foot">Pass Level {lvl.num - 1} to unlock</span>
-              </div>
-            );
-          }
+          const themeClass = world === 'space' ? 'lvl-card--space'
+            : world === 'garden' ? 'lvl-card--garden'
+            : `lvl-card--std${ready ? ' is-ready' : ''}`;
+          const visual: ReactNode = world === 'space' ? <SpaceVisual />
+            : world === 'garden' ? <GardenVisual />
+            : <LevelEmblem level={num} />;
+          const bodyWrap = world === 'space' || world === 'garden';
+          const numLabel = world === 'space' ? `Level ${num} · Space Patrol`
+            : world === 'garden' ? `Level ${num} · Sound Garden`
+            : `Level ${num}`;
 
-          if (WORLD[lvl.num] === 'space') {
-            return (
-              <button key={lvl.num} type="button" className="lvl-card lvl-card--space l2l-reveal" style={style} onClick={() => navigate(`#/level/${lvl.num}`)} aria-label={`Level ${lvl.num}: ${lvl.title}`}>
-                <span className="lvl-space" aria-hidden="true">
-                  {SPACE_STARS.map(([t, l], i) => (
-                    <i key={i} style={{ top: `${t}%`, left: `${l}%`, animationDelay: `${(i % 5) * 0.5}s` } as CSSProperties} />
-                  ))}
-                  <span className="lvl-space__planet" />
-                  <span className="lvl-space__rocket">
-                    <svg viewBox="0 0 36 36" width="34" height="34">
-                      <path d="M25 6 q3 0 3 6 v8 h-6 v-8 q0-6 3-6z" fill="#eaf6f8" />
-                      <circle cx="25" cy="13" r="1.8" fill="#2b6f8a" />
-                      <path d="M22 20 l-3 5 3 -1 z" fill="#22c1d6" />
-                      <path d="M28 20 l3 5 -3 -1 z" fill="#22c1d6" />
-                      <path d="M23 20 h4 l-2 6 z" className="lvl-space__flame" fill="#ffb24a" />
-                    </svg>
-                  </span>
-                </span>
-                <span className="lvl-card__body">
-                  <span className="lvl-card__num">Level {lvl.num} · Space Patrol</span>
-                  <span className="lvl-card__title">{lvl.title}</span>
-                  <span className="lvl-card__focus">{lvl.focus}</span>
-                  <span className="lvl-card__foot">{foot}</span>
-                </span>
-              </button>
-            );
-          }
+          const foot = unlocked
+            ? footText(num, games)
+            : nextUp
+              ? (prereqReady ? `✨ Pass the Level ${prereq} Checkpoint to open` : `Almost there — finish Level ${prereq}`)
+              : `Opens after Level ${prereq}`;
 
-          if (WORLD[lvl.num] === 'garden') {
-            return (
-              <button key={lvl.num} type="button" className="lvl-card lvl-card--garden l2l-reveal" style={style} onClick={() => navigate(`#/level/${lvl.num}`)} aria-label={`Level ${lvl.num}: ${lvl.title}`}>
-                <span className="lvl-garden" aria-hidden="true">
-                  <span className="lvl-garden__sun" />
-                  <span className="lvl-garden__hill" />
-                  <span className="lvl-garden__sprout">🌱</span>
-                  <span className="lvl-garden__sprout lvl-garden__sprout--2">🌿</span>
-                  <span className="lvl-garden__sprout lvl-garden__sprout--3">🌸</span>
-                </span>
-                <span className="lvl-card__body">
-                  <span className="lvl-card__num">Level {lvl.num} · Sound Garden</span>
-                  <span className="lvl-card__title">{lvl.title}</span>
-                  <span className="lvl-card__focus">{lvl.focus}</span>
-                  <span className="lvl-card__foot">{foot}</span>
-                </span>
-              </button>
-            );
-          }
-
-          return (
-            <button key={lvl.num} type="button" className={`lvl-card lvl-card--std${ready ? ' is-ready' : ''} l2l-reveal`} style={style} onClick={() => navigate(`#/level/${lvl.num}`)} aria-label={`Level ${lvl.num}: ${lvl.title}`}>
-              <LevelEmblem level={lvl.num} />
-              <span className="lvl-card__num">Level {lvl.num}</span>
+          const bodyKids = (
+            <>
+              <span className="lvl-card__num">{numLabel}</span>
               <span className="lvl-card__title">{lvl.title}</span>
-              <span className="lvl-card__focus">{lvl.focus}</span>
+              <span className="lvl-card__focus">{unlocked ? lvl.focus : (LEVEL_TEASER[num] ?? lvl.focus)}</span>
               <span className="lvl-card__foot">{foot}</span>
-            </button>
+            </>
+          );
+          const body = bodyWrap ? <span className="lvl-card__body">{bodyKids}</span> : bodyKids;
+          const cls = `lvl-card ${themeClass}${!unlocked ? ' lvl-card--veiled' : ''}${nextUp ? ' lvl-card--nextup' : ''} l2l-reveal`;
+
+          if (unlocked) {
+            return (
+              <button key={num} type="button" className={cls} style={style} onClick={() => navigate(`#/level/${num}`)} aria-label={`Level ${num}: ${lvl.title}`}>
+                {visual}{body}
+              </button>
+            );
+          }
+
+          const veil = (
+            <span className="lvl-veil" aria-hidden="true">
+              <span className="lvl-veil__badge">{nextUp ? '✨' : '🔒'}</span>
+            </span>
+          );
+          // The next goal is tappable → it sends you to the level you must pass.
+          if (nextUp) {
+            return (
+              <button key={num} type="button" className={cls} style={style} onClick={() => navigate(`#/level/${prereq}`)} aria-label={`Level ${num}: ${lvl.title} — almost unlocked`}>
+                {visual}{body}{veil}
+              </button>
+            );
+          }
+          return (
+            <div key={num} className={cls} style={style} role="img" aria-label={`Level ${num}: ${lvl.title} — locked`}>
+              {visual}{body}{veil}
+            </div>
           );
         })}
       </div>

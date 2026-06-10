@@ -226,12 +226,30 @@ body::before {
 .lvl-card--std:not(.is-ready) .lvl-card__foot { color: var(--muted); }
 .lvl-card--std .level-emblem { margin-bottom: 8px; }
 
-/* locked level — calm, dimmed, not playable (mastery-gated) */
-.lvl-card--locked { cursor: default; opacity: 0.72; align-items: flex-start;
-  background: repeating-linear-gradient(135deg, rgba(120,110,90,0.04) 0 10px, transparent 10px 20px), var(--surface); }
-.lvl-card--locked .lvl-lock { font-size: 26px; line-height: 1; margin-bottom: 6px; filter: grayscale(0.2); }
-.lvl-card--locked .lvl-card__title { color: var(--muted); }
-.lvl-card--locked .lvl-card__foot { color: var(--teal-deep); opacity: 0.8; }
+/* locked level — keeps its OWN themed world, shown "asleep" under a soft mist
+   so it stays inviting (curiosity) rather than a dull greyed box. */
+.lvl-card--veiled { position: relative; cursor: default; }
+.lvl-card--veiled.lvl-card--nextup { cursor: pointer; }
+.lvl-veil { position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+  display: flex; align-items: flex-start; justify-content: flex-end; padding: 12px;
+  background: linear-gradient(180deg, rgba(246, 239, 225, 0.42) 0%, rgba(246, 239, 225, 0.74) 100%); }
+.lvl-veil__badge { font-size: 22px; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.18)); }
+/* text rides ABOVE the mist (crisp + readable); the world art stays misted below */
+.lvl-card--veiled .lvl-card__body,
+.lvl-card--veiled .lvl-card__num,
+.lvl-card--veiled .lvl-card__title,
+.lvl-card--veiled .lvl-card__focus,
+.lvl-card--veiled .lvl-card__foot { position: relative; z-index: 3; }
+.lvl-card--veiled .lvl-card__focus { font-style: italic; }
+.lvl-card--veiled .lvl-card__foot { color: var(--teal-deep); }
+
+/* the NEXT level to open — a warm glow ring (opacity pulse only) that pulls the eye */
+.lvl-card--nextup .lvl-veil { background: linear-gradient(180deg, rgba(246, 239, 225, 0.26) 0%, rgba(246, 239, 225, 0.58) 100%); }
+.lvl-card--nextup .lvl-card__foot { color: #b9791c; font-weight: 800; }
+.lvl-card--nextup::after { content: ''; position: absolute; inset: -2px; border-radius: inherit; z-index: 4;
+  border: 3px solid rgba(245, 177, 60, 0.7); pointer-events: none; animation: lvl-nextup 2.2s ease-in-out infinite; }
+@keyframes lvl-nextup { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .lvl-card--nextup::after { animation: none; opacity: 0.7; } }
 
 /* themed Level 2 (Space Patrol) full card */
 .lvl-card--space { color: #eafcff; border-color: rgba(120, 220, 230, 0.4);

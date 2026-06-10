@@ -167,6 +167,18 @@ export async function renameLearner(id: string, displayName: string) {
   if (error) throw error;
 }
 
+/** A free-text note on the student's record (owner-authored). Isolated so the
+ *  rest of the app is unaffected before the note migration is applied. */
+export async function getLearnerNote(id: string): Promise<string> {
+  const { data, error } = await (await client()).from('learners').select('note').eq('id', id).maybeSingle();
+  if (error) throw error;
+  return (data?.note as string | null) ?? '';
+}
+export async function setLearnerNote(id: string, note: string) {
+  const { error } = await (await client()).from('learners').update({ note }).eq('id', id);
+  if (error) throw error;
+}
+
 /** Hard-delete a learner + all their data (cascades to sessions/skill_events/
  *  achievements/assignments). Used by the owner to honor a deletion request. */
 export async function deleteLearner(id: string) {

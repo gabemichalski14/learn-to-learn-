@@ -4,7 +4,7 @@ import { isCloudConfigured } from './data/supabase';
 import { useDialog } from './ui/dialogContext';
 import {
   listLearners, listTutors, listAssignments, listGuardians, listSessions, listSkillEvents,
-  assignTutor, unassignTutor, createInviteCode, renameLearner, deleteGuardian, deleteLearner,
+  assignTutor, unassignTutor, createInviteCode, renameLearner, deleteGuardian, deleteLearner, getLearnerNote, setLearnerNote,
   type CloudLearner, type CloudTutor, type CloudAssignment, type CloudGuardian,
 } from './data/cloud';
 import { masteryFromEvents } from './mastery/events';
@@ -48,6 +48,8 @@ export function StudentAdminPage({ id }: { id: string }) {
   const [name, setName] = useState('');
   const [code, setCode] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
+  const [note, setNote] = useState('');
+  const [savedNote, setSavedNote] = useState('');
 
   const load = useCallback(async () => {
     try {
@@ -68,6 +70,15 @@ export function StudentAdminPage({ id }: { id: string }) {
 
   useEffect(() => { if (!configured) return; const t = setTimeout(() => void load(), 0); return () => clearTimeout(t); }, [configured, load]);
 
+  // Note loads separately + fails soft, so a pre-migration missing column can't
+  // block the rest of the record.
+  useEffect(() => {
+    if (!configured) return;
+    let live = true;
+    void getLearnerNote(id).then((nt) => { if (live) { setNote(nt); setSavedNote(nt); } }).catch(() => {});
+    return () => { live = false; };
+  }, [configured, id]);
+
   const primary = assigns.find((a) => a.relation === 'primary')?.tutor_id ?? '';
   const subs = assigns.filter((a) => a.relation === 'substitute').map((a) => a.tutor_id);
   const subOptions = tutors.filter((t) => t.id !== primary && !subs.includes(t.id));
@@ -77,6 +88,10 @@ export function StudentAdminPage({ id }: { id: string }) {
     const n = name.trim();
     if (!n || !learner || n === learner.display_name) return;
     try { await renameLearner(id, n); await load(); } catch (e) { setErr(e instanceof Error ? e.message : 'Could not rename.'); }
+  }
+  async function saveNote() {
+    try { await setLearnerNote(id, note); setSavedNote(note); }
+    catch (e) { setErr(e instanceof Error ? e.message : 'Could not save the note (have you run the note migration?).'); }
   }
   async function setPrimary(tid: string) {
     try {
@@ -213,6 +228,20 @@ export function StudentAdminPage({ id }: { id: string }) {
                 ))}
               </div>
             )}
+          </section>
+
+          {/* private staff note */}
+          <section className="l2l-card admin__sec">
+            <h2 className="admin__h">Note</h2>
+            <p className="admin__empty" style={{ marginTop: 0 }}>Private context the data can't capture — only staff see this.</p>
+            <textarea
+              className="admin__note" value={note} maxLength={2000} rows={3}
+              placeholder="e.g. Loves space themes. Big breakthrough on short vowels this week."
+              onChange={(e) => setNote(e.target.value)}
+            />
+            <div className="admin__add" style={{ marginTop: 8 }}>
+              <button type="button" className="admin__cta" disabled={note === savedNote} onClick={() => void saveNote()}>Save note</button>
+            </div>
           </section>
 
           {/* data */}

@@ -138,3 +138,9 @@ button.admin__recent-row { width: 100%; border: none; font: inherit; cursor: poi
 .parent__grow strong { font-size: 30px; font-family: var(--font-display, Georgia, serif); }
 .parent__grow span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted, #6a6253); }
 .parent__story { margin: 12px 0 0; font-size: 15px; font-weight: 600; color: var(--ink, #24201a); line-height: 1.45; }
+
+/* private staff note (student record) */
+.admin__note { width: 100%; box-sizing: border-box; resize: vertical; font: inherit; font-size: 14px;
+  color: var(--ink, #24201a); background: rgba(255,255,255,0.6); border: 1px solid rgba(74,54,33,0.2);
+  border-radius: 10px; padding: 10px 12px; line-height: 1.45; }
+.admin__note:focus-visible { outline: 2px solid #173d2a; outline-offset: 1px; }

@@ -36,8 +36,8 @@ export const LEVELS: LevelInfo[] = [
     focus: 'Hearing and changing the sounds in spoken words (oral, no letters)',
     games: [
       { id: 'tap-it-out', title: 'Tap It Out', emoji: '🌱', tagline: 'Tap a sprout for each sound you hear.', status: 'available', route: '#/play/tap-it-out' },
+      { id: 'same-or-different', title: 'Same or Different?', emoji: '👂', tagline: 'Decide if two spoken words match.', status: 'available', route: '#/play/same-or-different' },
       soon('l1-switch', 'Switch It', '🔁', 'Change or drop one sound to make a new word.'),
-      soon('l1-same', 'Same or Different?', '👂', 'Decide if two spoken words match.'),
     ],
   },
   {

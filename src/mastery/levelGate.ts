@@ -19,9 +19,9 @@ const RATED_MIN = 5; // attempts before a skill is rated (matches mastery.ts)
 /** The rated skill-stats that a level is built around. */
 function levelSkillStats(map: MasteryMap, level: number): SkillStat[] {
   if (level === 1) {
-    // Level 1 = phonemic awareness — a single oral PA skill.
-    const s = map['pa:segment'];
-    return s ? [s] : [];
+    // Level 1 = phonemic awareness — any oral PA skill the learner has practised
+    // (segment via Tap It Out, compare via Same or Different?, …).
+    return Object.entries(map).filter(([k]) => k.startsWith('pa:')).map(([, s]) => s);
   }
   if (level === 2) {
     // Level 2 = letter sounds: first / last / medial.

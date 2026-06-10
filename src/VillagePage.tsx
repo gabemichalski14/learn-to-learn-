@@ -7,6 +7,7 @@ import { CharacterArt } from './world/lore/CharacterArt';
 import { Storytime } from './world/lore/Storytime';
 import { GardenPlantings } from './worlds/garden/GardenPlantings';
 import { PipArt } from './mascots/PipArt';
+import { RiveMascot } from './mascots/RiveMascot';
 import { pickTip, tipLabel } from './world/tips';
 import './village.css';
 
@@ -39,7 +40,12 @@ export function VillagePage({ learnerId }: { learnerId: string }) {
 
       <div className="vil-scroll">
         <section className="vil-host">
-          <PipArt size={104} expression="happy" className="vil-host__pip" />
+          <RiveMascot
+            src="/rive/pip-host.riv"
+            stateMachines="State Machine 1"
+            size={112}
+            fallback={<PipArt size={104} expression="happy" className="vil-host__pip" />}
+          />
           <div className="vil-host__say" role="status">
             {residents.length === 0 ? (
               <>

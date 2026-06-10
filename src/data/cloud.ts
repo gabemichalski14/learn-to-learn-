@@ -74,6 +74,33 @@ export async function getCurrentUser() {
   return data.user ?? null;
 }
 
+// ---------- password reset ----------
+/** Email a reset link; clicking it returns the user to #/account in recovery mode. */
+export async function requestPasswordReset(email: string) {
+  const redirectTo = `${window.location.origin}${window.location.pathname}#/account`;
+  return (await client()).auth.resetPasswordForEmail(email.trim(), { redirectTo });
+}
+
+/** Set a new password for the recovering (or signed-in) user. */
+export async function updatePassword(password: string) {
+  return (await client()).auth.updateUser({ password });
+}
+
+/** Fire when the user lands via a reset link (Supabase emits PASSWORD_RECOVERY).
+ *  Deferred (setTimeout 0) to dodge the auth-lock deadlock. Returns unsubscribe. */
+export function onPasswordRecovery(cb: () => void): () => void {
+  let unsub: (() => void) | null = null;
+  let cancelled = false;
+  void getSupabase().then((supabase) => {
+    if (!supabase || cancelled) return;
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') setTimeout(cb, 0);
+    });
+    unsub = () => data.subscription.unsubscribe();
+  });
+  return () => { cancelled = true; unsub?.(); };
+}
+
 export function onAuthChange(cb: (signedIn: boolean) => void): () => void {
   let unsub: (() => void) | null = null;
   let cancelled = false;

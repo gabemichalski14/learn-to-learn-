@@ -2,10 +2,11 @@ import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
-import { signIn, signUp, signOut, getCurrentUser, onAuthChange, redeemInvite, getRole, type SignUpIntent } from './data/cloud';
+import { signIn, signUp, signOut, getCurrentUser, onAuthChange, redeemInvite, getRole, requestPasswordReset, updatePassword, onPasswordRecovery, type SignUpIntent } from './data/cloud';
 import type { Role } from './useAuth';
 import { reconcileRoster } from './data/identity';
 import { flushOutbox } from './data/cloudSync';
+import { useDialog } from './ui/dialogContext';
 
 type Mode = 'in' | 'up';
 
@@ -71,6 +72,7 @@ async function redeemPendingInvite(): Promise<string | null> {
  */
 export function Account() {
   const configured = isCloudConfigured();
+  const dialog = useDialog();
   // An invite LINK lands here as #/account?invite=CODE&as=tutor|parent — prefill
   // the code + role + jump to sign-up so the invitee just adds email + password.
   const [inv] = useState(readInvite);
@@ -85,6 +87,7 @@ export function Account() {
   const [acctRole, setAcctRole] = useState<Role | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [recovering, setRecovering] = useState(false); // arrived via a password-reset link
 
   useEffect(() => {
     if (!configured) return;
@@ -111,6 +114,12 @@ export function Account() {
     return onAuthChange(() => getCurrentUser().then(handle));
   }, [configured]);
 
+  // Landed via a password-reset email link → show the "set a new password" form.
+  useEffect(() => {
+    if (!configured) return;
+    return onPasswordRecovery(() => { setRecovering(true); setMsg('Choose a new password below.'); navigate('#/account'); });
+  }, [configured]);
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -118,6 +127,17 @@ export function Account() {
     try {
       if (mode === 'up') {
         const intent: SignUpIntent = role;
+        // Guardrail: creating a center makes you an OWNER. Tutors/parents must use
+        // their invite link — this confirm stops the accidental "own center" that
+        // made invited people invisible to their real center.
+        if (intent === 'new_center') {
+          const ok = await dialog.confirm({
+            title: 'Create a brand-new center?',
+            message: 'This makes a new center with you as its owner/admin. If a center invited you as a tutor or parent, tap Cancel and open the invite link they sent you instead.',
+            okLabel: 'Yes, create my center',
+          });
+          if (!ok) { setBusy(false); return; }
+        }
         const { error } = await withTimeout(signUp(email, password, {
           centerName: intent === 'new_center' ? (centerName || undefined) : undefined,
           name: intent === 'new_center' ? undefined : (personName.trim() || undefined),
@@ -150,6 +170,32 @@ export function Account() {
     }
   }
 
+  async function forgotPassword() {
+    const target = email.trim();
+    if (!target) { setMsg('Enter your email above first, then tap “Forgot password?”.'); return; }
+    setBusy(true); setMsg(null);
+    try {
+      await withTimeout(requestPasswordReset(target));
+      setMsg(`If an account exists for ${target}, a reset link is on its way — check your email.`);
+    } catch { setMsg('Could not send a reset email just now. Please try again in a moment.'); }
+    finally { setBusy(false); }
+  }
+
+  async function saveNewPassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (password.length < 6) { setMsg('Pick a password of at least 6 characters.'); return; }
+    setBusy(true); setMsg(null);
+    try {
+      const { error } = await withTimeout(updatePassword(password));
+      if (error) throw error;
+      setRecovering(false); setPassword('');
+      setMsg('Password updated — you’re signed in.');
+      const r = await getRole();
+      navigate(r === 'owner' ? '#/admin' : r === 'parent' ? '#/family' : r === 'tutor' ? '#/tutor' : '#/');
+    } catch (err) { setMsg(friendly(err)); }
+    finally { setBusy(false); }
+  }
+
   const joining = mode === 'up' && role !== 'new_center';
   const fromLink = inv.code !== '';
   const joinKind = role === 'join_parent' ? 'parent' : 'tutor';
@@ -177,6 +223,14 @@ export function Account() {
             latest file in <code>supabase/migrations/</code>, and add the project URL + anon key to a local
             <code> .env.local</code> (see <code>.env.example</code>).
           </p>
+        </div>
+      ) : recovering ? (
+        <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>
+          <p className="l2l-lead">Set a new password</p>
+          <form onSubmit={saveNewPassword} className="auth-form">
+            <input className="l2l-input auth-input" type="password" placeholder="New password (min 6 characters)" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="new-password" />
+            <button type="submit" className="l2l-btn" style={{ marginTop: '4px' }} disabled={busy}>{busy ? '…' : 'Update password'}</button>
+          </form>
         </div>
       ) : user ? (
         <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>
@@ -228,9 +282,14 @@ export function Account() {
               {busy ? '…' : mode === 'in' ? 'Sign in' : 'Create account'}
             </button>
           </form>
-          <button type="button" className="link-btn" onClick={() => setMode(mode === 'in' ? 'up' : 'in')}>
-            {mode === 'in' ? 'Need an account? Create one' : 'Have an account? Sign in'}
-          </button>
+          <div className="auth-links">
+            <button type="button" className="link-btn" onClick={() => setMode(mode === 'in' ? 'up' : 'in')}>
+              {mode === 'in' ? 'Need an account? Create one' : 'Have an account? Sign in'}
+            </button>
+            {mode === 'in' && (
+              <button type="button" className="link-btn" onClick={() => void forgotPassword()} disabled={busy}>Forgot password?</button>
+            )}
+          </div>
         </div>
       )}
 

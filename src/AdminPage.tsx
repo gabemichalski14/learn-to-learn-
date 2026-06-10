@@ -3,11 +3,14 @@ import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
 import { useDialog } from './ui/dialogContext';
 import {
-  listLearners, listTutors, listAssignments, listDeletionRequests,
+  listLearners, listTutors, listAssignments, listDeletionRequests, leaderboard,
   createLearner, assignTutor, deleteLearner, resolveDeletion,
   type CloudLearner, type CloudTutor, type CloudAssignment, type DeletionRequest,
 } from './data/cloud';
 import './admin.css';
+
+interface StatRow { learner_id: string; display_name: string; sessions: number | null; avg_accuracy: number | null; last_played: string | null }
+const STALE_DAYS = 10; // no play in this long → a re-engagement nudge
 
 const tutorName = (t: CloudTutor) => t.name || (t.role === 'owner' ? 'You (owner)' : 'Tutor');
 const STUDENT_COLORS = ['#1b9aaa', '#6bae7f', '#e0a14a', '#a8569c', '#5570c0', '#c0573c'];
@@ -24,6 +27,8 @@ export function AdminPage() {
   const [tutors, setTutors] = useState<CloudTutor[]>([]);
   const [assigns, setAssigns] = useState<CloudAssignment[]>([]);
   const [requests, setRequests] = useState<DeletionRequest[]>([]);
+  const [stats, setStats] = useState<StatRow[]>([]);
+  const [now] = useState(() => Date.now());
   const [loading, setLoading] = useState(() => isCloudConfigured());
   const [err, setErr] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
@@ -33,8 +38,8 @@ export function AdminPage() {
     // NB: no synchronous setState here — the effect calls this, and the initial
     // `loading` state already covers the first paint (react-hooks/set-state-in-effect).
     try {
-      const [l, t, a, r] = await Promise.all([listLearners(), listTutors(), listAssignments(), listDeletionRequests()]);
-      setLearners(l); setTutors(t); setAssigns(a); setRequests(r); setErr(null);
+      const [l, t, a, r, lb] = await Promise.all([listLearners(), listTutors(), listAssignments(), listDeletionRequests(), leaderboard()]);
+      setLearners(l); setTutors(t); setAssigns(a); setRequests(r); setStats((lb ?? []) as StatRow[]); setErr(null);
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Could not load center data.');
     } finally {
@@ -52,6 +57,19 @@ export function AdminPage() {
   const ownerId = tutors.find((t) => t.role === 'owner')?.id;
   const tutorById = (id: string) => tutors.find((t) => t.id === id);
   const primaryOf = (learnerId: string) => assigns.find((a) => a.learner_id === learnerId && a.relation === 'primary')?.tutor_id ?? '';
+
+  // Triage: students who've started but are stalled (no play in a while) or
+  // finding it hard (low average) — the owner's "who needs a nudge" list.
+  const needsAttention = stats.filter((s) => {
+    if (!s.sessions) return false;
+    const days = s.last_played ? (now - Date.parse(s.last_played)) / 86_400_000 : 999;
+    return days >= STALE_DAYS || (s.avg_accuracy != null && s.avg_accuracy < 0.6);
+  });
+  const attentionReason = (s: StatRow) => {
+    if (s.avg_accuracy != null && s.avg_accuracy < 0.6) return 'finding it tricky';
+    const days = s.last_played ? Math.round((now - Date.parse(s.last_played)) / 86_400_000) : 0;
+    return `away ${days} day${days === 1 ? '' : 's'}`;
+  };
 
   async function addStudent() {
     const name = newName.trim();
@@ -110,6 +128,26 @@ export function AdminPage() {
                       <button type="button" className="admin__danger" onClick={() => onDelete(r)}>Delete data</button>
                       <button type="button" className="admin__ghost" onClick={() => onDismiss(r)}>Dismiss</button>
                     </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* triage — who needs a nudge (stalled or struggling) */}
+          {needsAttention.length > 0 && (
+            <section className="l2l-card admin__sec admin__sec--alert">
+              <h2 className="admin__h">🔔 Needs a nudge · {needsAttention.length}</h2>
+              <ul className="admin__students">
+                {needsAttention.map((s) => (
+                  <li key={s.learner_id}>
+                    <button type="button" className="admin__studentrow" onClick={() => navigate(`#/admin/student/${s.learner_id}`)}>
+                      <span className="admin__studentrow-main">
+                        <strong className="admin__studentrow-name">{s.display_name}</strong>
+                        <span className="admin__studentrow-sub">{attentionReason(s)}</span>
+                      </span>
+                      <span className="admin__chev" aria-hidden="true">›</span>
+                    </button>
                   </li>
                 ))}
               </ul>

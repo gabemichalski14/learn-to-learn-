@@ -147,3 +147,13 @@ button.admin__recent-row { width: 100%; border: none; font: inherit; cursor: poi
 
 /* small subheading inside an admin section (e.g. "Pending") */
 .admin__subh { margin: 14px 0 4px; font-size: 13px; font-weight: 800; color: var(--ink, #24201a); }
+
+/* session detail — grouped by skill (one row per sound + ✓/✗ strip) */
+.admin__groups { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.admin__group { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 10px; background: rgba(255,255,255,0.45); }
+.admin__group-skill { flex: 1 1 auto; min-width: 0; font-size: 13px; font-weight: 700; color: var(--ink, #24201a); }
+.admin__group-marks { display: inline-flex; gap: 2px; flex-wrap: wrap; }
+.admin__group-marks b { font-size: 11px; font-weight: 900; line-height: 1; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 5px; }
+.admin__group-marks b.ok { background: rgba(107,174,127,0.25); color: #3c6b4e; }
+.admin__group-marks b.no { background: rgba(225,120,90,0.20); color: #a4472e; }
+.admin__group-count { flex: none; font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--muted, #6a6253); }

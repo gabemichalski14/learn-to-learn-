@@ -81,7 +81,8 @@ export function Account() {
   const [centerName, setCenterName] = useState('');
   const [personName, setPersonName] = useState('');
   const [inviteCode, setInviteCode] = useState(inv.code);
-  const [role, setRole] = useState<SignUpIntent>(inv.as === 'parent' ? 'join_parent' : inv.as === 'tutor' ? 'join_tutor' : 'new_center');
+  // Joining only — creating a new center is not offered in the UI (invite-only).
+  const [role, setRole] = useState<SignUpIntent>(inv.as === 'parent' ? 'join_parent' : 'join_tutor');
   const [mode, setMode] = useState<Mode>(inv.code ? 'up' : 'in');
   const [user, setUser] = useState<string | null>(null);
   const [acctRole, setAcctRole] = useState<Role | null>(null);
@@ -257,11 +258,13 @@ export function Account() {
 
           {/* Role chooser only for a manual sign-up — an invite link already decides the role. */}
           {mode === 'up' && !fromLink && (
-            <div className="auth-roles" role="radiogroup" aria-label="Account type">
-              <button type="button" role="radio" aria-checked={role === 'new_center'} className={`auth-role${role === 'new_center' ? ' is-on' : ''}`} onClick={() => setRole('new_center')}>🏫 Set up my center</button>
-              <button type="button" role="radio" aria-checked={role === 'join_tutor'} className={`auth-role${role === 'join_tutor' ? ' is-on' : ''}`} onClick={() => setRole('join_tutor')}>🧑‍🏫 I'm a tutor</button>
-              <button type="button" role="radio" aria-checked={role === 'join_parent'} className={`auth-role${role === 'join_parent' ? ' is-on' : ''}`} onClick={() => setRole('join_parent')}>👪 I'm a parent</button>
-            </div>
+            <>
+              <div className="auth-roles" role="radiogroup" aria-label="Account type">
+                <button type="button" role="radio" aria-checked={role === 'join_tutor'} className={`auth-role${role === 'join_tutor' ? ' is-on' : ''}`} onClick={() => setRole('join_tutor')}>🧑‍🏫 I'm a tutor</button>
+                <button type="button" role="radio" aria-checked={role === 'join_parent'} className={`auth-role${role === 'join_parent' ? ' is-on' : ''}`} onClick={() => setRole('join_parent')}>👪 I'm a parent</button>
+              </div>
+              <p style={{ fontSize: 13, color: 'var(--muted, #6a6253)', margin: '8px 0 0', lineHeight: 1.45 }}>Joining a center? Open the invite link your center sent you. Centers are created by the platform owner.</p>
+            </>
           )}
 
           <form onSubmit={submit} className="auth-form">

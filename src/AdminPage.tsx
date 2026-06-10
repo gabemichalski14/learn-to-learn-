@@ -4,7 +4,7 @@ import { isCloudConfigured } from './data/supabase';
 import { useDialog } from './ui/dialogContext';
 import {
   listLearners, listTutors, listAssignments, listDeletionRequests, leaderboard,
-  createLearner, assignTutor, deleteLearner, resolveDeletion,
+  createLearner, deleteLearner, resolveDeletion,
   type CloudLearner, type CloudTutor, type CloudAssignment, type DeletionRequest,
 } from './data/cloud';
 import './admin.css';
@@ -54,7 +54,6 @@ export function AdminPage() {
   }, [configured, load]);
 
   const learnerName = (id: string) => learners.find((l) => l.id === id)?.display_name ?? 'this student';
-  const ownerId = tutors.find((t) => t.role === 'owner')?.id;
   const tutorById = (id: string) => tutors.find((t) => t.id === id);
   const primaryOf = (learnerId: string) => assigns.find((a) => a.learner_id === learnerId && a.relation === 'primary')?.tutor_id ?? '';
 
@@ -77,8 +76,7 @@ export function AdminPage() {
     setAdding(true);
     try {
       const color = STUDENT_COLORS[learners.length % STUDENT_COLORS.length];
-      const id = await createLearner(name, color);
-      if (ownerId) await assignTutor(id, ownerId, 'primary'); // assigned to you to start; reassign on the grid
+      await createLearner(name, color); // starts UNASSIGNED — assign a tutor from the Tutors page or the student record
       setNewName('');
       await load();
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not add the student.'); }

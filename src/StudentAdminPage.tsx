@@ -28,6 +28,21 @@ const GAME_TITLES: Record<string, string> = {
 const gameTitle = (id: string) => GAME_TITLES[id] ?? id.replace(/-/g, ' ');
 const tutorName = (t: CloudTutor) => t.name || (t.role === 'owner' ? 'You (owner)' : 'Tutor');
 
+/** Collapse a session's per-answer events by skill, so a game that drills one
+ *  skill (e.g. Tap It Out) shows ONE row with a ✓/✗ strip, not N identical
+ *  labels. Games that vary the sound (Space Sort) get a row per sound. */
+function groupItems(items: { skillKey: string; correct: boolean }[]): [string, { right: number; total: number; marks: boolean[] }][] {
+  const m = new Map<string, { right: number; total: number; marks: boolean[] }>();
+  for (const e of items) {
+    const g = m.get(e.skillKey) ?? { right: 0, total: 0, marks: [] };
+    g.total += 1;
+    if (e.correct) g.right += 1;
+    g.marks.push(e.correct);
+    m.set(e.skillKey, g);
+  }
+  return [...m.entries()];
+}
+
 /**
  * Owner's per-student control + record page (opened from the admin roster):
  * rename, manage tutors (primary + substitutes), manage linked parents, and see
@@ -293,13 +308,15 @@ export function StudentAdminPage({ id }: { id: string }) {
                             <p className="admin__empty" style={{ margin: 0 }}>No per-answer data was captured for this session.</p>
                           ) : (
                             <>
-                              <p className="admin__session-sum">{right}/{items.length} correct — every sound this session:</p>
-                              <ul className="admin__items">
-                                {items.map((e, i) => (
-                                  <li key={i} className={`admin__item ${e.correct ? 'is-ok' : 'is-no'}`}>
-                                    <span className="admin__item-mark" aria-hidden="true">{e.correct ? '✓' : '✗'}</span>
-                                    <span className="admin__item-skill">{skillLabel(e.skillKey)}</span>
-                                    <span className="admin__item-time">{new Date(e.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                              <p className="admin__session-sum">{right}/{items.length} correct this session — by sound:</p>
+                              <ul className="admin__groups">
+                                {groupItems(items).map(([skillKey, g]) => (
+                                  <li key={skillKey} className="admin__group">
+                                    <span className="admin__group-skill">{skillLabel(skillKey)}</span>
+                                    <span className="admin__group-marks" aria-label={`${g.right} of ${g.total} correct`}>
+                                      {g.marks.map((ok, j) => <b key={j} className={ok ? 'ok' : 'no'} aria-hidden="true">{ok ? '✓' : '✗'}</b>)}
+                                    </span>
+                                    <span className="admin__group-count">{g.right}/{g.total}</span>
                                   </li>
                                 ))}
                               </ul>

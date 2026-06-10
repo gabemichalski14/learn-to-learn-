@@ -34,6 +34,7 @@ export function TutorsAdminPage() {
 
   useEffect(() => { if (!configured) return; const t = setTimeout(() => void load(), 0); return () => clearTimeout(t); }, [configured, load]);
 
+  const staff = tutors.filter((t) => t.role !== 'owner'); // the owner manages; not listed as a tutor
   const learnerName = (id: string) => learners.find((l) => l.id === id)?.display_name ?? 'Student';
   const studentsOf = (tutorId: string) => assigns.filter((a) => a.tutor_id === tutorId);
   const unassignedFor = (tutorId: string) => learners.filter((l) => !assigns.some((a) => a.tutor_id === tutorId && a.learner_id === l.id));
@@ -99,7 +100,7 @@ export function TutorsAdminPage() {
           )}
           <section className="l2l-card admin__sec">
             <div className="admin__sechead">
-              <h2 className="admin__h">Tutors · {tutors.length}</h2>
+              <h2 className="admin__h">Tutors · {staff.length}</h2>
             </div>
             <form className="admin__add" onSubmit={(e) => { e.preventDefault(); void inviteTutor(); }}>
               <input className="admin__addinput" type="email" placeholder="Tutor's email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} autoComplete="off" />
@@ -121,7 +122,8 @@ export function TutorsAdminPage() {
               </>
             )}
             <ul className="admin__students">
-              {tutors.map((t) => {
+              {staff.length === 0 && <li><p className="admin__empty">No tutors yet — invite one above. (You manage everything as the owner.)</p></li>}
+              {staff.map((t) => {
                 const open = expanded === t.id;
                 const mine = studentsOf(t.id);
                 return (

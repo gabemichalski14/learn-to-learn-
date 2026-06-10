@@ -78,7 +78,13 @@ export function onAuthChange(cb: (signedIn: boolean) => void): () => void {
   let cancelled = false;
   void getSupabase().then((supabase) => {
     if (!supabase || cancelled) return;
-    const { data } = supabase.auth.onAuthStateChange((_e, session) => cb(!!session));
+    // IMPORTANT: defer the callback. supabase-js holds its auth lock while it
+    // emits this event, so calling any auth method (getUser/getSession) from
+    // here synchronously deadlocks — sign-in then hangs forever. setTimeout(0)
+    // runs consumers AFTER the lock is released. (Documented supabase footgun.)
+    const { data } = supabase.auth.onAuthStateChange((_e, session) => {
+      setTimeout(() => cb(!!session), 0);
+    });
     unsub = () => data.subscription.unsubscribe();
   });
   return () => {

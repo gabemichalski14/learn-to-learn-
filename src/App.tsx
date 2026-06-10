@@ -132,20 +132,21 @@ export default function App() {
       page = <Home learnerId={learnerId} onChooseLearner={chooseLearner} />;
   }
 
+  // Operator surfaces (admin, tutor dashboard, account) are professional consoles —
+  // no kid-world chrome (Living World ambient, garden frame, roaming mascot, eggs).
+  const operator = route.name === 'admin' || route.name === 'tutor' || route.name === 'account';
+
   return (
     <>
-      <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />
-      <GardenFrame />
+      {!operator && <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />}
+      {!operator && <GardenFrame />}
       <NavDrawer route={route.name} isTutor={isTutor} role={role ?? null} />
       {page}
       <SiteFooter />
-      {/* Roaming easter-egg buddy — keyed by route so each page gets a fresh
-          surprise placement/message. The child-facing buddy stays off the tutor
-          dashboard, where Pip instead gives the grown-up coaching tips. */}
-      {route.name !== 'tutor' && <MascotBuddy key={route.name} learnerId={learnerId} />}
-      {/* Rare ambient surprises (Pip peek, clover, butterfly) — tier-scaled.
-          Suppressed on the tutor dashboard to keep that view professional. */}
-      {route.name !== 'tutor' && <EasterEggs key={`egg-${route.name}`} tier={world.tier} motifs={eggMotifs} boost={eggBoost} />}
+      {/* Roaming buddy + ambient surprises — child-facing only; off the operator
+          consoles (admin/tutor/account) to keep them clean and professional. */}
+      {!operator && <MascotBuddy key={route.name} learnerId={learnerId} />}
+      {!operator && <EasterEggs key={`egg-${route.name}`} tier={world.tier} motifs={eggMotifs} boost={eggBoost} />}
     </>
   );
 }

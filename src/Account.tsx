@@ -2,7 +2,8 @@ import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
-import { signIn, signUp, signOut, getCurrentUser, onAuthChange, redeemInvite, type SignUpIntent } from './data/cloud';
+import { signIn, signUp, signOut, getCurrentUser, onAuthChange, redeemInvite, getRole, type SignUpIntent } from './data/cloud';
+import type { Role } from './useAuth';
 import { reconcileRoster } from './data/identity';
 import { flushOutbox } from './data/cloudSync';
 
@@ -56,6 +57,7 @@ export function Account() {
   const [role, setRole] = useState<SignUpIntent>('new_center');
   const [mode, setMode] = useState<Mode>('in');
   const [user, setUser] = useState<string | null>(null);
+  const [acctRole, setAcctRole] = useState<Role | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -63,7 +65,10 @@ export function Account() {
     if (!configured) return;
     const handle = (u: { email?: string } | null) => {
       setUser(u?.email ?? null);
-      if (u) void redeemPendingInvite().then(() => reconcileRoster()).then(() => flushOutbox());
+      if (u) {
+        void getRole().then(setAcctRole);
+        void redeemPendingInvite().then(() => reconcileRoster()).then(() => flushOutbox());
+      } else { setAcctRole(null); }
     };
     getCurrentUser().then(handle);
     return onAuthChange(() => getCurrentUser().then(handle));
@@ -125,8 +130,21 @@ export function Account() {
         </div>
       ) : user ? (
         <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>
-          <p className="l2l-lead">Signed in as <strong>{user}</strong>. Your students &amp; sessions sync to this account.</p>
-          <button type="button" className="l2l-btn l2l-btn--ghost" style={{ marginTop: '12px' }} onClick={() => signOut()}>Sign out</button>
+          <p className="l2l-lead">
+            Signed in as <strong>{user}</strong>
+            {acctRole && <> · <strong>{acctRole === 'owner' ? 'Center owner' : acctRole === 'tutor' ? 'Tutor' : 'Parent'}</strong></>}.
+          </p>
+          <p className="page__note" style={{ marginTop: 0 }}>Your students &amp; sessions sync to this account across devices.</p>
+          <div className="auth-links">
+            {acctRole === 'owner' && <>
+              <button type="button" className="l2l-btn" onClick={() => navigate('#/admin')}>Center admin →</button>
+              <button type="button" className="l2l-btn l2l-btn--ghost" onClick={() => navigate('#/tutor')}>Tutor dashboard →</button>
+            </>}
+            {acctRole === 'tutor' && <button type="button" className="l2l-btn" onClick={() => navigate('#/tutor')}>Tutor dashboard →</button>}
+            {acctRole === 'parent' && <button type="button" className="l2l-btn" onClick={() => navigate('#/family')}>My child →</button>}
+            {!acctRole && <button type="button" className="l2l-btn" onClick={() => navigate('#/')}>Go home →</button>}
+          </div>
+          <button type="button" className="link-btn" onClick={() => signOut()}>Sign out</button>
         </div>
       ) : (
         <div className="l2l-card l2l-reveal" style={{ marginTop: '24px', textAlign: 'left', '--i': 1 } as CSSProperties}>

@@ -416,3 +416,6 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
   background:rgba(127,200,200,.08); color:#2a4a4f; transition:background .12s ease, border-color .12s ease; }
 .auth-role.is-on{ background:linear-gradient(135deg,#34b6b0,#1b9aaa); color:#fff; border-color:transparent; box-shadow:0 6px 14px rgba(27,154,170,.3); }
 .auth-role:focus-visible{ outline:3px solid #173d2a; outline-offset:2px; }
+
+/* account hub — quick links once signed in */
+.auth-links{ display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 10px; }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRoute } from './router';
 import { GameScreen } from './GameScreen';
 import { Home } from './Home';
@@ -28,7 +28,9 @@ import { SameOrDifferent } from './worlds/garden/SameOrDifferent';
 import { SwitchItGame } from './worlds/garden/SwitchItGame';
 import { StarStation } from './worlds/space/StarStation';
 import { CheckpointGame } from './CheckpointGame';
-import { ensureLearner, setCurrentLearnerId } from './profiles';
+import { ensureLearner, setCurrentLearnerId, getCurrentLearnerId } from './profiles';
+import { reconcileRoster } from './data/identity';
+import { flushOutbox } from './data/cloudSync';
 import { useTutorSignedIn, useRole } from './useAuth';
 import { worldMotifs } from './world/lore/cast';
 import { loadMastery } from './mastery/mastery';
@@ -41,6 +43,21 @@ export default function App() {
   const [learnerId, setLearnerId] = useState<string>(() => ensureLearner().id);
   const isTutor = useTutorSignedIn();
   const role = useRole();
+
+  // On startup, mirror the signed-in account's cloud roster into local profiles
+  // (a no-op when signed out). Covers reload-while-signed-in; the Account page
+  // also reconciles at the moment of sign-in. Deferred to avoid setState-in-render.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      void reconcileRoster().then(() => {
+        void flushOutbox();
+        // reconcile may have pruned the profile we initially picked → re-point to a valid one
+        setLearnerId(getCurrentLearnerId() ?? ensureLearner().id);
+      });
+    }, 0);
+    return () => clearTimeout(t);
+  }, []);
+
   const world = useWorldTier(learnerId); // app-wide ambient richness grows with real practice
   // Friends light up the world: their motif drifts by while you're helping them
   // (a happy nudge) and gently after they're home. (Recomputed on navigation.)

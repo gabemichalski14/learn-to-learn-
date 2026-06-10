@@ -9,7 +9,7 @@ vi.mock('./cloud', () => ({
 vi.mock('./supabase', () => ({ getSupabase: vi.fn().mockResolvedValue({ auth: { getSession: async () => ({ data: { session: {} } }) } }) }));
 
 import { reconcileRoster } from './identity';
-import { loadLearners } from '../profiles';
+import { loadLearners, addLearner, setCloudId } from '../profiles';
 
 beforeEach(() => localStorage.clear());
 
@@ -26,5 +26,28 @@ describe('reconcileRoster', () => {
     await reconcileRoster();
     await reconcileRoster();
     expect(loadLearners().filter((l) => l.cloudId === 'cloud-A')).toHaveLength(1);
+  });
+
+  it('refreshes the name + color of an already-linked profile (rename propagates)', async () => {
+    const l = addLearner('Old Name', { color: '#000' });
+    setCloudId(l.id, 'cloud-A');
+    await reconcileRoster();
+    const updated = loadLearners().find((x) => x.cloudId === 'cloud-A');
+    expect(updated?.name).toBe('Mia');
+    expect(updated?.color).toBe('#111');
+  });
+
+  it('prunes local profiles not in the roster (other accounts + local-only ghosts)', async () => {
+    addLearner('Guest'); // local-only, no cloudId
+    const stale = addLearner('Ex-student');
+    setCloudId(stale.id, 'cloud-ZZZ'); // cloud-linked but NOT in this roster
+    await reconcileRoster();
+    const list = loadLearners();
+    expect(list.some((l) => l.name === 'Guest')).toBe(false);
+    expect(list.some((l) => l.cloudId === 'cloud-ZZZ')).toBe(false);
+    // the actual roster members are present
+    expect(list.some((l) => l.cloudId === 'cloud-A')).toBe(true);
+    expect(list.some((l) => l.cloudId === 'cloud-B')).toBe(true);
+    expect(list).toHaveLength(2);
   });
 });

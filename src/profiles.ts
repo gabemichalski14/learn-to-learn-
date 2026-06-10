@@ -130,6 +130,17 @@ export function renameLearner(id: string, name: string): void {
   persist(loadLearners().map((l) => (l.id === id ? { ...l, name: trimmed } : l)));
 }
 
+/** Sync a local profile's display fields from the cloud (no-op if unchanged). */
+export function updateLearnerMeta(id: string, meta: { name?: string; color?: string }): void {
+  const list = loadLearners();
+  const t = list.find((l) => l.id === id);
+  if (!t) return;
+  const name = meta.name?.trim() || t.name;
+  const color = meta.color || t.color;
+  if (name === t.name && color === t.color) return;
+  persist(list.map((l) => (l.id === id ? { ...l, name, color } : l)));
+}
+
 /** Remove a learner and all of their stored data (progress + session log). */
 export function removeLearner(id: string): void {
   const list = loadLearners().filter((l) => l.id !== id);

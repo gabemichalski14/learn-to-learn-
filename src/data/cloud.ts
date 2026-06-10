@@ -298,22 +298,22 @@ function randCode(): string {
 }
 
 /** Owner issues a one-time invite. `learnerId` required for kind='parent';
- *  `email` (the destination) is remembered so it can show in the pending list. */
-export async function createInviteCode(kind: 'parent' | 'tutor', learnerId?: string, email?: string, ttlDays = 14): Promise<string> {
+ *  `email` + `name` are remembered so the pending list reads as a person. */
+export async function createInviteCode(kind: 'parent' | 'tutor', learnerId?: string, email?: string, name?: string, ttlDays = 14): Promise<string> {
   const centerId = await currentCenterId();
   if (!centerId) throw new Error('No center');
   const code = randCode();
   const expires_at = new Date(Date.now() + ttlDays * 86_400_000).toISOString();
   const base = { code, kind, center_id: centerId, learner_id: learnerId ?? null, expires_at };
   const supabase = await client();
-  let { error } = await supabase.from('invite_codes').insert({ ...base, email: email?.trim() || null });
-  // Pre-migration fallback: if the email column doesn't exist yet, store without it.
-  if (error && /email/i.test(error.message)) ({ error } = await supabase.from('invite_codes').insert(base));
+  let { error } = await supabase.from('invite_codes').insert({ ...base, email: email?.trim() || null, name: name?.trim() || null });
+  // Pre-migration fallback: if the email/name columns don't exist yet, store without them.
+  if (error && /email|name|column/i.test(error.message)) ({ error } = await supabase.from('invite_codes').insert(base));
   if (error) throw error;
   return code;
 }
 
-export interface CloudInvite { code: string; kind: 'parent' | 'tutor'; email: string | null; learner_id: string | null; expires_at: string }
+export interface CloudInvite { code: string; kind: 'parent' | 'tutor'; email: string | null; name: string | null; learner_id: string | null; expires_at: string }
 /** Pending (unredeemed, unexpired) invites for the owner's center. Filter by
  *  kind and/or learner. Drops off automatically once redeem sets used_at. */
 export async function listPendingInvites(kind?: 'parent' | 'tutor', learnerId?: string): Promise<CloudInvite[]> {
@@ -325,10 +325,22 @@ export async function listPendingInvites(kind?: 'parent' | 'tutor', learnerId?: 
     if (learnerId) q = q.eq('learner_id', learnerId);
     return q.order('expires_at', { ascending: true });
   };
-  let { data, error } = await run('code, kind, email, learner_id, expires_at');
-  if (error && /email/i.test(error.message)) ({ data, error } = await run('code, kind, learner_id, expires_at'));
+  let { data, error } = await run('code, kind, email, name, learner_id, expires_at');
+  if (error && /email|name|column/i.test(error.message)) ({ data, error } = await run('code, kind, learner_id, expires_at'));
   if (error) throw error;
   return (data ?? []) as unknown as CloudInvite[];
+}
+
+/** A friendly label for a pending invite: the name the owner typed, else a name
+ *  derived from the email (jane.doe@… → "Jane Doe"), else a plain fallback. */
+export function inviteLabel(inv: { name?: string | null; email?: string | null }): string {
+  const name = inv.name?.trim();
+  if (name) return name;
+  const email = inv.email?.trim();
+  if (!email) return 'Invite sent';
+  const local = (email.split('@')[0] || '').replace(/[._+-]+/g, ' ').trim();
+  const words = local.split(/\s+/).filter(Boolean);
+  return words.length ? words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : email;
 }
 
 /** Owner cancels a pending invite (revoke / before resending). */

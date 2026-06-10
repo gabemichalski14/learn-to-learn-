@@ -3,7 +3,7 @@ import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
 import {
   listTutors, listAssignments, listLearners, createInviteCode, assignTutor, unassignTutor,
-  listPendingInvites, deleteInviteCode,
+  listPendingInvites, deleteInviteCode, inviteLabel,
   type CloudTutor, type CloudAssignment, type CloudLearner, type CloudInvite,
 } from './data/cloud';
 import './admin.css';
@@ -22,6 +22,7 @@ export function TutorsAdminPage() {
   const [err, setErr] = useState<string | null>(null);
   const [code, setCode] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteName, setInviteName] = useState('');
   const [pending, setPending] = useState<CloudInvite[]>([]);
 
   const load = useCallback(async () => {
@@ -56,16 +57,17 @@ export function TutorsAdminPage() {
 
   async function inviteTutor() {
     const email = inviteEmail.trim();
+    const who = inviteName.trim();
     try {
-      const c = await createInviteCode('tutor', undefined, email);
+      const c = await createInviteCode('tutor', undefined, email, who);
       const link = `${window.location.origin}${window.location.pathname}#/account?invite=${encodeURIComponent(c)}&as=tutor`;
       setCode(link);
       if (email) {
         const subject = encodeURIComponent('Your Learn to Learn invite');
-        const body = encodeURIComponent(`You've been invited to join Learn to Learn as a tutor.\n\nOpen this link to set up your account — just add your name and a password:\n${link}\n`);
+        const body = encodeURIComponent(`${who ? `Hi ${who},\n\n` : ''}You've been invited to join Learn to Learn as a tutor.\n\nOpen this link to set up your account — just add your name and a password:\n${link}\n`);
         window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; // opens YOUR mail app, pre-filled
-        setInviteEmail('');
       }
+      setInviteEmail(''); setInviteName('');
       await load(); // show it in "Pending" right away
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not create an invite.'); }
   }
@@ -103,18 +105,19 @@ export function TutorsAdminPage() {
               <h2 className="admin__h">Tutors · {staff.length}</h2>
             </div>
             <form className="admin__add" onSubmit={(e) => { e.preventDefault(); void inviteTutor(); }}>
+              <input className="admin__addinput" type="text" placeholder="Name (optional)" value={inviteName} onChange={(e) => setInviteName(e.target.value)} autoComplete="off" />
               <input className="admin__addinput" type="email" placeholder="Tutor's email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} autoComplete="off" />
               <button type="submit" className="admin__cta">Send invite</button>
             </form>
-            <p className="admin__hint">Enter their email — your mail app opens with the invite ready to send. (No email? Tap Send to get a copyable link.)</p>
+            <p className="admin__hint">Add their name + email — your mail app opens with the invite ready to send. (No email? Tap Send to get a copyable link.)</p>
             {pending.length > 0 && (
               <>
                 <h3 className="admin__subh">⏳ Pending · {pending.length}</h3>
                 <p className="admin__hint" style={{ marginTop: 0 }}>Invite sent — waiting for them to confirm. They move up to the list above once they make an account.</p>
                 <div className="admin__subs">
                   {pending.map((p) => (
-                    <span key={p.code} className="admin__subchip">
-                      {p.email || 'invite sent'} · expires {new Date(p.expires_at).toLocaleDateString()}
+                    <span key={p.code} className="admin__subchip" title={p.email ?? undefined}>
+                      {inviteLabel(p)} · expires {new Date(p.expires_at).toLocaleDateString()}
                       <button type="button" onClick={() => void cancelInvite(p.code)} aria-label="Cancel invite">×</button>
                     </span>
                   ))}

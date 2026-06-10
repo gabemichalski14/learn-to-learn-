@@ -5,7 +5,7 @@ import { useDialog } from './ui/dialogContext';
 import {
   listLearners, listTutors, listAssignments, listGuardians, listSessions, listSkillEvents,
   assignTutor, unassignTutor, createInviteCode, renameLearner, deleteGuardian, deleteLearner, getLearnerNote, setLearnerNote,
-  listPendingInvites, deleteInviteCode,
+  listPendingInvites, deleteInviteCode, inviteLabel,
   type CloudLearner, type CloudTutor, type CloudAssignment, type CloudGuardian, type CloudInvite,
 } from './data/cloud';
 import { masteryFromEvents } from './mastery/events';
@@ -65,6 +65,7 @@ export function StudentAdminPage({ id }: { id: string }) {
   const [name, setName] = useState('');
   const [code, setCode] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteName, setInviteName] = useState('');
   const [note, setNote] = useState('');
   const [savedNote, setSavedNote] = useState('');
 
@@ -122,17 +123,18 @@ export function StudentAdminPage({ id }: { id: string }) {
 
   async function inviteParent() {
     const email = inviteEmail.trim();
+    const parentName = inviteName.trim();
     try {
-      const c = await createInviteCode('parent', id, email);
+      const c = await createInviteCode('parent', id, email, parentName);
       const link = `${window.location.origin}${window.location.pathname}#/account?invite=${encodeURIComponent(c)}&as=parent`;
       setCode(link);
       if (email) {
-        const who = learner?.display_name ?? 'your child';
-        const subject = encodeURIComponent(`Follow ${who}'s progress on Learn to Learn`);
-        const body = encodeURIComponent(`You've been invited to follow ${who}'s progress on Learn to Learn.\n\nOpen this link to set up your account — just add your name and a password:\n${link}\n`);
+        const child = learner?.display_name ?? 'your child';
+        const subject = encodeURIComponent(`Follow ${child}'s progress on Learn to Learn`);
+        const body = encodeURIComponent(`${parentName ? `Hi ${parentName},\n\n` : ''}You've been invited to follow ${child}'s progress on Learn to Learn.\n\nOpen this link to set up your account — just add your name and a password:\n${link}\n`);
         window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; // opens YOUR mail app, pre-filled
-        setInviteEmail('');
       }
+      setInviteEmail(''); setInviteName('');
       await load(); // show it under "Pending" right away
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not create an invite.'); }
   }
@@ -236,6 +238,7 @@ export function StudentAdminPage({ id }: { id: string }) {
               <h2 className="admin__h">Parents · {guardians.length}</h2>
             </div>
             <form className="admin__add" onSubmit={(e) => { e.preventDefault(); void inviteParent(); }}>
+              <input className="admin__addinput" type="text" placeholder="Parent's name (optional)" value={inviteName} onChange={(e) => setInviteName(e.target.value)} autoComplete="off" />
               <input className="admin__addinput" type="email" placeholder="Parent's email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} autoComplete="off" />
               <button type="submit" className="admin__cta">Send invite</button>
             </form>
@@ -256,8 +259,8 @@ export function StudentAdminPage({ id }: { id: string }) {
                 <p className="admin__hint" style={{ marginTop: 0 }}>Invite sent — waiting for them to confirm. They move up to Parents once they make an account.</p>
                 <div className="admin__subs">
                   {pendingParents.map((p) => (
-                    <span key={p.code} className="admin__subchip">
-                      {p.email || 'invite sent'} · expires {new Date(p.expires_at).toLocaleDateString()}
+                    <span key={p.code} className="admin__subchip" title={p.email ?? undefined}>
+                      {inviteLabel(p)} · expires {new Date(p.expires_at).toLocaleDateString()}
                       <button type="button" onClick={() => void cancelInvite(p.code)} aria-label="Cancel invite">×</button>
                     </span>
                   ))}

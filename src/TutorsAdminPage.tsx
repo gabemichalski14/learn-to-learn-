@@ -75,6 +75,10 @@ export function TutorsAdminPage() {
     try { await deleteInviteCode(c); await load(); }
     catch (e) { setErr(e instanceof Error ? e.message : 'Could not cancel the invite.'); }
   }
+  async function clearAllPending() {
+    try { await Promise.all(pending.map((p) => deleteInviteCode(p.code))); await load(); }
+    catch (e) { setErr(e instanceof Error ? e.message : 'Could not clear the invites.'); }
+  }
 
   return (
     <main className="l2l-page">
@@ -100,9 +104,10 @@ export function TutorsAdminPage() {
               <button type="button" className="admin__codex" aria-label="dismiss" onClick={() => setCode(null)}>×</button>
             </div>
           )}
+          {/* invite controls */}
           <section className="l2l-card admin__sec">
             <div className="admin__sechead">
-              <h2 className="admin__h">Tutors · {staff.length}</h2>
+              <h2 className="admin__h">Invite a tutor</h2>
             </div>
             <form className="admin__add" onSubmit={(e) => { e.preventDefault(); void inviteTutor(); }}>
               <input className="admin__addinput" type="text" placeholder="Name (optional)" value={inviteName} onChange={(e) => setInviteName(e.target.value)} autoComplete="off" />
@@ -110,20 +115,32 @@ export function TutorsAdminPage() {
               <button type="submit" className="admin__cta">Send invite</button>
             </form>
             <p className="admin__hint">Add their name + email — your mail app opens with the invite ready to send. (No email? Tap Send to get a copyable link.)</p>
-            {pending.length > 0 && (
-              <>
-                <h3 className="admin__subh">⏳ Pending · {pending.length}</h3>
-                <p className="admin__hint" style={{ marginTop: 0 }}>Invite sent — waiting for them to confirm. They move up to the list above once they make an account.</p>
-                <div className="admin__subs">
-                  {pending.map((p) => (
-                    <span key={p.code} className="admin__subchip" title={p.email ?? undefined}>
-                      {inviteLabel(p)} · expires {new Date(p.expires_at).toLocaleDateString()}
-                      <button type="button" onClick={() => void cancelInvite(p.code)} aria-label="Cancel invite">×</button>
-                    </span>
-                  ))}
-                </div>
-              </>
-            )}
+          </section>
+
+          {/* pending requests — its OWN card, only while there are any */}
+          {pending.length > 0 && (
+            <section className="l2l-card admin__sec">
+              <div className="admin__sechead">
+                <h2 className="admin__h">⏳ Pending · {pending.length}</h2>
+                <button type="button" className="admin__linkbtn" onClick={() => void clearAllPending()}>Clear all</button>
+              </div>
+              <p className="admin__hint" style={{ marginTop: 0 }}>Invite sent — waiting for them to confirm. They move down to Tutors once they make an account.</p>
+              <div className="admin__subs">
+                {pending.map((p) => (
+                  <span key={p.code} className="admin__subchip" title={p.email ?? undefined}>
+                    {inviteLabel(p)} · expires {new Date(p.expires_at).toLocaleDateString()}
+                    <button type="button" onClick={() => void cancelInvite(p.code)} aria-label="Cancel invite">×</button>
+                  </span>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* confirmed tutors */}
+          <section className="l2l-card admin__sec">
+            <div className="admin__sechead">
+              <h2 className="admin__h">Tutors · {staff.length}</h2>
+            </div>
             <ul className="admin__students">
               {staff.length === 0 && <li><p className="admin__empty">No tutors yet — invite one above. (You manage everything as the owner.)</p></li>}
               {staff.map((t) => {

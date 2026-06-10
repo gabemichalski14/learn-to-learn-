@@ -7,6 +7,7 @@ import { useDataVersion } from './data/store';
 import { loadMastery } from './mastery/mastery';
 import { gardenResidents } from './world/lore/cast';
 import { pipChats } from './data/pipChats';
+import { PipArt } from './mascots/PipArt';
 import type { Learner } from './profiles';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
@@ -113,8 +114,16 @@ export function Leaderboard() {
 
       <div className="l2l-reveal" style={{ '--i': 1 } as CSSProperties}>
         {learners.length < 2 ? (
-          <div className="l2l-card" style={{ marginTop: '24px' }}>
-            <p>Add more players from the home screen to compare stickers and times!</p>
+          <div className="l2l-card lb-empty" style={{ marginTop: '24px' }}>
+            <PipArt size={92} expression="happy" />
+            <div className="lb-empty__body">
+              <h2 className="lb-empty__h">It’s just you and Pip up here… for now! 🌱</h2>
+              <p className="lb-empty__p">Add a friend from the Home screen and these boards come alive — race for stickers, fastest finishes, and friends brought all the way home.</p>
+              <div className="lb-empty__chips" aria-hidden="true">
+                <span>🏡 Friends home</span><span>🌟 Stickers</span><span>⚡ Fastest finish</span><span>🎮 Most games</span><span>💬 Pip chats</span>
+              </div>
+              <button type="button" className="lb-empty__cta" onClick={() => navigate('#/')}>← Add a player on Home</button>
+            </div>
           </div>
         ) : (
           <div className="l2l-card" style={{ marginTop: '24px' }}>

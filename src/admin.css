@@ -132,3 +132,9 @@ button.admin__recent-row { width: 100%; border: none; font: inherit; cursor: poi
 .admin__item.is-no { background: rgba(225, 120, 90, 0.16); color: #a4472e; }
 .admin__item-mark { font-weight: 900; }
 .admin__item-time { font-weight: 600; opacity: 0.55; font-size: 10px; }
+
+/* parent growth story */
+.parent__grow { margin-left: auto; display: flex; flex-direction: column; align-items: center; line-height: 1.05; color: #4e9568; }
+.parent__grow strong { font-size: 30px; font-family: var(--font-display, Georgia, serif); }
+.parent__grow span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted, #6a6253); }
+.parent__story { margin: 12px 0 0; font-size: 15px; font-weight: 600; color: var(--ink, #24201a); line-height: 1.45; }

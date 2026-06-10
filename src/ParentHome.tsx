@@ -3,8 +3,10 @@ import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
 import { useDialog } from './ui/dialogContext';
 import { PipArt } from './mascots/PipArt';
-import { listLearners, listSessions, requestDeletion, type CloudLearner } from './data/cloud';
+import { listLearners, listSessions, listSkillEvents, requestDeletion, type CloudLearner } from './data/cloud';
 import { sessionLogCsv, type SessionRecord } from './sessionLog';
+import { masteryFromEvents } from './mastery/events';
+import { summarize } from './world/tutor/dashboardData';
 import './admin.css';
 
 interface CloudSessionRow {
@@ -35,6 +37,7 @@ function downloadCsv(name: string, rows: SessionRecord[]) {
 function ChildCard({ child }: { child: CloudLearner }) {
   const dialog = useDialog();
   const [rows, setRows] = useState<SessionRecord[] | null>(null);
+  const [grown, setGrown] = useState<{ mastered: number; practising: number } | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,12 +45,25 @@ function ChildCard({ child }: { child: CloudLearner }) {
     void listSessions(child.id)
       .then((s) => { if (live) setRows((s as CloudSessionRow[]).map(toRecord)); })
       .catch(() => { if (live) setRows([]); });
+    void listSkillEvents(child.id)
+      .then((ev) => {
+        if (!live) return;
+        const sum = summarize(masteryFromEvents(ev.map((e) => ({ skillKey: e.skill_key, correct: e.correct, at: Date.parse(e.at) }))));
+        setGrown({ mastered: sum.mastered.length, practising: sum.practicing.length + sum.working.length });
+      })
+      .catch(() => { if (live) setGrown({ mastered: 0, practising: 0 }); });
     return () => { live = false; };
   }, [child.id]);
 
   const n = rows?.length ?? 0;
-  const avg = rows && rows.length ? Math.round((rows.reduce((s, r) => s + r.accuracy, 0) / rows.length) * 100) : 0;
   const last = rows && rows.length ? new Date(rows[rows.length - 1].endedAt) : null;
+  const name = child.display_name;
+  // Warm growth story — the child's own progress, no skill detail, no peer ranking.
+  const story = !grown
+    ? 'Loading…'
+    : grown.mastered === 0
+      ? `${name} is just getting started — every round plants new sounds. 🌱`
+      : `${name} has mastered ${grown.mastered} sound${grown.mastered === 1 ? '' : 's'}${grown.practising ? ` and is practising ${grown.practising} more` : ''}. 🌟`;
 
   async function onRequestDelete() {
     const ok = await dialog.confirm({
@@ -66,9 +82,15 @@ function ChildCard({ child }: { child: CloudLearner }) {
         <span className="parent__avatar" style={{ background: child.color }} aria-hidden="true">{child.display_name.slice(0, 1)}</span>
         <div>
           <strong className="parent__name">{child.display_name}</strong>
-          <p className="parent__stats">{rows === null ? 'Loading…' : `${n} session${n === 1 ? '' : 's'} · ${avg}% average${last ? ` · last ${last.toLocaleDateString()}` : ''}`}</p>
+          <p className="parent__stats">{rows === null ? 'Loading…' : `${n} session${n === 1 ? '' : 's'}${last ? ` · last played ${last.toLocaleDateString()}` : ''}`}</p>
         </div>
+        {grown && grown.mastered > 0 && (
+          <div className="parent__grow" aria-label={`${grown.mastered} sounds mastered`}>
+            <strong>{grown.mastered}</strong><span>sounds<br />mastered</span>
+          </div>
+        )}
       </div>
+      <p className="parent__story">{story}</p>
       <div className="parent__acts">
         <button type="button" className="l2l-btn" disabled={!rows || rows.length === 0} onClick={() => rows && downloadCsv(child.display_name, rows)}>⬇ Download report</button>
         <button type="button" className="l2l-btn l2l-btn--ghost" onClick={onRequestDelete}>Request data deletion</button>

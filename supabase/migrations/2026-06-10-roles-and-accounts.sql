@@ -12,6 +12,37 @@
 -- single-use, expiring, server-validated RPC.
 -- ============================================================================
 
+-- ---------- helpers this migration depends on (idempotent; defined here so the
+-- migration is self-sufficient over a partial or older schema.sql) ----------
+create or replace function current_center_id() returns uuid
+  language sql stable security definer set search_path = public as $$
+  select center_id from tutors where id = auth.uid()
+$$;
+
+create or replace function stamp_center_from_learner() returns trigger
+  language plpgsql security definer set search_path = public as $$
+begin
+  select center_id into new.center_id from learners where id = new.learner_id;
+  return new;
+end;
+$$;
+
+-- ensure the per-answer event log exists (older schema.sql may predate it)
+create table if not exists skill_events (
+  id         uuid primary key default gen_random_uuid(),
+  learner_id uuid not null references learners (id) on delete cascade,
+  center_id  uuid not null references centers (id) on delete cascade,
+  skill_key  text not null,
+  correct    boolean not null,
+  game       text,
+  at         timestamptz not null default now()
+);
+create index if not exists skill_events_learner_idx on skill_events (learner_id, at desc);
+alter table skill_events enable row level security;
+drop trigger if exists skill_events_stamp_center on skill_events;
+create trigger skill_events_stamp_center before insert on skill_events
+  for each row execute function stamp_center_from_learner();
+
 -- ---------- new tables ----------
 
 -- student ↔ tutor assignment (one 'primary'; optional time-boxed 'substitute')

@@ -142,7 +142,9 @@ export default function App() {
       {!operator && <GardenFrame />}
       <NavDrawer route={route.name} role={role ?? null} />
       {page}
-      <SiteFooter />
+      {/* Footer (brand + legal disclaimer) is public/kid-facing chrome — off the
+          operator consoles, which should read as clean control surfaces. */}
+      {!operator && <SiteFooter />}
       {/* Roaming buddy + ambient surprises — child-facing only; off the operator
           consoles (admin/tutor/account) to keep them clean and professional. */}
       {!operator && <MascotBuddy key={route.name} learnerId={learnerId} />}

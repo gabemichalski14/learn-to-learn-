@@ -90,3 +90,8 @@
 
 /* invite-LINK display: long URLs must wrap, not blow out the row */
 .admin__codeval { font-size: 12px; font-weight: 600; letter-spacing: 0; word-break: break-all; flex: 1 1 240px; max-width: 100%; }
+
+.admin__remove { font: inherit; font-weight: 700; font-size: 12px; cursor: pointer; color: #b15a3e;
+  background: none; border: none; padding: 7px 8px; min-height: 36px; }
+.admin__remove:hover { text-decoration: underline; }
+.admin__remove:focus-visible { outline: 2px solid #173d2a; outline-offset: 2px; }

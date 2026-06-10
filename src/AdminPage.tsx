@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
-import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
 import { useDialog } from './ui/dialogContext';
 import {
@@ -115,9 +114,19 @@ export function AdminPage() {
     catch (e) { setErr(e instanceof Error ? e.message : 'Could not update the request.'); }
   }
 
+  async function removeStudent(l: CloudLearner) {
+    const ok = await dialog.confirm({
+      title: `Remove ${l.display_name}?`,
+      message: `Permanently delete ${l.display_name} and all of their data? This can’t be undone.`,
+      okLabel: 'Remove', danger: true,
+    });
+    if (!ok) return;
+    try { await deleteLearner(l.id); await load(); }
+    catch (e) { setErr(e instanceof Error ? e.message : 'Could not remove the student.'); }
+  }
+
   return (
     <main className="l2l-page">
-      <button type="button" className="l2l-back" onClick={() => navigate('#/tutor')}>← Dashboard</button>
       <header className="l2l-reveal" style={{ '--i': 0 } as CSSProperties}>
         <p className="l2l-eyebrow">Center admin</p>
         <h1 className="l2l-display">Your <em>center</em></h1>
@@ -188,6 +197,7 @@ export function AdminPage() {
                             </select>
                           </label>
                           <button type="button" className="admin__linkbtn" onClick={() => invite('parent', l.id, `${l.display_name}'s parent`)}>Invite parent</button>
+                          <button type="button" className="admin__remove" onClick={() => void removeStudent(l)} aria-label={`Remove ${l.display_name}`}>Remove</button>
                         </div>
                         {(subs.length > 0 || subOptions.length > 0) && (
                           <div className="admin__subs">

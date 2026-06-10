@@ -47,6 +47,7 @@ export function StudentAdminPage({ id }: { id: string }) {
   const [err, setErr] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [code, setCode] = useState<string | null>(null);
+  const [inviteEmail, setInviteEmail] = useState('');
 
   const load = useCallback(async () => {
     try {
@@ -88,9 +89,18 @@ export function StudentAdminPage({ id }: { id: string }) {
   async function removeAssign(tid: string) { try { await unassignTutor(id, tid); await load(); } catch (e) { setErr(e instanceof Error ? e.message : 'Could not update.'); } }
 
   async function inviteParent() {
+    const email = inviteEmail.trim();
     try {
       const c = await createInviteCode('parent', id);
-      setCode(`${window.location.origin}${window.location.pathname}#/account?invite=${encodeURIComponent(c)}&as=parent`);
+      const link = `${window.location.origin}${window.location.pathname}#/account?invite=${encodeURIComponent(c)}&as=parent`;
+      setCode(link);
+      if (email) {
+        const who = learner?.display_name ?? 'your child';
+        const subject = encodeURIComponent(`Follow ${who}'s progress on Learn to Learn`);
+        const body = encodeURIComponent(`You've been invited to follow ${who}'s progress on Learn to Learn.\n\nOpen this link to set up your account — just add your name and a password:\n${link}\n`);
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; // opens YOUR mail app, pre-filled
+        setInviteEmail('');
+      }
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not create an invite.'); }
   }
   async function removeParent(userId: string) {
@@ -141,7 +151,7 @@ export function StudentAdminPage({ id }: { id: string }) {
           {err && <p className="admin__err" role="alert">{err}</p>}
           {code && (
             <div className="admin__code" role="status">
-              <span><strong>Parent</strong> invite link — send it once:</span>
+              <span>Parent invite link — or copy &amp; send it yourself:</span>
               <code className="admin__codeval">{code}</code>
               <button type="button" className="admin__copy" onClick={() => navigator.clipboard?.writeText(code).catch(() => {})}>Copy</button>
               <button type="button" className="admin__codex" aria-label="dismiss" onClick={() => setCode(null)}>×</button>
@@ -187,8 +197,11 @@ export function StudentAdminPage({ id }: { id: string }) {
           <section className="l2l-card admin__sec">
             <div className="admin__sechead">
               <h2 className="admin__h">Parents · {guardians.length}</h2>
-              <button type="button" className="admin__cta" onClick={() => void inviteParent()}>+ Invite parent</button>
             </div>
+            <form className="admin__add" onSubmit={(e) => { e.preventDefault(); void inviteParent(); }}>
+              <input className="admin__addinput" type="email" placeholder="Parent's email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} autoComplete="off" />
+              <button type="submit" className="admin__cta">Send invite</button>
+            </form>
             {guardians.length === 0 ? (
               <p className="admin__empty">No parent linked yet. Send an invite link above.</p>
             ) : (

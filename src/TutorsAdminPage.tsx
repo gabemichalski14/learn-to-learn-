@@ -20,6 +20,7 @@ export function TutorsAdminPage() {
   const [loading, setLoading] = useState(() => isCloudConfigured());
   const [err, setErr] = useState<string | null>(null);
   const [code, setCode] = useState<string | null>(null);
+  const [inviteEmail, setInviteEmail] = useState('');
 
   const load = useCallback(async () => {
     try {
@@ -35,9 +36,17 @@ export function TutorsAdminPage() {
   const studentsOf = (tutorId: string) => assigns.filter((a) => a.tutor_id === tutorId);
 
   async function inviteTutor() {
+    const email = inviteEmail.trim();
     try {
       const c = await createInviteCode('tutor');
-      setCode(`${window.location.origin}${window.location.pathname}#/account?invite=${encodeURIComponent(c)}&as=tutor`);
+      const link = `${window.location.origin}${window.location.pathname}#/account?invite=${encodeURIComponent(c)}&as=tutor`;
+      setCode(link);
+      if (email) {
+        const subject = encodeURIComponent('Your Learn to Learn invite');
+        const body = encodeURIComponent(`You've been invited to join Learn to Learn as a tutor.\n\nOpen this link to set up your account — just add your name and a password:\n${link}\n`);
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`; // opens YOUR mail app, pre-filled
+        setInviteEmail('');
+      }
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not create an invite.'); }
   }
 
@@ -59,7 +68,7 @@ export function TutorsAdminPage() {
           {err && <p className="admin__err" role="alert">{err}</p>}
           {code && (
             <div className="admin__code" role="status">
-              <span><strong>Tutor</strong> invite link — send it once:</span>
+              <span>Invite link {inviteEmail ? '' : 'ready'} — or copy &amp; send it yourself:</span>
               <code className="admin__codeval">{code}</code>
               <button type="button" className="admin__copy" onClick={() => navigator.clipboard?.writeText(code).catch(() => {})}>Copy</button>
               <button type="button" className="admin__codex" aria-label="dismiss" onClick={() => setCode(null)}>×</button>
@@ -68,8 +77,12 @@ export function TutorsAdminPage() {
           <section className="l2l-card admin__sec">
             <div className="admin__sechead">
               <h2 className="admin__h">Tutors · {tutors.length}</h2>
-              <button type="button" className="admin__cta" onClick={() => void inviteTutor()}>+ Invite tutor</button>
             </div>
+            <form className="admin__add" onSubmit={(e) => { e.preventDefault(); void inviteTutor(); }}>
+              <input className="admin__addinput" type="email" placeholder="Tutor's email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} autoComplete="off" />
+              <button type="submit" className="admin__cta">Send invite</button>
+            </form>
+            <p className="admin__hint">Enter their email — your mail app opens with the invite ready to send. (No email? Tap Send to get a copyable link.)</p>
             <ul className="admin__students">
               {tutors.map((t) => {
                 const open = expanded === t.id;

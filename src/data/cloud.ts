@@ -250,12 +250,19 @@ export async function insertSkillEvents(rows: CloudSkillEvent[]) {
   if (error) throw error;
 }
 
+export interface EnrichedSkillEvent {
+  skill_key: string; correct: boolean; at: string; game: string | null;
+  chosen: string | null; first_try: boolean | null; latency_ms: number | null;
+  replays: number | null; level: number | null; lesson: number | null;
+}
 export async function listSkillEvents(learnerId: string, sinceISO?: string) {
-  let q = (await client()).from('skill_events').select('skill_key, correct, at, game').eq('learner_id', learnerId);
+  let q = (await client()).from('skill_events')
+    .select('skill_key, correct, at, game, chosen, first_try, latency_ms, replays, level, lesson')
+    .eq('learner_id', learnerId);
   if (sinceISO) q = q.gte('at', sinceISO);
   const { data, error } = await q.order('at', { ascending: true });
   if (error) throw error;
-  return (data ?? []) as { skill_key: string; correct: boolean; at: string; game: string | null }[];
+  return (data ?? []) as EnrichedSkillEvent[];
 }
 
 // ---------- leaderboard / stats ----------

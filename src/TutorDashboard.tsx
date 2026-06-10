@@ -8,7 +8,9 @@ import { useDialog } from './ui/dialogContext';
 import { loadProgress, formatTime } from './progress';
 import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
-import { getSessions, getMastery } from './data/dataSource';
+import { getSessions, getMastery, getEnrichedEvents } from './data/dataSource';
+import type { EnrichedSkillEvent } from './data/cloud';
+import { confusions, confusionPhrase } from './world/tutor/personalization';
 import { loadMastery } from './mastery/mastery';
 import type { MasteryMap } from './mastery/mastery';
 import { skillLabel } from './mastery/skills';
@@ -69,6 +71,18 @@ export function TutorDashboard() {
     return () => { live = false; };
   }, [sel, version]);
   const mastery: MasteryMap = cloudMastery && cloudMastery.id === sel ? cloudMastery.map : (sel ? loadMastery(sel) : {});
+
+  // Enriched events (cloud-only) power the confusion analysis.
+  const [cloudEvents, setCloudEvents] = useState<{ id: string; rows: EnrichedSkillEvent[] } | null>(null);
+  useEffect(() => {
+    let live = true;
+    const l = sel ? getLearner(sel) : undefined;
+    if (!l) return;
+    void getEnrichedEvents(l).then((rows) => { if (live) setCloudEvents({ id: sel, rows }); });
+    return () => { live = false; };
+  }, [sel, version]);
+  const mixUps = confusions(cloudEvents && cloudEvents.id === sel ? cloudEvents.rows : []);
+
   const summary = summarize(mastery);
   const topNeed = summary.working[0];
   const ret = retention(mastery, now);
@@ -173,6 +187,17 @@ export function TutorDashboard() {
                     : 'Play a few rounds and the next focus to teach shows up here.'}</p>
                 )}
               </div>
+
+              {/* Common mix-ups — recurring confusions (from the chosen answer) */}
+              {mixUps.length > 0 && (
+                <div className="l2l-card" style={{ marginTop: '16px' }}>
+                  <h3 className="chart-card__title">🔀 Common mix-ups</h3>
+                  <p className="dash-engage">Mixing up similar letters or sounds is common at this age — a gentle side-by-side contrast drill clears it.</p>
+                  <ul className="dash-fresh">
+                    {mixUps.slice(0, 6).map((c) => <li key={`${c.skillKey}-${c.chosen}`} className="dash-fresh__chip">{confusionPhrase(c)}</li>)}
+                  </ul>
+                </div>
+              )}
 
               {/* Keep fresh — spaced review: mastered-but-stale + freshly slipping */}
               {fresh.length > 0 && (

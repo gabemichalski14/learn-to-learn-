@@ -42,6 +42,15 @@ export async function getSessions(learner: Learner): Promise<SessionRecord[]> {
   return loadSessionLog(learner.id);
 }
 
+/** A learner's enriched per-answer events (chosen/first_try/latency/…) for the
+ *  personalization engine. Cloud-only (the local mastery store doesn't keep
+ *  these); empty when signed out. */
+export async function getEnrichedEvents(learner: Learner): Promise<cloud.EnrichedSkillEvent[]> {
+  const cloudId = await cloudActiveId(learner);
+  if (!cloudId) return [];
+  try { return await cloud.listSkillEvents(cloudId); } catch { return []; }
+}
+
 /** A learner's mastery map — computed from cloud events when signed in, local otherwise. */
 export async function getMastery(learner: Learner): Promise<MasteryMap> {
   const cloudId = await cloudActiveId(learner);

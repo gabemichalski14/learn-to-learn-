@@ -1,11 +1,10 @@
 import { navigate } from './router';
 import { findLevel } from './games';
-import { levelCurriculum, lessonSounds } from './curriculum';
 
-/** Sub-menu for one level: its lessons (the curriculum) + its games. */
+/** Sub-menu for one level: its games. (We deliberately do NOT display a granular
+ *  scope & sequence — see docs/IP-CURRICULUM.md.) */
 export function LevelPage({ level }: { level: number }) {
   const lvl = findLevel(level);
-  const curriculum = levelCurriculum(level);
 
   if (!lvl) {
     return (
@@ -22,34 +21,6 @@ export function LevelPage({ level }: { level: number }) {
       <p className="level-page__eyebrow">Level {lvl.num}</p>
       <h1 className="site__title">{lvl.title}</h1>
       <p className="page__lead">{lvl.focus}</p>
-
-      {curriculum && curriculum.lessons.length > 0 && (
-        <section className="site__section" aria-labelledby="lessons-h">
-          <h2 id="lessons-h" className="site__h2">
-            Lessons{curriculum.oral ? ' (oral)' : ''}
-          </h2>
-          <ol className="lesson-list">
-            {curriculum.lessons.map((les) => (
-              <li key={les.n} className="lesson-row">
-                <span className="lesson-row__n">{les.n}</span>
-                <div className="lesson-row__body">
-                  <span className="lesson-row__title">{les.title}</span>
-                  {lessonSounds(les) && <span className="lesson-row__sounds">{lessonSounds(les)}</span>}
-                </div>
-              </li>
-            ))}
-          </ol>
-          {curriculum.lessonFlow && (
-            <p className="lesson-flow">Each lesson: {curriculum.lessonFlow.join(' → ')}</p>
-          )}
-          {curriculum.sections?.some((s) => s.includes('Posttest')) && (
-            <p className="lesson-flow lesson-flow--test">✓ Level ends with a posttest (mastery check)</p>
-          )}
-          {curriculum.partial && (
-            <p className="lesson-flow">More lessons exist — full list pending a capture of the contents page.</p>
-          )}
-        </section>
-      )}
 
       <h2 className="site__h2">Games</h2>
       <div className="tile-grid">

@@ -1,7 +1,6 @@
 import { useState, type CSSProperties, type ReactNode } from 'react';
 import { navigate } from './router';
 import { LEVELS, availableCount } from './games';
-import { levelCurriculum } from './curriculum';
 import { isLevelUnlocked, isLevelReady } from './mastery/levelGate';
 import { useRole } from './useAuth';
 import { useDataVersion } from './data/store';
@@ -28,11 +27,9 @@ const LEVEL_TEASER: Record<number, string> = {
   10: 'Giant words, built brick by brick from ancient roots.',
 };
 
-function footText(num: number, games: number): string {
-  const cur = levelCurriculum(num);
-  const lessons = cur?.lessons.length ?? 0;
-  const lessonStr = lessons > 0 ? `${lessons} lesson${lessons === 1 ? '' : 's'}${cur?.partial ? '+' : ''}` : 'Curriculum pending';
-  return games > 0 ? `${lessonStr} · ${games} game${games === 1 ? '' : 's'} ▸` : lessonStr;
+function footText(_num: number, games: number): string {
+  // We surface our OWN games count only — not a transcribed lesson breakdown.
+  return games > 0 ? `${games} game${games === 1 ? '' : 's'} ▸` : 'Coming soon';
 }
 
 function SpaceVisual() {

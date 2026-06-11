@@ -28,4 +28,17 @@ export default defineConfig([
       'local/no-unstable-deps': 'error',
     },
   },
+  {
+    // IP guardrail: view components (.tsx) must NOT import the curriculum
+    // skeleton — it's distilled from a named program's scope & sequence and may
+    // only drive content generation in logic (.ts) files, never be displayed.
+    // See docs/IP-CURRICULUM.md.
+    files: ['**/*.tsx'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: [{
+        group: ['*curriculum'],
+        message: 'Do not display the curriculum scope & sequence (IP boundary). See docs/IP-CURRICULUM.md — use it only in .ts logic.',
+      }] }],
+    },
+  },
 ])

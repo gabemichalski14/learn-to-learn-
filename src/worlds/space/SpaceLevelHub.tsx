@@ -1,6 +1,5 @@
 import { navigate } from '../../router';
 import { findLevel } from '../../games';
-import { levelCurriculum, lessonSounds } from '../../curriculum';
 import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { SpaceBackdrop } from './SpaceArt';
@@ -13,7 +12,6 @@ import './space.css';
 export function SpaceLevelHub({ level, learnerId }: { level: number; learnerId: string }) {
   useDataVersion();
   const lvl = findLevel(level);
-  const curriculum = levelCurriculum(level);
   if (!lvl) {
     return (
       <main className="sg sg-hub">
@@ -65,18 +63,6 @@ export function SpaceLevelHub({ level, learnerId }: { level: number; learnerId: 
             ✨ Take the Checkpoint — show what you learned!
           </button>
         ) : null}
-
-        {curriculum && curriculum.lessons.length > 0 && (
-          <section className="sg-hub__lessons" aria-label="Lessons">
-            <h2>Mission Log{curriculum.oral ? ' (oral)' : ''}</h2>
-            {curriculum.lessons.map((les) => (
-              <div key={les.n} className="sg-hub__lesson">
-                <b>{les.n}</b>
-                <span>{les.title}{lessonSounds(les) ? ` · ${lessonSounds(les)}` : ''}</span>
-              </div>
-            ))}
-          </section>
-        )}
 
         <button type="button" className="sg-hub__village" onClick={() => navigate('#/village')}>
           <Icon name="ico-village" emoji="🏡" /> Visit your Village

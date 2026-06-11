@@ -146,13 +146,19 @@ export function areasToImprove(learnerId: string, n = 3): FocusArea[] {
  * this sound. Returns undefined when nothing's rated weak yet (→ stay random).
  */
 export function weakestSoundForTarget(map: MasteryMap, target: SoundTarget, pool: string[]): string | undefined {
-  const cands = Object.entries(map)
+  const rated = Object.entries(map)
     .map(([k, s]) => ({ p: parseSkillKey(k), s }))
-    .filter((x) => x.p != null && x.p.target === target && pool.includes(x.p.soundId))
-    .filter((x) => x.s.attempts >= RATED_MIN && scoreOf(x.s) < IMPROVE_BELOW)
-    .map((x) => ({ sound: x.p!.soundId, score: scoreOf(x.s), lastSeen: x.s.lastSeen }))
-    .sort((a, b) => a.score - b.score || b.lastSeen - a.lastSeen);
-  return cands[0]?.sound;
+    .filter((x) => x.p != null && x.p.target === target && pool.includes(x.p.soundId) && x.s.attempts >= RATED_MIN)
+    .map((x) => ({ sound: x.p!.soundId, score: scoreOf(x.s), lastSeen: x.s.lastSeen }));
+  if (!rated.length) return undefined;
+  // Genuinely-shaky sounds come first (weakest, most-recent struggle). But even
+  // when EVERYTHING is strong, keep gently polishing the RELATIVE weakest — tie-
+  // broken by the least-recently-practised (spaced retrieval) — so a high performer
+  // STILL gets targeted, confidence-KEEPING practice (never "you're bad at this":
+  // the learner just sees a little more play on it, and success stays high).
+  const weak = rated.filter((x) => x.score < IMPROVE_BELOW);
+  if (weak.length) return weak.sort((a, b) => a.score - b.score || b.lastSeen - a.lastSeen)[0].sound;
+  return rated.sort((a, b) => a.score - b.score || a.lastSeen - b.lastSeen)[0].sound;
 }
 
 export interface SkillInsight {

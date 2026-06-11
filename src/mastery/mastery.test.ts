@@ -95,3 +95,20 @@ describe('mastery store', () => {
     expect(loadMastery(L)).toEqual({});
   });
 });
+
+describe('weakestSoundForTarget — always targets the weakest, even at high scores', () => {
+  it('returns the genuinely-shaky sound when one is below the line', () => {
+    for (let i = 0; i < 8; i++) recordItem(L, 'sound:first:m', true);            // strong
+    for (let i = 0; i < 6; i++) recordItem(L, 'sound:first:s', i < 4 ? false : true); // shaky
+    expect(weakestSoundForTarget(loadMastery(L), 'beginning', ['m', 's'])).toBe('s');
+  });
+
+  it('keeps polishing the RELATIVE weakest when every sound is strong (confidence-keeping)', () => {
+    for (let i = 0; i < 10; i++) recordItem(L, 'sound:first:m', true);           // ~perfect
+    recordItem(L, 'sound:first:s', false);                                       // one slip…
+    for (let i = 0; i < 9; i++) recordItem(L, 'sound:first:s', true);            // ~0.9 — strong, a touch lower
+    // both well above the 0.8 "needs work" line, yet the slightly-weaker 's' is
+    // still chosen — so a high performer keeps getting targeted practice.
+    expect(weakestSoundForTarget(loadMastery(L), 'beginning', ['m', 's'])).toBe('s');
+  });
+});

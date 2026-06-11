@@ -2,6 +2,7 @@ import { goBack, navigate } from '../../router';
 import { findLevel } from '../../games';
 import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
+import { LevelStory } from '../space/LevelStory';
 import './workshop.css';
 
 /** Patch's Workshop — the immersive launcher for Level 3. A warm, cozy tinker
@@ -20,16 +21,24 @@ export function WorkshopLevelHub({ level, learnerId }: { level: number; learnerI
   }
   return (
     <main className="wk wk-hub">
+      {/* layered scene: a pegboard wall + warm light + a workbench shelf, with a
+          few tools pinned up. Characterful-flat (CSS), transform/opacity only. */}
+      <div className="wk-hub__peg" aria-hidden="true" />
+      <div className="wk-hub__glow" aria-hidden="true" />
       <div className="wk-hub__deco" aria-hidden="true"><span>🔧</span><span>🪚</span><span>🧰</span><span>📏</span><span>⚙️</span></div>
+      <div className="wk-hub__bench" aria-hidden="true" />
       <div className="wk-hud">
         <button type="button" className="wk-back" onClick={() => goBack('#/')}>← Home</button>
         <span className="wk-badge">🧵 Patch's Workshop · Level {lvl.num}</span>
       </div>
 
       <div className="wk-stage wk-hub__stage">
-        <div className="wk-hub__patch" aria-hidden="true">🧵</div>
         <h1 className="wk-hub__title">{lvl.title}</h1>
         <p className="wk-hub__lead">{lvl.focus}</p>
+
+        {/* Patch's story-aware greeting (arrived → healing → healed → resident),
+            re-skinned warm for the Workshop via .wk-hub .sg-story overrides. */}
+        <LevelStory learnerId={learnerId} level={lvl.num} />
 
         <div className="wk-missions">
           {lvl.games.map((g) => {

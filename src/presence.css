@@ -1,0 +1,6 @@
+.presence-wrap { display: inline-flex; align-items: center; gap: 6px; }
+.presence { display: inline-block; border-radius: 50%; flex: 0 0 auto; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85); }
+.presence--online { background: #34c759; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 0 6px rgba(52, 199, 89, 0.6); }
+.presence--recent { background: #f5b945; }
+.presence--offline { background: #c7c7cc; }
+.presence-text { font-size: 12px; font-weight: 700; color: var(--muted, #6b7280); }

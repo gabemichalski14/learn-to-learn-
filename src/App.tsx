@@ -42,6 +42,7 @@ import { loadMastery } from './mastery/mastery';
 import { isLevelUnlocked, isGameUnlocked } from './mastery/levelGate';
 import { levelOfGame } from './games';
 import { LockedScreen } from './LockedScreen';
+import { markActive } from './presence';
 
 export default function App() {
   const route = useRoute();
@@ -69,6 +70,14 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [route.name, route.level, route.game]);
+
+  // Presence heartbeat: mark the active learner "on the platform" while the app
+  // is open (drives the green dot on Admin + the Leaderboard).
+  useEffect(() => {
+    markActive(learnerId);
+    const t = window.setInterval(() => markActive(learnerId), 60_000);
+    return () => window.clearInterval(t);
+  }, [learnerId]);
 
   const world = useWorldTier(learnerId); // app-wide ambient richness grows with real practice
   // Friends light up the world: their motif drifts by while you're helping them

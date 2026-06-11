@@ -10,8 +10,12 @@ import { pipChats } from './data/pipChats';
 import { PipArt } from './mascots/PipArt';
 import { isCloudConfigured } from './data/supabase';
 import { leaderboard } from './data/cloud';
+import { PresenceDot } from './PresenceDot';
+import { lastActiveOf } from './presence';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
+const SPOTLIGHT_SHOWN = 5;       // ~4–5 at once (research: rotating spotlight, never a permanent bottom)
+const SPOTLIGHT_ROTATE_MS = 7000;
 
 // Warm, NON-ranking titles — every learner gets one, so the page celebrates the
 // whole center (no shame, no FOMO). Randomized per visit; collisions are fine.
@@ -22,9 +26,9 @@ const STAR_TITLES = [
 ];
 
 interface Person { id: string; name: string; color: string }
-interface Entry { person: Person; value: string; sortKey: number }
-interface Row extends Person { sessions: number; bestMs: number | null; acc: number | null }
-interface CloudStat { learner_id: string; display_name: string; color: string; sessions: number | null; best_ms: number | null; avg_accuracy: number | null }
+interface Entry { person: Person; value: string; sortKey: number; lastActive: number | null }
+interface Row extends Person { sessions: number; bestMs: number | null; acc: number | null; lastPlayed: string | null }
+interface CloudStat { learner_id: string; display_name: string; color: string; sessions: number | null; best_ms: number | null; avg_accuracy: number | null; last_played: string | null }
 
 function Board({ title, entries }: { title: string; entries: Entry[] }) {
   return (
@@ -39,6 +43,7 @@ function Board({ title, entries }: { title: string; entries: Entry[] }) {
               <span className="lb-row__rank">{MEDALS[i] ?? i + 1}</span>
               <span className="lb-row__avatar" style={{ background: e.person.color }} aria-hidden="true">{initials(e.person.name)}</span>
               <span className="lb-row__name">{e.person.name}</span>
+              <PresenceDot lastActive={e.lastActive} />
               <span className="lb-row__value">{e.value}</span>
             </li>
           ))}
@@ -68,24 +73,36 @@ export function Leaderboard() {
 
   // per-visit seed for the spotlight shuffle (lazy init keeps render pure)
   const [seed] = useState(() => Math.floor(Math.random() * 1e6));
+  const [spotIdx, setSpotIdx] = useState(0); // which slice of the rotating spotlight
   const keyOf = (id: string) => { let h = seed + 7; for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 1_000_000_007; return h; };
 
   const rows: Row[] = usingCloud
-    ? cloud!.map((c) => ({ id: c.learner_id, name: c.display_name, color: c.color, sessions: c.sessions ?? 0, bestMs: c.best_ms ?? null, acc: c.avg_accuracy ?? null }))
-    : loadLearners().map((l) => { const p = loadProgress(l.id); return { id: l.id, name: l.name, color: l.color, sessions: p.sessions, bestMs: p.bestMs ?? null, acc: null }; });
+    ? cloud!.map((c) => ({ id: c.learner_id, name: c.display_name, color: c.color, sessions: c.sessions ?? 0, bestMs: c.best_ms ?? null, acc: c.avg_accuracy ?? null, lastPlayed: c.last_played ?? null }))
+    : loadLearners().map((l) => { const p = loadProgress(l.id); return { id: l.id, name: l.name, color: l.color, sessions: p.sessions, bestMs: p.bestMs ?? null, acc: null, lastPlayed: null }; });
+  const la = (r: Row) => lastActiveOf(r.id, r.lastPlayed);
 
-  const games: Entry[] = rows.filter((r) => r.sessions > 0).map((r) => ({ person: r, sortKey: r.sessions, value: String(r.sessions) })).sort((a, b) => b.sortKey - a.sortKey).slice(0, 5);
-  const fastest: Entry[] = rows.filter((r) => r.bestMs != null).map((r) => ({ person: r, sortKey: r.bestMs as number, value: formatTime(r.bestMs as number) })).sort((a, b) => a.sortKey - b.sortKey).slice(0, 5);
-  const sharp: Entry[] = rows.filter((r) => r.acc != null).map((r) => ({ person: r, sortKey: r.acc as number, value: `${Math.round((r.acc as number) * 100)}%` })).sort((a, b) => b.sortKey - a.sortKey).slice(0, 5);
+  const games: Entry[] = rows.filter((r) => r.sessions > 0).map((r) => ({ person: r, sortKey: r.sessions, value: String(r.sessions), lastActive: la(r) })).sort((a, b) => b.sortKey - a.sortKey).slice(0, 5);
+  const fastest: Entry[] = rows.filter((r) => r.bestMs != null).map((r) => ({ person: r, sortKey: r.bestMs as number, value: formatTime(r.bestMs as number), lastActive: la(r) })).sort((a, b) => a.sortKey - b.sortKey).slice(0, 5);
+  const sharp: Entry[] = rows.filter((r) => r.acc != null).map((r) => ({ person: r, sortKey: r.acc as number, value: `${Math.round((r.acc as number) * 100)}%`, lastActive: la(r) })).sort((a, b) => b.sortKey - a.sortKey).slice(0, 5);
 
   // local-only charming boards (keyed off the device's local ids)
   const localRows = usingCloud ? [] : loadLearners();
-  const stickers: Entry[] = localRows.map((l) => { const n = new Set(loadProgress(l.id).earned).size; return { person: l, sortKey: n, value: `${n}/${ACHIEVEMENTS.length}` }; }).filter((e) => e.sortKey > 0).sort((a, b) => b.sortKey - a.sortKey).slice(0, 5);
-  const friendsHome: Entry[] = localRows.map((l) => { const n = gardenResidents(loadMastery(l.id)).length; return { person: l, sortKey: n, value: String(n) }; }).filter((e) => e.sortKey > 0).sort((a, b) => b.sortKey - a.sortKey).slice(0, 5);
-  const chats: Entry[] = localRows.map((l) => { const n = pipChats(l.id); return { person: l, sortKey: n, value: String(n) }; }).filter((e) => e.sortKey > 0).sort((a, b) => b.sortKey - a.sortKey).slice(0, 5);
+  const stickers: Entry[] = localRows.map((l) => { const n = new Set(loadProgress(l.id).earned).size; return { person: l, sortKey: n, value: `${n}/${ACHIEVEMENTS.length}`, lastActive: lastActiveOf(l.id) }; }).filter((e) => e.sortKey > 0).sort((a, b) => b.sortKey - a.sortKey).slice(0, 5);
+  const friendsHome: Entry[] = localRows.map((l) => { const n = gardenResidents(loadMastery(l.id)).length; return { person: l, sortKey: n, value: String(n), lastActive: lastActiveOf(l.id) }; }).filter((e) => e.sortKey > 0).sort((a, b) => b.sortKey - a.sortKey).slice(0, 5);
+  const chats: Entry[] = localRows.map((l) => { const n = pipChats(l.id); return { person: l, sortKey: n, value: String(n), lastActive: lastActiveOf(l.id) }; }).filter((e) => e.sortKey > 0).sort((a, b) => b.sortKey - a.sortKey).slice(0, 5);
 
-  // Spotlight — EVERY learner gets a warm title (shuffled per visit). Nobody left off.
-  const spotlight = [...rows].sort((a, b) => keyOf(a.id) - keyOf(b.id)).map((r) => ({ person: r as Person, title: STAR_TITLES[keyOf(r.id) % STAR_TITLES.length] }));
+  // Spotlight — EVERY learner gets a warm title; we show a small ROTATING slice
+  // so everyone gets a turn (research: a permanent top/bottom demotivates).
+  const spotlightAll = [...rows].sort((a, b) => keyOf(a.id) - keyOf(b.id)).map((r) => ({ person: r as Person, title: STAR_TITLES[keyOf(r.id) % STAR_TITLES.length], lastActive: la(r) }));
+  const spotCount = spotlightAll.length;
+  useEffect(() => {
+    if (spotCount <= SPOTLIGHT_SHOWN) return;
+    const t = window.setInterval(() => setSpotIdx((i) => (i + SPOTLIGHT_SHOWN) % spotCount), SPOTLIGHT_ROTATE_MS);
+    return () => window.clearInterval(t);
+  }, [spotCount]);
+  const spotlight = spotCount <= SPOTLIGHT_SHOWN
+    ? spotlightAll
+    : Array.from({ length: SPOTLIGHT_SHOWN }, (_, k) => spotlightAll[(spotIdx + k) % spotCount]);
 
   return (
     <main className="l2l-page">
@@ -129,13 +146,13 @@ export function Leaderboard() {
 
             <div className="l2l-card" style={{ marginTop: '16px' }}>
               <h2 className="l2l-h2" style={{ marginBottom: 6 }}>Stars of the center</h2>
-              <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 14px' }}>Every learner shines somewhere — these change each visit, just for fun.</p>
+              <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 14px' }}>Every learner shines somewhere — these rotate, so everyone gets a turn in the spotlight. ✨</p>
               <ul className="lb-spotlight">
                 {spotlight.map((s) => (
                   <li key={s.person.id} className="lb-star">
                     <span className="lb-star__avatar" style={{ background: s.person.color }} aria-hidden="true">{initials(s.person.name)}</span>
                     <span className="lb-star__body">
-                      <span className="lb-star__name">{s.person.name}</span>
+                      <span className="lb-star__name">{s.person.name} <PresenceDot lastActive={s.lastActive} /></span>
                       <span className="lb-star__title">{s.title}</span>
                     </span>
                   </li>

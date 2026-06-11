@@ -7,6 +7,8 @@ import {
   createLearner, deleteLearner, resolveDeletion,
   type CloudLearner, type CloudTutor, type CloudAssignment, type DeletionRequest,
 } from './data/cloud';
+import { PresenceDot } from './PresenceDot';
+import { lastActiveOf } from './presence';
 import './admin.css';
 
 interface StatRow { learner_id: string; display_name: string; sessions: number | null; avg_accuracy: number | null; last_played: string | null }
@@ -56,6 +58,7 @@ export function AdminPage() {
   const learnerName = (id: string) => learners.find((l) => l.id === id)?.display_name ?? 'this student';
   const tutorById = (id: string) => tutors.find((t) => t.id === id);
   const primaryOf = (learnerId: string) => assigns.find((a) => a.learner_id === learnerId && a.relation === 'primary')?.tutor_id ?? '';
+  const presenceOf = (id: string) => lastActiveOf(id, stats.find((s) => s.learner_id === id)?.last_played ?? null);
 
   // Triage: students who've started but are stalled (no play in a while) or
   // finding it hard (low average) — the owner's "who needs a nudge" list.
@@ -173,7 +176,7 @@ export function AdminPage() {
                       <button type="button" className="admin__studentrow" onClick={() => navigate(`#/admin/student/${l.id}`)}>
                         <span className="admin__avatar" style={{ background: l.color }} aria-hidden="true">{l.display_name.slice(0, 1).toUpperCase()}</span>
                         <span className="admin__studentrow-main">
-                          <strong className="admin__studentrow-name">{l.display_name}</strong>
+                          <strong className="admin__studentrow-name">{l.display_name} <PresenceDot lastActive={presenceOf(l.id)} /></strong>
                           <span className="admin__studentrow-sub">{t ? `Tutor: ${tutorName(t)}` : 'No tutor assigned'}</span>
                         </span>
                         <span className="admin__chev" aria-hidden="true">›</span>

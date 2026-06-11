@@ -51,6 +51,8 @@ export const LEVELS: LevelInfo[] = [
       { id: 'ending-sounds', title: 'Touchdown', emoji: '🛬', tagline: 'Land each space critter by its last sound.', status: 'available', route: '#/play/ending-sounds' },
       { id: 'middle-sounds', title: 'Vowel Patrol', emoji: '🛸', tagline: 'Sort space critters by their middle vowel.', status: 'available', route: '#/play/middle-sounds' },
       { id: 'star-station', title: 'Star Station', emoji: '🛰️', tagline: 'Build the word you hear, letter by letter.', status: 'available', route: '#/play/star-station' },
+      { id: 'word-beam', title: 'Word Beam', emoji: '📡', tagline: 'Hear a word — spell it from the whole alphabet.', status: 'available', route: '#/play/word-beam' },
+      { id: 'warp-speed', title: 'Warp Speed', emoji: '☄️', tagline: 'Read each word fast and tap its picture.', status: 'available', route: '#/play/warp-speed' },
     ],
   },
   {

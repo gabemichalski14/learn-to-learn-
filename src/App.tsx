@@ -29,6 +29,8 @@ import { SwitchItGame } from './worlds/garden/SwitchItGame';
 import { RhymeTime } from './worlds/garden/RhymeTime';
 import { BlendIt } from './worlds/garden/BlendIt';
 import { StarStation } from './worlds/space/StarStation';
+import { WordBeam } from './worlds/space/WordBeam';
+import { WarpSpeed } from './worlds/space/WarpSpeed';
 import { BlendBuddies } from './worlds/workshop/BlendBuddies';
 import { SortIt } from './worlds/workshop/SortIt';
 import { RuleBreakers } from './worlds/workshop/RuleBreakers';
@@ -141,6 +143,12 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'star-station') {
     return <StarStation learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'word-beam') {
+    return <WordBeam learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'warp-speed') {
+    return <WarpSpeed learnerId={learnerId} />;
   }
   if (route.name === 'play' && route.game === 'blend-buddies') {
     return <BlendBuddies learnerId={learnerId} />;

@@ -435,3 +435,20 @@
 .ss-btn--ghost { color: #dff4f8; background: rgba(255, 255, 255, 0.1); border: 1.5px solid rgba(127, 223, 238, 0.5); box-shadow: none; }
 .ss-btn:focus-visible { outline: 3px solid #22c1d6; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .ss-slot.is-filled, .ss-tile.is-wrong { animation: none; } .ss-tile:hover, .ss-tile:active { transform: none; } }
+
+/* Word Beam — full alphabet tray (dictation) */
+.wb-keys { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 460px; margin: 8px auto 0; }
+.wb-key {
+  min-width: 40px; min-height: 44px; padding: 8px 10px; cursor: pointer; font: inherit; font-weight: 800; font-size: 18px;
+  border: 2px solid var(--teal-ring); border-radius: 12px; background: rgba(255, 255, 255, 0.92); color: var(--ink);
+  transition: transform .1s ease, background .1s ease; text-transform: lowercase;
+}
+.wb-key:hover { transform: translateY(-2px); background: #fff; }
+.wb-key:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.wb-key.is-wrong { background: #f6d4d4; border-color: #e0a3a3; }
+
+/* Warp Speed — big word + picture options (fluency) */
+.ws-word { font-family: var(--font-display, Georgia), serif; font-weight: 800; font-size: clamp(40px, 12vw, 68px); letter-spacing: .04em; color: #fff; margin: 6px 0 4px; text-align: center; }
+.ws-pics { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(10px, 3vw, 18px); }
+.ws-opt.is-right { box-shadow: 0 0 0 4px rgba(107, 174, 127, 0.45); }
+.ws-opt.is-wrong { opacity: .6; }

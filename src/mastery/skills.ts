@@ -53,6 +53,7 @@ export function skillTag(key: SkillKey): string {
   if (kind === 'digraph') return `${a} · digraph`;
   if (kind === 'rule') return a === 'floss' ? 'FLOSS rule' : a === 'ck' ? '-ck rule' : `${a} rule`;
   if (kind === 'syll') return 'two-syllable words';
+  if (kind === 'read') return 'reading speed';
   const p = parseSkillKey(key);
   if (!p) return key;
   const where = p.target === 'ending' ? 'end' : p.target === 'medial' ? 'middle' : 'start';
@@ -67,6 +68,7 @@ export function skillLabel(key: SkillKey): string {
   if (kind === 'digraph') return `the “${a}” digraph (two letters, one sound)`;
   if (kind === 'rule') return a === 'floss' ? 'the FLOSS rule (ff, ll, ss, zz)' : a === 'ck' ? 'the -ck spelling rule' : `the ${a} rule`;
   if (kind === 'syll') return 'splitting two-syllable words';
+  if (kind === 'read') return 'reading short words quickly (fluency)';
   const p = parseSkillKey(key);
   if (!p) return key;
   const where = p.target === 'ending' ? 'at the end' : p.target === 'medial' ? 'in the middle' : 'at the start';

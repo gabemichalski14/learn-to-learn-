@@ -11,6 +11,7 @@ import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { SpaceBackdrop } from './SpaceArt';
 import { GameShell } from '../../ui/GameShell';
+import { Icon } from '../../ui/Icon';
 import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import './space.css';
@@ -149,7 +150,7 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
             <p className="ss-finish__title">Station built! {'★'.repeat(finish.stars)}</p>
             <p className="ss-finish__say">{character?.name ?? 'Moss'} loves what you constructed. 🌟</p>
             <div className="ss-actions">
-              <button type="button" className="ss-btn" onClick={restart}>Build again 🔁</button>
+              <button type="button" className="ss-btn" onClick={restart}>Build again <Icon name="ico-replay" emoji="🔁" /></button>
               <button type="button" className="ss-btn ss-btn--ghost" onClick={() => navigate('#/level/2')}>Back to the Station</button>
             </div>
           </div>
@@ -169,7 +170,7 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
 
           <button type="button" className="ss-pic" onClick={() => say(word)} aria-label="Hear the word again">
             <span className="ss-pic__emoji">{round.emoji}</span>
-            <span className="ss-pic__hear">🔊 hear it</span>
+            <span className="ss-pic__hear"><Icon name="ico-hear" emoji="🔊" /> hear it</span>
           </button>
 
           <div className="ss-slots" aria-label="word being built">

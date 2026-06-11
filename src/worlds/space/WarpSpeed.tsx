@@ -10,6 +10,7 @@ import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { SpaceBackdrop } from './SpaceArt';
 import { GameShell } from '../../ui/GameShell';
+import { Icon } from '../../ui/Icon';
 import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import './space.css';
@@ -103,7 +104,7 @@ export function WarpSpeed({ learnerId = 'guest' }: { learnerId?: string }) {
             <p className="ss-finish__title">Warp speed! {'★'.repeat(finish.stars)}</p>
             <p className="ss-finish__say">{finish.score} / {ROUNDS} read · about {finish.perMin} words a minute. {character?.name ?? 'Moss'} could barely keep up! ☄️</p>
             <div className="ss-actions">
-              <button type="button" className="ss-btn" onClick={restart}>Go again 🔁</button>
+              <button type="button" className="ss-btn" onClick={restart}>Go again <Icon name="ico-replay" emoji="🔁" /></button>
               <button type="button" className="ss-btn ss-btn--ghost" onClick={() => navigate('#/level/2')}>Back to the Station</button>
             </div>
           </div>

@@ -30,6 +30,7 @@ import { StarStation } from './worlds/space/StarStation';
 import { BlendBuddies } from './worlds/workshop/BlendBuddies';
 import { SortIt } from './worlds/workshop/SortIt';
 import { RuleBreakers } from './worlds/workshop/RuleBreakers';
+import { ChopShop } from './worlds/workshop/ChopShop';
 import { CheckpointGame } from './CheckpointGame';
 import { ensureLearner, setCurrentLearnerId, getCurrentLearnerId } from './profiles';
 import { reconcileRoster } from './data/identity';
@@ -121,6 +122,9 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'rule-breakers') {
     return <RuleBreakers learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'chop-shop') {
+    return <ChopShop learnerId={learnerId} />;
   }
   if (route.name === 'play') {
     return <GameScreen learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} focus={route.focus} />;

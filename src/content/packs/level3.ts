@@ -84,6 +84,12 @@ export function buildRuleRounds(n: number, rng: () => number = Math.random): Rul
   }));
 }
 
+// ---------- Chop Shop (tap the syllable boundary) ----------
+export interface ChopRound { word: string; emoji?: string; split: number }
+export function buildChopRounds(n: number, rng: () => number = Math.random): ChopRound[] {
+  return shuffle(SYLL_WORDS, rng).slice(0, n).map((w) => ({ word: w.label, emoji: w.emoji, split: w.split }));
+}
+
 const TILE_DISTRACTORS = 'bcdfghjklmnpqrstvwz'.split('');
 /** `n` rounds: a blend word + a shuffled tray of its letters + 2 distractors.
  *  `blendIdx` marks the two "buddy" letters (so the UI can show them holding hands). */

@@ -59,7 +59,7 @@ export const LEVELS: LevelInfo[] = [
       { id: 'blend-buddies', title: 'Blend Buddies', emoji: '🧵', tagline: 'Build the word — keep both blend buddies together.', status: 'available', route: '#/play/blend-buddies' },
       { id: 'sort-it', title: 'Sort It', emoji: '🗂️', tagline: 'Sort words by their digraph (sh, ch, th…).', status: 'available', route: '#/play/sort-it' },
       { id: 'rule-breakers', title: 'Rule Breakers', emoji: '📏', tagline: 'Pick the right ending (ck, ff, ll, ss).', status: 'available', route: '#/play/rule-breakers' },
-      soon('chop-shop', 'Chop Shop', '🪚', 'Chop two-syllable words in two.'),
+      { id: 'chop-shop', title: 'Chop Shop', emoji: '🪚', tagline: 'Chop two-syllable words in two.', status: 'available', route: '#/play/chop-shop' },
     ],
   },
   {

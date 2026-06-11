@@ -1,5 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { matchDestination, destById, PIP_DESTINATIONS } from './pipNav';
+import { matchDestination, destById, PIP_DESTINATIONS, searchDestinations } from './pipNav';
+
+describe('searchDestinations (type-ahead)', () => {
+  it('suggests by partial label or keyword, best-first', () => {
+    expect(searchDestinations('lead')[0]?.id).toBe('leaderboard'); // label prefix
+    expect(searchDestinations('gard')[0]?.id).toBe('garden');      // label/keyword
+    expect(searchDestinations('rocket').some((d) => d.id === 'space')).toBe(true); // keyword
+  });
+  it('returns nothing for an empty query (Pip never shows a place grid)', () => {
+    expect(searchDestinations('')).toEqual([]);
+    expect(searchDestinations('   ')).toEqual([]);
+  });
+});
 
 describe('matchDestination', () => {
   it('routes natural requests to the right place', () => {

@@ -141,9 +141,12 @@
 .mascot-say__askgo { flex: 0 0 auto; width: 40px; min-height: 40px; border: none; border-radius: 12px; cursor: pointer;
   background: linear-gradient(135deg, var(--teal), var(--teal-deep)); color: #fff; font-size: 18px; font-weight: 800; }
 .mascot-say__hint { margin: 0 0 8px; font-size: 12px; color: var(--muted); font-weight: 600; }
-.mascot-say__chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.mascot-say__chip { font: inherit; font-weight: 700; font-size: 12px; cursor: pointer; min-height: 36px;
+/* live type-ahead suggestions (no place-icon grid — you type where to go) */
+.mascot-say__results { display: flex; flex-direction: column; gap: 4px; max-height: 168px; overflow-y: auto; }
+.mascot-say__result { font: inherit; font-weight: 700; font-size: 13px; cursor: pointer; min-height: 40px; text-align: left;
   border: 1px solid var(--teal-ring); background: #fff; color: var(--teal-deep);
-  padding: 6px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 4px; }
-.mascot-say__chip:hover { background: var(--teal-soft); }
-.mascot-say__chip:focus-visible, .mascot-say__nav-toggle:focus-visible, .mascot-say__askgo:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  padding: 8px 12px; border-radius: 12px; }
+.mascot-say__result:hover { background: var(--teal-soft); }
+.mascot-say__hl { background: transparent; color: var(--teal); font-weight: 900; text-decoration: underline; text-underline-offset: 2px; }
+.mascot-say__result:focus-visible, .mascot-say__nav-toggle:focus-visible, .mascot-say__askgo:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.mascot-say__askgo:disabled { opacity: 0.4; cursor: default; }

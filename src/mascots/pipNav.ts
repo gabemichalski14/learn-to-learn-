@@ -38,7 +38,7 @@ export function destById(id: string): Dest | null {
 
 /**
  * Map a free-text request to a destination by keyword overlap. Returns the
- * best match, or null when nothing is recognized (UI then shows the chips).
+ * best match, or null when nothing is recognized.
  */
 export function matchDestination(query: string): Dest | null {
   const words = query.toLowerCase().match(/[a-z]+/g);
@@ -52,4 +52,27 @@ export function matchDestination(query: string): Dest | null {
     if (score > bestScore) { bestScore = score; best = dest; }
   }
   return bestScore > 0 ? best : null;
+}
+
+/**
+ * Live type-ahead: every destination whose label or a keyword matches the
+ * (partial) query, ranked best-first. Empty query → no suggestions (Pip never
+ * shows a grid of places to pick from — you type where you want to go). Powers
+ * the search box where the matched letters are highlighted as you type.
+ */
+export function searchDestinations(query: string): Dest[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  const scored: { d: Dest; s: number }[] = [];
+  for (const d of PIP_DESTINATIONS) {
+    const label = d.label.toLowerCase();
+    let s = -1;
+    if (label.startsWith(q)) s = 4;
+    else if (label.includes(q)) s = 3;
+    else if (d.keys.some((k) => k === q)) s = 2.5;
+    else if (d.keys.some((k) => k.startsWith(q))) s = 2;
+    else if (d.keys.some((k) => k.includes(q))) s = 1;
+    if (s >= 0) scored.push({ d, s });
+  }
+  return scored.sort((a, b) => b.s - a.s).map((x) => x.d);
 }

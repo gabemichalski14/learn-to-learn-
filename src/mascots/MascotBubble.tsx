@@ -1,12 +1,20 @@
 import { useState, type FormEvent } from 'react';
 import type { Phrase } from './phrases';
-import { PIP_DESTINATIONS, matchDestination } from './pipNav';
+import { searchDestinations, matchDestination } from './pipNav';
+
+/** Highlight the typed letters inside a place name as you go. */
+function Highlight({ text, q }: { text: string; q: string }) {
+  const needle = q.trim();
+  const i = needle ? text.toLowerCase().indexOf(needle.toLowerCase()) : -1;
+  if (i < 0) return <>{text}</>;
+  return <>{text.slice(0, i)}<mark className="mascot-say__hl">{text.slice(i, i + needle.length)}</mark>{text.slice(i + needle.length)}</>;
+}
 
 /**
  * Pip's speech bubble. Two modes: a warm line (with its learning CTA), or a
- * "Take me to…" guide panel where the learner can tap a place — or just *ask*
- * ("my garden", "I wanna play") and Pip figures out where. Navigation is handed
- * up so the caller can play the mascot-led wipe (Pip walks you there).
+ * "type where to go" guide. Pip no longer shows a grid of place-icons to pick
+ * from — you TYPE a place and he walks you there, suggesting matches with the
+ * letters you've typed highlighted as you go.
  */
 export function MascotBubble({
   phrase, onCta, onDismiss, onNavigate,
@@ -18,13 +26,12 @@ export function MascotBubble({
 }) {
   const [nav, setNav] = useState(false);
   const [q, setQ] = useState('');
-  const [hint, setHint] = useState<string | null>(null);
+  const results = onNavigate ? searchDestinations(q) : [];
 
   function ask(e: FormEvent) {
     e.preventDefault();
-    const m = matchDestination(q);
-    if (m && onNavigate) { onNavigate(m.to); return; }
-    setHint('Hmm, I’m not sure where that is — tap a spot below! 🧭');
+    const top = results[0] ?? matchDestination(q);
+    if (top) onNavigate?.(top.to);
   }
 
   return (
@@ -39,32 +46,36 @@ export function MascotBubble({
               <button type="button" className="mascot-say__cta" onClick={onCta}>{phrase.cta} →</button>
             )}
             {onNavigate && (
-              <button type="button" className="mascot-say__nav-toggle" onClick={() => setNav(true)}>🧭 Take me to…</button>
+              <button type="button" className="mascot-say__nav-toggle" onClick={() => setNav(true)}>🧭 Take me somewhere…</button>
             )}
           </div>
         </>
       ) : (
         <>
-          <p className="mascot-say__navtitle">Where shall we wander, Explorer? I'll walk you there. 🌿</p>
+          <p className="mascot-say__navtitle">Type where you'd like to go — I'll walk you there. 🌿</p>
           <form className="mascot-say__ask" onSubmit={ask}>
             <input
               className="mascot-say__askinput"
               value={q}
-              onChange={(e) => { setQ(e.target.value); setHint(null); }}
-              placeholder="Ask Pip… (e.g. “my garden”)"
-              aria-label="Ask Pip where to go"
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="garden · games · leaderboard · home…"
+              aria-label="Type where to go"
               maxLength={40}
+              autoFocus
             />
-            <button type="submit" className="mascot-say__askgo" aria-label="Go">→</button>
+            <button type="submit" className="mascot-say__askgo" aria-label="Go" disabled={!results.length}>→</button>
           </form>
-          {hint && <p className="mascot-say__hint">{hint}</p>}
-          <div className="mascot-say__chips">
-            {PIP_DESTINATIONS.map((d) => (
-              <button key={d.to} type="button" className="mascot-say__chip" onClick={() => onNavigate?.(d.to)}>
-                <span aria-hidden="true">{d.emoji}</span> {d.label}
-              </button>
-            ))}
-          </div>
+          {q.trim() && (
+            <div className="mascot-say__results">
+              {results.length ? results.map((d) => (
+                <button key={d.to} type="button" className="mascot-say__result" onClick={() => onNavigate?.(d.to)}>
+                  <Highlight text={d.label} q={q} />
+                </button>
+              )) : (
+                <p className="mascot-say__hint">Hmm, I don't know that place — try “garden”, “games”, or “home”. 🧭</p>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>

@@ -53,8 +53,8 @@ export function LevelStory({ learnerId, level }: { learnerId: string; level: num
           </button>
         )}
         {stage === 'resident' && (
-          <button type="button" className="sg-story__cta sg-story__cta--ghost" onClick={() => navigate('#/level/1')}>
-            Visit the garden 🌼
+          <button type="button" className="sg-story__cta sg-story__cta--ghost" onClick={() => navigate('#/village')}>
+            Visit the Village 🏡
           </button>
         )}
       </div>

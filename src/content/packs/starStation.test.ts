@@ -16,4 +16,11 @@ describe('buildStarRounds', () => {
     expect(positionTarget(1, 3)).toBe('medial');
     expect(positionTarget(2, 3)).toBe('ending');
   });
+  it('NEVER includes final-x words (box/fox/six spell /ks/, not one ending sound)', () => {
+    const seen = new Set<string>();
+    for (let k = 0; k < 80; k++) buildStarRounds(6).forEach((r) => seen.add(r.word));
+    for (const w of seen) expect(w.endsWith('x')).toBe(false);
+    // sanity: the clean pool is still non-trivial
+    expect(seen.size).toBeGreaterThanOrEqual(6);
+  });
 });

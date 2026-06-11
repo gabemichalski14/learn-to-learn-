@@ -27,7 +27,8 @@ const ROUNDS = 6;
 export function WordBeam({ learnerId = 'guest' }: { learnerId?: string }) {
   const audio = useMemo(() => createRecordedAudioPlayer(), []);
   const character = castFor(2); // Moss
-  const heal = character ? healFor(character, loadMastery(learnerId)) : 1;
+  // Moss's REAL recovery — heals LIVE as you spell (each placement records his sound).
+  const [heal, setHeal] = useState(() => (character ? healFor(character, loadMastery(learnerId)) : 1));
   const [muted, setMutedState] = useState(isMuted());
   function toggleMute() { const n = !muted; setMuted(n); setMutedState(n); }
   const [rounds, setRounds] = useState(() => buildDictationRounds(ROUNDS));
@@ -62,6 +63,7 @@ export function WordBeam({ learnerId = 'guest' }: { learnerId?: string }) {
     window.setTimeout(() => {
       recordItem(learnerId, key, correct, undefined, correct ? undefined : chosen, firstTry);
       logSkillEvent(learnerId, { skillKey: key, correct, at: Date.now(), game: 'word-beam', level: 2, firstTry, chosen: correct ? undefined : chosen });
+      if (character) setHeal(healFor(character, loadMastery(learnerId))); // Moss heals live
     }, 0);
   }
 

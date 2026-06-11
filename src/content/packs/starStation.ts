@@ -14,7 +14,11 @@ export interface BuildRound {
   tiles: string[];
 }
 
-const CVC = shortVowelWords.words.filter((w) => w.label.length === 3 && /^[a-z]{3}$/.test(w.label));
+// TRUE 3-phoneme CVC only: each letter must map to one sound, so the three tile
+// slots = beginning / medial / ending cleanly. Exclude final-x (box/fox/six spell
+// /ks/ — two phonemes in one letter), which would teach "/ks/ = one sound" and log
+// a bogus `sound:last:x` skill. (box/fox/six still sort fine in Vowel Patrol.)
+const CVC = shortVowelWords.words.filter((w) => /^[a-z]{3}$/.test(w.label) && !w.label.endsWith('x'));
 
 function shuffle<T>(arr: T[], rng: () => number): T[] {
   const a = [...arr];

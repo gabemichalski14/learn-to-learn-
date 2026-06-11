@@ -26,7 +26,9 @@ const ROUNDS = 6;
 export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
   const audio = useMemo(() => createRecordedAudioPlayer(), []);
   const character = castFor(2); // Moss
-  const heal = character ? healFor(character, loadMastery(learnerId)) : 1; // real recovery, like every other game
+  // Moss's REAL recovery — and it heals LIVE as you build (each placement records
+  // his sound), like the sort game, not frozen for the whole session.
+  const [heal, setHeal] = useState(() => (character ? healFor(character, loadMastery(learnerId)) : 1));
   const [muted, setMutedState] = useState(isMuted());
   function toggleMute() { const n = !muted; setMuted(n); setMutedState(n); }
   const [rounds, setRounds] = useState(() => buildStarRounds(ROUNDS));
@@ -68,6 +70,7 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
         skillKey: key, correct, at: Date.now(), game: 'star-station', level: 2, firstTry,
         chosen: correct ? undefined : chosen, // the letter they tapped instead (confusion)
       });
+      if (character) setHeal(healFor(character, loadMastery(learnerId))); // Moss heals live
     }, 0);
   }
 

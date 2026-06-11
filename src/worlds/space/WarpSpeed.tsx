@@ -72,7 +72,10 @@ export function WarpSpeed({ learnerId = 'guest' }: { learnerId?: string }) {
     });
     awardForSession(learnerId);
     sfx.win();
-    const perMin = Math.round((correctRef.current / durationMs) * 60000);
+    // Cap at a plausible reading rate so an ultra-fast session can't show an
+    // absurd "1200 words a minute" (display-only; the tutor WCPM is computed
+    // separately from session data).
+    const perMin = Math.min(200, Math.round((correctRef.current / durationMs) * 60000));
     setFinish({ score: correctRef.current, perMin, stars: wrongRef.current === 0 ? 3 : correctRef.current >= ROUNDS - 2 ? 2 : 1 });
   }
 

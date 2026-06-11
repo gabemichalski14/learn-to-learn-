@@ -8,7 +8,7 @@ import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
-import { GardenBackdrop, SproutGuide } from './GardenArt';
+import { GardenBackdrop } from './GardenArt';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
 import { MascotSpeaker } from '../../mascots/MascotSpeaker';
 import { castFor, reactionLine, healFor, characterStage, fragmentToReveal, isFullyRecovered } from '../../world/lore/cast';
@@ -46,7 +46,6 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const [attempts, setAttempts] = useState(0);
   const [phase, setPhase] = useState<Phase>('idle');
   const [finish, setFinish] = useState<{ stars: number; beat?: string; homecoming?: boolean } | null>(null);
-  const [guideOpen, setGuideOpen] = useState(true);
 
   // Chip — the Level 1 companion. You TEACH him to hear the beats (protégé
   // effect); each word you tap out, he catches another beat and heals from your
@@ -64,7 +63,6 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   // Juice state
   const [combo, setCombo] = useState(0);
   const comboRef = useRef(0);
-  const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
   const [sway, setSway] = useState(false);
   const [muted, setMutedState] = useState(isMuted());
   const [echoPing, setEchoPing] = useState(0); // bumps on an audio moment → Echo twinkles
@@ -138,8 +136,6 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       setCombo(c);
       if (c >= 2) sfx.combo(c); else sfx.correct();
       setGrew((g) => g + 1); // a flower for your garden
-      setMood('cheer');
-      window.setTimeout(() => setMood((m) => (m === 'cheer' ? null : m)), 900);
       // Chip catches the beat — heal from real mastery + react (reveal his memory
       // the moment his sound is fully recovered, else a warm "I caught it").
       if (character) {
@@ -156,10 +152,8 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       comboRef.current = 0;
       setCombo(0);
       sfx.wrong();
-      setMood('wobble');
       setSway(true);
       window.setTimeout(() => setSway(false), 480);
-      window.setTimeout(() => setMood((m) => (m === 'wobble' ? null : m)), 640);
       if (character) {
         setChipLine(reactionLine(character, 'wrong'));
         setChipMood('wobble');
@@ -237,7 +231,6 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
     startRef.current = Date.now();
     comboRef.current = 0;
     setCombo(0);
-    setMood(null);
     setSway(false);
     if (character) {
       setChipHeal(healFor(character, loadMastery(learnerId)));
@@ -279,7 +272,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
               onClick={() => { void audio.narrate(chipLine); sfx.tap(); setChipMood('cheer'); window.setTimeout(() => setChipMood((m) => (m === 'cheer' ? null : m)), 760); }}
               aria-label={`Hear ${character.name} again`}
             >
-              <CharacterArt emoji={character.emoji} heal={chipHeal} mood={tutorial ? 'point' : chipMood} size={62} art={character.art} label={character.name} />
+              <CharacterArt emoji={character.emoji} heal={chipHeal} mood={tutorial ? 'point' : chipMood} size={76} art={character.art} label={character.name} />
             </button>
             <div className="gd-hero__body">
               <p className="gd-hero__line" role="status">{chipLine}</p>
@@ -330,19 +323,6 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
         )}
 
         <p className={`gd-status${phase === 'wrong' ? ' gd-status--wrong' : ''}`} role="status">{status}</p>
-      </div>
-
-      <div className="gd-scout">
-        <button type="button" className="gd-scout__btn" onClick={() => { sfx.tap(); setGuideOpen((o) => !o); }} aria-label="Sprout — tap for help">
-          <SproutGuide mood={mood} />
-        </button>
-        {guideOpen && (
-          <div className="gd-bubble" role="status">
-            <button type="button" className="gd-bubble__x" onClick={() => setGuideOpen(false)} aria-label="Close help">✕</button>
-            <p className="gd-bubble__hi">Hi, I'm Sprout! 🌱</p>
-            <p>Listen to the word, then <b>tap a sprout for each sound</b>. Stretch it out — like b…ee.</p>
-          </div>
-        )}
       </div>
 
       {finish && (

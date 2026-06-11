@@ -7,9 +7,13 @@
   animation: char-bob 3.4s ease-in-out infinite;
   will-change: transform;
 }
-.char-art--s0 { filter: grayscale(1) brightness(.85); opacity: .5; transform: scale(.82); }
-.char-art--s1 { filter: grayscale(.6) brightness(.95); opacity: .72; transform: scale(.9); }
-.char-art--s2 { filter: grayscale(.25); opacity: .9; transform: scale(.97); }
+/* A "not yet whole" character should still read as a complete, appealing
+   character whose colour has drained — NOT a ghostly loading placeholder. Keep a
+   clear muted→vivid progression (+ a glow once whole) but never fully grey it out
+   or drop it below ~70% opacity, so it always looks finished and intentional. */
+.char-art--s0 { filter: grayscale(.5) brightness(.96) saturate(.9); opacity: .74; transform: scale(.92); }
+.char-art--s1 { filter: grayscale(.32) brightness(.98); opacity: .85; transform: scale(.95); }
+.char-art--s2 { filter: grayscale(.12); opacity: .95; transform: scale(.98); }
 .char-art--s3 { filter: drop-shadow(0 0 14px rgba(255, 214, 120, .55)); opacity: 1; transform: scale(1); }
 img.char-art { object-fit: contain; }
 

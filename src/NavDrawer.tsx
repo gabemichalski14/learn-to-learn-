@@ -3,7 +3,7 @@ import { navigate } from './router';
 import type { RouteName } from './router';
 import type { Role } from './useAuth';
 import { LogoMark } from './LogoMark';
-import { getCurrentUser, onAuthChange, signOut } from './data/cloud';
+import { getCurrentUser, getMyName, onAuthChange, signOut } from './data/cloud';
 
 /** Who sees a nav item. `guest` = nobody signed in (a child on a shared device). */
 type Audience = 'guest' | 'owner' | 'tutor' | 'parent';
@@ -42,13 +42,17 @@ export function NavDrawer({ route, role = null }: { route: RouteName; role?: Rol
   const [acctOpen, setAcctOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
   const audience: Audience = role ?? 'guest';
 
-  // Track the signed-in identity for the bottom block. onAuthChange gives a
-  // boolean + returns a cleanup fn, so we just re-fetch the user on any change.
+  // Track the signed-in identity (name + email) for the bottom block. onAuthChange
+  // gives a boolean + a cleanup fn, so we just re-fetch on any change.
   useEffect(() => {
     let live = true;
-    const load = () => { void getCurrentUser().then((u) => { if (live) setEmail((u as { email?: string } | null)?.email ?? null); }).catch(() => {}); };
+    const load = () => {
+      void getCurrentUser().then((u) => { if (live) setEmail((u as { email?: string } | null)?.email ?? null); }).catch(() => {});
+      void getMyName().then((n) => { if (live) setFullName(n); }).catch(() => {});
+    };
     load();
     const off = onAuthChange(() => load());
     return () => { live = false; off(); };
@@ -80,8 +84,10 @@ export function NavDrawer({ route, role = null }: { route: RouteName; role?: Rol
     return out;
   })();
 
-  const identityName = email ?? 'Shared device';
-  const avatar = (email ?? 'L').slice(0, 1).toUpperCase();
+  // Prefer the first name (the name you set in Account); fall back to email, then guest.
+  const firstName = fullName?.trim().split(/\s+/)[0] || '';
+  const identityName = firstName || email || 'Shared device';
+  const avatar = (firstName || email || 'L').slice(0, 1).toUpperCase();
 
   return (
     <>

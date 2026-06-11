@@ -12,6 +12,7 @@ import { GardenBackdrop } from './GardenArt';
 import { GameShell } from '../../ui/GameShell';
 import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
+import { WordPicture } from '../../world/WordPicture';
 import './garden.css';
 
 const ROUNDS = 8;
@@ -124,7 +125,7 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
 
           <div className="gd-panel">
             <button type="button" className="gd-pic gd-pic--target" onClick={() => say(round.target.word)} aria-label={`Hear ${round.target.word} again`}>
-              <span className="gd-pic__emoji">{round.target.emoji}</span>
+              <WordPicture label={round.target.word} emoji={round.target.emoji} className="gd-picimg" />
               <span className="gd-pic__hear">🔊 hear it</span>
             </button>
             <p className="sd-q">Which one <b>rhymes</b>?</p>
@@ -133,7 +134,7 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
                 <button key={opt.word} type="button"
                   className={`gd-pic gd-pic--opt${picked === opt.word ? (opt.word === round.answer ? ' is-right' : ' is-wrong') : ''}`}
                   disabled={picked !== null} onClick={() => choose(opt)} aria-label={opt.word}>
-                  <span className="gd-pic__emoji">{opt.emoji}</span>
+                  <WordPicture label={opt.word} emoji={opt.emoji} className="gd-picimg" />
                 </button>
               ))}
             </div>

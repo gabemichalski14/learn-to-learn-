@@ -395,6 +395,10 @@ img.gd-wordpic.wpic { width: clamp(160px, 40vw, 232px); height: auto; }
 .gd-pic:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .gd-pic:disabled { cursor: default; }
 .gd-pic__emoji { font-size: clamp(40px, 11vw, 60px); line-height: 1; }
+/* WordPicture inside a Rhyme/Blend option card: painted PNG sized like the emoji,
+   with the emoji fallback at the same visual size when a PNG isn't present yet. */
+.gd-picimg { width: clamp(64px, 16vw, 92px); height: auto; }
+.gd-picimg.wpic--emoji { width: auto; font-size: clamp(40px, 11vw, 60px); }
 .gd-pic--target { margin: 0 auto 6px; border-style: dashed; }
 .gd-pic__hear { font-size: 12px; font-weight: 800; color: var(--teal-deep); }
 .gd-pic--opt.is-right { border-color: var(--green); box-shadow: 0 0 0 4px rgba(107, 174, 127, 0.32); }

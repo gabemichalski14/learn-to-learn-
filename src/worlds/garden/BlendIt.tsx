@@ -12,6 +12,7 @@ import { GardenBackdrop } from './GardenArt';
 import { GameShell } from '../../ui/GameShell';
 import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
+import { WordPicture } from '../../world/WordPicture';
 import './garden.css';
 
 const ROUNDS = 8;
@@ -140,7 +141,7 @@ export function BlendIt({ learnerId = 'guest' }: { learnerId?: string }) {
                 <button key={opt.word} type="button"
                   className={`gd-pic gd-pic--opt${picked === opt.word ? (opt.word === round.word ? ' is-right' : ' is-wrong') : ''}`}
                   disabled={picked !== null} onClick={() => choose(opt)} aria-label={opt.word}>
-                  <span className="gd-pic__emoji">{opt.emoji}</span>
+                  <WordPicture label={opt.word} emoji={opt.emoji} className="gd-picimg" />
                 </button>
               ))}
             </div>

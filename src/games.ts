@@ -38,6 +38,8 @@ export const LEVELS: LevelInfo[] = [
       { id: 'tap-it-out', title: 'Tap It Out', emoji: '🌱', tagline: 'Tap a sprout for each sound you hear.', status: 'available', route: '#/play/tap-it-out' },
       { id: 'same-or-different', title: 'Same or Different?', emoji: '👂', tagline: 'Decide if two spoken words match.', status: 'available', route: '#/play/same-or-different' },
       { id: 'switch-it', title: 'Switch It', emoji: '🔁', tagline: 'Tap the sound that changed to make a new word.', status: 'available', route: '#/play/switch-it' },
+      { id: 'rhyme-time', title: 'Rhyme Time', emoji: '🎵', tagline: 'Hear a word — tap the picture that rhymes.', status: 'available', route: '#/play/rhyme-time' },
+      { id: 'blend-it', title: 'Blend It', emoji: '🔡', tagline: 'Hear the sounds, then tap the word they make.', status: 'available', route: '#/play/blend-it' },
     ],
   },
   {

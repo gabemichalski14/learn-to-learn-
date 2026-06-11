@@ -26,6 +26,8 @@ import { GardenLevelHub } from './worlds/garden/GardenLevelHub';
 import { TapItOutGame } from './worlds/garden/TapItOutGame';
 import { SameOrDifferent } from './worlds/garden/SameOrDifferent';
 import { SwitchItGame } from './worlds/garden/SwitchItGame';
+import { RhymeTime } from './worlds/garden/RhymeTime';
+import { BlendIt } from './worlds/garden/BlendIt';
 import { StarStation } from './worlds/space/StarStation';
 import { BlendBuddies } from './worlds/workshop/BlendBuddies';
 import { SortIt } from './worlds/workshop/SortIt';
@@ -130,6 +132,12 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'switch-it') {
     return <SwitchItGame learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'rhyme-time') {
+    return <RhymeTime learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'blend-it') {
+    return <BlendIt learnerId={learnerId} />;
   }
   if (route.name === 'play' && route.game === 'star-station') {
     return <StarStation learnerId={learnerId} />;

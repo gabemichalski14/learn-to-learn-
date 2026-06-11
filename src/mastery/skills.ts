@@ -36,8 +36,18 @@ export const syllKey = (pattern: string): SkillKey => `syll:${pattern}`;
 /** Compact, position-FIRST tag for tight chips (e.g. the Sound Map). Keeps the
  *  distinguishing part visible even in a narrow space — so "/m/ · start" and
  *  "/m/ · end" never collapse to the same truncated "the /m/ soun…". */
+const PA_LABEL: Record<string, string> = {
+  'pa:segment': 'hearing each sound in a word',
+  'pa:compare': 'telling sounds apart',
+  'pa:rhyme': 'hearing rhymes',
+  'pa:blend': 'blending sounds into a word',
+};
+const PA_TAG: Record<string, string> = {
+  'pa:segment': 'each sound', 'pa:compare': 'same / different', 'pa:rhyme': 'rhyming', 'pa:blend': 'blending',
+};
+
 export function skillTag(key: SkillKey): string {
-  if (key === 'pa:segment') return 'each sound in a word';
+  if (key.startsWith('pa:')) return PA_TAG[key] ?? 'listening';
   const [kind, a, b] = key.split(':');
   if (kind === 'blend') return `${(b ?? '').split('').join('-')} blend · ${a === 'final' ? 'end' : 'start'}`;
   if (kind === 'digraph') return `${a} · digraph`;
@@ -51,7 +61,7 @@ export function skillTag(key: SkillKey): string {
 
 /** Learner-facing label. ipa is simply /id/ in our registry, so we build from the id. */
 export function skillLabel(key: SkillKey): string {
-  if (key === 'pa:segment') return 'hearing each sound in a word';
+  if (key.startsWith('pa:')) return PA_LABEL[key] ?? 'listening to sounds';
   const [kind, a, b] = key.split(':');
   if (kind === 'blend') return `the ${(b ?? '').split('').join('-')} blend ${a === 'final' ? 'at the end' : 'at the start'}`;
   if (kind === 'digraph') return `the “${a}” digraph (two letters, one sound)`;

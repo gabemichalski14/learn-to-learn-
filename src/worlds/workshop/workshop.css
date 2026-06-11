@@ -53,3 +53,14 @@
 @keyframes wk-cheer { 0%,100% { transform: translateY(0) } 30% { transform: translateY(-8px) scale(1.08) } }
 @keyframes wk-wobble { 0%,100% { transform: rotate(0) } 25% { transform: rotate(-7deg) } 75% { transform: rotate(7deg) } }
 @media (prefers-reduced-motion: reduce) { .wk-patch, .wk-tile, .wk-tile.is-wrong { animation: none !important; transform: none !important; } }
+
+/* WorkshopPick — "tap the right answer" (Sort It, Rule Breakers) */
+.wk-stem { font-size: 30px; font-weight: 800; color: #5a4424; letter-spacing: 2px; }
+.wk-stem i { font-style: normal; color: #d98a2b; }
+.wk-opts { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.wk-opt { min-width: 84px; min-height: 64px; padding: 12px 20px; border-radius: 14px; font: inherit; font-size: 26px; font-weight: 800;
+  color: #5a4424; background: linear-gradient(180deg, #fff 0%, #f3e2c0 100%); border: 2px solid rgba(122,90,34,0.3); box-shadow: 0 3px 0 rgba(122,90,34,0.22); cursor: pointer; }
+.wk-opt:hover { transform: translateY(-2px); }
+.wk-opt.is-right { background: #cde6d4; border-color: #6bae7f; }
+.wk-opt.is-wrong { background: #f6cdb6; border-color: #d98a2b; animation: wk-wobble 0.4s ease; }
+@media (prefers-reduced-motion: reduce) { .wk-opt { animation: none !important; transform: none !important; } }

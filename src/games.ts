@@ -57,8 +57,8 @@ export const LEVELS: LevelInfo[] = [
     focus: 'Closed syllables, blends, digraphs, and the first spelling rules',
     games: [
       { id: 'blend-buddies', title: 'Blend Buddies', emoji: '🧵', tagline: 'Build the word — keep both blend buddies together.', status: 'available', route: '#/play/blend-buddies' },
-      soon('sort-it', 'Sort It', '🗂️', 'Sort words by their digraph (sh, ch, th…).'),
-      soon('rule-breakers', 'Rule Breakers', '📏', 'Pick the right ending (ck, ff, ll, ss).'),
+      { id: 'sort-it', title: 'Sort It', emoji: '🗂️', tagline: 'Sort words by their digraph (sh, ch, th…).', status: 'available', route: '#/play/sort-it' },
+      { id: 'rule-breakers', title: 'Rule Breakers', emoji: '📏', tagline: 'Pick the right ending (ck, ff, ll, ss).', status: 'available', route: '#/play/rule-breakers' },
       soon('chop-shop', 'Chop Shop', '🪚', 'Chop two-syllable words in two.'),
     ],
   },

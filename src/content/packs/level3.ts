@@ -65,6 +65,25 @@ function shuffle<T>(arr: readonly T[], rng: () => number): T[] {
   return a;
 }
 export interface BlendRound { word: string; emoji?: string; blend: string; position: 'init' | 'final'; tiles: string[]; blendIdx: [number, number] }
+// ---------- Sort It (tap the matching digraph bin) ----------
+export interface SortItRound { word: string; emoji?: string; digraph: string; options: string[] }
+export function buildSortItRounds(n: number, rng: () => number = Math.random): SortItRound[] {
+  return shuffle(DIGRAPH_WORDS, rng).slice(0, n).map((w) => {
+    const others = shuffle(DIGRAPHS.filter((d) => d !== w.digraph), rng).slice(0, 2);
+    return { word: w.label, emoji: w.emoji, digraph: w.digraph, options: shuffle([w.digraph, ...others], rng) };
+  });
+}
+
+// ---------- Rule Breakers (pick the right ending: ck / floss) ----------
+export interface RuleRound { word: string; emoji?: string; rule: 'ck' | 'floss'; stem: string; ending: string; distractor: string; options: string[] }
+export function buildRuleRounds(n: number, rng: () => number = Math.random): RuleRound[] {
+  return shuffle(RULE_WORDS, rng).slice(0, n).map((w) => ({
+    word: w.label, emoji: w.emoji, rule: w.rule,
+    stem: w.label.slice(0, w.label.length - w.ending.length),
+    ending: w.ending, distractor: w.distractor, options: shuffle([w.ending, w.distractor], rng),
+  }));
+}
+
 const TILE_DISTRACTORS = 'bcdfghjklmnpqrstvwz'.split('');
 /** `n` rounds: a blend word + a shuffled tray of its letters + 2 distractors.
  *  `blendIdx` marks the two "buddy" letters (so the UI can show them holding hands). */

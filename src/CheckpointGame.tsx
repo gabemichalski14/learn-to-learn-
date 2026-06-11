@@ -15,6 +15,7 @@ import { everydayObjects } from './content/packs/everydayObjects';
 import { everydayEndings } from './content/packs/everydayEndings';
 import { shortVowelWords } from './content/packs/shortVowelWords';
 import { buildSortItRounds, buildRuleRounds } from './content/packs/level3';
+import { buildLongShortRounds, buildNameChangeRounds, buildDivideRounds } from './content/packs/level4';
 import { soundOf } from './domain/engine';
 import type { Pack, SoundTarget } from './domain/types';
 import './checkpoint.css';
@@ -62,6 +63,25 @@ function buildQuestions(level: number, learnerId: string): Question[] {
     const dq: Question[] = buildSortItRounds(4).map((r) => ({ kind: 'pick', label: r.word, emoji: r.emoji ?? '🔧', prompt: 'Which sound do you hear?', answer: r.digraph, choices: r.options }));
     const rq: Question[] = buildRuleRounds(4).map((r) => ({ kind: 'pick', label: r.word, emoji: r.emoji ?? '🔧', prompt: 'Which ending is right?', answer: r.ending, choices: r.options }));
     return shuffle([...dq, ...rq]).slice(0, N);
+  }
+
+  if (level === 4) {
+    // Level 4 — Giant's Valley: silent-e + long/short (open vs closed) + a little
+    // syllable division, all as clean multiple-choice for a post-test.
+    const ls: Question[] = buildLongShortRounds(3).map((r) => ({
+      kind: 'pick', label: r.word, emoji: '🦕', prompt: 'Is the vowel long or short?', answer: r.long ? 'long' : 'short', choices: ['long', 'short'],
+    }));
+    const nc: Question[] = buildNameChangeRounds(3).map((r) => {
+      const t = r.targetIsE ? r.withE : r.base;
+      return { kind: 'pick' as const, label: t, emoji: r.targetIsE ? (r.eEmoji ?? '✨') : (r.baseEmoji ?? '🔤'), prompt: 'Does this word have a magic e?', answer: r.targetIsE ? 'yes' : 'no', choices: ['yes', 'no'] };
+    });
+    const dv: Question[] = buildDivideRounds(2).map((r) => {
+      const right = `${r.word.slice(0, r.split)}·${r.word.slice(r.split)}`;
+      const wrongAt = r.split === 2 ? 3 : 2;
+      const wrong = `${r.word.slice(0, wrongAt)}·${r.word.slice(wrongAt)}`;
+      return { kind: 'pick' as const, label: r.word, emoji: r.emoji ?? '✂️', prompt: 'Where does it split?', answer: right, choices: shuffle([right, wrong]) };
+    });
+    return shuffle([...ls, ...nc, ...dv]).slice(0, N);
   }
 
   const practised = skillInsights(loadMastery(learnerId))

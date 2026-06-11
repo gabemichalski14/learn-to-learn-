@@ -14,6 +14,7 @@ import { logSession, noteRound } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { goBack, navigate } from '../../router';
 import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
+import { GameShell } from '../../ui/GameShell';
 import { SpaceSpecimen } from './creatureIcons';
 import { SpaceFinish } from './SpaceFinish';
 import { castFor, reactionLine, healFor, fragmentToReveal, characterStage, isFullyRecovered } from '../../world/lore/cast';
@@ -283,23 +284,24 @@ export function SpaceSortGame({
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <main className="sg">
-        <SpaceBackdrop />
-        {character && <LevelScene heal={heal} />}
-
-        <div className="sg-hud">
-          <button type="button" className="sg-back" onClick={() => goBack(`#/level/${level}`)}>← Back</button>
-          <span className="sg-badge"><span className="dot" /> {title} · Sector {roundIndex + 1}</span>
+      <GameShell
+        prefix="sg"
+        rootClass="sg"
+        backdrop={<>
+          <SpaceBackdrop />
+          {character && <LevelScene heal={heal} />}
+        </>}
+        back={{ label: '← Space', onClick: () => goBack(`#/level/${level}`) }}
+        badge={<><span className="dot" /> {title} · Sector {roundIndex + 1}</>}
+        current={roundIndex}
+        total={totalRounds}
+        muted={muted}
+        onToggleMute={toggleMute}
+        rightExtra={<>
           {combo >= 2 && <span key={combo} className="sg-combo" aria-label={`${combo} in a row`}>🔥 {combo}</span>}
-          <span className="sg-seg" aria-label={`Sector ${roundIndex + 1} of ${totalRounds}`}>
-            {Array.from({ length: totalRounds }).map((_, i) => (
-              <i key={i} className={i <= roundIndex ? 'on' : ''} />
-            ))}
-          </span>
           {learnerName && <span className="sg-who" aria-label={`Playing as ${learnerName}`}>👤 {learnerName}</span>}
-          <button type="button" className="sg-mute" onClick={toggleMute} aria-label={muted ? 'Turn sound on' : 'Turn sound off'} aria-pressed={muted}>{muted ? '🔇' : '🔊'}</button>
-        </div>
-
+        </>}
+      >
         <div className={`sg-stage${shake ? ' sg-stage--shake' : ''}`}>
           {echoPing > 0 && <EchoTwinkle key={echoPing} className="sg-echoping" />}
 
@@ -386,7 +388,7 @@ export function SpaceSortGame({
             onBack={() => goBack(`#/level/${level}`)}
           />
         )}
-      </main>
+      </GameShell>
     </DndContext>
   );
 }

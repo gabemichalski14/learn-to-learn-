@@ -38,7 +38,7 @@
 .sg-badge{ display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; letter-spacing:.16em;
   text-transform:uppercase; color:#9fe9f0; }
 .sg-badge .dot{ width:7px; height:7px; border-radius:50%; background:#5ef0c8; box-shadow:0 0 10px #5ef0c8; }
-.sg-hudr{ display:flex; align-items:center; gap:12px; }
+.sg-hudr, .sg-hud__right{ display:flex; align-items:center; gap:12px; }
 .sg-seg{ display:flex; gap:3px; } .sg-seg i{ width:14px; height:5px; border-radius:2px; background:rgba(255,255,255,.14); }
 .sg-seg i.on{ background:linear-gradient(90deg,#22c1d6,#5ef0c8); box-shadow:0 0 8px rgba(94,240,200,.6); }
 .sg-back{ border:1px solid rgba(150,230,235,.4); background:rgba(8,26,36,.6); color:#eafcff; font:inherit; font-weight:800; font-size:13px;

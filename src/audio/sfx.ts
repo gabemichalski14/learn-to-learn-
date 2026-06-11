@@ -1,15 +1,19 @@
 /**
  * Tiny synthesized game "juice" sound effects (Web Audio) + light haptics.
  * No asset files — everything is generated on the fly. The AudioContext is
- * created lazily and resumed on the user's first gesture. A single mute toggle
- * (persisted) silences both sound and vibration. Separate from spoken
- * phoneme/word audio (that's the AudioPlayer).
+ * created lazily and resumed on the user's first gesture. Sound and haptics have
+ * INDEPENDENT persisted toggles (Pip can flip either). Separate from spoken
+ * phoneme/word audio (that's the AudioPlayer — always on, it's the lesson).
  */
 let ctx: AudioContext | null = null;
 
 const MUTE_KEY = 'll-muted';
+const HAPTICS_KEY = 'll-haptics';
 let muted = (() => {
   try { return localStorage.getItem(MUTE_KEY) === '1'; } catch { return false; }
+})();
+let hapticsEnabled = (() => {
+  try { return localStorage.getItem(HAPTICS_KEY) !== '0'; } catch { return true; } // default on
 })();
 
 export function setMuted(m: boolean): void {
@@ -18,6 +22,13 @@ export function setMuted(m: boolean): void {
 }
 export function isMuted(): boolean {
   return muted;
+}
+export function setHaptics(on: boolean): void {
+  hapticsEnabled = on;
+  try { localStorage.setItem(HAPTICS_KEY, on ? '1' : '0'); } catch { /* ignore */ }
+}
+export function hapticsOn(): boolean {
+  return hapticsEnabled;
 }
 
 function audioCtx(): AudioContext | null {
@@ -52,7 +63,7 @@ function tone(freq: number, startOffset: number, dur: number, type: OscillatorTy
 }
 
 function haptic(pattern: number | number[]): void {
-  if (muted) return;
+  if (!hapticsEnabled) return; // independent of sound
   try { navigator.vibrate?.(pattern); } catch { /* ignore */ }
 }
 

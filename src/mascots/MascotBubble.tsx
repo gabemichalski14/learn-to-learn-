@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import type { Phrase } from './phrases';
-import { searchDestinations, matchDestination } from './pipNav';
+import { pipSuggest, type PipCap, type PipOutcome } from './pipBrain';
 
-/** Highlight the typed letters inside a place name as you go. */
+/** Highlight the typed letters inside a suggestion as you go. */
 function Highlight({ text, q }: { text: string; q: string }) {
   const needle = q.trim();
   const i = needle ? text.toLowerCase().indexOf(needle.toLowerCase()) : -1;
@@ -11,10 +11,10 @@ function Highlight({ text, q }: { text: string; q: string }) {
 }
 
 /**
- * Pip's speech bubble. Two modes: a warm line (with its learning CTA), or a
- * "type where to go" guide. Pip no longer shows a grid of place-icons to pick
- * from — you TYPE a place and he walks you there, suggesting matches with the
- * letters you've typed highlighted as you go.
+ * Pip's speech bubble. Two modes: a warm line (with its learning CTA), or "Ask
+ * Pip anything" — a one-stop search. You type what you want and Pip either walks
+ * you there, flips a setting (sounds / buzz), or explains a game or your data.
+ * Suggestions are text with the typed letters highlighted (no icon grid).
  */
 export function MascotBubble({
   phrase, onCta, onDismiss, onNavigate,
@@ -26,12 +26,17 @@ export function MascotBubble({
 }) {
   const [nav, setNav] = useState(false);
   const [q, setQ] = useState('');
-  const results = onNavigate ? searchDestinations(q) : [];
+  const [answer, setAnswer] = useState<PipOutcome | null>(null);
+  const results = onNavigate ? pipSuggest(q) : [];
 
+  function pick(cap: PipCap) {
+    const out = cap.run();
+    if (out.kind === 'go') { onNavigate?.(out.to); return; }
+    setAnswer(out); // 'say' (setting confirmation) or 'explain' — stay in the bubble
+  }
   function ask(e: FormEvent) {
     e.preventDefault();
-    const top = results[0] ?? matchDestination(q);
-    if (top) onNavigate?.(top.to);
+    if (results[0]) pick(results[0]);
   }
 
   return (
@@ -46,33 +51,50 @@ export function MascotBubble({
               <button type="button" className="mascot-say__cta" onClick={onCta}>{phrase.cta} →</button>
             )}
             {onNavigate && (
-              <button type="button" className="mascot-say__nav-toggle" onClick={() => setNav(true)}>🧭 Take me somewhere…</button>
+              <button type="button" className="mascot-say__nav-toggle" onClick={() => setNav(true)}>🧭 Ask Pip anything…</button>
             )}
           </div>
         </>
       ) : (
         <>
-          <p className="mascot-say__navtitle">Type where you'd like to go — I'll walk you there. 🌿</p>
+          <p className="mascot-say__navtitle">Where to — or what can I help with? Just type. 🌿</p>
           <form className="mascot-say__ask" onSubmit={ask}>
             <input
               className="mascot-say__askinput"
               value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="garden · games · leaderboard · home…"
-              aria-label="Type where to go"
-              maxLength={40}
+              onChange={(e) => { setQ(e.target.value); setAnswer(null); }}
+              placeholder="garden · sounds off · what is Blend Buddies · my progress"
+              aria-label="Ask Pip"
+              maxLength={48}
               autoFocus
             />
             <button type="submit" className="mascot-say__askgo" aria-label="Go" disabled={!results.length}>→</button>
           </form>
-          {q.trim() && (
+
+          {answer && (
+            <div className="mascot-say__answer">
+              {answer.kind === 'say' ? (
+                <p className="mascot-say__ansbody">{answer.text}</p>
+              ) : (
+                <>
+                  <p className="mascot-say__anstitle">{answer.title}</p>
+                  <p className="mascot-say__ansbody">{answer.body}</p>
+                  {answer.to && answer.cta && (
+                    <button type="button" className="mascot-say__cta" onClick={() => onNavigate?.(answer.to!)}>{answer.cta}</button>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
+          {q.trim() && !answer && (
             <div className="mascot-say__results">
-              {results.length ? results.map((d) => (
-                <button key={d.to} type="button" className="mascot-say__result" onClick={() => onNavigate?.(d.to)}>
-                  <Highlight text={d.label} q={q} />
+              {results.length ? results.map((c) => (
+                <button key={c.id} type="button" className="mascot-say__result" onClick={() => pick(c)}>
+                  <Highlight text={c.label} q={q} />
                 </button>
               )) : (
-                <p className="mascot-say__hint">Hmm, I don't know that place — try “garden”, “games”, or “home”. 🧭</p>
+                <p className="mascot-say__hint">Hmm, not sure — try “games”, “sounds off”, or “my progress”. 🧭</p>
               )}
             </div>
           )}

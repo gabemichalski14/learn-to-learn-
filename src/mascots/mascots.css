@@ -150,3 +150,9 @@
 .mascot-say__hl { background: transparent; color: var(--teal); font-weight: 900; text-decoration: underline; text-underline-offset: 2px; }
 .mascot-say__result:focus-visible, .mascot-say__nav-toggle:focus-visible, .mascot-say__askgo:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 .mascot-say__askgo:disabled { opacity: 0.4; cursor: default; }
+
+/* Pip "ask anything" answer card (setting confirmation / explanation) */
+.mascot-say__answer { margin: 2px 0 8px; padding: 10px 12px; border-radius: 12px; background: var(--teal-soft, #eaf6f4); border: 1px solid var(--teal-ring, #cfe8e3); }
+.mascot-say__anstitle { margin: 0 0 4px; font-weight: 800; font-size: 13px; color: var(--teal-deep, #226); }
+.mascot-say__ansbody { margin: 0 0 6px; font-size: 13px; line-height: 1.5; color: var(--ink, #333); }
+.mascot-say__answer .mascot-say__cta { margin-top: 2px; }

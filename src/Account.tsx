@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 import { navigate } from './router';
 import { isCloudConfigured } from './data/supabase';
-import { signIn, signUp, signOut, getCurrentUser, onAuthChange, redeemInvite, getRole, requestPasswordReset, updatePassword, onPasswordRecovery, type SignUpIntent } from './data/cloud';
+import { signIn, signUp, signOut, getCurrentUser, onAuthChange, redeemInvite, getRole, requestPasswordReset, updatePassword, onPasswordRecovery, getMyName, setMyName, type SignUpIntent } from './data/cloud';
 import type { Role } from './useAuth';
 import { reconcileRoster } from './data/identity';
 import { flushOutbox } from './data/cloudSync';
@@ -89,14 +89,19 @@ export function Account() {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [recovering, setRecovering] = useState(false); // arrived via a password-reset link
+  const [nameField, setNameField] = useState('');
+  const [savedName, setSavedName] = useState('');
+  const [nameBusy, setNameBusy] = useState(false);
 
   useEffect(() => {
     if (!configured) return;
     const handle = async (u: { email?: string } | null) => {
       setUser(u?.email ?? null);
-      if (!u) { setAcctRole(null); return; }
+      if (!u) { setAcctRole(null); setNameField(''); setSavedName(''); return; }
       const r = await getRole();
       setAcctRole(r);
+      const nm = (await getMyName()) ?? '';
+      setNameField(nm); setSavedName(nm);
       // SAFETY: an owner must never auto-redeem a pending invite — that's what
       // demoted an admin to a tutor. Drop any stray code and skip redemption.
       if (r === 'owner') {
@@ -240,6 +245,14 @@ export function Account() {
             {acctRole && <> · <strong>{acctRole === 'owner' ? 'Center owner' : acctRole === 'tutor' ? 'Tutor' : 'Parent'}</strong></>}.
           </p>
           <p className="page__note" style={{ marginTop: 0 }}>Your students &amp; sessions sync to this account across devices.</p>
+          <div className="auth-form" style={{ marginTop: '10px' }}>
+            <label className="page__note" style={{ marginTop: 0, fontWeight: 700 }} htmlFor="acct-name">Your name</label>
+            <input id="acct-name" className="l2l-input auth-input" type="text" placeholder="Your name" value={nameField} onChange={(e) => setNameField(e.target.value)} maxLength={60} autoComplete="name" />
+            <button type="button" className="l2l-btn" disabled={nameBusy || !nameField.trim() || nameField.trim() === savedName}
+              onClick={async () => { const n = nameField.trim(); setNameBusy(true); try { await setMyName(n); setSavedName(n); setMsg('Name updated.'); } catch { setMsg('Could not update your name — has the set-name migration (10) been run?'); } setNameBusy(false); }}>
+              {nameBusy ? '…' : 'Save name'}
+            </button>
+          </div>
           <div className="auth-links">
             {acctRole === 'owner' && <button type="button" className="l2l-btn" onClick={() => navigate('#/admin')}>Open Center admin →</button>}
             {acctRole === 'tutor' && <button type="button" className="l2l-btn" onClick={() => navigate('#/tutor')}>Tutor dashboard →</button>}

@@ -407,31 +407,20 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
 
 /* Site footer — copyright + independence/trademark disclaimer. Quiet by
    design: small, muted, generous top space so it never competes with play. */
-/* Sticky-footer shell: main grows to fill the viewport so the footer caps the
-   bottom and the ambient backdrop can't show below it. No position/z-index here
-   (would trap the footer below the roaming mascot). */
 .app-shell{ display:flex; flex-direction:column; min-height:100dvh; }
 .app-shell__main{ flex:1 0 auto; }
+/* When a fixed footer is shown, pad the content so nothing hides behind it. */
+.app-shell--footer .app-shell__main{ padding-bottom:104px; }
 
+/* FIXED slim footer bar — pinned to the viewport bottom, always visible, opaque
+   (above the mascot z-45 / parade z-44 / ambient frame). */
 .l2l-footer{
-  width:100%;
-  margin:48px 0 0;
-  padding:22px 20px calc(22px + env(safe-area-inset-bottom, 0px));
+  position:fixed; left:0; right:0; bottom:0; z-index:60;
+  margin:0; padding:9px 18px calc(9px + env(safe-area-inset-bottom, 0px));
   text-align:center;
-  /* an opaque "ground" that also fills any space BELOW the footer (overscroll /
-     short pages), so the meadow backdrop never leaks past it */
-}
-.l2l-footer::after{
-  content:''; position:absolute; left:0; right:0; top:100%; height:100vh;
-  background:var(--surface, #fffdf8); z-index:-1; pointer-events:none;
-}
-.l2l-footer{
-  /* Sit ABOVE the roaming mascot (z-45) + pip-parade (z-44) + ambient frame so
-     nothing ever overlaps the footer text — an opaque "ground" band. */
-  position:relative; z-index:50;
   background:var(--surface, #fffdf8);
   border-top:1px solid var(--teal-ring);
-  box-shadow:0 -12px 26px rgba(80,70,40,0.10);
+  box-shadow:0 -8px 22px rgba(80,70,40,0.12);
 }
 .l2l-footer__brand,
 .l2l-footer__legal{ max-width:720px; margin-left:auto; margin-right:auto; }

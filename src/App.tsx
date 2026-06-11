@@ -218,6 +218,10 @@ export default function App() {
   // never leaks behind/below the content.
   const immersive = route.name === 'home' || route.name === 'level' || route.name === 'levels'
     || route.name === 'village' || route.name === 'games' || route.name === 'checkpoint';
+  // The footer is a FIXED slim bar pinned to the viewport bottom — shown on the
+  // clean data/utility pages (not the immersive kid worlds, where it would intrude,
+  // nor the bare consoles). Content gets bottom padding so nothing hides behind it.
+  const showFooter = !bareConsole && !immersive;
 
   return (
     <>
@@ -227,13 +231,9 @@ export default function App() {
       {immersive && <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />}
       {immersive && <GardenFrame />}
       <NavDrawer route={route.name} role={role ?? null} />
-      {/* Sticky-footer shell: the page fills at least the viewport so the footer
-          always caps the bottom — the ambient backdrop never "leaks" below it on
-          short pages. No z-index here, so the footer keeps sitting above the mascot. */}
-      <div className="app-shell">
+      <div className={`app-shell${showFooter ? ' app-shell--footer' : ''}`}>
         <div className="app-shell__main">{page}</div>
-        {/* Footer (brand + legal disclaimer): off only the bare control consoles. */}
-        {!bareConsole && <SiteFooter />}
+        {showFooter && <SiteFooter />}
       </div>
       {/* Roaming buddy + ambient surprises — child-facing; off the consoles AND the
           tutor dashboard (calm/professional), kept on kid + family pages. */}

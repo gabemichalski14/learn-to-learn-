@@ -201,6 +201,25 @@ export async function deleteGuardian(userId: string, learnerId: string) {
 }
 
 // ---------- tutors + assignments (owner admin) ----------
+/** The signed-in user's current display name (tutor or guardian row). */
+export async function getMyName(): Promise<string | null> {
+  try {
+    const c = await client();
+    const { data: u } = await c.auth.getUser();
+    const uid = u.user?.id;
+    if (!uid) return null;
+    const t = await c.from('tutors').select('name').eq('id', uid).maybeSingle();
+    if (t.data?.name) return t.data.name as string;
+    const g = await c.from('guardians').select('name').eq('user_id', uid).maybeSingle();
+    return (g.data?.name as string | null) ?? null;
+  } catch { return null; }
+}
+/** Change the signed-in user's own display name (self-only, via set_my_name). */
+export async function setMyName(name: string): Promise<void> {
+  const { error } = await (await client()).rpc('set_my_name', { p_name: name });
+  if (error) throw error;
+}
+
 export interface CloudTutor { id: string; name: string | null; role: string; last_seen_at?: string | null }
 /** Heartbeat: stamp the signed-in tutor's "active now". Best-effort — a no-op
  *  until the tutor-presence migration is applied. */

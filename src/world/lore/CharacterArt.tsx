@@ -23,24 +23,26 @@ export function CharacterArt({
   art?: ArtSource;          // when present (future), render Rive instead of emoji
   label?: string;
 }) {
-  const [errored, setErrored] = useState(false);
+  const [errored, setErrored] = useState<Set<string>>(new Set());
   const stage = healStage(heal);
   const cls = `char-art char-art--s${stage}${mood ? ` char-art--${mood}` : ''}`;
 
-  // Real flat art (transparent PNG): the matching expression frame if we have one
-  // for the current mood, else the base image. CSS does the heal transform right
-  // on the <img>; if the file isn't there yet, onError falls back to the emoji
-  // placeholder (which still heals) — so wiring real paths is always safe.
-  const frame = errored ? undefined : (mood && art?.frames?.[mood]) || art?.image;
+  // Real flat art (transparent PNG): try the matching expression frame, then fall
+  // back to the base/calm image, then (only if both are missing) the emoji. A
+  // single missing expression must NOT blank the whole avatar to emoji.
+  const moodFrame = (mood && art?.frames?.[mood]) || undefined;
+  const frame = [moodFrame, art?.image].find((s): s is string => !!s && !errored.has(s));
   if (frame) {
     return (
+      // Square box + object-fit:contain (CSS) so non-square art is centered, never
+      // squished/short, and every character reads at a consistent size.
       <img
         className={cls}
-        style={{ width: `${size}px`, height: 'auto', '--heal': heal } as CSSProperties}
+        style={{ width: `${size}px`, height: `${size}px`, '--heal': heal } as CSSProperties}
         src={frame}
         alt={label ?? ''}
         draggable={false}
-        onError={() => setErrored(true)}
+        onError={() => setErrored((prev) => new Set(prev).add(frame))}
       />
     );
   }

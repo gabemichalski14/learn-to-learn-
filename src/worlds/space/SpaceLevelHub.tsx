@@ -5,6 +5,7 @@ import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { SpaceBackdrop } from './SpaceArt';
 import { LevelStory } from './LevelStory';
+import { Icon } from '../../ui/Icon';
 import './space.css';
 
 /** Immersive Space Patrol hub for Level 2 — a themed landing that flows straight
@@ -76,6 +77,10 @@ export function SpaceLevelHub({ level, learnerId }: { level: number; learnerId: 
             ))}
           </section>
         )}
+
+        <button type="button" className="sg-hub__village" onClick={() => navigate('#/village')}>
+          <Icon name="ico-village" emoji="🏡" /> Visit your Village
+        </button>
       </div>
     </main>
   );

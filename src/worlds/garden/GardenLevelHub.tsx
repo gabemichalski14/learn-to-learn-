@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { goBack, navigate } from '../../router';
 import { findLevel } from '../../games';
+import { levelCurriculum, lessonSounds } from '../../curriculum';
 import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
@@ -26,6 +27,7 @@ const GAME_ICON: Record<string, string> = {
 export function GardenLevelHub({ level, learnerId }: { level: number; learnerId: string }) {
   useDataVersion();
   const lvl = findLevel(level);
+  const curriculum = levelCurriculum(level);
   const audio = useMemo(() => createRecordedAudioPlayer(), []);
   const character = castFor(level);
 
@@ -122,6 +124,18 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
             ✨ Take the Checkpoint — show what you learned!
           </button>
         ) : null}
+
+        {curriculum && curriculum.lessons.length > 0 && (
+          <section className="gd-hub__lessons" aria-label="Lessons">
+            <h2>Lesson Log{curriculum.oral ? ' (oral)' : ''}</h2>
+            {curriculum.lessons.map((les) => (
+              <div key={les.n} className="gd-hub__lesson">
+                <b>{les.n}</b>
+                <span>{les.title}{lessonSounds(les) ? ` · ${lessonSounds(les)}` : ''}</span>
+              </div>
+            ))}
+          </section>
+        )}
 
         <button type="button" className="gd-hub__village" onClick={() => navigate('#/village')}>
           <Icon name="ico-village" emoji="🏡" /> Visit your Village

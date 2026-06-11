@@ -52,6 +52,22 @@ export interface Teaching {
 
 /** Where a character's real art lives (set once a Rive file / images exist).
  *  Until then `CharacterArt` renders a transforming emoji placeholder. */
+/** Standard art paths for a character — the manifest convention
+ *  /art/char/<id>-<expr>.png. Files are optional: CharacterArt probes for each and
+ *  falls back to the emoji (which still heals) until the PNG lands. */
+export function charArt(id: string): ArtSource {
+  return {
+    image: `/art/char/${id}-calm.png`,
+    frames: {
+      cheer: `/art/char/${id}-cheer.png`,
+      wobble: `/art/char/${id}-wobble.png`,
+      point: `/art/char/${id}-point.png`,
+      bloom: `/art/char/${id}-bloom.png`,
+      talk: `/art/char/${id}-talk.png`,
+    },
+  };
+}
+
 export interface ArtSource {
   /** A single base image (flat, transparent PNG). CSS does the heal transform
    *  (grey/small → colour/whole) right on it — the simplest free route. */
@@ -180,16 +196,7 @@ export const MOSS: LevelCharacter = {
   playRoute: '#/play/beginning-sounds',
   // Flat transparent PNGs dropped in public/characters/moss/ (see the README
   // there). Until the files exist, CharacterArt's onError falls back to the emoji.
-  art: {
-    image: '/characters/moss/calm.png',
-    frames: {
-      cheer: '/characters/moss/cheer.png',
-      wobble: '/characters/moss/wobble.png',
-      point: '/characters/moss/point.png',
-      bloom: '/characters/moss/bloom.png',
-      talk: '/characters/moss/talk.png',
-    },
-  },
+  art: charArt('moss'),
   house: '/characters/village/cottage.png',
   motif: '🍃',
   // Voice = dyslexia-first (docs/art/moss-yarn-guide.md §0): short, plain words,
@@ -294,16 +301,7 @@ export const CHIP: LevelCharacter = {
     ],
   },
   playRoute: '#/play/tap-it-out',
-  art: {
-    image: '/characters/chip/calm.png',
-    frames: {
-      cheer: '/characters/chip/cheer.png',
-      wobble: '/characters/chip/wobble.png',
-      point: '/characters/chip/point.png',
-      bloom: '/characters/chip/bloom.png',
-      talk: '/characters/chip/talk.png',
-    },
-  },
+  art: charArt('chip'),
   house: '/characters/village/cottage-2.png',
   motif: '🎵',
   reactions: {
@@ -405,6 +403,7 @@ export const PATCH: LevelCharacter = {
     ],
   },
   playRoute: '#/play/blend-buddies',
+  art: charArt('patch'),
   house: '/characters/village/cottage.png',
   motif: '🧵',
   beats: {

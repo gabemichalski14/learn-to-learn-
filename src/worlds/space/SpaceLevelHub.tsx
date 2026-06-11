@@ -5,6 +5,7 @@ import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { SpaceBackdrop } from './SpaceArt';
 import { LevelStory } from './LevelStory';
+import { Art } from '../../art/Art';
 import './space.css';
 
 /** Immersive Space Patrol hub for Level 2 — a themed landing that flows straight
@@ -25,6 +26,7 @@ export function SpaceLevelHub({ level, learnerId }: { level: number; learnerId: 
   return (
     <main className="sg sg-hub">
       <SpaceBackdrop />
+      <Art imageKey="hub:space:bg" emoji="" alt="" className="hub-bg-art" />
       <div className="sg-hud">
         <button type="button" className="sg-back" onClick={() => navigate('#/')}>← Home</button>
         <span className="sg-badge"><span className="dot" /> Space Patrol · Level {lvl.num}</span>

@@ -27,11 +27,10 @@ export function CharacterArt({
   const stage = healStage(heal);
   const cls = `char-art char-art--s${stage}${mood ? ` char-art--${mood}` : ''}`;
 
-  // Real flat art (transparent PNG): the matching expression frame if we have
-  // one for the current mood, else the base image. CSS still does the heal
-  // transform (grey/small → colour/whole) right on the <img>. If the file isn't
-  // there yet, we fall back to the emoji placeholder (so wiring real paths is
-  // always safe). (Rive drop-in when `art.rive` lands will replace this branch.)
+  // Real flat art (transparent PNG): the matching expression frame if we have one
+  // for the current mood, else the base image. CSS does the heal transform right
+  // on the <img>; if the file isn't there yet, onError falls back to the emoji
+  // placeholder (which still heals) — so wiring real paths is always safe.
   const frame = errored ? undefined : (mood && art?.frames?.[mood]) || art?.image;
   if (frame) {
     return (

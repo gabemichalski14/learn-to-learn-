@@ -3,6 +3,7 @@ import { navigate } from './router';
 import type { RouteName } from './router';
 import type { Role } from './useAuth';
 import { LogoMark } from './LogoMark';
+import { getCurrentUser, onAuthChange, signOut } from './data/cloud';
 
 /** Who sees a nav item. `guest` = nobody signed in (a child on a shared device). */
 type Audience = 'guest' | 'owner' | 'tutor' | 'parent';
@@ -15,9 +16,8 @@ interface NavItem {
   roles: Audience[];
 }
 
-// The OWNER account is control-only (Center admin + Account) — no kid/family
-// pages. Tutors get teaching tools; parents get their child; the shared-device
-// guest gets the full kid world.
+// Page navigation (middle of the drawer). Account + profile + settings live in the
+// bottom account block (below), Claude-style — not in this list.
 const ITEMS: NavItem[] = [
   { label: 'Students', to: '#/admin', match: ['admin', 'admin-student'], roles: ['owner'] },
   { label: 'Tutors', to: '#/admin/tutors', match: ['admin-tutors'], roles: ['owner'] },
@@ -26,74 +26,73 @@ const ITEMS: NavItem[] = [
   { label: 'Levels', to: '#/levels', match: ['levels', 'level', 'games', 'play'], roles: ['guest', 'tutor', 'owner'] },
   { label: 'Village', to: '#/village', match: ['village'], roles: ['guest'] },
   { label: 'Leaderboard', to: '#/leaderboard', match: ['leaderboard'], roles: ['guest', 'tutor', 'owner', 'parent'] },
-  { label: 'Profile', to: '#/profile', match: ['profile'], roles: ['guest', 'tutor'] },
-  { label: 'Account', to: '#/account', match: ['account'], roles: ['guest', 'owner', 'tutor', 'parent'] },
 ];
 
+const ROLE_LABEL: Record<Audience, string> = { owner: 'Owner', tutor: 'Tutor', parent: 'Parent', guest: 'Shared device' };
+
+interface AcctItem { label: string; to?: string; act?: () => void; }
+
 /**
- * Left-side hamburger menu. The burger button is fixed top-left on every
- * platform page; tapping it slides a drawer in from the left with the page list.
+ * Left-side hamburger menu. Brand at the top, page nav in the middle, and a
+ * Claude-style ACCOUNT block pinned to the bottom: who's signed in + a popover
+ * for profile / settings / help / sign-out.
  */
 export function NavDrawer({ route, role = null }: { route: RouteName; role?: Role | null }) {
   const [open, setOpen] = useState(false);
+  const [acctOpen, setAcctOpen] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
   const audience: Audience = role ?? 'guest';
 
-  // Close on Escape and lock body scroll while open.
+  // Track the signed-in identity for the bottom block. onAuthChange gives a
+  // boolean + returns a cleanup fn, so we just re-fetch the user on any change.
+  useEffect(() => {
+    let live = true;
+    const load = () => { void getCurrentUser().then((u) => { if (live) setEmail((u as { email?: string } | null)?.email ?? null); }).catch(() => {}); };
+    load();
+    const off = onAuthChange(() => load());
+    return () => { live = false; off(); };
+  }, []);
+
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setAcctOpen(false); setOpen(false); } };
     window.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prev;
-    };
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
   }, [open]);
 
-  function go(to: string) {
-    setOpen(false);
-    navigate(to);
+  function go(to: string) { setOpen(false); setAcctOpen(false); navigate(to); }
+  async function doSignOut() {
+    try { await signOut(); } catch { /* ignore */ }
+    setOpen(false); setAcctOpen(false);
+    navigate('#/');
+    if (typeof window !== 'undefined') window.location.reload();
   }
+
+  // Account popover items, by role. Real destinations only (no dead routes).
+  const acctItems: AcctItem[] = (() => {
+    const out: AcctItem[] = [];
+    if (audience === 'guest' || audience === 'tutor') out.push({ label: 'My profile', to: '#/profile' });
+    out.push({ label: email ? 'Account & settings' : 'Sign in', to: '#/account' });
+    if (email) out.push({ label: 'Sign out', act: () => void doSignOut() });
+    return out;
+  })();
+
+  const identityName = email ?? 'Shared device';
+  const avatar = (email ?? 'L').slice(0, 1).toUpperCase();
 
   return (
     <>
-      <button
-        type="button"
-        className="burger"
-        aria-label="Open menu"
-        aria-haspopup="true"
-        aria-expanded={open}
-        aria-controls="nav-drawer"
-        onClick={() => setOpen(true)}
-      >
-        <span className="burger__bars" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </span>
+      <button type="button" className="burger" aria-label="Open menu" aria-haspopup="true" aria-expanded={open} aria-controls="nav-drawer" onClick={() => setOpen(true)}>
+        <span className="burger__bars" aria-hidden="true"><span /><span /><span /></span>
       </button>
 
-      <div
-        className={`drawer-overlay${open ? ' drawer-overlay--show' : ''}`}
-        onClick={() => setOpen(false)}
-        aria-hidden={!open}
-      />
+      <div className={`drawer-overlay${open ? ' drawer-overlay--show' : ''}`} onClick={() => { setAcctOpen(false); setOpen(false); }} aria-hidden={!open} />
 
-      <nav
-        id="nav-drawer"
-        className={`drawer${open ? ' drawer--open' : ''}`}
-        aria-label="Main menu"
-        aria-hidden={!open}
-      >
-        <button
-          type="button"
-          className="drawer__brand"
-          onClick={() => go('#/')}
-          aria-label="Learn to Learn home"
-        >
+      <nav id="nav-drawer" className={`drawer${open ? ' drawer--open' : ''}`} aria-label="Main menu" aria-hidden={!open}>
+        <button type="button" className="drawer__brand" onClick={() => go('#/')} aria-label="Learn to Learn home">
           <LogoMark className="drawer__logo" />
           <span className="drawer__brand-text">
             <span className="drawer__brand-name">Learn to Learn</span>
@@ -106,12 +105,7 @@ export function NavDrawer({ route, role = null }: { route: RouteName; role?: Rol
             const active = item.match.includes(route);
             return (
               <li key={item.label}>
-                <button
-                  type="button"
-                  className={`drawer__item${active ? ' drawer__item--active' : ''}`}
-                  aria-current={active ? 'page' : undefined}
-                  onClick={() => go(item.to)}
-                >
+                <button type="button" className={`drawer__item${active ? ' drawer__item--active' : ''}`} aria-current={active ? 'page' : undefined} onClick={() => go(item.to)}>
                   <span className="drawer__label">{item.label}</span>
                 </button>
               </li>
@@ -119,9 +113,29 @@ export function NavDrawer({ route, role = null }: { route: RouteName; role?: Rol
           })}
         </ul>
 
-        <button type="button" className="drawer__close" onClick={() => setOpen(false)}>
-          Close
-        </button>
+        {/* Account block — pinned to the bottom (Claude-style). */}
+        <div className="drawer__acct">
+          {acctOpen && (
+            <div className="drawer__acct-menu" role="menu">
+              {acctItems.map((it) => (
+                <button key={it.label} type="button" role="menuitem" className={`drawer__acct-mi${it.label === 'Sign out' ? ' drawer__acct-mi--danger' : ''}`}
+                  onClick={() => { if (it.act) it.act(); else if (it.to) go(it.to); }}>
+                  {it.label}
+                </button>
+              ))}
+              <button type="button" role="menuitem" className="drawer__acct-mi" aria-expanded={showHelp} onClick={() => setShowHelp((v) => !v)}>Help ▾</button>
+              {showHelp && <p className="drawer__acct-help">Stuck on anything? Tap <strong>Pip 🧵</strong> on any page and type what you need — he can take you there, explain a game, or change a setting. Or ask your tutor.</p>}
+            </div>
+          )}
+          <button type="button" className="drawer__acct-id" aria-haspopup="true" aria-expanded={acctOpen} onClick={() => setAcctOpen((v) => !v)}>
+            <span className="drawer__acct-avatar" aria-hidden="true">{avatar}</span>
+            <span className="drawer__acct-who">
+              <span className="drawer__acct-name">{identityName}</span>
+              <span className="drawer__acct-role">{ROLE_LABEL[audience]}</span>
+            </span>
+            <span className="drawer__acct-chev" aria-hidden="true">{acctOpen ? '▾' : '▴'}</span>
+          </button>
+        </div>
       </nav>
     </>
   );

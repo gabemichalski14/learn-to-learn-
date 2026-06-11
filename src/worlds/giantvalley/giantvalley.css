@@ -109,3 +109,6 @@
 .wg-opt__emoji { font-size: clamp(40px, 11vw, 58px); line-height: 1; }
 .wg-opt.is-right { border-color: #2c8a6e; box-shadow: 0 0 0 4px rgba(44, 138, 110, 0.32); }
 .wg-opt.is-wrong { border-color: #e0a3a3; opacity: .65; }
+
+/* Photo valley is the scene now — hide the scattered deco emoji that floated over it. */
+.gv-deco { display: none; }

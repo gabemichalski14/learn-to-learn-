@@ -452,3 +452,6 @@
 .ws-pics { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(10px, 3vw, 18px); }
 .ws-opt.is-right { box-shadow: 0 0 0 4px rgba(107, 174, 127, 0.45); }
 .ws-opt.is-wrong { opacity: .6; }
+
+/* Photo starfield is the scene now — hide the old CSS cosmos sprites that floated over it. */
+.sg-cosmos, .sg-far, .sg-shoot, .sg-rocket, .sg-stars { display: none; }

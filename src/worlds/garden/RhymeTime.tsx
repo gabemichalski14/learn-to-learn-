@@ -13,6 +13,7 @@ import { GameShell } from '../../ui/GameShell';
 import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import { WordPicture } from '../../world/WordPicture';
+import { Icon } from '../../ui/Icon';
 import './garden.css';
 
 const ROUNDS = 8;
@@ -91,7 +92,7 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
       rootClass="gd rt"
       backdrop={<GardenBackdrop />}
       back={{ label: '← Garden', onClick: () => goBack('#/level/1') }}
-      badge={<>🎵 Rhyme Time · Level 1</>}
+      badge={<><Icon name="ico-rhyme-time" emoji="🎵" /> Rhyme Time · Level 1</>}
       current={i}
       total={ROUNDS}
       muted={muted}
@@ -105,7 +106,7 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
             <p className="sd-finish__score">{finish.score} / {ROUNDS} right</p>
             <p className="sd-finish__say">{character?.name ?? 'Chip'} heard every rhyme with you. 🎵</p>
             <div className="sd-choices">
-              <button type="button" className="gd-btn" onClick={restart}>Play again 🔁</button>
+              <button type="button" className="gd-btn" onClick={restart}>Play again <Icon name="ico-replay" emoji="🔁" /></button>
               <button type="button" className="gd-btn gd-btn--ghost" onClick={() => navigate('#/level/1')}>Back to the Garden</button>
             </div>
           </div>
@@ -126,7 +127,7 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
           <div className="gd-panel">
             <button type="button" className="gd-pic gd-pic--target" onClick={() => say(round.target.word)} aria-label={`Hear ${round.target.word} again`}>
               <WordPicture label={round.target.word} emoji={round.target.emoji} className="gd-picimg" />
-              <span className="gd-pic__hear">🔊 hear it</span>
+              <span className="gd-pic__hear"><Icon name="ico-hear" emoji="🔊" /> hear it</span>
             </button>
             <p className="sd-q">Which one <b>rhymes</b>?</p>
             <div className="gd-pics">

@@ -10,7 +10,14 @@ import { loadLore, setStoryStage } from '../../world/lore/loreStore';
 import { castFor, healFor, characterStage, beatFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import { GardenBackdrop } from './GardenArt';
+import { Icon } from '../../ui/Icon';
 import './garden.css';
+
+/** Per-game painted icon (falls back to the game's emoji until a PNG exists). */
+const GAME_ICON: Record<string, string> = {
+  'tap-it-out': 'ico-tap-it-out', 'same-or-different': 'ico-same-different', 'switch-it': 'ico-switch-it',
+  'rhyme-time': 'ico-rhyme-time', 'blend-it': 'ico-blend-it',
+};
 
 /** Calm launcher for Level 1's Sound Garden games. A painted meadow, the level's
  *  focus, its games — and the level's companion (Chip) greeting you, healing as
@@ -51,7 +58,7 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
       <GardenBackdrop />
       <div className="gd-hud">
         <button type="button" className="gd-back" onClick={() => goBack('#/levels')}>← Levels</button>
-        <span className="gd-badge">🌱 Sound Garden · Level {lvl.num}</span>
+        <span className="gd-badge"><Icon name="ico-sound-garden" emoji="🌱" /> Sound Garden · Level {lvl.num}</span>
       </div>
 
       <div className="gd-stage gd-hub__stage">
@@ -95,7 +102,7 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
                 disabled={!available}
                 aria-label={available ? `Play ${g.title}` : `${g.title} — coming soon`}
               >
-                <span className="gd-mission__emoji" aria-hidden="true">{g.emoji}</span>
+                <Icon name={GAME_ICON[g.id] ?? ''} emoji={g.emoji} className="gd-mission__emoji" />
                 <span className="gd-mission__title">{g.title}</span>
                 <span className="gd-mission__tag">{g.tagline}</span>
                 <span className={`gd-mission__foot ${available ? 'gd-mission__go' : 'gd-mission__soon'}`}>
@@ -117,7 +124,7 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
         ) : null}
 
         <button type="button" className="gd-hub__village" onClick={() => navigate('#/village')}>
-          🏡 Visit your Village
+          <Icon name="ico-village" emoji="🏡" /> Visit your Village
         </button>
       </div>
     </main>

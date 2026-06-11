@@ -10,6 +10,7 @@ import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { GardenBackdrop } from './GardenArt';
 import { GameShell } from '../../ui/GameShell';
+import { Icon } from '../../ui/Icon';
 import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import './garden.css';
@@ -126,7 +127,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
       rootClass="gd sd si"
       backdrop={<GardenBackdrop />}
       back={{ label: '← Garden', onClick: () => goBack('#/level/1') }}
-      badge={<>🔁 Switch It · Level 1</>}
+      badge={<><Icon name="ico-switch-it" emoji="🔁" /> Switch It · Level 1</>}
       current={i}
       total={ROUNDS}
       muted={muted}
@@ -140,7 +141,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
             <p className="sd-finish__score">{finish.score} / {ROUNDS} right</p>
             <p className="sd-finish__say">{character?.name} loves how you remix the sounds. 🎵</p>
             <div className="sd-choices">
-              <button type="button" className="gd-btn" onClick={restart}>Play again 🔁</button>
+              <button type="button" className="gd-btn" onClick={restart}>Play again <Icon name="ico-replay" emoji="🔁" /></button>
               <button type="button" className="gd-btn gd-btn--ghost" onClick={() => navigate('#/level/1')}>Back to the Garden</button>
             </div>
           </div>
@@ -184,11 +185,11 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
                 })}
               </div>
               <div className="sd-listen">
-                <button type="button" className="sd-listen__btn" onClick={() => round && say(round.source)}>🔊 First word</button>
-                <button type="button" className="sd-listen__btn" onClick={() => round && say(round.target)}>🔊 Second word</button>
+                <button type="button" className="sd-listen__btn" onClick={() => round && say(round.source)}><Icon name="ico-hear" emoji="🔊" /> First word</button>
+                <button type="button" className="sd-listen__btn" onClick={() => round && say(round.target)}><Icon name="ico-hear" emoji="🔊" /> Second word</button>
               </div>
               <button type="button" className="si-hint" onClick={() => { setShowLetters((v) => !v); sfx.tap(); }} aria-pressed={showLetters}>
-                {showLetters ? '🙈 Hide the words' : '👀 Show me the words'}
+                {showLetters ? <><Icon name="ico-hide" emoji="🙈" /> Hide the words</> : <><Icon name="ico-show" emoji="👀" /> Show me the words</>}
               </button>
             </div>
           )}

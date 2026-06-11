@@ -10,6 +10,7 @@ import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { GardenBackdrop } from './GardenArt';
 import { GameShell } from '../../ui/GameShell';
+import { Icon } from '../../ui/Icon';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
 import { MascotSpeaker } from '../../mascots/MascotSpeaker';
 import { castFor, reactionLine, healFor, characterStage, fragmentToReveal, isFullyRecovered } from '../../world/lore/cast';
@@ -252,7 +253,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
       rootClass="gd"
       backdrop={<GardenBackdrop />}
       back={{ label: '← Garden', onClick: () => goBack('#/level/1') }}
-      badge={<>🌱 Tap It Out · Word {round + 1}</>}
+      badge={<><Icon name="ico-tap-it-out" emoji="🌱" /> Tap It Out · Word {round + 1}</>}
       current={round}
       total={ROUNDS}
       muted={muted}
@@ -284,7 +285,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
         <div className="gd-word">
           <WordPicture label={word.label} emoji={word.emoji} className="gd-wordpic" />
           <span className="gd-word__label">{cap(word.label)}</span>
-          <button type="button" className="gd-hear" onClick={() => { sfx.tap(); pingEcho(); void audio.playWord(word); }}>🔊 Hear it</button>
+          <button type="button" className="gd-hear" onClick={() => { sfx.tap(); pingEcho(); void audio.playWord(word); }}><Icon name="ico-hear" emoji="🔊" /> Hear it</button>
         </div>
 
         <p className="gd-ask">How many sounds do you hear? <b>Tap a beat for each one.</b></p>
@@ -305,18 +306,18 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
         {!bloom ? (
           <>
             <button type="button" className={`gd-tapbtn${tutorial ? ' gd-tapbtn--hint' : ''}`} onClick={tap} aria-label="Tap for one sound">
-              <span className="gd-tapbtn__ico" aria-hidden="true">👆</span>
+              <span className="gd-tapbtn__ico" aria-hidden="true"><Icon name="ico-tap" emoji="👆" /></span>
               <span className="gd-tapbtn__label">Tap</span>
               <span className="gd-tapbtn__sub">one tap = one sound</span>
             </button>
             <div className="gd-actions">
-              <button type="button" className="gd-ghost" onClick={undo} disabled={taps === 0}>↩ Undo</button>
-              <button type="button" className="gd-btn" onClick={check} disabled={taps === 0}>Plant it! 🌷</button>
+              <button type="button" className="gd-ghost" onClick={undo} disabled={taps === 0}><Icon name="ico-undo" emoji="↩" /> Undo</button>
+              <button type="button" className="gd-btn" onClick={check} disabled={taps === 0}>Plant it! <Icon name="ico-plant" emoji="🌷" /></button>
             </div>
           </>
         ) : (
           <div className="gd-actions">
-            <button type="button" className="gd-btn" onClick={advanceNow}>{isLast ? 'See my garden 🎉' : 'Next word 🌿'}</button>
+            <button type="button" className="gd-btn" onClick={advanceNow}>{isLast ? 'See my garden 🎉' : <>Next word <Icon name="ico-leaf" emoji="🌿" /></>}</button>
           </div>
         )}
 

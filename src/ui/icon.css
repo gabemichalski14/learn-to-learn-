@@ -1,0 +1,17 @@
+/* UI icon (painted PNG) + its emoji fallback. Sized to 1em so it drops into any
+   spot an emoji used to sit and matches that spot's font-size; add a sizing
+   class to scale it up (e.g. a hub mission tile). */
+.uicon {
+  width: 1em;
+  height: 1em;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: -0.15em;
+  flex: none;
+}
+.uicon--emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}

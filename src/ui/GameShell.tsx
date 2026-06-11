@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Icon } from './Icon';
 
 /**
  * GameShell — the CONGRUENT chrome shared by every game screen, so the back
@@ -49,7 +50,7 @@ export function GameShell({
             </span>
           )}
           {onToggleMute && (
-            <button type="button" className={`${prefix}-mute`} onClick={onToggleMute} aria-label={muted ? 'Turn sound on' : 'Turn sound off'} aria-pressed={muted}>{muted ? '🔇' : '🔊'}</button>
+            <button type="button" className={`${prefix}-mute`} onClick={onToggleMute} aria-label={muted ? 'Turn sound on' : 'Turn sound off'} aria-pressed={muted}><Icon name={muted ? 'ico-mute-off' : 'ico-mute-on'} emoji={muted ? '🔇' : '🔊'} /></button>
           )}
         </span>
       </div>

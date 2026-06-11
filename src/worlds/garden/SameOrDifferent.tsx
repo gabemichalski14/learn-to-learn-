@@ -10,6 +10,7 @@ import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { GardenBackdrop } from './GardenArt';
 import { GameShell } from '../../ui/GameShell';
+import { Icon } from '../../ui/Icon';
 import { castFor, reactionLine, isFullyRecovered, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import './garden.css';
@@ -117,7 +118,7 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
       rootClass="gd sd"
       backdrop={<GardenBackdrop />}
       back={{ label: '← Garden', onClick: () => goBack('#/level/1') }}
-      badge={<>👂 Same or Different? · Level 1</>}
+      badge={<><Icon name="ico-same-different" emoji="👂" /> Same or Different? · Level 1</>}
       current={i}
       total={ROUNDS}
       muted={muted}
@@ -131,7 +132,7 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
             <p className="sd-finish__score">{finish.score} / {ROUNDS} right</p>
             <p className="sd-finish__say">{character?.name} heard every one with you. 🎵</p>
             <div className="sd-choices">
-              <button type="button" className="gd-btn" onClick={restart}>Play again 🔁</button>
+              <button type="button" className="gd-btn" onClick={restart}>Play again <Icon name="ico-replay" emoji="🔁" /></button>
               <button type="button" className="gd-btn gd-btn--ghost" onClick={() => navigate('#/level/1')}>Back to the Garden</button>
             </div>
           </div>
@@ -152,13 +153,13 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
           <div className="gd-panel">
             <p className="sd-q">Are these two words the <b>same</b>?</p>
             <div className="sd-listen">
-              <button type="button" className="sd-listen__btn" onClick={() => round && playWord(round.a)}>🔊 First word</button>
-              <button type="button" className="sd-listen__btn" onClick={() => round && playWord(round.b)}>🔊 Second word</button>
+              <button type="button" className="sd-listen__btn" onClick={() => round && playWord(round.a)}><Icon name="ico-hear" emoji="🔊" /> First word</button>
+              <button type="button" className="sd-listen__btn" onClick={() => round && playWord(round.b)}><Icon name="ico-hear" emoji="🔊" /> Second word</button>
             </div>
 
             <div className="sd-choices">
-              <button type="button" className={`sd-choice sd-choice--same${picked === true ? (round?.same ? ' is-right' : ' is-wrong') : ''}`} disabled={picked !== null} onClick={() => choose(true)}>🟰 Same</button>
-              <button type="button" className={`sd-choice sd-choice--diff${picked === false ? (!round?.same ? ' is-right' : ' is-wrong') : ''}`} disabled={picked !== null} onClick={() => choose(false)}>✳️ Different</button>
+              <button type="button" className={`sd-choice sd-choice--same${picked === true ? (round?.same ? ' is-right' : ' is-wrong') : ''}`} disabled={picked !== null} onClick={() => choose(true)}><Icon name="ico-same" emoji="🟰" /> Same</button>
+              <button type="button" className={`sd-choice sd-choice--diff${picked === false ? (!round?.same ? ' is-right' : ' is-wrong') : ''}`} disabled={picked !== null} onClick={() => choose(false)}><Icon name="ico-different" emoji="✳️" /> Different</button>
             </div>
             {phase !== 'idle' && <p className={`sd-feedback sd-feedback--${phase}`} role="status">{phase === 'right' ? 'Yes! 🎉' : 'Listen again 💛'}</p>}
           </div>

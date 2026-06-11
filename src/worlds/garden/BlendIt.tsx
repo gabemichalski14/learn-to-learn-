@@ -13,6 +13,7 @@ import { GameShell } from '../../ui/GameShell';
 import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import { WordPicture } from '../../world/WordPicture';
+import { Icon } from '../../ui/Icon';
 import './garden.css';
 
 const ROUNDS = 8;
@@ -98,7 +99,7 @@ export function BlendIt({ learnerId = 'guest' }: { learnerId?: string }) {
       rootClass="gd rt"
       backdrop={<GardenBackdrop />}
       back={{ label: '← Garden', onClick: () => goBack('#/level/1') }}
-      badge={<>🔡 Blend It · Level 1</>}
+      badge={<><Icon name="ico-blend-it" emoji="🔡" /> Blend It · Level 1</>}
       current={i}
       total={ROUNDS}
       muted={muted}
@@ -112,7 +113,7 @@ export function BlendIt({ learnerId = 'guest' }: { learnerId?: string }) {
             <p className="sd-finish__score">{finish.score} / {ROUNDS} right</p>
             <p className="sd-finish__say">{character?.name ?? 'Chip'} heard the words come together with you. 🎵</p>
             <div className="sd-choices">
-              <button type="button" className="gd-btn" onClick={restart}>Play again 🔁</button>
+              <button type="button" className="gd-btn" onClick={restart}>Play again <Icon name="ico-replay" emoji="🔁" /></button>
               <button type="button" className="gd-btn gd-btn--ghost" onClick={() => navigate('#/level/1')}>Back to the Garden</button>
             </div>
           </div>
@@ -132,7 +133,7 @@ export function BlendIt({ learnerId = 'guest' }: { learnerId?: string }) {
 
           <div className="gd-panel">
             <button type="button" className="gd-listen-sounds" onClick={() => playSounds(round.sounds)} aria-label="Hear the sounds again">
-              🔊 Hear the sounds again
+              <Icon name="ico-hear" emoji="🔊" /> Hear the sounds again
               <span className="gd-listen-sounds__dots" aria-hidden="true">{round.sounds.map((_, n) => <i key={n} />)}</span>
             </button>
             <p className="sd-q">What word do they make?</p>

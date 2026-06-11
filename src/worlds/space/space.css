@@ -44,6 +44,9 @@
 .sg-back{ border:1px solid rgba(150,230,235,.4); background:rgba(8,26,36,.6); color:#eafcff; font:inherit; font-weight:800; font-size:13px;
   border-radius:999px; padding:6px 14px; cursor:pointer; backdrop-filter:blur(3px); box-shadow:0 2px 10px rgba(0,0,0,.35); }
 .sg-back:focus-visible{ outline:2px solid #eafcff; outline-offset:2px; }
+/* the child-facing directions line (congruent with L1's prompt) */
+.sg-ask{ margin:2px auto 0; font-size:clamp(14px,3.4vw,17px); font-weight:800; color:#eafcff; text-align:center;
+  background:rgba(8,26,36,.55); border:1px solid rgba(150,230,235,.3); padding:7px 16px; border-radius:999px; backdrop-filter:blur(3px); }
 .sg-who{ position:relative; z-index:3; font-size:12px; font-weight:700; color:#bfe9ef;
   background:rgba(10,34,46,.6); border:1px solid rgba(120,220,230,.35); border-radius:999px; padding:3px 10px; white-space:nowrap; }
 

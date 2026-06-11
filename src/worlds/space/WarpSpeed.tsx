@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { goBack, navigate } from '../../router';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
-import { sfx } from '../../audio/sfx';
+import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import { buildReadRounds, type CvcWord } from '../../content/packs/level2';
-import { recordItem } from '../../mastery/mastery';
+import { recordItem, loadMastery } from '../../mastery/mastery';
 import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
-import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
-import { castFor, reactionLine } from '../../world/lore/cast';
+import { SpaceBackdrop } from './SpaceArt';
+import { GameShell } from '../../ui/GameShell';
+import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import './space.css';
 
@@ -25,6 +26,9 @@ const SKILL = 'read:cvc';
 export function WarpSpeed({ learnerId = 'guest' }: { learnerId?: string }) {
   const audio = useMemo(() => createRecordedAudioPlayer(), []);
   const character = castFor(2); // Moss
+  const heal = character ? healFor(character, loadMastery(learnerId)) : 1;
+  const [muted, setMutedState] = useState(isMuted());
+  function toggleMute() { const n = !muted; setMuted(n); setMutedState(n); }
   const [rounds, setRounds] = useState(() => buildReadRounds(ROUNDS));
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
@@ -78,13 +82,17 @@ export function WarpSpeed({ learnerId = 'guest' }: { learnerId?: string }) {
   }
 
   return (
-    <main className="sg ss">
-      <SpaceBackdrop />
-      <div className="sg-hud">
-        <button type="button" className="sg-back" onClick={() => goBack('#/level/2')}>← Station</button>
-        <span className="sg-badge">☄️ Warp Speed · Level 2</span>
-      </div>
-
+    <GameShell
+      prefix="sg"
+      rootClass="sg ss"
+      backdrop={<SpaceBackdrop />}
+      back={{ label: '← Space', onClick: () => goBack('#/level/2') }}
+      badge={<>☄️ Warp Speed · Level 2</>}
+      current={i}
+      total={ROUNDS}
+      muted={muted}
+      onToggleMute={toggleMute}
+    >
       {finish ? (
         <div className="ss-stage">
           <div className="ss-finish">
@@ -102,12 +110,13 @@ export function WarpSpeed({ learnerId = 'guest' }: { learnerId?: string }) {
           {character && (
             <div className="ss-hero">
               <button type="button" className="ss-hero__face" onClick={() => { void audio.narrate(line); sfx.tap(); }} aria-label={`Hear ${character.name} again`}>
-                <CharacterArt emoji={character.emoji} heal={1} mood={mood} size={96} art={character.art} label={character.name} />
+                <CharacterArt emoji={character.emoji} heal={heal} mood={mood} size={96} art={character.art} label={character.name} />
               </button>
               <p className="ss-hero__line" role="status">{line}</p>
             </div>
           )}
 
+          <p className="sg-ask">Read the word, then tap its picture — quick!</p>
           <p className="ws-word" aria-label={`Read the word ${round.word}`}>{round.word}</p>
           <div className="ws-pics" role="group" aria-label="pick the picture">
             {round.options.map((opt) => (
@@ -118,13 +127,8 @@ export function WarpSpeed({ learnerId = 'guest' }: { learnerId?: string }) {
               </button>
             ))}
           </div>
-          <span className="ss-progress" aria-hidden="true">
-            {rounds.map((_, n) => <i key={n} className={n < i ? 'done' : n === i ? 'on' : ''} />)}
-          </span>
         </div>
       )}
-
-      <div className="sg-scout"><ScoutDrone size={62} /></div>
-    </main>
+    </GameShell>
   );
 }

@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { goBack, navigate } from '../../router';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
-import { sfx } from '../../audio/sfx';
+import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import { buildStarRounds, positionTarget } from '../../content/packs/starStation';
-import { recordItem } from '../../mastery/mastery';
+import { recordItem, loadMastery } from '../../mastery/mastery';
 import { skillKeyForSound } from '../../mastery/skills';
 import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
-import { SpaceBackdrop, ScoutDrone } from './SpaceArt';
-import { castFor, reactionLine } from '../../world/lore/cast';
+import { SpaceBackdrop } from './SpaceArt';
+import { GameShell } from '../../ui/GameShell';
+import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import './space.css';
 
@@ -25,6 +26,9 @@ const ROUNDS = 6;
 export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
   const audio = useMemo(() => createRecordedAudioPlayer(), []);
   const character = castFor(2); // Moss
+  const heal = character ? healFor(character, loadMastery(learnerId)) : 1; // real recovery, like every other game
+  const [muted, setMutedState] = useState(isMuted());
+  function toggleMute() { const n = !muted; setMuted(n); setMutedState(n); }
   const [rounds, setRounds] = useState(() => buildStarRounds(ROUNDS));
   const [ri, setRi] = useState(0);
   const [placed, setPlaced] = useState(0);          // correct letters built so far
@@ -124,13 +128,17 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
   }
 
   return (
-    <main className="sg ss">
-      <SpaceBackdrop />
-      <div className="sg-hud">
-        <button type="button" className="sg-back" onClick={() => goBack('#/level/2')}>← Station</button>
-        <span className="sg-badge">🛰️ Star Station · Level 2</span>
-      </div>
-
+    <GameShell
+      prefix="sg"
+      rootClass="sg ss"
+      backdrop={<SpaceBackdrop />}
+      back={{ label: '← Space', onClick: () => goBack('#/level/2') }}
+      badge={<>🛰️ Star Station · Level 2</>}
+      current={ri}
+      total={ROUNDS}
+      muted={muted}
+      onToggleMute={toggleMute}
+    >
       {finish ? (
         <div className="ss-stage">
           <div className="ss-finish">
@@ -148,11 +156,13 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
           {character && (
             <div className="ss-hero">
               <button type="button" className="ss-hero__face" onClick={() => { void audio.narrate(line); sfx.tap(); }} aria-label={`Hear ${character.name} again`}>
-                <CharacterArt emoji={character.emoji} heal={1} mood={mood} size={96} art={character.art} label={character.name} />
+                <CharacterArt emoji={character.emoji} heal={heal} mood={mood} size={96} art={character.art} label={character.name} />
               </button>
               <p className="ss-hero__line" role="status">{line}</p>
             </div>
           )}
+
+          <p className="sg-ask">Hear the word, then tap the letters <b>in order</b> to build it.</p>
 
           <button type="button" className="ss-pic" onClick={() => say(word)} aria-label="Hear the word again">
             <span className="ss-pic__emoji">{round.emoji}</span>
@@ -176,13 +186,8 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
               >{ch}</button>
             ))}
           </div>
-          <span className="ss-progress" aria-hidden="true">
-            {rounds.map((_, n) => <i key={n} className={n < ri ? 'done' : n === ri ? 'on' : ''} />)}
-          </span>
         </div>
       )}
-
-      <div className="sg-scout"><ScoutDrone size={62} /></div>
-    </main>
+    </GameShell>
   );
 }

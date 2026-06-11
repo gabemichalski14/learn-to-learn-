@@ -280,10 +280,16 @@
 .sg-mission__tag{ font-size:12.5px; color:#9fc6cf; line-height:1.4; }
 .sg-mission__foot{ margin-top:6px; font-size:12px; font-weight:800; }
 .sg-mission__go{ color:#5ef0c8; } .sg-mission__soon{ color:#7fb0bb; }
-.sg-hub__lessons{ margin-top:28px; width:100%; max-width:620px; }
-.sg-hub__lessons h2{ font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:#9fe9f0; text-align:center; margin:0 0 8px; }
-.sg-hub__lesson{ display:flex; gap:10px; align-items:baseline; padding:7px 2px; border-bottom:1px solid rgba(120,220,230,.12); color:#cfe7ec; font-size:13px; }
-.sg-hub__lesson b{ color:#5ef0c8; min-width:18px; }
+/* Mission Log sits on its OWN dark panel so the text never blends into the
+   starfield (a contained, readable surface like the rest of the cozy cards). */
+.sg-hub__lessons{ margin-top:28px; width:100%; max-width:620px;
+  background:rgba(5,18,26,.74); -webkit-backdrop-filter:blur(5px); backdrop-filter:blur(5px);
+  border:1px solid rgba(120,220,230,.28); border-radius:16px; padding:14px 18px;
+  box-shadow:0 12px 32px rgba(0,0,0,.4); }
+.sg-hub__lessons h2{ font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:#7df3df; text-align:center; margin:0 0 10px; }
+.sg-hub__lesson{ display:flex; gap:10px; align-items:baseline; padding:8px 2px; border-bottom:1px solid rgba(120,220,230,.16); color:#eaf7fb; font-size:13.5px; font-weight:600; }
+.sg-hub__lesson:last-child{ border-bottom:none; }
+.sg-hub__lesson b{ color:#5ef0c8; min-width:18px; font-weight:900; }
 
 /* ============================================================
    Game juice — catch squash/stretch, sparkle burst, combo,

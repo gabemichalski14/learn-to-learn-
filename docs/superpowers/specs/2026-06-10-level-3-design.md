@@ -92,6 +92,59 @@ latency / level. L3 needs finer skillKeys + one genuinely new insight:
 - **P4 — Data surfacing:** blend-reduction insight + rule-mastery on the tutor
   dashboard (reusing the P4/P5 engines).
 
+## Deep-dive: alignment with research, psychology + mission (verified)
+Decision: **name = Patch, build all 4 games.** Before building, validated the
+arc + data against the research and the cast framework — two findings sharpened it:
+
+**1. A meta-arc across levels (escalating self-efficacy).** Bandura's four sources
+of self-efficacy are *ranked*: enactive mastery (strongest) > vicarious > verbal
+persuasion > affective. So the cast deliberately climbs the ladder as the child
+grows more capable:
+- L1 **Chip** — protégé effect (you teach him → verbal/relational).
+- L2 **Moss** — **vicarious** mastery (you watch a lost sound click home).
+- L3 **Patch** — **enactive mastery** (YOU apply a rule and it works *every time*)
+  — the strongest source. Bandura: vicarious *bootstraps* the first enactive
+  mastery, so Moss → Patch is the correct developmental order.
+
+**2. MIND-strengths traversal (Eide, *The Dyslexic Advantage*).** Each level
+affirms a different dyslexic strength: Moss = **Material/spatial**; Patch =
+**Interconnected reasoning** (seeing how parts connect into a whole) — the perfect
+metaphor for *blends = sounds joining*. Difference-not-deficit throughout: Patch's
+interconnected mind is the gift; blend-reduction is just "the slippery part."
+
+**Per-game — mechanic ↔ psychology ↔ data (each is principled, not just a toy):**
+| Game | Heals / teaches | Psychology principle | Data signal |
+|------|-----------------|---------------------|-------------|
+| **Blend Buddies** | blends; un-does reduction | enactive mastery + "both sounds heard" (Patch's wound) | first-try on `blend:*`; **`chosen` = the dropped consonant** → reduction insight |
+| **Sort It** | digraph discrimination | minimal-pair contrast (sh vs ch) — the evidence-based digraph method | `chosen` = the confused digraph → confusion engine |
+| **Rule Breakers** | -ck → FLOSS | enactive mastery — the *rule-unlock* (the lever's heart): apply it, it always works | first-try on `rule:ck` / `rule:floss` = "rule has clicked" |
+| **Chop Shop** | VC\|CV chunking | interconnected reasoning — see the word's parts (Patch's strength) | `chosen` = the wrong cut → boundary confusion |
+
+**Data method confirmed against our pipeline:** all four ride the existing
+skill_events (correct/chosen/first_try/latency/level) + the P4 personalization
+engine (confusions ≥3, first-try mastery, fluency, retention) with NO schema
+change — the new skillKeys just flow through. Blend-reduction = the L3 analogue of
+the b/d confusion (reuse `confusions()` + `confusionPhrase()`), framed
+developmentally + no-shame ("often drops the /l/ in l-blends — very common").
+
+**Gaps surfaced + how handled:**
+- *Adaptive minimal-pair contrast* is free for **Sort It** (it reuses
+  `useSortGame` + `GameScreen`'s confusion-contrast). **Blend Buddies** is a custom
+  build game → it must (a) log `chosen` = the omitted blend consonant, and (b)
+  optionally pair a confusable blend; (a) is required for the reduction insight,
+  (b) is a nice-to-have.
+- *Patch's art*: light flat/emoji presence now (per the art-direction decision —
+  no hand-coded SVG scenery); his deep animated art + full fragment/teaching arc
+  come in the art pass. The arc's *framing* (flaw heals the skill, no-shame) is
+  honored in copy now; mission intact.
+
+**Confidence: high.** The mechanic, the psychology lever, the dyslexic strength,
+and the data signal are the SAME thread per game — and the level escalates both the
+MIND-strength and the self-efficacy source. Cleared to build P1→P3.
+
+Sources (psychology): [Bandura — sources of self-efficacy, mastery strongest](https://www.simplypsychology.org/self-efficacy.html),
+[Eide — MIND strengths](https://www.dyslexicadvantage.org/dyslexic-mind-strengths/).
+
 ## Open decisions for the owner
 1. Character **name + world theme** (Workshop/Tinker vs another).
 2. Game count for v1 — all 4, or headliner + 2?

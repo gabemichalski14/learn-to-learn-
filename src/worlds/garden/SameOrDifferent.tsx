@@ -8,8 +8,8 @@ import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
-import { GardenBackdrop, SproutGuide } from './GardenArt';
-import { castFor, reactionLine, isFullyRecovered } from '../../world/lore/cast';
+import { GardenBackdrop } from './GardenArt';
+import { castFor, reactionLine, isFullyRecovered, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import './garden.css';
 
@@ -31,6 +31,9 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
   const [picked, setPicked] = useState<boolean | null>(null);
   const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
   const whole = character ? isFullyRecovered(character, loadMastery(learnerId)) : false;
+  // Chip looks the SAME across every Level-1 game (the character IS the progress):
+  // his real recovery, not a hardcoded "always whole". Continuous with Tap It Out.
+  const heal = character ? healFor(character, loadMastery(learnerId)) : 1;
   const [line, setLine] = useState(() =>
     character ? (whole && character.revisit?.length ? character.revisit[Math.floor(Math.random() * character.revisit.length)]
       : "My ears love tiny differences! Listen — are these two the SAME word, or DIFFERENT?") : '');
@@ -131,7 +134,7 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
           {character && (
             <div className="gd-hero sd-hero">
               <button type="button" className="gd-hero__face" onClick={() => { if (character) { void audio.narrate(line); sfx.tap(); } }} aria-label={`Hear ${character.name} again`}>
-                <CharacterArt emoji={character.emoji} heal={1} mood={mood} size={96} art={character.art} label={character.name} />
+                <CharacterArt emoji={character.emoji} heal={heal} mood={mood} size={76} art={character.art} label={character.name} />
               </button>
               <div className="gd-hero__body">
                 <p className="gd-hero__line" role="status">{line}</p>
@@ -157,8 +160,6 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
           </div>
         </div>
       )}
-
-      <div className="gd-scout gd-hub__scout"><SproutGuide size={64} /></div>
     </main>
   );
 }

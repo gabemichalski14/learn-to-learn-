@@ -23,7 +23,13 @@ export function RiveMascot({ src, stateMachines, artboard, size = 120, fallback 
   useEffect(() => {
     let live = true;
     fetch(src, { method: 'HEAD' })
-      .then((r) => { if (live) setExists(r.ok); })
+      .then((r) => {
+        // A dev server's SPA fallback answers 200 + text/html for a MISSING file —
+        // that is not a real .riv. Only load Rive for an actual binary asset, else
+        // the Rive runtime tries to parse HTML and logs "Bad header / failed to load".
+        const isHtml = (r.headers.get('content-type') || '').includes('text/html');
+        if (live) setExists(r.ok && !isHtml);
+      })
       .catch(() => { if (live) setExists(false); });
     return () => { live = false; };
   }, [src]);

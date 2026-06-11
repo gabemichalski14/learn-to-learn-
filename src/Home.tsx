@@ -10,7 +10,6 @@ import { useDataVersion } from './data/store';
 import { rankAreas, type FocusArea } from './mastery/mastery';
 import type { SessionRecord } from './sessionLog';
 import { useNarrative, homeLead } from './world/narrative';
-import { useTutorSignedIn } from './useAuth';
 
 interface Props {
   learnerId: string;
@@ -22,7 +21,6 @@ interface Props {
  *  curriculum lives on the Levels page (in the menu). */
 export function Home({ learnerId, onChooseLearner }: Props) {
   const [now] = useState(() => Date.now());
-  const signedIn = useTutorSignedIn(); // guests see a sign-in funnel instead of the leaderboard
   const version = useDataVersion(); // re-render + refetch when local data changes
   const learner = getLearner(learnerId);
   const name = learner?.name ?? 'Explorer';
@@ -100,30 +98,22 @@ export function Home({ learnerId, onChooseLearner }: Props) {
           <AreasToImprove learnerId={learnerId} focus={focus} />
         </section>
 
-        {signedIn ? (
-          <section className="l2l-card l2l-reveal" style={{ '--i': 6 } as React.CSSProperties} aria-labelledby="lb-h">
-            <h2 id="lb-h" className="l2l-h2">Leaderboard</h2>
-            <p className="home-sub">Friendly standings across your center.</p>
-            <ol className="lb">
-              {board.length === 0 && <li className="home-sub">No players yet.</li>}
-              {board.map(({ l, p }, i) => (
-                <li key={l.id} className={`lb-row${l.id === learnerId ? ' lb-row--me' : ''}`}>
-                  <span className="lb-rank">{i + 1}</span>
-                  <span className="lb-av" style={{ background: l.color }} aria-hidden="true">{initials(l.name)}</span>
-                  <span className="lb-name">{l.name}</span>
-                  <span className="lb-meta">{new Set(p.earned).size} ⭐ · {p.sessions} played</span>
-                </li>
-              ))}
-            </ol>
-            <button type="button" className="l2l-btn l2l-btn--ghost home-lb__more" onClick={() => navigate('#/leaderboard')}>Full leaderboard →</button>
-          </section>
-        ) : (
-          <section className="l2l-card l2l-reveal" style={{ '--i': 6 } as React.CSSProperties}>
-            <h2 className="l2l-h2">✨ Unlock everything</h2>
-            <p className="home-sub">You're playing the free preview — Level 1 is open to explore. Sign in to unlock every level, save progress across devices, and open the tutor &amp; parent dashboards.</p>
-            <button type="button" className="l2l-btn" onClick={() => navigate('#/account')}>Sign in →</button>
-          </section>
-        )}
+        <section className="l2l-card l2l-reveal" style={{ '--i': 6 } as React.CSSProperties} aria-labelledby="lb-h">
+          <h2 id="lb-h" className="l2l-h2">Leaderboard</h2>
+          <p className="home-sub">Friendly standings across players on this device.</p>
+          <ol className="lb">
+            {board.length === 0 && <li className="home-sub">No players yet.</li>}
+            {board.map(({ l, p }, i) => (
+              <li key={l.id} className={`lb-row${l.id === learnerId ? ' lb-row--me' : ''}`}>
+                <span className="lb-rank">{i + 1}</span>
+                <span className="lb-av" style={{ background: l.color }} aria-hidden="true">{initials(l.name)}</span>
+                <span className="lb-name">{l.name}</span>
+                <span className="lb-meta">{new Set(p.earned).size} ⭐ · {p.sessions} played</span>
+              </li>
+            ))}
+          </ol>
+          <button type="button" className="l2l-btn l2l-btn--ghost home-lb__more" onClick={() => navigate('#/leaderboard')}>Full leaderboard →</button>
+        </section>
       </div>
     </main>
   );

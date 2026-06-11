@@ -278,8 +278,17 @@ export const CHIP: LevelCharacter = {
   },
   skillKey: 'pa:segment',
   soundId: 'segment',
+  // Chip's song scattered into ALL FIVE Sound-Garden games — one phonemic-awareness
+  // skill per game (Tap It Out=segment, Same or Different=compare, Switch It=
+  // manipulate, Rhyme Time=rhyme, Blend It=blend). Recover them all to make him
+  // whole, so finishing Level 1 means playing every game. Each returns a musical memory.
+  sounds: ['pa:segment', 'pa:compare', 'pa:manipulate', 'pa:rhyme', 'pa:blend'],
   fragments: {
     segment: ['…there. I caught a beat — one little tk, all on its own. You showed me how. Now I can find the rest. 🎵'],
+    compare: ['…two words, almost the same — but one little beat is different. My ears can tell them apart now. You taught me that. 🎵'],
+    manipulate: ['…switch one beat and the whole word changes — cat, cap! I can move the sounds around now, like notes on a string. 🎶'],
+    rhyme: ['…cat, hat, bat — they all land on the same beat at the end. Rhymes! That was always my favorite part of the song. 🎵'],
+    blend: ["…I strung the little beats together and a whole word sang out. Blending — that's my song coming home. 🎶"],
   },
   storytime: [
     'Every word is a tiny song now — and I can hear each beat. You taught me that. 🎵',

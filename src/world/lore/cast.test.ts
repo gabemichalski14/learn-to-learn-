@@ -30,6 +30,19 @@ describe('cast registry', () => {
     expect(castFor(2)).toBe(MOSS);
     expect(castFor(99)).toBeUndefined();
   });
+  it('Chip recovers across ALL five Level-1 games (one PA skill each)', () => {
+    expect(soundsOf(CHIP)).toEqual(['pa:segment', 'pa:compare', 'pa:manipulate', 'pa:rhyme', 'pa:blend']);
+    // a musical memory for every recovered skill — no empty/undefined leaks
+    for (const k of soundsOf(CHIP)) {
+      const sid = k.split(':').pop()!;
+      expect(CHIP.fragments?.[sid]?.[0]?.length).toBeGreaterThan(0);
+    }
+    // not whole until every game is mastered; one game alone heals 1/5
+    expect(isFullyRecovered(CHIP, { 'pa:segment': stat(6, 6) })).toBe(false);
+    expect(healFor(CHIP, { 'pa:segment': stat(6, 6) })).toBeCloseTo(1 / 5, 5);
+    const allFive = Object.fromEntries(soundsOf(CHIP).map((k) => [k, stat(6, 6)]));
+    expect(isFullyRecovered(CHIP, allFive)).toBe(true);
+  });
 });
 
 // Master every one of a character's scattered hums.

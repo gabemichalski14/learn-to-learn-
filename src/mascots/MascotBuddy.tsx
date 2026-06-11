@@ -50,6 +50,7 @@ export function MascotBuddy({ learnerId }: { learnerId: string }) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const openRef = useRef(false);
   const paradeRef = useRef(false);
+  const lastParadeRef = useRef(0); // when the last parade ran — spaces auto-parades out
   const dodgedRef = useRef(false); // trickster: only dodge once in a row
   const pokeTimes = useRef<number[]>([]);
   const timers = useRef<number[]>([]);
@@ -57,6 +58,7 @@ export function MascotBuddy({ learnerId }: { learnerId: string }) {
   // The gag: a conga line of Pips waddles across the screen, then is gone again.
   function summonParade() {
     if (paradeRef.current) return;
+    lastParadeRef.current = Date.now();
     setParade(true);
     sfx.combo(6);
     timers.current.push(window.setTimeout(() => setParade(false), 10500));
@@ -73,7 +75,9 @@ export function MascotBuddy({ learnerId }: { learnerId: string }) {
       const id = window.setTimeout(() => {
         if (!alive) return;
         if (!openRef.current) {
-          if (Math.random() < 0.12) {
+          // The parade is a treat — keep it rare: a low chance AND at least ~6
+          // minutes since the last one (poking Pip fast still summons it any time).
+          if (Math.random() < 0.04 && Date.now() - lastParadeRef.current > 360000) {
             summonParade(); // rare gag
           } else {
             setSpot((s) => (s + 1 + rnd(SPOTS.length - 1)) % SPOTS.length); // a different spot

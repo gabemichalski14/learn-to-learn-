@@ -14,22 +14,26 @@ import './living-world.css';
  * a single self-rescheduling timer — never a render loop. prefers-reduced-motion
  * limits it to the calm, static clover.
  */
-type EggType = 'peek' | 'clover' | 'butterfly' | 'star' | 'motif';
+type EggType = 'peek' | 'clover' | 'butterfly' | 'star' | 'motif' | 'critter';
 
 interface Egg { type: EggType; key: number; left: number; top: number; side: 1 | -1; caught: boolean; glyph?: string; }
 
 const rnd = (n: number) => Math.floor(Math.random() * n);
 
+// A pool of gentle drifting visitors — lots of variety from one type, so a
+// surprise rarely looks the same twice (ladybug, snail, leaf, bee, bird…).
+const CRITTERS = ['🐞', '🍃', '🐌', '🐝', '🌼', '🐢', '🐿️', '🍂', '🦔', '🪻', '🐤', '🐸'];
+
 function eligibleTypes(tier: number, reduce: boolean): EggType[] {
   if (reduce) return ['clover']; // calm, static, opt-in only
-  const pool: EggType[] = ['peek'];
-  if (tier >= 1) pool.push('clover');
+  const pool: EggType[] = ['peek', 'critter']; // critter from the start = variety for everyone
+  if (tier >= 1) pool.push('clover', 'critter'); // a touch more common as the world grows
   if (tier >= 2) pool.push('butterfly');
   if (tier >= 3) pool.push('star');
   return pool;
 }
 
-const LIFETIME: Record<EggType, number> = { peek: 4200, clover: 9000, butterfly: 7200, star: 1600, motif: 5200 };
+const LIFETIME: Record<EggType, number> = { peek: 4200, clover: 9000, butterfly: 7200, star: 1600, motif: 5200, critter: 6000 };
 
 /**
  * @param motifs friend symbols to occasionally drift past (from worldMotifs)
@@ -56,7 +60,7 @@ export function EasterEggs({ tier, motifs = [], boost = 0 }: { tier: number; mot
         type, key: Date.now(),
         left: 8 + rnd(80), top: 22 + rnd(54),
         side: rnd(2) === 0 ? 1 : -1, caught: false,
-        glyph: type === 'motif' ? motifs[rnd(motifs.length)] : undefined,
+        glyph: type === 'motif' ? motifs[rnd(motifs.length)] : type === 'critter' ? CRITTERS[rnd(CRITTERS.length)] : undefined,
       });
       push(window.setTimeout(() => { if (alive) setEgg(null); }, LIFETIME[type]));
     };
@@ -116,7 +120,8 @@ export function EasterEggs({ tier, motifs = [], boost = 0 }: { tier: number; mot
   if (egg.type === 'star') {
     return <span className="egg egg--star" style={pos} aria-hidden="true" />;
   }
-  if (egg.type === 'motif') {
+  if (egg.type === 'motif' || egg.type === 'critter') {
+    // both are a single glyph that gently drifts past (friend symbol, or a critter)
     return <span className="egg egg--motif" style={{ left: `${egg.left}%`, top: `${egg.top}%`, '--dir': egg.side } as CSSProperties} aria-hidden="true">{egg.glyph}</span>;
   }
   // clover — the one tappable, opt-in surprise

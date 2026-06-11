@@ -405,6 +405,15 @@ img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
   padding: 24px 26px 26px; box-shadow: 0 16px 38px rgba(80, 70, 40, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.7); }
 .gd-panel .sd-q { color: #2a4a33; }
 .si-cw { font-weight: 900; }
+/* Switch It — optional letter reveal (oral-first scaffold) + its toggle */
+.si-reveal { margin: 2px 0 0; font-size: clamp(26px, 7vw, 36px); font-weight: 900; letter-spacing: 0.06em;
+  display: flex; align-items: center; gap: 12px; justify-content: center; animation: gd-pop 0.3s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.si-reveal__arrow { color: #4e9568; font-weight: 700; }
+.si-hint { align-self: center; min-height: 40px; display: inline-flex; align-items: center; gap: 6px; font: inherit;
+  font-weight: 800; font-size: 13px; cursor: pointer; color: #2f7d56; background: rgba(255, 255, 255, 0.8);
+  border: 1.5px solid #8ecf9f; border-radius: 999px; padding: 8px 16px; }
+.si-hint:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .si-reveal { animation: none; } }
 
 /* Rhyme Time / Blend It — picture-pick games (Chip, Level 1) */
 .gd-pics { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(10px, 3vw, 18px); margin-top: 12px; }

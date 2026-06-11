@@ -3,13 +3,13 @@ import { goBack, navigate } from '../../router';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
 import { sfx } from '../../audio/sfx';
 import { buildSwitchRounds } from '../../content/packs/switchIt';
-import { recordItem } from '../../mastery/mastery';
+import { recordItem, loadMastery } from '../../mastery/mastery';
 import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
-import { GardenBackdrop, SproutGuide } from './GardenArt';
-import { castFor, reactionLine } from '../../world/lore/cast';
+import { GardenBackdrop } from './GardenArt';
+import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import './garden.css';
 
@@ -37,12 +37,17 @@ function ColoredWord({ word }: { word: string }) {
 export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const audio = useMemo(() => createRecordedAudioPlayer(), []);
   const character = castFor(1); // Chip
+  // Chip's real recovery, so he looks the SAME across every Level-1 game.
+  const heal = character ? healFor(character, loadMastery(learnerId)) : 1;
   const [rounds, setRounds] = useState(() => buildSwitchRounds(ROUNDS));
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
   const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
   const [line, setLine] = useState('Let’s remix a word! Listen, then tap the sound that SWITCHED.');
   const [finish, setFinish] = useState<{ score: number; stars: number } | null>(null);
+  // Level 1 is ORAL first: the words are hidden so the child uses their ear, with
+  // an optional "show me" reveal as a scaffold. Resets to hidden each new round.
+  const [showLetters, setShowLetters] = useState(false);
 
   const startRef = useRef(0);
   const correctRef = useRef(0);
@@ -79,7 +84,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
       const now = Date.now();
       recordItem(learnerId, SKILL, correct);
       logSkillEvent(learnerId, { skillKey: SKILL, correct, at: now, game: 'switch-it', level: 1, firstTry: true });
-      setMood(null); setPicked(null);
+      setMood(null); setPicked(null); setShowLetters(false);
       if (i + 1 >= ROUNDS) finishSession(now);
       else setI((n) => n + 1);
     }, 1150);
@@ -107,7 +112,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
     handledRef.current = false; correctRef.current = 0; wrongRef.current = 0;
     startRef.current = Date.now();
     setRounds(buildSwitchRounds(ROUNDS));
-    setFinish(null); setI(0); setPicked(null);
+    setFinish(null); setI(0); setPicked(null); setShowLetters(false);
   }
 
   const resolved = picked !== null;
@@ -138,7 +143,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
           {character && (
             <div className="gd-hero sd-hero">
               <button type="button" className="gd-hero__face" onClick={() => { void audio.narrate(line); sfx.tap(); }} aria-label={`Hear ${character.name} again`}>
-                <CharacterArt emoji={character.emoji} heal={1} mood={mood} size={96} art={character.art} label={character.name} />
+                <CharacterArt emoji={character.emoji} heal={heal} mood={mood} size={76} art={character.art} label={character.name} />
               </button>
               <div className="gd-hero__body">
                 <p className="gd-hero__line" role="status">{line}</p>
@@ -151,7 +156,12 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
 
           {round && (
             <div className="gd-panel">
-              <p className="sd-q">Make <ColoredWord word={round.source} /> into <ColoredWord word={round.target} /> — tap the sound that switched.</p>
+              <p className="sd-q">Listen to both words. Tap the sound that <b>switched</b> — first, middle, or last.</p>
+              {/* Oral first: words hidden unless the child asks to see them. The
+                  letters are tinted to match the beads so the mapping is clear. */}
+              {showLetters && (
+                <p className="si-reveal"><ColoredWord word={round.source} /> <span className="si-reveal__arrow" aria-hidden="true">→</span> <ColoredWord word={round.target} /></p>
+              )}
               <div className="si-beads" role="group" aria-label="sounds">
                 {Array.from(round.source).map((_, idx) => {
                   const isAnswer = idx === round.changeIndex;
@@ -170,15 +180,16 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
                 })}
               </div>
               <div className="sd-listen">
-                <button type="button" className="sd-listen__btn" onClick={() => say(round.source)}>🔈 {round.source}</button>
-                <button type="button" className="sd-listen__btn" onClick={() => say(round.target)}>🔈 {round.target}</button>
+                <button type="button" className="sd-listen__btn" onClick={() => round && say(round.source)}>🔊 First word</button>
+                <button type="button" className="sd-listen__btn" onClick={() => round && say(round.target)}>🔊 Second word</button>
               </div>
+              <button type="button" className="si-hint" onClick={() => { setShowLetters((v) => !v); sfx.tap(); }} aria-pressed={showLetters}>
+                {showLetters ? '🙈 Hide the words' : '👀 Show me the words'}
+              </button>
             </div>
           )}
         </div>
       )}
-
-      <div className="gd-scout gd-hub__scout"><SproutGuide size={64} /></div>
     </main>
   );
 }

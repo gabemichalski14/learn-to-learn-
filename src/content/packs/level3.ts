@@ -58,6 +58,25 @@ export const DIGRAPH_WORDS: DigraphWord[] = [
 ];
 export const DIGRAPHS = ['sh', 'ch', 'th', 'wh', 'ck', 'ng'] as const;
 
+// ---------- Blend Buddies round builder (build the heard word from tiles) ----------
+function shuffle<T>(arr: readonly T[], rng: () => number): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+export interface BlendRound { word: string; emoji?: string; blend: string; position: 'init' | 'final'; tiles: string[]; blendIdx: [number, number] }
+const TILE_DISTRACTORS = 'bcdfghjklmnpqrstvwz'.split('');
+/** `n` rounds: a blend word + a shuffled tray of its letters + 2 distractors.
+ *  `blendIdx` marks the two "buddy" letters (so the UI can show them holding hands). */
+export function buildBlendRounds(n: number, rng: () => number = Math.random): BlendRound[] {
+  return shuffle(BLEND_WORDS, rng).slice(0, n).map((w) => {
+    const letters = w.label.split('');
+    const distractors = shuffle(TILE_DISTRACTORS.filter((d) => !letters.includes(d)), rng).slice(0, 2);
+    const blendIdx: [number, number] = w.position === 'init' ? [0, 1] : [letters.length - 2, letters.length - 1];
+    return { word: w.label, emoji: w.emoji, blend: w.blend, position: w.position, blendIdx, tiles: shuffle([...letters, ...distractors], rng) };
+  });
+}
+
 // ---------- first spelling rules (-ck, FLOSS) — Rule Breakers ----------
 // `ending` = the correct doubled / ck ending; `distractor` = the tempting single.
 export interface RuleWord { label: string; emoji?: string; rule: 'ck' | 'floss'; ending: string; distractor: string }

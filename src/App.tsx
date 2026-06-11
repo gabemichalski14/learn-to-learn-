@@ -27,6 +27,7 @@ import { TapItOutGame } from './worlds/garden/TapItOutGame';
 import { SameOrDifferent } from './worlds/garden/SameOrDifferent';
 import { SwitchItGame } from './worlds/garden/SwitchItGame';
 import { StarStation } from './worlds/space/StarStation';
+import { BlendBuddies } from './worlds/workshop/BlendBuddies';
 import { CheckpointGame } from './CheckpointGame';
 import { ensureLearner, setCurrentLearnerId, getCurrentLearnerId } from './profiles';
 import { reconcileRoster } from './data/identity';
@@ -109,6 +110,9 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'star-station') {
     return <StarStation learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'blend-buddies') {
+    return <BlendBuddies learnerId={learnerId} />;
   }
   if (route.name === 'play') {
     return <GameScreen learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} focus={route.focus} />;

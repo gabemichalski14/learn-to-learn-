@@ -53,11 +53,13 @@ export const LEVELS: LevelInfo[] = [
   },
   {
     num: 3,
-    title: 'Closed Syllables & Spelling Rules',
-    focus: 'Closed syllables, blends, first spelling rules',
+    title: "Patch's Workshop",
+    focus: 'Closed syllables, blends, digraphs, and the first spelling rules',
     games: [
-      soon('l3-syll', 'Chop Shop', '🔪', 'Chop words into syllables.'),
-      soon('l3-rules', 'Rule Breakers', '📏', 'Pick the right ending (ff, ll, ss…).'),
+      { id: 'blend-buddies', title: 'Blend Buddies', emoji: '🧵', tagline: 'Build the word — keep both blend buddies together.', status: 'available', route: '#/play/blend-buddies' },
+      soon('sort-it', 'Sort It', '🗂️', 'Sort words by their digraph (sh, ch, th…).'),
+      soon('rule-breakers', 'Rule Breakers', '📏', 'Pick the right ending (ck, ff, ll, ss).'),
+      soon('chop-shop', 'Chop Shop', '🪚', 'Chop two-syllable words in two.'),
     ],
   },
   {

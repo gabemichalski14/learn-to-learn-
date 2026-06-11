@@ -1,0 +1,55 @@
+/* Level 3 — Patch's Workshop. Warm, woody, cozy (fits the storybook brand).
+   Motion is transform/opacity only; reduced-motion honored; touch targets >=44px. */
+.wk { min-height: 100vh; padding: 16px 14px 28px; display: flex; flex-direction: column; align-items: center;
+  background: radial-gradient(130% 85% at 50% -5%, #fcf2dd 0%, #f3e4c6 55%, #ead7ad 100%); color: #4a3a22; }
+.wk-hud { width: 100%; max-width: 720px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.wk-back { font: inherit; font-weight: 700; font-size: 14px; color: #7a5a22; background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(122,90,34,0.25); border-radius: 999px; padding: 8px 14px; cursor: pointer; min-height: 40px; }
+.wk-back:hover { background: rgba(255,255,255,0.85); }
+.wk-badge { font-size: 13px; font-weight: 800; color: #8a6a1f; }
+
+.wk-stage { width: 100%; max-width: 560px; display: flex; flex-direction: column; align-items: center; gap: 18px; margin-top: 14px; }
+
+.wk-hero { display: flex; align-items: center; gap: 12px; width: 100%; }
+.wk-hero__face { background: none; border: none; cursor: pointer; padding: 4px; line-height: 1; }
+.wk-patch { font-size: 46px; display: inline-block; }
+.wk-patch.is-cheer { animation: wk-cheer 0.5s ease; }
+.wk-patch.is-wobble { animation: wk-wobble 0.4s ease; }
+.wk-hero__line { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.4; color: #5a4424; }
+
+.wk-pic { display: flex; flex-direction: column; align-items: center; gap: 4px; background: rgba(255,255,255,0.7);
+  border: 2px solid rgba(122,90,34,0.18); border-radius: 18px; padding: 14px 22px; cursor: pointer; min-height: 44px; }
+.wk-pic:hover { background: #fff; }
+.wk-pic__emoji { font-size: 56px; line-height: 1; }
+.wk-pic__hear { font-size: 12px; font-weight: 700; color: #8a6a1f; }
+
+.wk-slots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.wk-slot { width: 44px; height: 54px; border-radius: 10px; border: 2px dashed rgba(122,90,34,0.35);
+  display: grid; place-items: center; font-size: 26px; font-weight: 800; color: #4a3a22; background: rgba(255,255,255,0.35); }
+.wk-slot.is-filled { border-style: solid; border-color: #6bae7f; background: #fff; }
+.wk-slot.is-buddy { border-color: #e0922a; box-shadow: 0 0 0 3px rgba(224,146,42,0.18); } /* the two blend buddies */
+
+.wk-tray { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.wk-tile { min-width: 50px; min-height: 50px; padding: 8px; border-radius: 12px; font: inherit; font-size: 24px; font-weight: 800;
+  color: #5a4424; background: linear-gradient(180deg, #fff 0%, #f3e2c0 100%); border: 1px solid rgba(122,90,34,0.3);
+  box-shadow: 0 2px 0 rgba(122,90,34,0.25); cursor: pointer; }
+.wk-tile:hover { transform: translateY(-1px); }
+.wk-tile.is-used { opacity: 0.3; box-shadow: none; cursor: default; }
+.wk-tile.is-wrong { animation: wk-wobble 0.4s ease; background: #f6cdb6; }
+
+.wk-progress { display: inline-flex; gap: 6px; }
+.wk-progress i { width: 9px; height: 9px; border-radius: 50%; background: rgba(122,90,34,0.2); }
+.wk-progress i.done { background: #6bae7f; }
+.wk-progress i.on { background: #e0922a; }
+
+.wk-finish { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; margin-top: 24px; }
+.wk-finish__art { font-size: 80px; line-height: 1; }
+.wk-finish__title { font-size: 22px; font-weight: 800; color: #5a4424; margin: 0; font-family: var(--font-display, Georgia, serif); }
+.wk-finish__say { font-size: 15px; color: #6a5430; margin: 0; }
+.wk-actions { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
+.wk-btn { font: inherit; font-weight: 800; font-size: 15px; color: #fff; background: #d98a2b; border: none; border-radius: 999px; padding: 12px 22px; cursor: pointer; min-height: 44px; }
+.wk-btn--ghost { background: rgba(255,255,255,0.7); color: #7a5a22; border: 1px solid rgba(122,90,34,0.3); }
+
+@keyframes wk-cheer { 0%,100% { transform: translateY(0) } 30% { transform: translateY(-8px) scale(1.08) } }
+@keyframes wk-wobble { 0%,100% { transform: rotate(0) } 25% { transform: rotate(-7deg) } 75% { transform: rotate(7deg) } }
+@media (prefers-reduced-motion: reduce) { .wk-patch, .wk-tile, .wk-tile.is-wrong { animation: none !important; transform: none !important; } }

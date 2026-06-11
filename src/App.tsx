@@ -32,6 +32,7 @@ import { ensureLearner, setCurrentLearnerId, getCurrentLearnerId } from './profi
 import { reconcileRoster } from './data/identity';
 import { flushOutbox } from './data/cloudSync';
 import { useTutorSignedIn, useRole } from './useAuth';
+import { isCloudConfigured } from './data/supabase';
 import { worldMotifs } from './world/lore/cast';
 import { loadMastery } from './mastery/mastery';
 import { isLevelUnlocked, isGameUnlocked } from './mastery/levelGate';
@@ -75,6 +76,19 @@ export default function App() {
   function chooseLearner(id: string) {
     setCurrentLearnerId(id);
     setLearnerId(id);
+  }
+
+  // Freemium gate: Level 1 is the free preview; Level 2+, the leaderboard, and the
+  // dashboards require an account. (No gate when cloud isn't configured, so local
+  // dev without keys still works.) Checked before the mastery gate so a signed-out
+  // visitor sees "sign in to unlock", not "finish Level 1 first".
+  if (isCloudConfigured() && !isTutor) {
+    const lvl = route.name === 'play' ? (levelOfGame(route.game ?? 'beginning-sounds') ?? 1)
+      : (route.name === 'level' || route.name === 'checkpoint') ? (route.level ?? 1) : 1;
+    if ((route.name === 'play' || route.name === 'level' || route.name === 'checkpoint') && lvl > 1) {
+      return <LockedScreen authLocked />;
+    }
+    if (route.name === 'leaderboard') return <LockedScreen authLocked />;
   }
 
   // Mastery-gate: Barton is strictly sequential — you can't enter a level (or its

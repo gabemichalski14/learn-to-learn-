@@ -12,6 +12,31 @@ import { isMuted } from './sfx';
  * macOS speech engine can never block the tap that triggered it. (Chrome on
  * macOS can wedge the renderer if speak()/cancel() are hammered synchronously.)
  */
+/**
+ * TTS reads a bare phoneme id as the LETTER NAME ("k" → "kay"), which never
+ * blends into the word — so Blend It would teach the wrong thing. Map the common
+ * phonemes to a spelling TTS pronounces as the SOUND instead. Consonants are
+ * reliable; short vowels are approximate (recorded clips in /audio/sounds are the
+ * accurate, Barton-correct path and always take precedence when present). Unknown
+ * ids fall through unchanged.
+ */
+const PHONEME_SAY: Record<string, string> = {
+  // stop consonants — a faint schwa is unavoidable in TTS, but far better than a letter name
+  b: 'buh', d: 'duh', g: 'guh', k: 'kuh', p: 'puh', t: 'tuh', c: 'kuh',
+  // continuant consonants — held, no schwa
+  f: 'fff', l: 'lll', m: 'mmm', n: 'nnn', r: 'rrr', s: 'sss', v: 'vvv', z: 'zzz',
+  h: 'huh', j: 'juh', w: 'wuh', y: 'yuh', x: 'ks', q: 'kwuh',
+  // short vowels — approximate (best the engine can do without recordings)
+  a: 'aah', e: 'eh', i: 'ih', o: 'awe', u: 'uh',
+  // common digraphs
+  sh: 'shh', ch: 'ch', th: 'thh', ng: 'ng', ck: 'kuh', wh: 'wuh',
+};
+
+/** TTS-pronounceable form of a phoneme id (the SOUND, not the letter name). */
+export function sayPhoneme(soundId: string): string {
+  return PHONEME_SAY[soundId.toLowerCase()] ?? soundId;
+}
+
 export function createStubAudioPlayer(): AudioPlayer {
   // Per-instance throttle: each game screen owns one player, so this damps a
   // flurry of taps within a screen without leaking state between screens.
@@ -54,7 +79,8 @@ export function createStubAudioPlayer(): AudioPlayer {
   }
 
   return {
-    playSound: (soundId: string) => speak(soundId),
+    // Phonemes go through the sound-map so TTS says the SOUND, not the letter name.
+    playSound: (soundId: string) => speak(sayPhoneme(soundId)),
     playWord: (item: WordItem) => speak(item.label),
     narrate: (text: string) => speak(text),
   };

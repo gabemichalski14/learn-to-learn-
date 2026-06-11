@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createStubAudioPlayer } from './stubAudioPlayer';
+import { createStubAudioPlayer, sayPhoneme } from './stubAudioPlayer';
 import type { WordItem } from '../domain/types';
 
 describe('stub audio player', () => {
@@ -20,5 +20,24 @@ describe('stub audio player', () => {
     const player = createStubAudioPlayer();
     await player.playSound('b');
     expect(globalThis.speechSynthesis.speak).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('sayPhoneme (TTS pronounces the SOUND, not the letter name)', () => {
+  it('maps stop consonants to a blendable form, not the letter name', () => {
+    expect(sayPhoneme('k')).toBe('kuh');
+    expect(sayPhoneme('t')).toBe('tuh');
+    expect(sayPhoneme('b')).toBe('buh');
+  });
+  it('holds continuant consonants', () => {
+    expect(sayPhoneme('s')).toBe('sss');
+    expect(sayPhoneme('m')).toBe('mmm');
+  });
+  it('blends a CVC into a word-ish sequence (cat → kuh·aah·tuh)', () => {
+    expect(['k', 'a', 't'].map(sayPhoneme)).toEqual(['kuh', 'aah', 'tuh']);
+  });
+  it('is case-insensitive and falls through for unknown ids', () => {
+    expect(sayPhoneme('K')).toBe('kuh');
+    expect(sayPhoneme('zzz-unknown')).toBe('zzz-unknown');
   });
 });

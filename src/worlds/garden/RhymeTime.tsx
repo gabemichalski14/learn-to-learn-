@@ -3,13 +3,13 @@ import { goBack, navigate } from '../../router';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
 import { sfx } from '../../audio/sfx';
 import { buildRhymeRounds, type PicWord } from '../../content/packs/level1';
-import { recordItem } from '../../mastery/mastery';
+import { recordItem, loadMastery } from '../../mastery/mastery';
 import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
-import { GardenBackdrop, SproutGuide } from './GardenArt';
-import { castFor, reactionLine } from '../../world/lore/cast';
+import { GardenBackdrop } from './GardenArt';
+import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import './garden.css';
 
@@ -24,6 +24,7 @@ const SKILL = 'pa:rhyme';
 export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
   const audio = useMemo(() => createRecordedAudioPlayer(), []);
   const character = castFor(1); // Chip
+  const heal = character ? healFor(character, loadMastery(learnerId)) : 1; // continuous across L1
   const [rounds, setRounds] = useState(() => buildRhymeRounds(ROUNDS));
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
@@ -106,7 +107,7 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
           {character && (
             <div className="gd-hero sd-hero">
               <button type="button" className="gd-hero__face" onClick={() => { void audio.narrate(line); sfx.tap(); }} aria-label={`Hear ${character.name} again`}>
-                <CharacterArt emoji={character.emoji} heal={1} mood={mood} size={96} art={character.art} label={character.name} />
+                <CharacterArt emoji={character.emoji} heal={heal} mood={mood} size={76} art={character.art} label={character.name} />
               </button>
               <div className="gd-hero__body">
                 <p className="gd-hero__line" role="status">{line}</p>
@@ -135,8 +136,6 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
           </div>
         </div>
       )}
-
-      <div className="gd-scout gd-hub__scout"><SproutGuide size={64} /></div>
     </main>
   );
 }

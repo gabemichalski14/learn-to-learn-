@@ -1,7 +1,11 @@
 /** Themed, animated emblem for a level card. Level 2 = bespoke space scene;
  *  other levels = a curriculum-themed glyph. Decorative (aria-hidden). */
+// One distinct, on-theme glyph per level (no repeats, none generic):
+//  1 hearing sounds · 2 space (SVG) · 3 Patch's spool/blends · 4 Bram/big words ·
+//  5 word-parts · 6 silent-e magic · 7 bossy-R crown · 8 vowel-team duo ·
+//  9 foreign languages · 10 Greek/Latin roots.
 const LEVEL_EMOJI: Record<number, string> = {
-  1: '👂', 3: '🧱', 4: '✂️', 5: '➕', 6: '🤫', 7: '👑', 8: '🧩', 9: '🌍', 10: '🏛️',
+  1: '👂', 3: '🧵', 4: '🦕', 5: '🧩', 6: '🪄', 7: '👑', 8: '👯', 9: '🌍', 10: '🏛️',
 };
 
 export function LevelEmblem({ level }: { level: number }) {

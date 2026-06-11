@@ -311,7 +311,7 @@ export function SpaceSortGame({
                 onClick={() => { void audio.narrate(charLine); sfx.tap(); setMood('cheer'); window.setTimeout(() => setMood((m) => (m === 'cheer' ? null : m)), 760); }}
                 aria-label={`Hear ${character.name} again`}
               >
-                <CharacterArt emoji={character.emoji} heal={heal} mood={mood} size={64} art={character.art} label={character.name} />
+                <CharacterArt emoji={character.emoji} heal={heal} mood={mood} size={96} art={character.art} label={character.name} />
               </button>
               <div className="sg-hero__body">
                 <p className="sg-hero__line" role="status">{charLine}</p>

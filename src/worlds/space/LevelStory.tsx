@@ -37,7 +37,7 @@ export function LevelStory({ learnerId, level }: { learnerId: string; level: num
   return (
     <section className={`sg-story sg-story--${stage}`} aria-label={`${character.name}'s story`}>
       <span className="sg-story__face">
-        <CharacterArt emoji={character.emoji} heal={STAGE_HEAL[stage] ?? 1} size={72} art={character.art} label={character.name} />
+        <CharacterArt emoji={character.emoji} heal={STAGE_HEAL[stage] ?? 1} size={108} art={character.art} label={character.name} />
       </span>
       <div className="sg-story__body">
         <p className="sg-story__name">{character.name}{stage === 'arrived' ? ' needs your help' : ''}</p>

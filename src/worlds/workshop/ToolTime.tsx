@@ -98,7 +98,7 @@ export function ToolTime({ learnerId = 'guest' }: { learnerId?: string }) {
         <div className="wk-stage">
           <div className="wk-hero">
             <button type="button" className="wk-hero__face" onClick={() => { void audio.narrate(line); sfx.tap(); }} aria-label={`Hear ${character?.name ?? 'Patch'} again`}>
-              <CharacterArt emoji={character?.emoji ?? '🧵'} heal={1} mood={mood} size={60} art={character?.art} label={character?.name} />
+              <CharacterArt emoji={character?.emoji ?? '🧵'} heal={1} mood={mood} size={96} art={character?.art} label={character?.name} />
             </button>
             <p className="wk-hero__line" role="status">{line}</p>
           </div>

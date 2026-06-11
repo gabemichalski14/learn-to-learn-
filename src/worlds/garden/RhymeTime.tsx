@@ -106,7 +106,7 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
           {character && (
             <div className="gd-hero sd-hero">
               <button type="button" className="gd-hero__face" onClick={() => { void audio.narrate(line); sfx.tap(); }} aria-label={`Hear ${character.name} again`}>
-                <CharacterArt emoji={character.emoji} heal={1} mood={mood} size={64} art={character.art} label={character.name} />
+                <CharacterArt emoji={character.emoji} heal={1} mood={mood} size={96} art={character.art} label={character.name} />
               </button>
               <div className="gd-hero__body">
                 <p className="gd-hero__line" role="status">{line}</p>

@@ -18,7 +18,7 @@ export function SpaceLevelHub({ level, learnerId }: { level: number; learnerId: 
     return (
       <main className="sg sg-hub">
         <SpaceBackdrop />
-        <div className="sg-hud"><button type="button" className="sg-back" onClick={() => navigate('#/')}>← Home</button></div>
+        <div className="sg-hud"><button type="button" className="sg-back" onClick={() => navigate('#/levels')}>← Levels</button></div>
         <div className="sg-stage"><h1 className="sg-hub__title">Level not found</h1></div>
       </main>
     );
@@ -28,7 +28,7 @@ export function SpaceLevelHub({ level, learnerId }: { level: number; learnerId: 
       <SpaceBackdrop />
       <Art imageKey="hub:space:bg" emoji="" alt="" className="hub-bg-art" />
       <div className="sg-hud">
-        <button type="button" className="sg-back" onClick={() => navigate('#/')}>← Home</button>
+        <button type="button" className="sg-back" onClick={() => navigate('#/levels')}>← Levels</button>
         <span className="sg-badge"><span className="dot" /> Space Patrol · Level {lvl.num}</span>
       </div>
       <div className="sg-stage sg-hub__stage">

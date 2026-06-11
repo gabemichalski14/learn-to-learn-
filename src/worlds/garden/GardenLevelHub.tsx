@@ -17,7 +17,7 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
     return (
       <main className="gd gd-hub">
         <GardenBackdrop />
-        <div className="gd-hud"><button type="button" className="gd-back" onClick={() => goBack('#/')}>← Home</button></div>
+        <div className="gd-hud"><button type="button" className="gd-back" onClick={() => goBack('#/levels')}>← Levels</button></div>
         <div className="gd-stage"><h1 className="gd-hub__title">Level not found</h1></div>
       </main>
     );
@@ -27,7 +27,7 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
       <GardenBackdrop />
       <Art imageKey="hub:garden:bg" emoji="" alt="" className="hub-bg-art" />
       <div className="gd-hud">
-        <button type="button" className="gd-back" onClick={() => goBack('#/')}>← Home</button>
+        <button type="button" className="gd-back" onClick={() => goBack('#/levels')}>← Levels</button>
         <span className="gd-badge">🌱 Sound Garden · Level {lvl.num}</span>
       </div>
 

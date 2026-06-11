@@ -15,7 +15,7 @@ export function WorkshopLevelHub({ level, learnerId }: { level: number; learnerI
   if (!lvl) {
     return (
       <main className="wk wk-hub">
-        <div className="wk-hud"><button type="button" className="wk-back" onClick={() => goBack('#/')}>← Home</button></div>
+        <div className="wk-hud"><button type="button" className="wk-back" onClick={() => goBack('#/levels')}>← Levels</button></div>
         <div className="wk-stage"><h1 className="wk-hub__title">Level not found</h1></div>
       </main>
     );
@@ -30,7 +30,7 @@ export function WorkshopLevelHub({ level, learnerId }: { level: number; learnerI
       <div className="wk-hub__deco" aria-hidden="true"><span>🔧</span><span>🪚</span><span>🧰</span><span>📏</span><span>⚙️</span></div>
       <div className="wk-hub__bench" aria-hidden="true" />
       <div className="wk-hud">
-        <button type="button" className="wk-back" onClick={() => goBack('#/')}>← Home</button>
+        <button type="button" className="wk-back" onClick={() => goBack('#/levels')}>← Levels</button>
         <span className="wk-badge">🧵 Patch's Workshop · Level {lvl.num}</span>
       </div>
 

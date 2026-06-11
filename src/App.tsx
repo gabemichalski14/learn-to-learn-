@@ -212,14 +212,20 @@ export default function App() {
   // it and Games/Levels) — only the roaming mascot/eggs stay off it, to stay calm.
   const bareConsole = route.name === 'admin' || route.name === 'admin-student' || route.name === 'admin-tutors' || route.name === 'account';
   const noMascot = bareConsole || route.name === 'tutor';
+  // The immersive world (soft backdrop + foreground meadow frame) belongs only on
+  // the kid-play pages. Data/utility pages (leaderboard, profile, family, tutor,
+  // consoles) get a clean paper page so the footer caps the bottom and the meadow
+  // never leaks behind/below the content.
+  const immersive = route.name === 'home' || route.name === 'level' || route.name === 'levels'
+    || route.name === 'village' || route.name === 'games' || route.name === 'checkpoint';
 
   return (
     <>
       {/* Storybook paper base — always present, behind everything (incl. the
           Living World garden on kid pages and the bare consoles). */}
       <div className="book-paper" aria-hidden="true" />
-      {!bareConsole && <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />}
-      {!bareConsole && <GardenFrame />}
+      {immersive && <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />}
+      {immersive && <GardenFrame />}
       <NavDrawer route={route.name} role={role ?? null} />
       {/* Sticky-footer shell: the page fills at least the viewport so the footer
           always caps the bottom — the ambient backdrop never "leaks" below it on

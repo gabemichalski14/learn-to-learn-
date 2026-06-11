@@ -64,6 +64,8 @@ export const LEVELS: LevelInfo[] = [
       { id: 'sort-it', title: 'Sort It', emoji: '🗂️', tagline: 'Sort words by their digraph (sh, ch, th…).', status: 'available', route: '#/play/sort-it' },
       { id: 'rule-breakers', title: 'Rule Breakers', emoji: '📏', tagline: 'Pick the right ending (ck, ff, ll, ss).', status: 'available', route: '#/play/rule-breakers' },
       { id: 'chop-shop', title: 'Chop Shop', emoji: '🪚', tagline: 'Chop two-syllable words in two.', status: 'available', route: '#/play/chop-shop' },
+      { id: 'patches-dictation', title: "Patch's Dictation", emoji: '✏️', tagline: 'Hear a word — spell it from the whole alphabet.', status: 'available', route: '#/play/patches-dictation' },
+      { id: 'tool-time', title: 'Tool Time', emoji: '🔧', tagline: 'Read each word fast and grab its picture.', status: 'available', route: '#/play/tool-time' },
     ],
   },
   {

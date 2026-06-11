@@ -159,3 +159,26 @@ export const SYLL_WORDS: SyllWord[] = [
   { label: 'tennis', emoji: '🎾', split: 3 },   // ten | nis
   { label: 'dentist', emoji: '🦷', split: 3 },  // den | tist
 ];
+
+// ---------- Patch's Dictation + Tool Time (the two new L3 archetypes) ----------
+// One picture pool drawn from the blend + digraph words that have a clean emoji,
+// each tagged with the L3 skill key it trains.
+export interface L3PicWord { word: string; emoji: string; skillKey: string }
+export const L3_PIC_POOL: L3PicWord[] = [
+  ...BLEND_WORDS.filter((w) => w.emoji).map((w) => ({ word: w.label, emoji: w.emoji as string, skillKey: blendKey(w.position, w.blend) })),
+  ...DIGRAPH_WORDS.filter((w) => w.emoji).map((w) => ({ word: w.label, emoji: w.emoji as string, skillKey: digraphKey(w.digraph) })),
+];
+
+/** Patch's Dictation: n words to spell from the full alphabet (logs the word's key). */
+export function buildL3DictationRounds(n: number, rng: () => number = Math.random): L3PicWord[] {
+  return shuffle(L3_PIC_POOL, rng).slice(0, n);
+}
+
+export interface L3ReadRound { word: string; emoji: string; skillKey: string; options: { word: string; emoji: string }[] }
+/** Tool Time (fluency): read the word fast, tap its picture from 3. */
+export function buildL3ReadRounds(n: number, rng: () => number = Math.random): L3ReadRound[] {
+  return shuffle(L3_PIC_POOL, rng).slice(0, n).map((w) => {
+    const distractors = shuffle(L3_PIC_POOL.filter((x) => x.word !== w.word), rng).slice(0, 2).map((x) => ({ word: x.word, emoji: x.emoji }));
+    return { word: w.word, emoji: w.emoji, skillKey: w.skillKey, options: shuffle([{ word: w.word, emoji: w.emoji }, ...distractors], rng) };
+  });
+}

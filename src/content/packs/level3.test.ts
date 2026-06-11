@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { BLEND_WORDS, DIGRAPH_WORDS, DIGRAPHS, RULE_WORDS, SYLL_WORDS, buildSortItRounds } from './level3';
+import { BLEND_WORDS, DIGRAPH_WORDS, DIGRAPHS, RULE_WORDS, SYLL_WORDS, buildSortItRounds, buildL3DictationRounds, buildL3ReadRounds } from './level3';
 import { blendKey, digraphKey, ruleKey, syllKey, skillLabel } from '../../mastery/skills';
 
 describe('level3 content pack', () => {
@@ -55,5 +55,28 @@ describe('level3 content pack', () => {
     }
     expect(skillLabel(blendKey('init', 'fl'))).toMatch(/f-l blend/);
     expect(skillLabel(ruleKey('floss'))).toMatch(/FLOSS/);
+  });
+});
+
+describe('Patch\'s Dictation + Tool Time builders', () => {
+  const seeded = (n: number) => { let s = n; return () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; }; };
+  it('dictation rounds are emoji words tagged with a blend/digraph key', () => {
+    const rs = buildL3DictationRounds(6, seeded(3));
+    expect(rs).toHaveLength(6);
+    for (const r of rs) {
+      expect(r.word.length).toBeGreaterThanOrEqual(3);
+      expect(r.emoji).toBeTruthy();
+      expect(/^(blend:|digraph:)/.test(r.skillKey)).toBe(true);
+    }
+  });
+  it('read rounds have 3 unique options incl. the word + its key', () => {
+    const rs = buildL3ReadRounds(8, seeded(4));
+    expect(rs).toHaveLength(8);
+    for (const r of rs) {
+      expect(r.options).toHaveLength(3);
+      expect(r.options.some((o) => o.word === r.word)).toBe(true);
+      expect(new Set(r.options.map((o) => o.word)).size).toBe(3);
+      expect(/^(blend:|digraph:)/.test(r.skillKey)).toBe(true);
+    }
   });
 });

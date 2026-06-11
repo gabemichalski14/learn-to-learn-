@@ -10,7 +10,7 @@ import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
 import { getSessions, getMastery, getEnrichedEvents } from './data/dataSource';
 import type { EnrichedSkillEvent } from './data/cloud';
-import { confusions, confusionPhrase, fluency } from './world/tutor/personalization';
+import { confusions, confusionPhrase, fluency, spellingSlips, spellingSlipPhrase, readingPace } from './world/tutor/personalization';
 import { loadMastery } from './mastery/mastery';
 import type { MasteryMap } from './mastery/mastery';
 import { skillLabel } from './mastery/skills';
@@ -84,6 +84,8 @@ export function TutorDashboard() {
   const events = cloudEvents && cloudEvents.id === sel ? cloudEvents.rows : [];
   const mixUps = confusions(events);
   const automatic = new Set([...fluency(events)].filter(([, v]) => v === 'automatic').map(([k]) => k));
+  const slips = spellingSlips(events);   // dictation misspellings (cloud events)
+  const pace = readingPace(log);          // reading words/min from fluency sessions
 
   const summary = summarize(mastery);
   const topNeed = summary.working[0];
@@ -197,6 +199,28 @@ export function TutorDashboard() {
                   <p className="dash-engage">Mixing up similar letters or sounds is common at this age — a gentle side-by-side contrast drill clears it.</p>
                   <ul className="dash-fresh">
                     {mixUps.slice(0, 6).map((c) => <li key={`${c.skillKey}-${c.chosen}`} className="dash-fresh__chip">{confusionPhrase(c)}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              {/* Reading pace — words/min from the fluency games (growth, not a benchmark) */}
+              {pace.n > 0 && (
+                <div className="l2l-card" style={{ marginTop: '16px' }}>
+                  <h3 className="chart-card__title">⚡ Reading pace</h3>
+                  <p className="dash-engage">
+                    <strong>{pace.wcpm} words/min</strong> last fluency round{pace.best > pace.wcpm ? ` · best ${pace.best}` : ''}
+                    {' '}· across {pace.n} timed game{pace.n === 1 ? '' : 's'}. Accuracy comes first — pace grows as reading becomes automatic.
+                  </p>
+                </div>
+              )}
+
+              {/* Spelling slips — recurring dictation misspellings (what to drill next) */}
+              {slips.length > 0 && (
+                <div className="l2l-card" style={{ marginTop: '16px' }}>
+                  <h3 className="chart-card__title">✏️ Spelling slips</h3>
+                  <p className="dash-engage">From dictation — the letters that trip them up. A quick targeted drill on these clears them fastest.</p>
+                  <ul className="dash-fresh">
+                    {slips.slice(0, 6).map((c) => <li key={`${c.skillKey}-${c.chosen}`} className="dash-fresh__chip">{spellingSlipPhrase(c)}</li>)}
                   </ul>
                 </div>
               )}

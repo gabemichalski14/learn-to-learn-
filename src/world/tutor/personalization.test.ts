@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { confusions, confusionPhrase, firstTryRate, fluency, type EvInput } from './personalization';
+import { confusions, confusionPhrase, firstTryRate, fluency, spellingSlips, spellingSlipPhrase, readingPace, type EvInput } from './personalization';
 
 const wrong = (skill_key: string, chosen: string): EvInput => ({ skill_key, correct: false, chosen });
 
@@ -55,5 +55,37 @@ describe('personalization.fluency', () => {
     const m = fluency([...fast, ...slow]);
     expect(m.get('a')).toBe('automatic');
     expect(m.get('b')).toBe('effortful');
+  });
+});
+
+describe('spellingSlips (dictation misspellings)', () => {
+  it('counts wrong letters from dictation games only, >= MIN_SLIP', () => {
+    const ev = (game: string, chosen: string): EvInput => ({ skill_key: 'sound:first:m', correct: false, chosen, game });
+    const slips = spellingSlips([
+      ev('word-beam', 'b'), ev('word-beam', 'b'),          // pattern (2) → kept
+      ev('patches-dictation', 'n'),                         // 1 → dropped
+      ev('blast-off', 'b'), ev('blast-off', 'b'),           // NOT a dictation game → ignored
+      { skill_key: 'sound:first:m', correct: true, chosen: 'm', game: 'word-beam' }, // correct → ignored
+    ]);
+    expect(slips).toHaveLength(1);
+    expect(slips[0]).toMatchObject({ chosen: 'b', count: 2 });
+    expect(spellingSlipPhrase(slips[0])).toContain('wrote');
+  });
+});
+
+describe('readingPace (fluency WCPM)', () => {
+  it('computes words-correct-per-minute from fluency sessions; latest + best', () => {
+    const s = (game: string, items: number, accuracy: number, durationMs: number) => ({ game, items, accuracy, durationMs });
+    const pace = readingPace([
+      s('star-station', 6, 1, 60000),   // not a fluency game → ignored
+      s('warp-speed', 12, 1, 60000),    // 12 wcpm
+      s('tool-time', 12, 0.5, 30000),   // 6 correct / 0.5 min = 12 wcpm
+    ]);
+    expect(pace.n).toBe(2);
+    expect(pace.best).toBe(12);
+    expect(pace.wcpm).toBe(12); // latest
+  });
+  it('returns n=0 when there are no fluency sessions', () => {
+    expect(readingPace([{ game: 'tap-it-out', items: 8, accuracy: 1, durationMs: 60000 }])).toMatchObject({ n: 0 });
   });
 });

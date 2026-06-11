@@ -2,7 +2,7 @@ import { goBack, navigate } from '../../router';
 import { findLevel } from '../../games';
 import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
-import { GardenBackdrop, SproutGuide } from './GardenArt';
+import { GardenBackdrop } from './GardenArt';
 import './garden.css';
 
 /** Calm launcher for Level 1's Sound Garden games. The cozy reward space — your
@@ -69,10 +69,6 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
         <button type="button" className="gd-hub__village" onClick={() => navigate('#/village')}>
           🏡 Visit your Village
         </button>
-      </div>
-
-      <div className="gd-scout gd-hub__scout">
-        <SproutGuide size={72} />
       </div>
     </main>
   );

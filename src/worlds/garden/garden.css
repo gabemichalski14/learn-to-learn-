@@ -12,26 +12,8 @@
     linear-gradient(180deg, rgba(253, 238, 205, 0.28) 0%, rgba(246, 240, 216, 0.12) 50%, rgba(234, 246, 223, 0.40) 100%),
     url('/backgrounds/garden.jpg') center / cover no-repeat,
     linear-gradient(180deg, #fdeecd 0%, #eaf6df 100%); }
-/* the painting carries its own sky + hills, so hide the CSS scenery to avoid clashing */
-.gd-bg .gd-sun, .gd-bg .gd-cloud, .gd-bg .gd-hill { display: none; }
-.gd-sun { position: absolute; top: 6%; right: 9%; width: 84px; height: 84px; border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, #ffe07a, #f5c84c); box-shadow: 0 0 60px 18px rgba(245, 200, 76, 0.45);
-  animation: gd-sun 7s ease-in-out infinite alternate; }
-@keyframes gd-sun { from { transform: scale(1); } to { transform: scale(1.06); } }
-.gd-cloud { position: absolute; width: 120px; height: 36px; background: #ffffff; border-radius: 40px; opacity: 0.92;
-  box-shadow: 30px 8px 0 -4px #fff, -32px 10px 0 -2px #fff, 8px -12px 0 -6px #fff; animation: gd-drift linear infinite; }
-.gd-cloud--1 { top: 12%; left: -14%; transform: scale(1); animation-duration: 58s; }
-.gd-cloud--2 { top: 24%; left: -22%; transform: scale(1.4); opacity: 0.8; animation-duration: 82s; animation-delay: -30s; }
-.gd-cloud--3 { top: 7%; left: -10%; transform: scale(0.7); animation-duration: 66s; animation-delay: -48s; }
-@keyframes gd-drift { from { left: -22%; } to { left: 118%; } }
-.gd-hill { position: absolute; left: -10%; right: -10%; border-radius: 50% 50% 0 0; }
-.gd-hill--back { bottom: 0; height: 42%; background: linear-gradient(180deg, #a8d5c2, #8ecf9f); }
-.gd-hill--front { bottom: -6%; height: 30%; background: linear-gradient(180deg, #6bae7f, #4e9568); border-radius: 46% 54% 0 0; }
-.gd-fly { position: absolute; font-size: 22px; }
-.gd-fly--1 { top: 30%; left: 12%; animation: gd-flutter 9s ease-in-out infinite; }
-.gd-fly--2 { top: 44%; right: 16%; font-size: 18px; animation: gd-flutter 11s ease-in-out infinite reverse; }
-@keyframes gd-flutter { 0%, 100% { transform: translate(0, 0) rotate(-4deg); } 50% { transform: translate(24px, -18px) rotate(6deg); } }
-.gd-vig { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 -40px 80px rgba(78, 149, 104, 0.25); }
+/* The illustrated meadow PNG is the scene now — the old hand-coded CSS scenery
+   (sun/clouds/hills/butterflies/vignette) was retired with it. */
 
 /* ---- HUD ---- */
 .gd-hud { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -106,29 +88,6 @@ img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
 .gd-status { min-height: 22px; font-size: 14px; font-weight: 700; color: #235c40; margin: 2px 0; }
 .gd-status--wrong { color: #b4622a; }
 
-/* ---- Sprout guide + speech bubble ---- */
-.gd-scout { position: absolute; z-index: 5; left: 14px; bottom: 14px; display: flex; align-items: flex-end; gap: 10px; max-width: min(80vw, 320px); }
-.gd-sproutmascot { display: block; filter: drop-shadow(0 8px 14px rgba(78, 149, 104, 0.35)); animation: gd-hover 3.4s ease-in-out infinite alternate; }
-@keyframes gd-hover { from { transform: translateY(0); } to { transform: translateY(-8px); } }
-.gd-sproutmascot__sway { transform-origin: 32px 52px; animation: gd-sway 3s ease-in-out infinite alternate; }
-@keyframes gd-sway { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
-/* Sprout idle life: a curious peek-tilt + a periodic double-blink (on the inner
-   svg so it composes with the hover). */
-.gd-sproutmascot svg { animation: gd-life 6.8s ease-in-out infinite; transform-origin: 50% 86%; }
-@keyframes gd-life { 0%, 36%, 100% { transform: rotate(0); } 26% { transform: rotate(-6deg); } 32% { transform: rotate(5deg); } 36% { transform: rotate(0); } 72% { transform: translateY(-3px); } 80% { transform: translateY(0); } }
-.gd-sproutmascot__eyes { transform-box: fill-box; transform-origin: center; animation: gd-blink 3.6s ease-in-out infinite; }
-@keyframes gd-blink { 0%, 88%, 100% { transform: scaleY(1); } 91% { transform: scaleY(.1); } 94% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
-.gd-scout__btn { flex: none; background: none; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.gd-scout__btn:focus-visible { outline: 2px solid #173d2a; outline-offset: 4px; border-radius: 50%; }
-.gd-bubble { position: relative; background: #fff; border: 1px solid rgba(78, 149, 104, 0.3); border-radius: 16px; padding: 12px 14px;
-  color: #235c40; font-size: 13px; line-height: 1.4; max-width: 232px; box-shadow: 0 12px 28px rgba(78, 149, 104, 0.28);
-  transform-origin: left bottom; animation: gd-pop 0.3s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
-.gd-bubble::after { content: ''; position: absolute; left: -9px; bottom: 18px; width: 0; height: 0; border: 7px solid transparent; border-right-color: #fff; }
-.gd-bubble p { margin: 0; }
-.gd-bubble b { color: #2f7d56; }
-.gd-bubble__hi { font-weight: 800; color: #4e9568; margin-bottom: 4px !important; }
-.gd-bubble__x { position: absolute; top: 0; right: 0; width: 40px; height: 40px; display: flex; align-items: flex-start; justify-content: flex-end; padding: 4px 7px; background: none; border: none; color: #8ab397; cursor: pointer; font-size: 14px; line-height: 1; }
-
 /* ---- finish ---- */
 .gd-finish { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; text-align: center;
   background: rgba(232, 250, 230, 0.82); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
@@ -143,7 +102,7 @@ img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
 .gd-finish__btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
 @media (prefers-reduced-motion: reduce) {
-  .gd-sun, .gd-cloud, .gd-fly, .gd-sproutmascot, .gd-sproutmascot svg, .gd-sproutmascot__eyes, .gd-sproutmascot__sway, .gd-grown, .gd-grown.bloom, .gd-bubble, .gd-finish__card { animation: none; }
+  .gd-finish__card { animation: none; }
 }
 
 /* ============================================================
@@ -182,12 +141,6 @@ img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
 .gd-stage--sway { animation: gd-swaykf 0.48s ease; }
 @keyframes gd-swaykf { 0%, 100% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-6px) rotate(-0.4deg); } 60% { transform: translateX(5px) rotate(0.4deg); } }
 
-/* Sprout reacts: a happy hop on a hit, a soft wobble on a miss */
-.gd-sproutmascot--cheer { animation: gd-cheer 0.8s ease; }
-@keyframes gd-cheer { 0% { transform: translateY(0) scale(1); } 30% { transform: translateY(-16px) scale(1.1); } 55% { transform: translateY(0) scale(1); } 78% { transform: translateY(-7px); } 100% { transform: translateY(0); } }
-.gd-sproutmascot--wobble { animation: gd-wobblekf 0.55s ease; }
-@keyframes gd-wobblekf { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-9deg); } 50% { transform: rotate(7deg); } 75% { transform: rotate(-4deg); } }
-
 /* finish: soft petals drifting down behind the card */
 .gd-petalfall { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .gd-petalfall i { position: absolute; top: -8vh; left: var(--x); font-size: 20px; opacity: 0;
@@ -199,7 +152,7 @@ img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gd-combo, .gd-burst i, .gd-stage--sway, .gd-sproutmascot--cheer, .gd-sproutmascot--wobble, .gd-petalfall i { animation: none; }
+  .gd-combo, .gd-burst i, .gd-stage--sway, .gd-petalfall i { animation: none; }
   .gd-petalfall i { display: none; }
 }
 
@@ -439,7 +392,3 @@ img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
 .gd-listen-sounds:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .gd-listen-sounds__dots { display: inline-flex; gap: 5px; }
 .gd-listen-sounds__dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.65); }
-
-/* The illustrated photo backdrop is the scene now — hide the old CSS scenery
-   sprites that floated on top of it. */
-.gd-fly, .gd-scout { display: none; }

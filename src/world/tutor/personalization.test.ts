@@ -24,6 +24,14 @@ describe('personalization.confusions', () => {
     expect(phrase).toMatch(/often picks/);
     expect(phrase.toLowerCase()).not.toMatch(/dyslexia|deficit|disorder/);
   });
+
+  it('reads true per L3 kind: blends drop a sound, syllables cut at the wrong spot', () => {
+    expect(confusionPhrase({ skillKey: 'blend:init:sl', chosen: 'l', count: 3 })).toMatch(/drops the \/l\/ sound/);
+    expect(confusionPhrase({ skillKey: 'syll:vccv', chosen: '3', count: 3 })).toMatch(/cuts at the wrong spot/);
+    expect(confusionPhrase({ skillKey: 'syll:vccv', chosen: '3', count: 3 })).not.toMatch(/“3”/); // no opaque index
+    // digraph / rule still read perfectly with the "picks X instead" model
+    expect(confusionPhrase({ skillKey: 'digraph:sh', chosen: 'ch', count: 3 })).toMatch(/often picks “ch” instead/);
+  });
 });
 
 describe('personalization.firstTryRate', () => {

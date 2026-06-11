@@ -21,12 +21,8 @@ export function WorkshopLevelHub({ level, learnerId }: { level: number; learnerI
   }
   return (
     <main className="wk wk-hub">
-      {/* layered scene: a pegboard wall + warm light + a workbench shelf, with a
-          few tools pinned up. Characterful-flat (CSS), transform/opacity only. */}
-      <div className="wk-hub__peg" aria-hidden="true" />
-      <div className="wk-hub__glow" aria-hidden="true" />
-      <div className="wk-hub__deco" aria-hidden="true"><span>🔧</span><span>🪚</span><span>🧰</span><span>📏</span><span>⚙️</span></div>
-      <div className="wk-hub__bench" aria-hidden="true" />
+      {/* The illustrated workshop photo (the .wk background) IS the scene now —
+          the old CSS pegboard/bench/glow layers were removed so they don't clash. */}
       <div className="wk-hud">
         <button type="button" className="wk-back" onClick={() => goBack('#/levels')}>← Levels</button>
         <span className="wk-badge">🧵 Patch's Workshop · Level {lvl.num}</span>

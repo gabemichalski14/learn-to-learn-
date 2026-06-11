@@ -457,7 +457,9 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
 /* Hub background art — a full-bleed PNG layer that appears only when the file
    exists (else an invisible fallback); the CSS/SVG scene shows underneath until
    then. Content sits above via each hub's stage z-index. */
-.hub-bg-art{ position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
-.hub-bg-art > img{ width:100%; height:100%; object-fit:cover; display:block; }
+/* <Art> renders the <img> itself with this class (not a wrapper) — so size + cover
+   go on the element directly, else the image sits at natural size and the layers
+   behind it show around the edges. */
+.hub-bg-art{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; pointer-events:none; display:block; }
 .gd-hub, .sg-hub, .wk-hub{ position:relative; }
 .gd-hub .gd-stage, .sg-hub .sg-stage{ position:relative; z-index:1; }

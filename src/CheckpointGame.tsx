@@ -14,6 +14,7 @@ import { tapItOutWords } from './content/packs/tapItOut';
 import { everydayObjects } from './content/packs/everydayObjects';
 import { everydayEndings } from './content/packs/everydayEndings';
 import { shortVowelWords } from './content/packs/shortVowelWords';
+import { buildSortItRounds, buildRuleRounds } from './content/packs/level3';
 import { soundOf } from './domain/engine';
 import type { Pack, SoundTarget } from './domain/types';
 import './checkpoint.css';
@@ -23,7 +24,8 @@ const POS_WORD: Record<SoundTarget, string> = { beginning: 'first', ending: 'las
 
 type Question =
   | { kind: 'count'; label: string; emoji: string; answer: number; choices: number[] }
-  | { kind: 'sound'; label: string; emoji: string; target: SoundTarget; answer: string; choices: string[] };
+  | { kind: 'sound'; label: string; emoji: string; target: SoundTarget; answer: string; choices: string[] }
+  | { kind: 'pick'; label: string; emoji: string; prompt: string; answer: string; choices: string[] };
 
 function shuffle<T>(a: T[]): T[] { const x = [...a]; for (let i = x.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [x[i], x[j]] = [x[j], x[i]]; } return x; }
 
@@ -52,6 +54,14 @@ function buildQuestions(level: number, learnerId: string): Question[] {
     return shuffle(tapItOutWords).slice(0, N).map((w) => ({
       kind: 'count' as const, label: w.label, emoji: w.emoji, answer: w.sounds, choices: [2, 3, 4],
     }));
+  }
+
+  if (level === 3) {
+    // Level 3 — Patch's Workshop: a mix of digraph discrimination + spelling-rule
+    // application (the cleanest of the L3 skills for a multiple-choice post-test).
+    const dq: Question[] = buildSortItRounds(4).map((r) => ({ kind: 'pick', label: r.word, emoji: r.emoji ?? '🔧', prompt: 'Which sound do you hear?', answer: r.digraph, choices: r.options }));
+    const rq: Question[] = buildRuleRounds(4).map((r) => ({ kind: 'pick', label: r.word, emoji: r.emoji ?? '🔧', prompt: 'Which ending is right?', answer: r.ending, choices: r.options }));
+    return shuffle([...dq, ...rq]).slice(0, N);
   }
 
   const practised = skillInsights(loadMastery(learnerId))
@@ -174,7 +184,7 @@ export function CheckpointGame({ level, learnerId }: { level: number; learnerId:
 
         <WordPicture label={q.label} emoji={q.emoji} className="cp__pic" />
         <p className="cp__q">
-          {q.kind === 'count' ? 'How many sounds do you hear?' : `What is the ${POS_WORD[q.target]} sound?`}
+          {q.kind === 'count' ? 'How many sounds do you hear?' : q.kind === 'pick' ? q.prompt : `What is the ${POS_WORD[q.target]} sound?`}
         </p>
         <button type="button" className="cp__again" onClick={() => void audio.playWord({ id: q.label, label: q.label, emoji: q.emoji } as never)}>🔊 Hear it again</button>
 

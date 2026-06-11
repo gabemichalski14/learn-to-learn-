@@ -24,6 +24,7 @@ const toRecord = (r: CloudSessionRow): SessionRecord => ({
 const GAME_TITLES: Record<string, string> = {
   'tap-it-out': 'Tap It Out', 'same-or-different': 'Same or Different?', 'switch-it': 'Switch It',
   'beginning-sounds': 'Blast Off', 'ending-sounds': 'Touchdown', 'middle-sounds': 'Vowel Patrol', 'star-station': 'Star Station',
+  'blend-buddies': 'Blend Buddies', 'sort-it': 'Sort It', 'rule-breakers': 'Rule Breakers', 'chop-shop': 'Chop Shop',
 };
 const gameTitle = (id: string) => GAME_TITLES[id] ?? id.replace(/-/g, ' ');
 const tutorName = (t: CloudTutor) => t.name || (t.role === 'owner' ? 'You (owner)' : 'Tutor');

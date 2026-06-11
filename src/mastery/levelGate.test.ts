@@ -14,6 +14,14 @@ function drill(skill: string, correct: number, wrong: number) {
 }
 
 describe('level gate', () => {
+  it('Level 3 becomes ready once its blend/digraph/rule skills are mastered', () => {
+    expect(levelGate(L, 3).ready).toBe(false);            // no L3 data yet
+    drill('blend:init:fl', 6, 0);
+    drill('digraph:sh', 6, 0);
+    drill('rule:floss', 6, 0);
+    expect(levelGate(L, 3).ready).toBe(true);             // 3 L3 skills mastered → checkpoint offered
+  });
+
   it('Level 1 is always unlocked; Level 2 starts locked', () => {
     expect(isLevelUnlocked(L, 1)).toBe(true);
     expect(isLevelUnlocked(L, 2)).toBe(false);

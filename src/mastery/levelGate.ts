@@ -32,7 +32,13 @@ function levelSkillStats(map: MasteryMap, level: number): SkillStat[] {
       })
       .map(([, s]) => s);
   }
-  return []; // Levels 3+ have no live games yet
+  if (level === 3) {
+    // Level 3 = Patch's Workshop: blends, digraphs, the ck/FLOSS rules, syllables.
+    return Object.entries(map)
+      .filter(([k]) => k.startsWith('blend:') || k.startsWith('digraph:') || k.startsWith('rule:') || k.startsWith('syll:'))
+      .map(([, s]) => s);
+  }
+  return []; // Levels 4+ have no live games yet
 }
 
 export interface LevelGate {

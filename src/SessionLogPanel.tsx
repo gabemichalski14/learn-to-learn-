@@ -30,6 +30,10 @@ const GAME_TITLES: Record<string, string> = {
   'ending-sounds': 'Touchdown',
   'middle-sounds': 'Vowel Patrol',
   'star-station': 'Star Station',
+  'blend-buddies': 'Blend Buddies',
+  'sort-it': 'Sort It',
+  'rule-breakers': 'Rule Breakers',
+  'chop-shop': 'Chop Shop',
 };
 const gameTitle = (id: string) => GAME_TITLES[id] ?? id.replace(/-/g, ' ');
 

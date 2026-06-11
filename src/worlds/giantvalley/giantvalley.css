@@ -76,11 +76,11 @@
 
 /* The Great Divide — word + tappable cut points */
 .gd-divide { display: inline-flex; align-items: center; flex-wrap: wrap; justify-content: center; margin: 10px 0;
-  font-family: var(--font-display, Georgia), serif; font-weight: 800; font-size: clamp(36px, 11vw, 64px); color: #234a2e; }
+  font-family: var(--font-display, Georgia), serif; font-weight: 800; font-size: clamp(30px, 9vw, 60px); color: #234a2e; }
 .gd-dl { padding: 0 1px; }
 .gd-dl--vowel { color: #c9772e; }
 .gd-gap {
-  width: 26px; min-height: 56px; margin: 0 1px; cursor: pointer; font-size: 18px; line-height: 1;
+  min-width: 40px; min-height: 56px; margin: 0 1px; cursor: pointer; font-size: 18px; line-height: 1;
   border: 2px dashed #b9d6c1; border-radius: 10px; background: rgba(255, 255, 255, 0.5); color: #2c8a6e; opacity: .55;
   transition: opacity .12s ease, background .12s ease, transform .12s ease;
 }

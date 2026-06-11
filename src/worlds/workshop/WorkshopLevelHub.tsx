@@ -3,7 +3,6 @@ import { findLevel } from '../../games';
 import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { LevelStory } from '../space/LevelStory';
-import { Art } from '../../art/Art';
 import './workshop.css';
 
 /** Patch's Workshop — the immersive launcher for Level 3. A warm, cozy tinker
@@ -22,7 +21,6 @@ export function WorkshopLevelHub({ level, learnerId }: { level: number; learnerI
   }
   return (
     <main className="wk wk-hub">
-      <Art imageKey="hub:workshop:bg" emoji="" alt="" className="hub-bg-art" />
       {/* layered scene: a pegboard wall + warm light + a workbench shelf, with a
           few tools pinned up. Characterful-flat (CSS), transform/opacity only. */}
       <div className="wk-hub__peg" aria-hidden="true" />

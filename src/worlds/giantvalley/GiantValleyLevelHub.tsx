@@ -3,7 +3,6 @@ import { findLevel } from '../../games';
 import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { LevelStory } from '../space/LevelStory';
-import { Art } from '../../art/Art';
 import '../workshop/workshop.css';
 import './giantvalley.css';
 
@@ -23,7 +22,6 @@ export function GiantValleyLevelHub({ level, learnerId }: { level: number; learn
   }
   return (
     <main className="wk wk-hub gv">
-      <Art imageKey="hub:l4:bg" emoji="" alt="" className="hub-bg-art" />
       <div className="gv-deco" aria-hidden="true"><span>🏔️</span><span>🌲</span><span>🦕</span><span>🌄</span><span>🪨</span></div>
       <div className="wk-hud">
         <button type="button" className="wk-back" onClick={() => goBack('#/levels')}>← Levels</button>

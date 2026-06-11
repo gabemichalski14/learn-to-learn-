@@ -1,4 +1,5 @@
 import { useState, type CSSProperties } from 'react';
+import { Art } from '../../art/Art';
 
 /** Space Patrol world art — backdrop + mascot. Stand-ins for a richer illustrated
  *  set; built as SVG/CSS so they animate and stay fully ours. */
@@ -77,6 +78,8 @@ export function SpaceBackdrop() {
   } as CSSProperties;
   return (
     <div className="sg-bg" aria-hidden="true">
+      {/* illustrated starfield (when present) as the base; the CSS cosmos twinkles over it */}
+      <Art imageKey="hub:space:bg" emoji="" alt="" className="hub-bg-art" />
       {/* slowly hue-shifting, drifting nebula */}
       <div className="sg-cosmos">
         <span className="sg-neb sg-neb--1" />

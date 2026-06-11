@@ -1,8 +1,11 @@
 import { Butterfly, Bee } from './GardenFlora';
+import { Art } from '../../art/Art';
 
 /**
  * Sound Garden world art (Level 1) — a calm meadow backdrop + the Sprout guide.
- * Built as CSS/SVG so it animates and stays entirely ours.
+ * The illustrated PNG (when present) covers the CSS scene; the CSS meadow is the
+ * graceful fallback. Used by every Level-1 game AND the hub, so dropping
+ * /art/hub/garden-bg.png lights them all up at once.
  */
 export function GardenBackdrop() {
   return (
@@ -15,6 +18,7 @@ export function GardenBackdrop() {
       <span className="gd-hill gd-hill--front" />
       <span className="gd-fly gd-fly--1"><Butterfly size={28} /></span>
       <span className="gd-fly gd-fly--2"><Bee size={24} /></span>
+      <Art imageKey="hub:garden:bg" emoji="" alt="" className="hub-bg-art" />
       <span className="gd-vig" />
     </div>
   );

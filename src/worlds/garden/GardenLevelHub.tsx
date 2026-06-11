@@ -3,7 +3,6 @@ import { findLevel } from '../../games';
 import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { GardenBackdrop, SproutGuide } from './GardenArt';
-import { Art } from '../../art/Art';
 import './garden.css';
 
 /** Calm launcher for Level 1's Sound Garden games. The cozy reward space — your
@@ -25,7 +24,6 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
   return (
     <main className="gd gd-hub">
       <GardenBackdrop />
-      <Art imageKey="hub:garden:bg" emoji="" alt="" className="hub-bg-art" />
       <div className="gd-hud">
         <button type="button" className="gd-back" onClick={() => goBack('#/levels')}>← Levels</button>
         <span className="gd-badge">🌱 Sound Garden · Level {lvl.num}</span>

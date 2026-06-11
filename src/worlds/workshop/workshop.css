@@ -1,7 +1,7 @@
 /* Level 3 — Patch's Workshop. Warm, woody, cozy (fits the storybook brand).
    Motion is transform/opacity only; reduced-motion honored; touch targets >=44px. */
 .wk { min-height: 100vh; padding: 16px 14px 28px; display: flex; flex-direction: column; align-items: center;
-  background: radial-gradient(130% 85% at 50% -5%, #fcf2dd 0%, #f3e4c6 55%, #ead7ad 100%); color: #4a3a22; }
+  background: url(/art/hub/workshop-bg.png) center / cover no-repeat, radial-gradient(130% 85% at 50% -5%, #fcf2dd 0%, #f3e4c6 55%, #ead7ad 100%); color: #4a3a22; }
 .wk-hud { width: 100%; max-width: 720px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .wk-back { font: inherit; font-weight: 700; font-size: 14px; color: #7a5a22; background: rgba(255,255,255,0.6);
   border: 1px solid rgba(122,90,34,0.25); border-radius: 999px; padding: 8px 14px; cursor: pointer; min-height: 40px; }

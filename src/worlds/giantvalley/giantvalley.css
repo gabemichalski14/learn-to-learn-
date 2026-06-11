@@ -1,6 +1,6 @@
 /* Giant's Valley (Level 4, Bram) — reuses the Workshop hub/game layout with a
    valley-green tint + a silent-e "Name Change" widget. */
-.gv.wk { background: radial-gradient(130% 85% at 50% -5%, #eef8ec 0%, #cfe9c9 55%, #a6d3ad 100%); color: #234a2e; }
+.gv.wk { background: url(/art/hub/l4-bg.png) center / cover no-repeat, radial-gradient(130% 85% at 50% -5%, #eef8ec 0%, #cfe9c9 55%, #a6d3ad 100%); color: #234a2e; }
 .gv .wk-back { color: #2c6b3e; background: rgba(255, 255, 255, 0.6); }
 .gv .wk-hub__title, .gv .wk-finish__title { color: #234a2e; }
 

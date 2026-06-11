@@ -63,7 +63,7 @@ export function PatchesDictation({ learnerId = 'guest' }: { learnerId?: string }
         const sk = round.skillKey;
         window.setTimeout(() => {
           recordItem(learnerId, sk, correct, undefined, correct ? undefined : chosen);
-          logSkillEvent(learnerId, { skillKey: sk, correct, at: Date.now(), game: 'patches-dictation', level: 3, firstTry: correct, chosen: correct ? undefined : chosen });
+          logSkillEvent(learnerId, { skillKey: sk, correct, at: Date.now(), game: 'patches-dictation', level: 3, firstTry: true, chosen: correct ? undefined : chosen });
         }, 0);
         setMood('cheer');
         if (character) setLine(reactionLine(character, 'correct'));

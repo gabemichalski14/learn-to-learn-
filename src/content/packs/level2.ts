@@ -17,9 +17,14 @@ function shuffle<T>(arr: readonly T[], rng: () => number): T[] {
   return a;
 }
 
-/** Word Beam: n CVC words to spell (the alphabet tray is the same every round). */
+// Word Beam logs ONE sound key per letter position (first/medial/last), so its
+// pool must be exactly 3-letter CVC — otherwise a 4-letter word makes two
+// positions "medial" and splits a digraph, polluting the L2 sound keys.
+const CVC3_POOL: CvcWord[] = CVC_POOL.filter((w) => /^[a-z]{3}$/.test(w.word));
+
+/** Word Beam: n true-CVC (3-letter) words to spell from the alphabet tray. */
 export function buildDictationRounds(n: number, rng: () => number = Math.random): CvcWord[] {
-  return shuffle(CVC_POOL, rng).slice(0, n);
+  return shuffle(CVC3_POOL, rng).slice(0, n);
 }
 
 export interface ReadRound { word: string; emoji: string; options: CvcWord[] }

@@ -3,6 +3,7 @@ import { navigate } from './router';
 import { LEVELS, availableCount } from './games';
 import { levelCurriculum } from './curriculum';
 import { isLevelUnlocked, isLevelReady } from './mastery/levelGate';
+import { useRole } from './useAuth';
 import { useDataVersion } from './data/store';
 import { LevelEmblem } from './LevelEmblem';
 
@@ -70,7 +71,8 @@ function GardenVisual() {
  *  veiled, "sleeping" version with a teaser, so the child *wants* to wake it. */
 export function LevelsPage({ learnerId }: { learnerId: string }) {
   useDataVersion(); // re-check unlocks when mastery changes
-  const firstLocked = LEVELS.find((l) => !isLevelUnlocked(learnerId, l.num))?.num ?? Infinity;
+  const isOwner = useRole() === 'owner'; // admin sees every level open (preview/manage)
+  const firstLocked = isOwner ? Infinity : (LEVELS.find((l) => !isLevelUnlocked(learnerId, l.num))?.num ?? Infinity);
   // pressing a locked card "knocks" — a friendly shake + a why-it's-locked bubble
   const [knocked, setKnocked] = useState<number | null>(null);
   function knock(num: number) {
@@ -92,7 +94,7 @@ export function LevelsPage({ learnerId }: { learnerId: string }) {
           const num = lvl.num;
           const games = availableCount(lvl);
           const ready = games > 0;
-          const unlocked = isLevelUnlocked(learnerId, num);
+          const unlocked = isOwner || isLevelUnlocked(learnerId, num);
           const nextUp = !unlocked && num === firstLocked; // the immediate goal
           const prereq = num - 1;
           const prereqReady = isLevelReady(learnerId, prereq);

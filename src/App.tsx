@@ -77,20 +77,22 @@ export default function App() {
     setLearnerId(id);
   }
 
-  // Mastery-gate: Barton is strictly sequential — you can't enter a level (or its
-  // games) until the previous level is passed at ~95%. Guard the immersive routes.
+  // Mastery-gate: Barton is strictly sequential — a STUDENT can't enter a level (or
+  // its games) until the previous level is passed at ~95%. The owner/admin always
+  // has full access (to preview, demo, and manage), so they bypass the gate.
+  const bypassGate = role === 'owner';
   if (route.name === 'play') {
     const gid = route.game ?? 'beginning-sounds';
     const lvl = levelOfGame(gid) ?? 1;
-    if (!isLevelUnlocked(learnerId, lvl)) return <LockedScreen level={lvl} learnerId={learnerId} />;
-    if (!isGameUnlocked(learnerId, gid)) return <LockedScreen level={lvl} learnerId={learnerId} tutorLocked />;
+    if (!bypassGate && !isLevelUnlocked(learnerId, lvl)) return <LockedScreen level={lvl} learnerId={learnerId} />;
+    if (!bypassGate && !isGameUnlocked(learnerId, gid)) return <LockedScreen level={lvl} learnerId={learnerId} tutorLocked />;
   }
-  if (route.name === 'level' && !isLevelUnlocked(learnerId, route.level ?? 1)) {
+  if (route.name === 'level' && !bypassGate && !isLevelUnlocked(learnerId, route.level ?? 1)) {
     return <LockedScreen level={route.level ?? 1} learnerId={learnerId} />;
   }
   if (route.name === 'checkpoint') {
     const lvl = route.level ?? 1;
-    if (!isLevelUnlocked(learnerId, lvl)) return <LockedScreen level={lvl} learnerId={learnerId} />;
+    if (!bypassGate && !isLevelUnlocked(learnerId, lvl)) return <LockedScreen level={lvl} learnerId={learnerId} />;
     return <CheckpointGame level={lvl} learnerId={learnerId} />;
   }
 

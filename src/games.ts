@@ -74,11 +74,11 @@ export const LEVELS: LevelInfo[] = [
     focus: 'Silent-e, open syllables, and dividing big words to read them part by part',
     games: [
       { id: 'name-change', title: 'Name Change', emoji: '✨', tagline: 'Add the magic e — the vowel says its name.', status: 'available', route: '#/play/name-change' },
-      soon('long-or-short', 'Long or Short?', '📏', 'Is the vowel long or short?'),
-      soon('great-divide', 'The Great Divide', '✂️', 'Split a big word at the seam.'),
-      soon('word-giants', 'Word Giants', '🦕', 'Read longer words part by part.'),
-      soon('l4-dictation', 'Name Change Dictation', '✏️', 'Hear a magic-e word — spell it.'),
-      soon('giant-steps', 'Giant Steps', '🏔️', 'Read long words fast, one step at a time.'),
+      { id: 'long-or-short', title: 'Long or Short?', emoji: '📏', tagline: 'Is the vowel long (says its name) or short?', status: 'available', route: '#/play/long-or-short' },
+      { id: 'great-divide', title: 'The Great Divide', emoji: '✂️', tagline: 'Tap where the big word comes apart.', status: 'available', route: '#/play/great-divide' },
+      { id: 'word-giants', title: 'Word Giants', emoji: '🦕', tagline: 'Read longer words part by part.', status: 'available', route: '#/play/word-giants' },
+      { id: 'l4-dictation', title: 'Name Change Dictation', emoji: '✏️', tagline: 'Hear a magic-e word — spell it.', status: 'available', route: '#/play/l4-dictation' },
+      { id: 'giant-steps', title: 'Giant Steps', emoji: '🏔️', tagline: 'Read long words fast, one step at a time.', status: 'available', route: '#/play/giant-steps' },
     ],
   },
   {

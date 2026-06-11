@@ -52,3 +52,77 @@ export interface NameChangeRound extends VcePair {
 export function buildNameChangeRounds(n: number, rng: () => number = Math.random): NameChangeRound[] {
   return shuffle(VCE_PAIRS, rng).slice(0, n).map((p) => ({ ...p, targetIsE: rng() < 0.5 }));
 }
+
+/** Name Change Dictation: spell the silent-e word you hear (the +e member). */
+export interface VceDictWord { word: string; vowel: 'a' | 'i' | 'o' | 'u'; emoji?: string }
+export function buildVceDictationRounds(n: number, rng: () => number = Math.random): VceDictWord[] {
+  return shuffle(VCE_PAIRS, rng).slice(0, n).map((p) => ({ word: p.withE, vowel: p.vowel, emoji: p.eEmoji }));
+}
+
+// ---------- Open vs Closed (Long or Short?) ----------
+// Single-syllable: OPEN ends in a long vowel (me, go); CLOSED ends in a consonant
+// with a short vowel (met, got). `long` = the vowel says its name.
+export interface SyllWordLS { word: string; long: boolean }
+export const OPEN_CLOSED_WORDS: SyllWordLS[] = [
+  { word: 'me', long: true }, { word: 'go', long: true }, { word: 'hi', long: true },
+  { word: 'no', long: true }, { word: 'she', long: true }, { word: 'we', long: true },
+  { word: 'so', long: true }, { word: 'my', long: true }, { word: 'fly', long: true }, { word: 'sky', long: true },
+  { word: 'met', long: false }, { word: 'got', long: false }, { word: 'hit', long: false },
+  { word: 'hot', long: false }, { word: 'run', long: false }, { word: 'sit', long: false },
+  { word: 'cat', long: false }, { word: 'bed', long: false }, { word: 'cup', long: false }, { word: 'top', long: false },
+];
+export function buildLongShortRounds(n: number, rng: () => number = Math.random): SyllWordLS[] {
+  return shuffle(OPEN_CLOSED_WORDS, rng).slice(0, n);
+}
+
+// ---------- Syllable division (The Great Divide) ----------
+// `split` = the letter index to cut at (letters[0..split) | letters[split..]).
+// VCCV → cut between the consonants (closed first syllable); VCV → cut after a
+// long vowel (open) or after the consonant (closed). `open` = first syllable open.
+export interface DivWord { word: string; split: number; open: boolean; emoji?: string }
+export const DIVISION_WORDS: DivWord[] = [
+  { word: 'rabbit', split: 3, open: false, emoji: '🐰' },
+  { word: 'napkin', split: 3, open: false, emoji: '🧻' },
+  { word: 'magnet', split: 3, open: false, emoji: '🧲' },
+  { word: 'sunset', split: 3, open: false, emoji: '🌅' },
+  { word: 'basket', split: 3, open: false, emoji: '🧺' },
+  { word: 'muffin', split: 3, open: false, emoji: '🧁' },
+  { word: 'kitten', split: 3, open: false, emoji: '🐱' },
+  { word: 'tiger', split: 2, open: true, emoji: '🐯' },
+  { word: 'pilot', split: 2, open: true, emoji: '🧑‍✈️' },
+  { word: 'robot', split: 2, open: true, emoji: '🤖' },
+  { word: 'tulip', split: 2, open: true, emoji: '🌷' },
+  { word: 'robin', split: 3, open: false, emoji: '🐦' },
+  { word: 'wagon', split: 3, open: false, emoji: '🛺' },
+  { word: 'lemon', split: 3, open: false, emoji: '🍋' },
+];
+export function buildDivideRounds(n: number, rng: () => number = Math.random): DivWord[] {
+  return shuffle(DIVISION_WORDS, rng).slice(0, n);
+}
+
+// ---------- Multisyllable reading (Word Giants + Giant Steps) ----------
+export interface MultiWord { word: string; syllables: string[]; emoji: string }
+export const MULTI_WORDS: MultiWord[] = [
+  { word: 'sunset', syllables: ['sun', 'set'], emoji: '🌅' },
+  { word: 'rabbit', syllables: ['rab', 'bit'], emoji: '🐰' },
+  { word: 'magnet', syllables: ['mag', 'net'], emoji: '🧲' },
+  { word: 'pumpkin', syllables: ['pump', 'kin'], emoji: '🎃' },
+  { word: 'tiger', syllables: ['ti', 'ger'], emoji: '🐯' },
+  { word: 'robot', syllables: ['ro', 'bot'], emoji: '🤖' },
+  { word: 'pencil', syllables: ['pen', 'cil'], emoji: '✏️' },
+  { word: 'basket', syllables: ['bas', 'ket'], emoji: '🧺' },
+  { word: 'muffin', syllables: ['muf', 'fin'], emoji: '🧁' },
+  { word: 'lemon', syllables: ['le', 'mon'], emoji: '🍋' },
+  { word: 'kitten', syllables: ['kit', 'ten'], emoji: '🐱' },
+  { word: 'dragon', syllables: ['dra', 'gon'], emoji: '🐉' },
+  { word: 'cactus', syllables: ['cac', 'tus'], emoji: '🌵' },
+  { word: 'donut', syllables: ['do', 'nut'], emoji: '🍩' },
+  { word: 'helmet', syllables: ['hel', 'met'], emoji: '⛑️' },
+];
+export interface MultiRound extends MultiWord { options: { word: string; emoji: string }[] }
+export function buildMultiRounds(n: number, rng: () => number = Math.random): MultiRound[] {
+  return shuffle(MULTI_WORDS, rng).slice(0, n).map((w) => {
+    const distractors = shuffle(MULTI_WORDS.filter((x) => x.word !== w.word), rng).slice(0, 2).map((x) => ({ word: x.word, emoji: x.emoji }));
+    return { ...w, options: shuffle([{ word: w.word, emoji: w.emoji }, ...distractors], rng) };
+  });
+}

@@ -60,3 +60,52 @@
 .nc-say:hover { background: #fff; }
 .nc-say:focus-visible { outline: 2px solid #234a2e; outline-offset: 2px; }
 .nc-help { margin: 12px auto 0; max-width: 420px; font-size: 12px; line-height: 1.5; color: #3a6b48; opacity: .9; }
+
+/* Long or Short? — two big choices */
+.ls-choice {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 130px; min-height: 64px;
+  padding: 12px 20px; cursor: pointer; font: inherit; font-weight: 800; font-size: clamp(16px, 4vw, 20px);
+  border: 3px solid #9cc7ab; border-radius: 18px; background: rgba(255, 255, 255, 0.8); color: #234a2e;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.ls-choice small { font-size: 12px; font-weight: 600; color: #3a6b48; }
+.ls-choice:hover:not(:disabled) { transform: translateY(-2px); }
+.ls-choice:focus-visible { outline: 2px solid #234a2e; outline-offset: 2px; }
+.ls-choice.is-right { border-color: #2c8a6e; box-shadow: 0 0 0 4px rgba(44, 138, 110, 0.3); }
+.ls-choice.is-wrong { border-color: #e0a3a3; opacity: .7; }
+
+/* The Great Divide — word + tappable cut points */
+.gd-divide { display: inline-flex; align-items: center; flex-wrap: wrap; justify-content: center; margin: 10px 0;
+  font-family: var(--font-display, Georgia), serif; font-weight: 800; font-size: clamp(36px, 11vw, 64px); color: #234a2e; }
+.gd-dl { padding: 0 1px; }
+.gd-dl--vowel { color: #c9772e; }
+.gd-gap {
+  width: 26px; min-height: 56px; margin: 0 1px; cursor: pointer; font-size: 18px; line-height: 1;
+  border: 2px dashed #b9d6c1; border-radius: 10px; background: rgba(255, 255, 255, 0.5); color: #2c8a6e; opacity: .55;
+  transition: opacity .12s ease, background .12s ease, transform .12s ease;
+}
+.gd-gap:hover:not(:disabled) { opacity: 1; transform: scaleY(1.05); background: #fff; }
+.gd-gap:focus-visible { outline: 2px solid #234a2e; outline-offset: 2px; }
+.gd-gap.is-right { opacity: 1; border-color: #2c8a6e; border-style: solid; background: #e6f5ec; }
+.gd-gap.is-wrong { opacity: 1; border-color: #e0a3a3; }
+.gd-gap.is-answer { opacity: 1; border-color: #2c8a6e; border-style: solid; }
+
+/* Word Giants / Giant Steps — chunked word + picture options */
+.wg-word {
+  display: inline-flex; align-items: baseline; flex-wrap: wrap; justify-content: center; gap: 0; margin: 8px 0 4px;
+  cursor: pointer; border: none; background: none; font-family: var(--font-display, Georgia), serif; font-weight: 800;
+  font-size: clamp(40px, 12vw, 72px); color: #234a2e; letter-spacing: .01em;
+}
+.wg-word--read { cursor: default; }
+.wg-word:focus-visible { outline: 2px solid #234a2e; outline-offset: 2px; border-radius: 12px; }
+.wg-dot { color: #9a5cc6; padding: 0 .12em; }
+.wg-opt {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 92px; min-height: 92px;
+  padding: 12px; cursor: pointer; border: 3px solid #9cc7ab; border-radius: 20px; background: rgba(255, 255, 255, 0.8);
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.wg-opt:hover:not(:disabled) { transform: translateY(-3px); }
+.wg-opt:focus-visible { outline: 2px solid #234a2e; outline-offset: 2px; }
+.wg-opt__emoji { font-size: clamp(40px, 11vw, 58px); line-height: 1; }
+.wg-opt.is-right { border-color: #2c8a6e; box-shadow: 0 0 0 4px rgba(44, 138, 110, 0.32); }
+.wg-opt.is-wrong { border-color: #e0a3a3; opacity: .65; }

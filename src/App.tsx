@@ -40,6 +40,11 @@ import { ToolTime } from './worlds/workshop/ToolTime';
 import { WorkshopLevelHub } from './worlds/workshop/WorkshopLevelHub';
 import { GiantValleyLevelHub } from './worlds/giantvalley/GiantValleyLevelHub';
 import { NameChange } from './worlds/giantvalley/NameChange';
+import { LongOrShort } from './worlds/giantvalley/LongOrShort';
+import { GreatDivide } from './worlds/giantvalley/GreatDivide';
+import { WordGiants } from './worlds/giantvalley/WordGiants';
+import { NameChangeDictation } from './worlds/giantvalley/NameChangeDictation';
+import { GiantSteps } from './worlds/giantvalley/GiantSteps';
 import { CheckpointGame } from './CheckpointGame';
 import { ensureLearner, setCurrentLearnerId, getCurrentLearnerId } from './profiles';
 import { reconcileRoster } from './data/identity';
@@ -174,6 +179,21 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'name-change') {
     return <NameChange learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'long-or-short') {
+    return <LongOrShort learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'great-divide') {
+    return <GreatDivide learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'word-giants') {
+    return <WordGiants learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'l4-dictation') {
+    return <NameChangeDictation learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'giant-steps') {
+    return <GiantSteps learnerId={learnerId} />;
   }
   if (route.name === 'play') {
     return <GameScreen learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} focus={route.focus} />;

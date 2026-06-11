@@ -9,6 +9,7 @@ import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { GardenBackdrop } from './GardenArt';
+import { GameShell } from '../../ui/GameShell';
 import { EchoTwinkle } from '../../mascots/EchoTwinkle';
 import { MascotSpeaker } from '../../mascots/MascotSpeaker';
 import { castFor, reactionLine, healFor, characterStage, fragmentToReveal, isFullyRecovered } from '../../world/lore/cast';
@@ -246,21 +247,18 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
           : '';
 
   return (
-    <main className="gd">
-      <GardenBackdrop />
-
-      <div className="gd-hud">
-        <button type="button" className="gd-back" onClick={() => goBack('#/level/1')}>← Back</button>
-        <span className="gd-badge">🌱 Tap It Out · Word {round + 1}</span>
-        <span className="gd-hud__right">
-          {combo >= 2 && <span key={combo} className="gd-combo" aria-label={`${combo} in a row`}>🌸 {combo}</span>}
-          <span className="gd-seg" aria-label={`Word ${round + 1} of ${ROUNDS}`}>
-            {Array.from({ length: ROUNDS }).map((_, i) => <i key={i} className={i <= round ? 'on' : ''} />)}
-          </span>
-          <button type="button" className="gd-mute" onClick={toggleMute} aria-label={muted ? 'Turn sound on' : 'Turn sound off'} aria-pressed={muted}>{muted ? '🔇' : '🔊'}</button>
-        </span>
-      </div>
-
+    <GameShell
+      prefix="gd"
+      rootClass="gd"
+      backdrop={<GardenBackdrop />}
+      back={{ label: '← Garden', onClick: () => goBack('#/level/1') }}
+      badge={<>🌱 Tap It Out · Word {round + 1}</>}
+      current={round}
+      total={ROUNDS}
+      muted={muted}
+      onToggleMute={toggleMute}
+      rightExtra={combo >= 2 ? <span key={combo} className="gd-combo" aria-label={`${combo} in a row`}>🌸 {combo}</span> : undefined}
+    >
       <div className={`gd-stage${sway ? ' gd-stage--sway' : ''}`}>
         {echoPing > 0 && <EchoTwinkle key={echoPing} className="gd-echoping" />}
 
@@ -272,7 +270,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
               onClick={() => { void audio.narrate(chipLine); sfx.tap(); setChipMood('cheer'); window.setTimeout(() => setChipMood((m) => (m === 'cheer' ? null : m)), 760); }}
               aria-label={`Hear ${character.name} again`}
             >
-              <CharacterArt emoji={character.emoji} heal={chipHeal} mood={tutorial ? 'point' : chipMood} size={76} art={character.art} label={character.name} />
+              <CharacterArt emoji={character.emoji} heal={chipHeal} mood={tutorial ? 'point' : chipMood} size={96} art={character.art} label={character.name} />
             </button>
             <div className="gd-hero__body">
               <p className="gd-hero__line" role="status">{chipLine}</p>
@@ -344,6 +342,6 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
           </div>
         </div>
       )}
-    </main>
+    </GameShell>
   );
 }

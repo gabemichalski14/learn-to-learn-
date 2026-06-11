@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { goBack, navigate } from '../../router';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
-import { sfx } from '../../audio/sfx';
+import { sfx, isMuted, setMuted } from '../../audio/sfx';
 import { buildBlendItRounds, type PicWord } from '../../content/packs/level1';
 import { recordItem, loadMastery } from '../../mastery/mastery';
 import { logSkillEvent } from '../../data/cloudSync';
@@ -9,6 +9,7 @@ import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
 import { awardForSession } from '../../achievements';
 import { GardenBackdrop } from './GardenArt';
+import { GameShell } from '../../ui/GameShell';
 import { castFor, reactionLine, healFor } from '../../world/lore/cast';
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import './garden.css';
@@ -33,6 +34,8 @@ export function BlendIt({ learnerId = 'guest' }: { learnerId?: string }) {
   const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
   const [line, setLine] = useState('Listen to the sounds… then tap what they make! 🎵');
   const [finish, setFinish] = useState<{ score: number; stars: number } | null>(null);
+  const [muted, setMutedState] = useState(isMuted());
+  function toggleMute() { const n = !muted; setMuted(n); setMutedState(n); }
 
   const startRef = useRef(0);
   const correctRef = useRef(0);
@@ -89,13 +92,17 @@ export function BlendIt({ learnerId = 'guest' }: { learnerId?: string }) {
   }
 
   return (
-    <main className="gd rt">
-      <GardenBackdrop />
-      <div className="gd-hud">
-        <button type="button" className="gd-back" onClick={() => goBack('#/level/1')}>← Garden</button>
-        <span className="gd-badge">🔡 Blend It · Level 1</span>
-      </div>
-
+    <GameShell
+      prefix="gd"
+      rootClass="gd rt"
+      backdrop={<GardenBackdrop />}
+      back={{ label: '← Garden', onClick: () => goBack('#/level/1') }}
+      badge={<>🔡 Blend It · Level 1</>}
+      current={i}
+      total={ROUNDS}
+      muted={muted}
+      onToggleMute={toggleMute}
+    >
       {finish ? (
         <div className="gd-stage">
           <div className="gd-finish">
@@ -114,13 +121,10 @@ export function BlendIt({ learnerId = 'guest' }: { learnerId?: string }) {
           {character && (
             <div className="gd-hero sd-hero">
               <button type="button" className="gd-hero__face" onClick={() => { void audio.narrate(line); sfx.tap(); }} aria-label={`Hear ${character.name} again`}>
-                <CharacterArt emoji={character.emoji} heal={heal} mood={mood} size={76} art={character.art} label={character.name} />
+                <CharacterArt emoji={character.emoji} heal={heal} mood={mood} size={96} art={character.art} label={character.name} />
               </button>
               <div className="gd-hero__body">
                 <p className="gd-hero__line" role="status">{line}</p>
-                <span className="sd-progress" aria-hidden="true">
-                  {rounds.map((_, n) => <i key={n} className={n < i ? 'done' : n === i ? 'on' : ''} />)}
-                </span>
               </div>
             </div>
           )}
@@ -143,6 +147,6 @@ export function BlendIt({ learnerId = 'guest' }: { learnerId?: string }) {
           </div>
         </div>
       )}
-    </main>
+    </GameShell>
   );
 }

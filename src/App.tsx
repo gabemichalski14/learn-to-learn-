@@ -36,6 +36,7 @@ import { CheckpointGame } from './CheckpointGame';
 import { ensureLearner, setCurrentLearnerId, getCurrentLearnerId } from './profiles';
 import { reconcileRoster } from './data/identity';
 import { flushOutbox } from './data/cloudSync';
+import { touchTutorPresence } from './data/cloud';
 import { useTutorSignedIn, useRole } from './useAuth';
 import { worldMotifs } from './world/lore/cast';
 import { loadMastery } from './mastery/mastery';
@@ -78,6 +79,15 @@ export default function App() {
     const t = window.setInterval(() => markActive(learnerId), 60_000);
     return () => window.clearInterval(t);
   }, [learnerId]);
+
+  // Tutor presence: while signed in, stamp this tutor/owner's "active now" so the
+  // owner can see who's on their account (Tutors page). Best-effort/cloud.
+  useEffect(() => {
+    if (!isTutor) return;
+    void touchTutorPresence();
+    const t = window.setInterval(() => void touchTutorPresence(), 150_000); // ~2.5 min
+    return () => window.clearInterval(t);
+  }, [isTutor]);
 
   const world = useWorldTier(learnerId); // app-wide ambient richness grows with real practice
   // Friends light up the world: their motif drifts by while you're helping them

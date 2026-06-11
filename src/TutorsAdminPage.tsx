@@ -6,6 +6,8 @@ import {
   listPendingInvites, deleteInviteCode, inviteLabel,
   type CloudTutor, type CloudAssignment, type CloudLearner, type CloudInvite,
 } from './data/cloud';
+import { PresenceDot } from './PresenceDot';
+import { parseTs } from './presence';
 import './admin.css';
 
 const tutorName = (t: CloudTutor) => t.name || (t.role === 'owner' ? 'You (owner)' : 'Tutor');
@@ -150,7 +152,7 @@ export function TutorsAdminPage() {
                   <li key={t.id}>
                     <button type="button" className="admin__studentrow" aria-expanded={open} onClick={() => setExpanded(open ? null : t.id)}>
                       <span className="admin__studentrow-main">
-                        <strong className="admin__studentrow-name">{tutorName(t)}{t.role === 'owner' && <i style={{ fontStyle: 'normal', color: 'var(--teal-deep)' }}> · owner</i>}</strong>
+                        <strong className="admin__studentrow-name">{tutorName(t)} <PresenceDot lastActive={parseTs(t.last_seen_at)} />{t.role === 'owner' && <i style={{ fontStyle: 'normal', color: 'var(--teal-deep)' }}> · owner</i>}</strong>
                         <span className="admin__studentrow-sub">{mine.length === 0 ? 'No students assigned' : `${mine.length} student${mine.length === 1 ? '' : 's'}`}</span>
                       </span>
                       <span className="admin__chev" aria-hidden="true">{open ? '▴' : '▾'}</span>

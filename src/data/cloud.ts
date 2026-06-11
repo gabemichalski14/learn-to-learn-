@@ -201,11 +201,19 @@ export async function deleteGuardian(userId: string, learnerId: string) {
 }
 
 // ---------- tutors + assignments (owner admin) ----------
-export interface CloudTutor { id: string; name: string | null; role: string }
+export interface CloudTutor { id: string; name: string | null; role: string; last_seen_at?: string | null }
+/** Heartbeat: stamp the signed-in tutor's "active now". Best-effort — a no-op
+ *  until the tutor-presence migration is applied. */
+export async function touchTutorPresence(): Promise<void> {
+  try { await (await client()).rpc('touch_tutor_presence'); } catch { /* migration not applied yet */ }
+}
 export async function listTutors(): Promise<CloudTutor[]> {
-  const { data, error } = await (await client()).from('tutors').select('id, name, role');
-  if (error) throw error;
-  return (data ?? []) as CloudTutor[];
+  // last_seen_at may not exist pre-migration; fall back to the base columns.
+  const c = await client();
+  let res = await c.from('tutors').select('id, name, role, last_seen_at');
+  if (res.error) res = await c.from('tutors').select('id, name, role');
+  if (res.error) throw res.error;
+  return (res.data ?? []) as CloudTutor[];
 }
 
 export interface CloudAssignment { learner_id: string; tutor_id: string; relation: 'primary' | 'substitute'; expires_at: string | null }

@@ -70,12 +70,15 @@ export const LEVELS: LevelInfo[] = [
   },
   {
     num: 4,
-    title: 'Syllable Division & Vowel Teams',
-    focus: 'Open syllables, dividing big words, and long-vowel/vowel-team spelling',
+    title: 'Long Vowels & Big Words',
+    focus: 'Silent-e, open syllables, and dividing big words to read them part by part',
     games: [
-      soon('l4-split', 'The Great Divide', '✂️', 'Split big words into parts.'),
-      soon('l4-magic', 'Name Change', '✨', 'Silent-e makes the vowel say its name.'),
-      soon('l4-read', 'Word Giants', '🦕', 'Read longer words part by part.'),
+      { id: 'name-change', title: 'Name Change', emoji: '✨', tagline: 'Add the magic e — the vowel says its name.', status: 'available', route: '#/play/name-change' },
+      soon('long-or-short', 'Long or Short?', '📏', 'Is the vowel long or short?'),
+      soon('great-divide', 'The Great Divide', '✂️', 'Split a big word at the seam.'),
+      soon('word-giants', 'Word Giants', '🦕', 'Read longer words part by part.'),
+      soon('l4-dictation', 'Name Change Dictation', '✏️', 'Hear a magic-e word — spell it.'),
+      soon('giant-steps', 'Giant Steps', '🏔️', 'Read long words fast, one step at a time.'),
     ],
   },
   {

@@ -454,7 +454,101 @@ export const PATCH: LevelCharacter = {
   },
 };
 
-export const CAST: LevelCharacter[] = [CHIP, MOSS, PATCH];
+export const BRAM: LevelCharacter = {
+  id: 'bram',
+  level: 4,
+  name: 'Bram',
+  emoji: '🦕',
+  strength: 'big-picture seeing — Bram takes in the whole shape of a giant word at a glance, then breaks it into climbable parts',
+  lever: 'chunking to beat overwhelm — the holistic strength turned into a strategy: a long word is never bigger, just more parts, one at a time',
+  persona: {
+    want: 'wake the sleeping giants of the valley so the long words can be read again',
+    need: 'to learn that a giant word is not scary — it is just little parts holding hands, and a silent friend can change a whole sound',
+    flaw: 'freezes at the SIZE of a word and tries to swallow it whole instead of cutting it into parts',
+    trait: 'a gentle, slow-moving word-dino; loves looking at the whole valley, hums while he climbs, never rushes',
+  },
+  skillKey: 'vce',
+  soundId: 'vce',
+  // One signature skill per Level-4 game — recover them all to wake Bram fully.
+  sounds: ['vce', 'vowel:open', 'div:vcv', 'read:multi'],
+  fragments: {
+    vce: ['…there — the silent e. It says nothing, but it changes everything. cap becomes cape. ✨'],
+    open: ["When a vowel's at the open end, it gets to say its own name — me, go, hi. I'd forgotten that. 🦕"],
+    vcv: ['Big words come apart at the seam — ti·ger, rob·in. One cut, two climbable parts. ✂️'],
+    multi: ['And the giant words? Just parts, read one at a time. Nothing was ever too big. 🏔️'],
+  },
+  storytime: [
+    'The valley is awake again. The giants stretch and the long words read themselves. Sit with me? 🦕',
+    'I used to freeze at a big word. Now I just see the parts. Funny how the giant was never the problem. 💛',
+    'You taught me to take it one chunk at a time. Come climb a word with me anytime. 🏔️',
+  ],
+  revisit: [
+    "Back in the valley? I'm wide awake now — but I love climbing big words with you. Pick a giant! 🦕",
+    'Just visiting from the Village! Cut a long word into parts with me again? 💛',
+  ],
+  teaching: {
+    title: 'How a giant word becomes small',
+    lines: [
+      'Big words used to freeze me — I tried to swallow them whole. Here is how I climb them now. 🦕',
+      'Look at the whole shape first — that is your gift, big-picture friend.',
+      'Then cut it at the seam: between the consonants, or right after a vowel that says its name.',
+      'Read one part. Then the next. A giant word is never bigger — just more parts.',
+      'And watch for the silent e — it says nothing, but it makes the vowel say its name. cap → cape. ✨',
+    ],
+  },
+  playRoute: '#/play/name-change',
+  art: charArt('bram'),
+  house: '/characters/village/cottage.png',
+  motif: '🦕',
+  beats: {
+    arrived: [
+      'Oh… a small friend! The valley fell asleep and the long words went quiet. Will you help me wake the giants? 🦕',
+      'Hello, down there! Each giant holds a piece of how to read big words. Climb them with me?',
+    ],
+    healing: [
+      'A giant stirs… I can feel a long word waking up. 🏔️',
+      'You cut that big word right at the seam — that is exactly how. Keep climbing! 🦕',
+    ],
+    healed: [
+      'The whole valley is awake — every giant, every long word. You did that, little friend. 🦕',
+      'No word is too big for us now. We just take it one part at a time. 💛',
+    ],
+    resident: ['Welcome back to the valley! Want to climb a giant word together? 🦕'],
+  },
+  reactions: {
+    intro: [
+      "I'm Bram. I see the whole shape of a word in a blink — it's the cutting-into-parts I take slow. Climb with me? 🦕",
+      'Hello! Every giant in this valley holds a piece of reading big words. Wake them with me, one at a time.',
+      'You came! Big-picture friends like us — we just need to chunk it. Let me show you.',
+    ],
+    teach: [
+      'Watch. 🦕 First the whole shape… then I cut it at the seam… then read one part at a time. Your turn!',
+      'Here is my way: see the giant, find the seam, climb one part, then the next. I will start — then it is yours.',
+      'A silent e says nothing, but it makes the vowel say its name. cap… cape. Let me show you — your turn next! ✨',
+    ],
+    correct: [
+      'Yes — one part at a time, and the giant wakes! 🦕',
+      'That silent e changed everything — you heard it. ✨',
+      'You cut it right at the seam. The valley hums. 💛',
+    ],
+    wrong: [
+      "A big one, that — and big words froze me too, once. Look at the whole shape, then find the seam.",
+      'Ooh, close. Say each part slow… where does it come apart? Try again? 💛',
+      '"Not yet" just means we keep climbing. I\'m right here, big as a hill.',
+    ],
+    clear: [
+      'A whole giant, awake. The long words are coming back…',
+      'Look what you read. The valley feels more alive. 💛',
+    ],
+    win: [
+      'You woke the whole valley! 🦕 Every giant, every long word — read, one part at a time.',
+      'A big word was never too big. You taught me that. 💛',
+      'We did it. Come climb a giant in my valley any time. 🏔️',
+    ],
+  },
+};
+
+export const CAST: LevelCharacter[] = [CHIP, MOSS, PATCH, BRAM];
 
 export function castFor(level: number): LevelCharacter | undefined {
   return CAST.find((c) => c.level === level);

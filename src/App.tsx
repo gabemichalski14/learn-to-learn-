@@ -38,6 +38,8 @@ import { ChopShop } from './worlds/workshop/ChopShop';
 import { PatchesDictation } from './worlds/workshop/PatchesDictation';
 import { ToolTime } from './worlds/workshop/ToolTime';
 import { WorkshopLevelHub } from './worlds/workshop/WorkshopLevelHub';
+import { GiantValleyLevelHub } from './worlds/giantvalley/GiantValleyLevelHub';
+import { NameChange } from './worlds/giantvalley/NameChange';
 import { CheckpointGame } from './CheckpointGame';
 import { ensureLearner, setCurrentLearnerId, getCurrentLearnerId } from './profiles';
 import { reconcileRoster } from './data/identity';
@@ -170,8 +172,15 @@ export default function App() {
   if (route.name === 'play' && route.game === 'tool-time') {
     return <ToolTime learnerId={learnerId} />;
   }
+  if (route.name === 'play' && route.game === 'name-change') {
+    return <NameChange learnerId={learnerId} />;
+  }
   if (route.name === 'play') {
     return <GameScreen learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} focus={route.focus} />;
+  }
+
+  if (route.name === 'level' && (route.level ?? 1) === 4) {
+    return <GiantValleyLevelHub level={4} learnerId={learnerId} />;
   }
 
   if (route.name === 'level' && (route.level ?? 1) === 3) {

@@ -1,0 +1,52 @@
+/* Giant's Valley (Level 4, Bram) — reuses the Workshop hub/game layout with a
+   valley-green tint + a silent-e "Name Change" widget. */
+.gv.wk { background: radial-gradient(130% 85% at 50% -5%, #eef8ec 0%, #cfe9c9 55%, #a6d3ad 100%); color: #234a2e; }
+.gv .wk-back { color: #2c6b3e; background: rgba(255, 255, 255, 0.6); }
+.gv .wk-hub__title, .gv .wk-finish__title { color: #234a2e; }
+
+/* scattered valley deco behind the content */
+.gv-deco { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .42; }
+.gv-deco span { position: absolute; font-size: clamp(30px, 7vw, 56px); }
+.gv-deco span:nth-child(1) { top: 9%; left: 6%; }
+.gv-deco span:nth-child(2) { top: 16%; right: 9%; }
+.gv-deco span:nth-child(3) { bottom: 14%; left: 8%; }
+.gv-deco span:nth-child(4) { top: 40%; right: 5%; }
+.gv-deco span:nth-child(5) { bottom: 10%; right: 14%; }
+.gv .wk-stage { position: relative; z-index: 1; }
+
+/* Name Change — the silent-e toggle */
+.nc-hear {
+  margin: 6px auto 2px; min-height: 44px; padding: 10px 20px; cursor: pointer; font: inherit; font-weight: 800;
+  border: none; border-radius: 999px; background: #2c8a6e; color: #fff;
+}
+.nc-hear:hover { transform: translateY(-1px); }
+.nc-hear:focus-visible { outline: 2px solid #234a2e; outline-offset: 2px; }
+.nc-word {
+  display: inline-flex; align-items: center; gap: 1px; margin: 10px 0 2px;
+  font-family: var(--font-display, Georgia), serif; font-weight: 800; font-size: clamp(48px, 14vw, 86px); letter-spacing: .02em;
+}
+.nc-letter { color: #234a2e; }
+.nc-vowel { transition: color .18s ease; }
+.nc-vowel.is-short { color: #c9772e; } /* short vowel — warm amber */
+.nc-vowel.is-long { color: #1b6f9a; }  /* long vowel — cool blue (says its name) */
+.nc-e { color: #9a5cc6; position: relative; }
+.nc-e::after { content: '✨'; font-size: .42em; position: absolute; top: -.15em; right: -.55em; }
+.nc-pic { font-size: clamp(40px, 10vw, 64px); line-height: 1; min-height: 1.1em; }
+.nc-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; margin-top: 10px; }
+.nc-wand {
+  min-height: 48px; padding: 12px 22px; cursor: pointer; font: inherit; font-weight: 800;
+  border: 2px solid #d8bdf0; border-radius: 999px; background: #efe2fb; color: #6a3fa0;
+}
+.nc-wand:hover { transform: translateY(-1px); background: #f6eeff; }
+.nc-wand:focus-visible { outline: 2px solid #234a2e; outline-offset: 2px; }
+.nc-confirm {
+  min-height: 48px; padding: 12px 24px; cursor: pointer; font: inherit; font-weight: 800;
+  border: none; border-radius: 999px; background: #1b9aaa; color: #fff;
+}
+.nc-confirm:hover:not(:disabled) { transform: translateY(-1px); }
+.nc-confirm:disabled { opacity: .6; cursor: default; }
+.nc-confirm:focus-visible { outline: 2px solid #234a2e; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nc-vowel, .nc-hear, .nc-wand, .nc-confirm { transition: none; }
+}

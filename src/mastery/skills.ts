@@ -53,7 +53,10 @@ export function skillTag(key: SkillKey): string {
   if (kind === 'digraph') return `${a} · digraph`;
   if (kind === 'rule') return a === 'floss' ? 'FLOSS rule' : a === 'ck' ? '-ck rule' : `${a} rule`;
   if (kind === 'syll') return 'two-syllable words';
-  if (kind === 'read') return 'reading speed';
+  if (kind === 'vce') return 'silent-e';
+  if (kind === 'vowel') return 'long / short';
+  if (kind === 'div') return 'splitting words';
+  if (kind === 'read') return a === 'multi' ? 'long-word speed' : 'reading speed';
   const p = parseSkillKey(key);
   if (!p) return key;
   const where = p.target === 'ending' ? 'end' : p.target === 'medial' ? 'middle' : 'start';
@@ -68,7 +71,10 @@ export function skillLabel(key: SkillKey): string {
   if (kind === 'digraph') return `the “${a}” digraph (two letters, one sound)`;
   if (kind === 'rule') return a === 'floss' ? 'the FLOSS rule (ff, ll, ss, zz)' : a === 'ck' ? 'the -ck spelling rule' : `the ${a} rule`;
   if (kind === 'syll') return 'splitting two-syllable words';
-  if (kind === 'read') return 'reading short words quickly (fluency)';
+  if (kind === 'vce') return 'silent-e (the magic e makes the vowel say its name)';
+  if (kind === 'vowel') return 'open vs closed syllables (long vs short vowel)';
+  if (kind === 'div') return 'splitting big words into syllables';
+  if (kind === 'read') return a === 'multi' ? 'reading longer words quickly (fluency)' : 'reading short words quickly (fluency)';
   const p = parseSkillKey(key);
   if (!p) return key;
   const where = p.target === 'ending' ? 'at the end' : p.target === 'medial' ? 'in the middle' : 'at the start';

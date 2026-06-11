@@ -17,9 +17,10 @@ describe('cast registry', () => {
     const ids = CAST.map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (const c of CAST) {
-      // a real trainable skill — a per-sound key, a PA key, or an L3 skill
-      // (blend / digraph / rule / syll), all of which ride the skill_events pipeline
-      expect(parseSkillKey(c.skillKey) !== null || /^(pa|blend|digraph|rule|syll):/.test(c.skillKey)).toBe(true);
+      // a real trainable skill — a per-sound key, a PA key, an L3 skill
+      // (blend / digraph / rule / syll), or an L4 skill (vce / vowel / div / read),
+      // all of which ride the skill_events pipeline
+      expect(parseSkillKey(c.skillKey) !== null || /^(pa|blend|digraph|rule|syll|vce|vowel|div|read)(:|$)/.test(c.skillKey)).toBe(true);
       expect(c.soundId.length).toBeGreaterThan(0);
       expect(c.playRoute).toMatch(/^#\//);
     }

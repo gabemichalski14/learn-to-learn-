@@ -38,7 +38,14 @@ function levelSkillStats(map: MasteryMap, level: number): SkillStat[] {
       .filter(([k]) => k.startsWith('blend:') || k.startsWith('digraph:') || k.startsWith('rule:') || k.startsWith('syll:'))
       .map(([, s]) => s);
   }
-  return []; // Levels 4+ have no live games yet
+  if (level === 4) {
+    // Level 4 = Giant's Valley: silent-e, open vs closed, syllable division.
+    // (read:multi fluency is a bonus, not a gate requirement — like read:cvc at L2.)
+    return Object.entries(map)
+      .filter(([k]) => k.startsWith('vce') || k.startsWith('vowel:') || k.startsWith('div:'))
+      .map(([, s]) => s);
+  }
+  return []; // Levels 5+ have no live games yet
 }
 
 export interface LevelGate {

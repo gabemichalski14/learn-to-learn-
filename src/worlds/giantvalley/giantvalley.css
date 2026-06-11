@@ -50,3 +50,13 @@
 @media (prefers-reduced-motion: reduce) {
   .nc-vowel, .nc-hear, .nc-wand, .nc-confirm { transition: none; }
 }
+
+/* Name Change — clearer step-by-step directions */
+.nc-step { margin: 12px 0 2px; font-weight: 800; font-size: clamp(13px, 3vw, 15px); color: #2c6b3e; }
+.nc-say {
+  margin: 4px auto 0; min-height: 40px; padding: 8px 16px; cursor: pointer; font: inherit; font-weight: 700; font-size: 13px;
+  border: 2px solid #9cc7ab; border-radius: 999px; background: rgba(255, 255, 255, 0.7); color: #2c6b3e;
+}
+.nc-say:hover { background: #fff; }
+.nc-say:focus-visible { outline: 2px solid #234a2e; outline-offset: 2px; }
+.nc-help { margin: 12px auto 0; max-width: 420px; font-size: 12px; line-height: 1.5; color: #3a6b48; opacity: .9; }

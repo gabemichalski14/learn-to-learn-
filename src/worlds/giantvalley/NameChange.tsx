@@ -29,7 +29,7 @@ export function NameChange({ learnerId = 'guest' }: { learnerId?: string }) {
   const [hasE, setHasE] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
-  const [line, setLine] = useState('Hear the word, then add or take away the magic e to match it. ✨');
+  const [line, setLine] = useState('Listen — then build the word you hear with me! ✨');
   const [finish, setFinish] = useState<{ score: number; stars: number } | null>(null);
 
   const startRef = useRef(0);
@@ -125,22 +125,27 @@ export function NameChange({ learnerId = 'guest' }: { learnerId?: string }) {
             <p className="wk-hero__line" role="status">{line}</p>
           </div>
 
-          <button type="button" className="nc-hear" onClick={() => playWord(targetWord)} aria-label="Hear the word again">🔊 hear the word</button>
+          <p className="nc-step">1 · Listen to the word</p>
+          <button type="button" className="nc-hear" onClick={() => playWord(targetWord)} aria-label="Hear the word you need to build">🔊 The word you heard</button>
 
-          <div className="nc-word" aria-label={`current word ${currentWord}`}>
+          <p className="nc-step">2 · Build it — tap ✨ to add the magic e if the vowel says its name</p>
+          <div className="nc-word" aria-label={`you built ${currentWord}`}>
             {round.base.split('').map((ch, i) => (
               <span key={i} className={i === vowelIdx ? `nc-vowel ${hasE ? 'is-long' : 'is-short'}` : 'nc-letter'}>{ch}</span>
             ))}
             {hasE && <span className="nc-e">e</span>}
           </div>
           <div className="nc-pic" aria-hidden="true">{currentEmoji ?? ''}</div>
+          <button type="button" className="nc-say" onClick={() => playWord(currentWord)} aria-label="Hear the word you built">🔊 Hear what you built</button>
 
           <div className="nc-row">
             <button type="button" className="nc-wand" onClick={toggleE} aria-pressed={hasE}>
               {hasE ? '➖ take the e away' : '✨ add the magic e'}
             </button>
-            <button type="button" className="nc-confirm" disabled={confirmed} onClick={confirm}>That's it! ✓</button>
+            <button type="button" className="nc-confirm" disabled={confirmed} onClick={confirm}>3 · They match! ✓</button>
           </div>
+
+          <p className="nc-help">✨ The magic <b>e</b> is silent — but it makes the vowel say its <b>name</b> (cap → cape).</p>
 
           <span className="wk-progress" aria-hidden="true">
             {rounds.map((_, n) => <i key={n} className={n < ri ? 'done' : n === ri ? 'on' : ''} />)}

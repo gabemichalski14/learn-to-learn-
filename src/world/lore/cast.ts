@@ -356,7 +356,106 @@ export const CHIP: LevelCharacter = {
   },
 };
 
-export const CAST: LevelCharacter[] = [CHIP, MOSS];
+// Level 3 — Patch (the connector). Interconnected reasoning (Eide MIND strength)
+// + enactive mastery (Bandura's STRONGEST self-efficacy source — you apply a rule
+// and it works every time). His wound IS the curriculum's central error: blend
+// reduction (squeezing a blend until a sound slips out). Flat/emoji art for now
+// (no hand-coded SVG, per the art-direction call); CharacterArt heals the emoji.
+export const PATCH: LevelCharacter = {
+  id: 'patch',
+  level: 3,
+  name: 'Patch',
+  emoji: '🧵',
+  strength: 'interconnected reasoning — Patch sees how every little piece joins into the whole',
+  lever: "enactive mastery (Bandura's strongest source) — you apply a rule yourself and it works every single time",
+  persona: {
+    want: 'stitch his scattered bits back together and reopen the Workshop',
+    need: 'to learn two sounds can hold hands and BOTH still be heard — and that a rule is a tool you own, not a trap',
+    flaw: 'squeezes pieces so tight that one slips away — a blend loses a sound ("slip" → "sip")',
+    trait: 'a tinkerer; fidgets with thread and bolts, lights up when two parts click together',
+  },
+  skillKey: 'blend:init:sl',
+  soundId: 'sl',
+  // His pieces scattered into all four Workshop games — recover them ALL to make
+  // him whole (one signature skill per game).
+  sounds: ['blend:init:sl', 'digraph:sh', 'rule:floss', 'syll:vccv'],
+  fragments: {
+    sl: ['…there it is — sl. Two sounds, holding hands, neither one lost. That stitch is mine. 🧵'],
+    sh: ['Sh — quiet now. One sound from two letters. I used to hush the whole Workshop with it. 🤫'],
+    floss: ['And my trusty tool: the FLOSS rule — f, l, s, z, doubled every time. A rule I can count on. 📏'],
+    vccv: ['Big words come apart at the seam — rab·bit, nap·kin. I always saw the join. ✂️'],
+  },
+  storytime: [
+    'Every piece, back where it belongs. The Workshop hums again. Sit a while? 🧵',
+    'Funny — I thought a dropped sound meant I was broken. Turns out I just hold them gently now. 💛',
+    "You stitched me back together. I live here now. Door's always open. 🔧",
+  ],
+  revisit: [
+    "Back in the Workshop? I'm whole now — but I love building with you. Let's keep these joins strong! 🧵",
+    'Just visiting from the Village! Hold the buddies together with me again? 💛',
+  ],
+  teaching: {
+    title: 'How two sounds hold hands',
+    lines: [
+      "Blends used to slip on me — I'd squeeze sl so hard the l fell out. Here's how I hold them now. 🧵",
+      'Say both. s… l… slow. Two sounds, both heard — buddies that hold hands.',
+      'Don\'t drop one. If you only hear "sip," a buddy got away. Reach back for it.',
+      'Trust the rule. ck after a short vowel; double f, l, s, z at the end. A rule works every time — that\'s your superpower.',
+      "I see the whole picture fast — it's the little joins I take slow. That's not broken. That's how I build. 💛",
+    ],
+  },
+  playRoute: '#/play/blend-buddies',
+  house: '/characters/village/cottage.png',
+  motif: '🧵',
+  beats: {
+    arrived: [
+      'Oh — a helper! My Workshop came apart and the pieces flew into every game. Help me stitch them back? 🧵',
+      'Hello! Each bit of me is stuck in a build. Put them together and I come back, piece by piece.',
+    ],
+    healing: [
+      'Another piece, clicked into place. I can feel the Workshop warming up… 🔧',
+      "You're holding the buddies together — that's exactly it. Keep going! 🧵",
+    ],
+    healed: [
+      "That's all of me — every join, every rule, back together. You did that. 🧵",
+      "The Workshop's open again, and it's because you didn't let a single sound slip. 💛",
+    ],
+    resident: ['Welcome to the Workshop! Pull up a stool. What shall we build today? 🧵'],
+  },
+  reactions: {
+    intro: [
+      "I'm Patch. I came apart out here — pieces everywhere. Will you help me stitch them back together? 🧵",
+      'Hello! Every build holds a piece of me. Put it together and I come back — bit by bit.',
+      "You came! I knew a good builder would. Let's join these sounds up.",
+    ],
+    teach: [
+      'Watch how I do it. 🧵 Say BOTH sounds — s… l… — and keep them holding hands. Now you try!',
+      "Here's my way: hear both buddies, build them side by side, don't let one slip. I'll start — then it's yours.",
+      'Two sounds, both heard, joined up tight. Let me show you one — your turn next! 💛',
+    ],
+    correct: [
+      'Click — both buddies, together! That one\'s mine. 🧵',
+      'Yes — neither one slipped. You held them. 🌟',
+      'You built that. I can feel it clicking home. 💛',
+    ],
+    wrong: [
+      "A buddy got away there — and that's okay. Blends are slippery; they were for me too.",
+      'Ooh, close. Say both sounds slow… catch the one that slipped. Try again? 💛',
+      '"Not yet" just means we keep building. I\'m right here.',
+    ],
+    clear: [
+      "A whole build, done. The Workshop's humming louder…",
+      'Look what you joined. I feel more like me. 💛',
+    ],
+    win: [
+      "You put me back together — every piece! 🧵 I wasn't broken. I just needed to hold them gently.",
+      "All my joins, strong. I'm me again — because you didn't drop a single sound. 💛",
+      'We did it. Come build in my Workshop any time.',
+    ],
+  },
+};
+
+export const CAST: LevelCharacter[] = [CHIP, MOSS, PATCH];
 
 export function castFor(level: number): LevelCharacter | undefined {
   return CAST.find((c) => c.level === level);
@@ -423,6 +522,13 @@ export function fragmentId(c: LevelCharacter, soundId: string): string {
   return `fragment:${c.id}:${soundId}`;
 }
 
+/** The fragment key for a skill: the parsed soundId (L1/L2 sounds), else the last
+ *  segment of the skillKey (L3: blend:init:sl → 'sl', rule:floss → 'floss'), else
+ *  the character's signature soundId. */
+function fragmentSid(k: SkillKey, fallback: string): string {
+  return parseSkillKey(k)?.soundId ?? k.split(':').pop() ?? fallback;
+}
+
 /** The next memory to reveal: a sound that's now mastered but whose fragment the
  *  learner hasn't been shown yet. Null when there's nothing new. */
 export function fragmentToReveal(
@@ -431,7 +537,7 @@ export function fragmentToReveal(
   if (!c.fragments) return null;
   for (const k of soundsOf(c)) {
     // per-sound key → its soundId; a single-skill key (e.g. PA) → the character's soundId
-    const sid = parseSkillKey(k)?.soundId ?? c.soundId;
+    const sid = fragmentSid(k, c.soundId);
     if (!sid) continue;
     const lines = c.fragments[sid];
     if (!lines || !lines.length) continue;
@@ -455,7 +561,7 @@ export function storytimeScene(c: LevelCharacter, mastery: MasteryMap, rng: () =
   if (open) lines.push(open);
   if (c.fragments) {
     for (const k of soundsOf(c)) {
-      const sid = parseSkillKey(k)?.soundId ?? c.soundId;
+      const sid = fragmentSid(k, c.soundId);
       if (!sid) continue;
       const memory = c.fragments[sid]?.[0];
       if (memory && isHumRecovered(mastery[k])) lines.push(memory);

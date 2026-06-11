@@ -78,29 +78,16 @@ export function navigate(to: string): void {
   if (typeof window !== 'undefined') window.location.hash = to;
 }
 
-// Track the route we were on before the current one, so "leave a game" can
-// return to wherever it was launched from (a level hub, the Games tab, …)
-// instead of a hardcoded destination.
-let prevHash: string | null = null;
-let curHash: string | null = typeof window !== 'undefined' ? window.location.hash : null;
-if (typeof window !== 'undefined') {
-  window.addEventListener('hashchange', () => {
-    prevHash = curHash;
-    curHash = window.location.hash;
-  });
-}
-
 /**
- * Go back to the screen we came from. Used when leaving a game so the child
- * lands back where they started (the Games tab, the level hub, …) rather than
- * being thrown to a fixed page. Falls back to `fallback` when there's no prior
- * in-app screen (e.g. the game was opened via a direct link) or the prior
- * screen was itself a game.
+ * Go to a back/parent screen. Every call site passes its labelled destination
+ * (e.g. "← Home" → '#/', "← Workshop" → '#/level/3'), so we navigate THERE
+ * directly — the button always goes exactly where it says.
+ *
+ * (Previously this did history-style `prevHash` return, which made two pages
+ * that link to each other — e.g. a level hub and the Village — ping-pong back
+ * and forth on "← Home" instead of going home. A labelled button must match
+ * its label, so we navigate to the destination, never to "wherever I came from".)
  */
-export function goBack(fallback: string): void {
-  if (prevHash && !/^#\/?play/.test(prevHash)) {
-    navigate(prevHash);
-  } else {
-    navigate(fallback);
-  }
+export function goBack(destination: string): void {
+  navigate(destination);
 }

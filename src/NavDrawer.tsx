@@ -25,7 +25,7 @@ const ITEMS: NavItem[] = [
   { label: 'My child', to: '#/family', match: ['family'], roles: ['parent'] },
   { label: 'Levels', to: '#/levels', match: ['levels', 'level', 'games', 'play'], roles: ['guest', 'tutor', 'owner'] },
   { label: 'Village', to: '#/village', match: ['village'], roles: ['guest'] },
-  { label: 'Leaderboard', to: '#/leaderboard', match: ['leaderboard'], roles: ['guest', 'owner'] },
+  { label: 'Leaderboard', to: '#/leaderboard', match: ['leaderboard'], roles: ['guest', 'tutor', 'owner', 'parent'] },
   { label: 'Profile', to: '#/profile', match: ['profile'], roles: ['guest', 'tutor'] },
   { label: 'Account', to: '#/account', match: ['account'], roles: ['guest', 'owner', 'tutor', 'parent'] },
 ];

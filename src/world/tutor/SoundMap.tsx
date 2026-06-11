@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { skillLabel } from '../../mastery/skills';
+import { skillTag } from '../../mastery/skills';
 import type { MasteryMap, SkillInsight } from '../../mastery/mastery';
 import { summarize, whyNote } from './dashboardData';
 import './soundMap.css';
@@ -16,7 +16,7 @@ function Chip({ s, recent, automatic }: { s: SkillInsight; recent: number[]; aut
   return (
     <li>
       <button type="button" className="smap-chip" aria-expanded={open} onClick={() => setOpen(!open)}>
-        <span className="smap-chip__label">{skillLabel(s.skillKey)}</span>
+        <span className="smap-chip__label">{skillTag(s.skillKey)}</span>
         {automatic && <span className="smap-chip__auto" title="quick &amp; sure — automatic">⚡</span>}
         <span className="smap-chip__bar" aria-hidden="true"><span style={{ width: `${pct}%` }} /></span>
         <span className="smap-chip__pct">{pct}%</span>

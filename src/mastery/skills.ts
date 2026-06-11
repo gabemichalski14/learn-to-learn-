@@ -33,6 +33,22 @@ export const digraphKey = (dg: string): SkillKey => `digraph:${dg}`;
 export const ruleKey = (rule: 'ck' | 'floss'): SkillKey => `rule:${rule}`;
 export const syllKey = (pattern: string): SkillKey => `syll:${pattern}`;
 
+/** Compact, position-FIRST tag for tight chips (e.g. the Sound Map). Keeps the
+ *  distinguishing part visible even in a narrow space — so "/m/ · start" and
+ *  "/m/ · end" never collapse to the same truncated "the /m/ soun…". */
+export function skillTag(key: SkillKey): string {
+  if (key === 'pa:segment') return 'each sound in a word';
+  const [kind, a, b] = key.split(':');
+  if (kind === 'blend') return `${(b ?? '').split('').join('-')} blend · ${a === 'final' ? 'end' : 'start'}`;
+  if (kind === 'digraph') return `${a} · digraph`;
+  if (kind === 'rule') return a === 'floss' ? 'FLOSS rule' : a === 'ck' ? '-ck rule' : `${a} rule`;
+  if (kind === 'syll') return 'two-syllable words';
+  const p = parseSkillKey(key);
+  if (!p) return key;
+  const where = p.target === 'ending' ? 'end' : p.target === 'medial' ? 'middle' : 'start';
+  return `/${p.soundId}/ · ${where}`;
+}
+
 /** Learner-facing label. ipa is simply /id/ in our registry, so we build from the id. */
 export function skillLabel(key: SkillKey): string {
   if (key === 'pa:segment') return 'hearing each sound in a word';

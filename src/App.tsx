@@ -221,9 +221,14 @@ export default function App() {
       {!bareConsole && <LivingWorld tier={world.tier} lush={world.lush} score={world.score} />}
       {!bareConsole && <GardenFrame />}
       <NavDrawer route={route.name} role={role ?? null} />
-      {page}
-      {/* Footer (brand + legal disclaimer): off only the bare control consoles. */}
-      {!bareConsole && <SiteFooter />}
+      {/* Sticky-footer shell: the page fills at least the viewport so the footer
+          always caps the bottom — the ambient backdrop never "leaks" below it on
+          short pages. No z-index here, so the footer keeps sitting above the mascot. */}
+      <div className="app-shell">
+        <div className="app-shell__main">{page}</div>
+        {/* Footer (brand + legal disclaimer): off only the bare control consoles. */}
+        {!bareConsole && <SiteFooter />}
+      </div>
       {/* Roaming buddy + ambient surprises — child-facing; off the consoles AND the
           tutor dashboard (calm/professional), kept on kid + family pages. */}
       {!noMascot && <MascotBuddy key={route.name} learnerId={learnerId} />}

@@ -146,7 +146,9 @@ export function MascotBuddy({ learnerId }: { learnerId: string }) {
     setBurst(true);
     sfx.pop();
     timers.current.push(window.setTimeout(() => setBurst(false), 700));
-    timers.current.push(window.setTimeout(() => setOpen(false), 9000));
+    // No auto-close: once you've pressed Pip he stays put (and doesn't wander)
+    // until you click off / tap ✕ / press Escape — so typing in his search box is
+    // never cut short. (Dismissal handlers live in the open-effect above.)
   }
   function go() {
     sfx.tap();

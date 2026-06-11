@@ -35,8 +35,11 @@
 .gd-word { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 30px 18px; border-radius: 28px;
   background: linear-gradient(180deg, #ffffff 0%, #fffaf0 100%); box-shadow: 0 18px 40px rgba(78, 149, 104, 0.3), inset 0 1px 0 #fff;
   border: 1px solid rgba(78, 149, 104, 0.16); }
-.gd-pic { font-size: clamp(60px, 17vw, 96px); line-height: 1; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18)); }
-img.gd-pic.wpic { width: clamp(120px, 30vw, 168px); height: auto; }
+/* Tap It Out's word picture — its OWN class (must NOT collide with the Rhyme/Blend
+   option-button `.gd-pic`, which adds a border + padding + font:inherit that
+   shrank the picture). Big and prominent: the picture is the star of the screen. */
+.gd-wordpic { font-size: clamp(84px, 22vw, 132px); line-height: 1; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18)); }
+img.gd-wordpic.wpic { width: clamp(160px, 40vw, 232px); height: auto; }
 .gd-word__label { font-weight: 800; font-size: clamp(22px, 6vw, 30px); letter-spacing: 0.04em; color: #1f5236; }
 .gd-hear { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer;
   border: none; color: #fff; background: linear-gradient(135deg, #6bae7f, #4e9568); padding: 9px 20px; border-radius: 999px;

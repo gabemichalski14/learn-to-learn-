@@ -284,7 +284,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
         )}
 
         <div className="gd-word">
-          <WordPicture label={word.label} emoji={word.emoji} className="gd-pic" />
+          <WordPicture label={word.label} emoji={word.emoji} className="gd-wordpic" />
           <span className="gd-word__label">{cap(word.label)}</span>
           <button type="button" className="gd-hear" onClick={() => { sfx.tap(); pingEcho(); void audio.playWord(word); }}>🔊 Hear it</button>
         </div>

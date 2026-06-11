@@ -24,7 +24,7 @@ const ITEMS: NavItem[] = [
   { label: 'Dashboard', to: '#/tutor', match: ['tutor'], roles: ['tutor'] },
   { label: 'My child', to: '#/family', match: ['family'], roles: ['parent'] },
   { label: 'Levels', to: '#/levels', match: ['levels', 'level', 'games', 'play'], roles: ['guest', 'tutor', 'owner'] },
-  { label: 'Village', to: '#/village', match: ['village'], roles: ['guest'] },
+  { label: 'Village', to: '#/village', match: ['village'], roles: ['guest', 'tutor', 'owner'] },
   { label: 'Leaderboard', to: '#/leaderboard', match: ['leaderboard'], roles: ['guest', 'tutor', 'owner', 'parent'] },
 ];
 
@@ -130,7 +130,11 @@ export function NavDrawer({ route, role = null }: { route: RouteName; role?: Rol
                 </button>
               ))}
               <button type="button" role="menuitem" className="drawer__acct-mi" aria-expanded={showHelp} onClick={() => setShowHelp((v) => !v)}>Help ▾</button>
-              {showHelp && <p className="drawer__acct-help">Stuck on anything? Tap <strong>Pip 🧵</strong> on any page and type what you need — he can take you there, explain a game, or change a setting. Or ask your tutor.</p>}
+              {showHelp && (
+                <p className="drawer__acct-help">
+                  Stuck on anything? Tap <strong>Pip</strong> on any page and type what you need — he can take you there, explain a game, or change a setting.{audience === 'guest' ? ' Or ask your tutor.' : ''}
+                </p>
+              )}
             </div>
           )}
           <button type="button" className="drawer__acct-id" aria-haspopup="true" aria-expanded={acctOpen} onClick={() => setAcctOpen((v) => !v)}>

@@ -1,11 +1,12 @@
 import { WorkshopPick, type PickRound } from './WorkshopPick';
 import { buildRuleRounds } from '../../content/packs/level3';
 import { ruleKey } from '../../mastery/skills';
+import { l3WeightOf } from './adaptive';
 
 /** Rule Breakers — hear a short-vowel word, pick the correct ending (-ck, or the
  *  doubled FLOSS f/l/s/z). Enactive mastery: apply the rule, it works every time. */
 export function RuleBreakers({ learnerId = 'guest' }: { learnerId?: string }) {
-  const makeRounds = (): PickRound[] => buildRuleRounds(6).map((r) => ({
+  const makeRounds = (): PickRound[] => buildRuleRounds(6, Math.random, l3WeightOf(learnerId)).map((r) => ({
     word: r.word, emoji: r.emoji, stem: r.stem, options: r.options, correct: r.ending, skillKey: ruleKey(r.rule),
   }));
   return (

@@ -5,6 +5,7 @@ import { sfx } from '../../audio/sfx';
 import { buildChopRounds } from '../../content/packs/level3';
 import { recordItem } from '../../mastery/mastery';
 import { syllKey } from '../../mastery/skills';
+import { l3WeightOf } from './adaptive';
 import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
@@ -19,7 +20,7 @@ const SKILL = syllKey('vccv');
  *  boundary → boundary-confusion signal. */
 export function ChopShop({ learnerId = 'guest' }: { learnerId?: string }) {
   const audio = useMemo(() => createRecordedAudioPlayer(), []);
-  const [rounds, setRounds] = useState(() => buildChopRounds(ROUNDS));
+  const [rounds, setRounds] = useState(() => buildChopRounds(ROUNDS, Math.random, l3WeightOf(learnerId)));
   const [ri, setRi] = useState(0);
   const [cut, setCut] = useState<number | null>(null);       // the correct cut, shown on success
   const [wrongCut, setWrongCut] = useState<number | null>(null);
@@ -85,7 +86,7 @@ export function ChopShop({ learnerId = 'guest' }: { learnerId?: string }) {
 
   function restart() {
     handledRef.current = false; advancingRef.current = false; wrongRef.current = 0; attemptedRef.current.clear();
-    startRef.current = Date.now(); setRounds(buildChopRounds(ROUNDS)); setFinish(null); setRi(0); setCut(null); setWrongCut(null);
+    startRef.current = Date.now(); setRounds(buildChopRounds(ROUNDS, Math.random, l3WeightOf(learnerId))); setFinish(null); setRi(0); setCut(null); setWrongCut(null);
   }
 
   return (

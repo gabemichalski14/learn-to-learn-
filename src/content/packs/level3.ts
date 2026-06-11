@@ -58,17 +58,38 @@ export const DIGRAPH_WORDS: DigraphWord[] = [
 ];
 export const DIGRAPHS = ['sh', 'ch', 'th', 'wh', 'ck', 'ng'] as const;
 
-// ---------- Blend Buddies round builder (build the heard word from tiles) ----------
+// ---------- round builders (shared selection) ----------
+import { blendKey, digraphKey, ruleKey, syllKey } from '../../mastery/skills';
+
+/** Per-skill weight (1–5) — higher = practise more. Used for adaptive selection. */
+export type WeightOf = (skill: string) => number;
+
 function shuffle<T>(arr: readonly T[], rng: () => number): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
   return a;
 }
+
+/** Pick `n` distinct words. Uniform (random) by default; when `weight` is given,
+ *  bias toward the weaker skills (the learner's soft spots) — weighted sampling
+ *  WITHOUT replacement, so a session still covers a spread. */
+function pickWords<T>(pool: readonly T[], n: number, rng: () => number, weight?: (it: T) => number): T[] {
+  if (!weight) return shuffle(pool, rng).slice(0, n);
+  const bag = pool.map((it) => ({ it, w: Math.max(0.0001, weight(it)) }));
+  const out: T[] = [];
+  for (let k = 0; k < n && bag.length; k++) {
+    const total = bag.reduce((s, b) => s + b.w, 0);
+    let r = rng() * total, idx = 0;
+    for (; idx < bag.length - 1; idx++) { r -= bag[idx].w; if (r <= 0) break; }
+    out.push(bag[idx].it); bag.splice(idx, 1);
+  }
+  return out;
+}
 export interface BlendRound { word: string; emoji?: string; blend: string; position: 'init' | 'final'; tiles: string[]; blendIdx: [number, number] }
 // ---------- Sort It (tap the matching digraph bin) ----------
 export interface SortItRound { word: string; emoji?: string; digraph: string; options: string[] }
-export function buildSortItRounds(n: number, rng: () => number = Math.random): SortItRound[] {
-  return shuffle(DIGRAPH_WORDS, rng).slice(0, n).map((w) => {
+export function buildSortItRounds(n: number, rng: () => number = Math.random, weightOf?: WeightOf): SortItRound[] {
+  return pickWords(DIGRAPH_WORDS, n, rng, weightOf && ((w) => weightOf(digraphKey(w.digraph)))).map((w) => {
     const others = shuffle(DIGRAPHS.filter((d) => d !== w.digraph), rng).slice(0, 2);
     return { word: w.label, emoji: w.emoji, digraph: w.digraph, options: shuffle([w.digraph, ...others], rng) };
   });
@@ -76,8 +97,8 @@ export function buildSortItRounds(n: number, rng: () => number = Math.random): S
 
 // ---------- Rule Breakers (pick the right ending: ck / floss) ----------
 export interface RuleRound { word: string; emoji?: string; rule: 'ck' | 'floss'; stem: string; ending: string; distractor: string; options: string[] }
-export function buildRuleRounds(n: number, rng: () => number = Math.random): RuleRound[] {
-  return shuffle(RULE_WORDS, rng).slice(0, n).map((w) => ({
+export function buildRuleRounds(n: number, rng: () => number = Math.random, weightOf?: WeightOf): RuleRound[] {
+  return pickWords(RULE_WORDS, n, rng, weightOf && ((w) => weightOf(ruleKey(w.rule)))).map((w) => ({
     word: w.label, emoji: w.emoji, rule: w.rule,
     stem: w.label.slice(0, w.label.length - w.ending.length),
     ending: w.ending, distractor: w.distractor, options: shuffle([w.ending, w.distractor], rng),
@@ -86,15 +107,18 @@ export function buildRuleRounds(n: number, rng: () => number = Math.random): Rul
 
 // ---------- Chop Shop (tap the syllable boundary) ----------
 export interface ChopRound { word: string; emoji?: string; split: number }
-export function buildChopRounds(n: number, rng: () => number = Math.random): ChopRound[] {
+export function buildChopRounds(n: number, rng: () => number = Math.random, weightOf?: WeightOf): ChopRound[] {
+  // All syllable words share one skill (syll:vccv), so weighting just scales how
+  // much to practise it overall; selection stays a spread across words.
+  void weightOf?.(syllKey('vccv'));
   return shuffle(SYLL_WORDS, rng).slice(0, n).map((w) => ({ word: w.label, emoji: w.emoji, split: w.split }));
 }
 
 const TILE_DISTRACTORS = 'bcdfghjklmnpqrstvwz'.split('');
 /** `n` rounds: a blend word + a shuffled tray of its letters + 2 distractors.
  *  `blendIdx` marks the two "buddy" letters (so the UI can show them holding hands). */
-export function buildBlendRounds(n: number, rng: () => number = Math.random): BlendRound[] {
-  return shuffle(BLEND_WORDS, rng).slice(0, n).map((w) => {
+export function buildBlendRounds(n: number, rng: () => number = Math.random, weightOf?: WeightOf): BlendRound[] {
+  return pickWords(BLEND_WORDS, n, rng, weightOf && ((w) => weightOf(blendKey(w.position, w.blend)))).map((w) => {
     const letters = w.label.split('');
     const distractors = shuffle(TILE_DISTRACTORS.filter((d) => !letters.includes(d)), rng).slice(0, 2);
     const blendIdx: [number, number] = w.position === 'init' ? [0, 1] : [letters.length - 2, letters.length - 1];

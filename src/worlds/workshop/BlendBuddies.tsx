@@ -5,6 +5,7 @@ import { sfx } from '../../audio/sfx';
 import { buildBlendRounds } from '../../content/packs/level3';
 import { recordItem } from '../../mastery/mastery';
 import { blendKey } from '../../mastery/skills';
+import { l3WeightOf } from './adaptive';
 import { logSkillEvent } from '../../data/cloudSync';
 import { recordFinish } from '../../progress';
 import { logSession } from '../../sessionLog';
@@ -23,7 +24,7 @@ const PATCH = { emoji: '🧵', name: 'Patch' };
  */
 export function BlendBuddies({ learnerId = 'guest' }: { learnerId?: string }) {
   const audio = useMemo(() => createRecordedAudioPlayer(), []);
-  const [rounds, setRounds] = useState(() => buildBlendRounds(ROUNDS));
+  const [rounds, setRounds] = useState(() => buildBlendRounds(ROUNDS, Math.random, l3WeightOf(learnerId)));
   const [ri, setRi] = useState(0);
   const [placed, setPlaced] = useState(0);
   const [used, setUsed] = useState<Set<number>>(new Set());
@@ -111,7 +112,7 @@ export function BlendBuddies({ learnerId = 'guest' }: { learnerId?: string }) {
   function restart() {
     handledRef.current = false; advancingRef.current = false; wrongRef.current = 0;
     wrongWordRef.current = false; reducedRef.current = null; startRef.current = Date.now();
-    setRounds(buildBlendRounds(ROUNDS)); setFinish(null); setRi(0); setPlaced(0); setUsed(new Set());
+    setRounds(buildBlendRounds(ROUNDS, Math.random, l3WeightOf(learnerId))); setFinish(null); setRi(0); setPlaced(0); setUsed(new Set());
   }
 
   return (

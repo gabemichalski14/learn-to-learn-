@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { BLEND_WORDS, DIGRAPH_WORDS, DIGRAPHS, RULE_WORDS, SYLL_WORDS } from './level3';
+import { BLEND_WORDS, DIGRAPH_WORDS, DIGRAPHS, RULE_WORDS, SYLL_WORDS, buildSortItRounds } from './level3';
 import { blendKey, digraphKey, ruleKey, syllKey, skillLabel } from '../../mastery/skills';
 
 describe('level3 content pack', () => {
@@ -38,6 +38,13 @@ describe('level3 content pack', () => {
       expect(w.label.slice(0, w.split).length).toBeGreaterThan(0);
       expect(w.label.slice(w.split).length).toBeGreaterThan(0);
     }
+  });
+
+  it('adaptive selection biases toward weighted-up (weak) skills', () => {
+    const weightOf = (skill: string) => (skill === digraphKey('sh') ? 100 : 0.01);
+    let sh = 0, total = 0;
+    for (let i = 0; i < 30; i++) for (const r of buildSortItRounds(3, Math.random, weightOf)) { total++; if (r.digraph === 'sh') sh++; }
+    expect(sh / total).toBeGreaterThan(0.4); // the weak skill dominates practice (vs ~0.23 uniform)
   });
 
   it('produces readable, no-shame skill labels for the new kinds', () => {

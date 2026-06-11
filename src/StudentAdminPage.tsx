@@ -94,7 +94,12 @@ export function StudentAdminPage({ id }: { id: string }) {
   useEffect(() => {
     if (!configured) return;
     let live = true;
-    void getLearnerNote(id).then((nt) => { if (live) { setNote(nt); setSavedNote(nt); } }).catch(() => {});
+    const local = localStorage.getItem(`ll-note-${id}`) ?? '';
+    // Cloud is the source of truth when reachable; otherwise the device-local copy
+    // so a note is never lost (and shows even before the staff_notes migration).
+    void getLearnerNote(id)
+      .then((nt) => { if (live) { const v = nt || local; setNote(v); setSavedNote(v); } })
+      .catch(() => { if (live) { setNote(local); setSavedNote(local); } });
     return () => { live = false; };
   }, [configured, id]);
 
@@ -109,8 +114,14 @@ export function StudentAdminPage({ id }: { id: string }) {
     try { await renameLearner(id, n); await load(); } catch (e) { setErr(e instanceof Error ? e.message : 'Could not rename.'); }
   }
   async function saveNote() {
-    try { await setLearnerNote(id, note); setSavedNote(note); }
-    catch (e) { setErr(e instanceof Error ? e.message : 'Could not save the note (have you run the note migration?).'); }
+    // Always persist on this device first → the note can never fail to save.
+    localStorage.setItem(`ll-note-${id}`, note);
+    setSavedNote(note);
+    setErr('');
+    // Best-effort cloud sync (shares the note across tutor devices). If the
+    // staff_notes table isn't there yet, the local copy still holds.
+    try { await setLearnerNote(id, note); }
+    catch { setErr('Saved on this device. To sync notes across tutors, run the staff_notes migration in Supabase.'); }
   }
   async function setPrimary(tid: string) {
     try {

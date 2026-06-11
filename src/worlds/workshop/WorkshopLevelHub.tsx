@@ -3,6 +3,7 @@ import { findLevel } from '../../games';
 import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { LevelStory } from '../space/LevelStory';
+import { HubHeader } from '../../ui/HubHeader';
 import './workshop.css';
 
 /** Patch's Workshop — the immersive launcher for Level 3. A warm, cozy tinker
@@ -23,10 +24,11 @@ export function WorkshopLevelHub({ level, learnerId }: { level: number; learnerI
     <main className="wk wk-hub">
       {/* The illustrated workshop photo (the .wk background) IS the scene now —
           the old CSS pegboard/bench/glow layers were removed so they don't clash. */}
-      <div className="wk-hud">
-        <button type="button" className="wk-back" onClick={() => goBack('#/levels')}>← Levels</button>
-        <span className="wk-badge">🧵 Patch's Workshop · Level {lvl.num}</span>
-      </div>
+      <HubHeader
+        prefix="wk"
+        back={{ label: '← Levels', onClick: () => goBack('#/levels') }}
+        badge={<>🧵 Patch's Workshop · Level {lvl.num}</>}
+      />
 
       <div className="wk-stage wk-hub__stage">
         <h1 className="wk-hub__title">{lvl.title}</h1>

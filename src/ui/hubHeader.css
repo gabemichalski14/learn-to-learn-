@@ -1,0 +1,16 @@
+/* Shared level-hub header layout: back pinned left, title centered, on every
+   world. Only the back/badge COLORS come from the per-world prefix classes. */
+.hub-hud {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 14px 16px;
+}
+.hub-hud__back { justify-self: start; grid-column: 1; }
+.hub-hud__title { grid-column: 2; justify-self: center; text-align: center; }

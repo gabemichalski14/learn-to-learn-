@@ -11,6 +11,7 @@ import { castFor, healFor, characterStage, beatFor } from '../../world/lore/cast
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import { GardenBackdrop } from './GardenArt';
 import { Icon } from '../../ui/Icon';
+import { HubHeader } from '../../ui/HubHeader';
 import './garden.css';
 
 /** Per-game painted icon (falls back to the game's emoji until a PNG exists). */
@@ -56,10 +57,11 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
   return (
     <main className="gd gd-hub">
       <GardenBackdrop />
-      <div className="gd-hud">
-        <button type="button" className="gd-back" onClick={() => goBack('#/levels')}>← Levels</button>
-        <span className="gd-badge"><Icon name="ico-sound-garden" emoji="🌱" /> Sound Garden · Level {lvl.num}</span>
-      </div>
+      <HubHeader
+        prefix="gd"
+        back={{ label: '← Levels', onClick: () => goBack('#/levels') }}
+        badge={<><Icon name="ico-sound-garden" emoji="🌱" /> Sound Garden · Level {lvl.num}</>}
+      />
 
       <div className="gd-stage gd-hub__stage">
         <h1 className="gd-hub__title">{lvl.title}</h1>

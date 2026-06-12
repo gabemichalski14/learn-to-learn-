@@ -38,7 +38,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'five',     emoji: '🐬', title: 'High Five',      desc: 'Finish 5 games',                earned: (c) => c.sessions >= 5 },
   { id: 'ten',      emoji: '🌻', title: 'Perfect Ten',    desc: 'Finish 10 games',               earned: (c) => c.sessions >= 10 },
   { id: 'persist',  emoji: '🐢', title: 'Never Give Up',  desc: 'Finish a really tricky one',    earned: (c) => c.last.wrongAttempts >= 6 },
-  { id: 'twoday',   emoji: '🎈', title: 'Two-Day Streak', desc: 'Play on two different days',    earned: (c) => c.distinctDays >= 2 },
+  { id: 'twoday',   emoji: '🎈', title: 'Two-Day Explorer', desc: 'Play on two different days',  earned: (c) => c.distinctDays >= 2 },
   { id: 'fiveday',  emoji: '🐱', title: 'Five-Day Club',  desc: 'Play on five different days',   earned: (c) => c.distinctDays >= 5 },
   { id: 'wise',     emoji: '🦉', title: 'Wise Owl',       desc: 'Finish 25 games',               earned: (c) => c.sessions >= 25 },
   { id: 'collector', emoji: '🐠', title: 'Collector',     desc: 'Earn every other sticker',      earned: () => false /* handled specially below */ },

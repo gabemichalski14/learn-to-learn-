@@ -20,7 +20,6 @@ interface Props {
  *  progress snapshot, what to practice next, and the leaderboard. The full
  *  curriculum lives on the Levels page (in the menu). */
 export function Home({ learnerId, onChooseLearner }: Props) {
-  const [now] = useState(() => Date.now());
   const version = useDataVersion(); // re-render + refetch when local data changes
   const learner = getLearner(learnerId);
   const name = learner?.name ?? 'Explorer';
@@ -51,13 +50,10 @@ export function Home({ learnerId, onChooseLearner }: Props) {
   const focus = fresh?.focus ?? [];
 
   const accuracy = sessions.length ? Math.round((sessions.reduce((s, r) => s + r.accuracy, 0) / sessions.length) * 100) : null;
-  const dayKeys = new Set(sessions.map((r) => r.endedAt.slice(0, 10)));
-  let streak = 0;
-  for (let i = 0; i < 90; i++) {
-    const key = new Date(now - i * 864e5).toISOString().slice(0, 10);
-    if (dayKeys.has(key)) streak++;
-    else break;
-  }
+  // Days learned — a gentle, non-resetting count of the distinct days played. No
+  // streak-loss / FOMO (a child-safety bright line): it only ever grows, and a
+  // missed day never resets or shames the child.
+  const daysLearning = new Set(sessions.map((r) => r.endedAt.slice(0, 10))).size;
 
   const board = loadLearners()
     .map((l) => ({ l, p: loadProgress(l.id) }))
@@ -87,7 +83,7 @@ export function Home({ learnerId, onChooseLearner }: Props) {
       <section className="home-stats" aria-label="Your progress">
         <div className="l2l-card l2l-reveal" style={{ '--i': 1 } as React.CSSProperties}><div className="l2l-stat"><img className="l2l-stat__icon l2l-stat__icon--img" src="/images/ui/controller.png" alt="" aria-hidden="true" /><span className="l2l-stat__num">{prog.sessions}</span><span className="l2l-stat__label">Sessions played</span></div></div>
         <div className="l2l-card l2l-reveal" style={{ '--i': 2 } as React.CSSProperties}><div className="l2l-stat"><img className="l2l-stat__icon l2l-stat__icon--img" src="/images/ui/bullseye.png" alt="" aria-hidden="true" /><span className="l2l-stat__num">{accuracy != null ? `${accuracy}%` : '—'}</span><span className="l2l-stat__label">Accuracy</span></div></div>
-        <div className="l2l-card l2l-reveal" style={{ '--i': 3 } as React.CSSProperties}><div className="l2l-stat"><img className="l2l-stat__icon l2l-stat__icon--img" src="/images/ui/campfire.png" alt="" aria-hidden="true" /><span className="l2l-stat__num">{streak}</span><span className="l2l-stat__label">Day streak</span></div></div>
+        <div className="l2l-card l2l-reveal" style={{ '--i': 3 } as React.CSSProperties}><div className="l2l-stat"><img className="l2l-stat__icon l2l-stat__icon--img" src="/images/ui/campfire.png" alt="" aria-hidden="true" /><span className="l2l-stat__num">{daysLearning}</span><span className="l2l-stat__label">Days learning</span></div></div>
         <div className="l2l-card l2l-reveal" style={{ '--i': 4 } as React.CSSProperties}><div className="l2l-stat"><img className="l2l-stat__icon l2l-stat__icon--img" src="/images/ui/star.png" alt="" aria-hidden="true" /><span className="l2l-stat__num">{stickers}/{ACHIEVEMENTS.length}</span><span className="l2l-stat__label">Stickers earned</span></div></div>
       </section>
 

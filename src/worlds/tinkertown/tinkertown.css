@@ -1,6 +1,12 @@
 /* Tinker Town (Level 5) — reuses the workshop (wk) chrome + the wk-game no-scroll
    frame, tinted woodland-green for Sprig's word-workshop. Game-specific tt- classes
    live here; the shared chrome comes from workshop.css. */
+/* Tinker Town's OWN background — distinct from every other level, NEVER the shared
+   .wk workshop scene. Uses the Level-5 card art until a dedicated l5 hub bg lands;
+   the woodland-green gradient is the fallback if the image is ever missing. */
+.tt.wk { background: url(/images/card-5.png) center / cover no-repeat,
+  radial-gradient(130% 85% at 50% -5%, #eef7ec 0%, #d6ecd0 55%, #b6dcb0 100%); color: #234c34; }
+.tt .wk-back { color: #2c6b3e; background: rgba(255, 255, 255, 0.6); }
 .tt .wk-badge { color: #2c5d3f; }
 .tt .wk-hub__title { color: #234c34; }
 

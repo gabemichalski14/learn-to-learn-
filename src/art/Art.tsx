@@ -1,5 +1,6 @@
 import { type CSSProperties } from 'react';
 import { artSrc, useImagePresent } from './assets';
+import { hideBrokenImg } from '../ui/imgFallback';
 
 /**
  * Render an art asset by KEY, with a graceful fallback: the PNG when it exists,
@@ -17,7 +18,7 @@ export function Art({ imageKey, emoji, alt = '', size, className, style }: {
   const src = artSrc(imageKey);
   const ready = useImagePresent(src);
   if (ready) {
-    return <img src={src} alt={alt} width={size} height={size} className={className} style={style} draggable={false} />;
+    return <img src={src} alt={alt} width={size} height={size} className={className} style={style} draggable={false} onError={hideBrokenImg} />;
   }
   return (
     <span

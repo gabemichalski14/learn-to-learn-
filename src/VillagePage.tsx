@@ -6,6 +6,7 @@ import { isLevelUnlocked } from './mastery/levelGate';
 import { LEVELS } from './games';
 import { gardenResidents, storytimeScene, type LevelCharacter } from './world/lore/cast';
 import { CharacterArt } from './world/lore/CharacterArt';
+import { hideBrokenImg } from './ui/imgFallback';
 import { Storytime } from './world/lore/Storytime';
 import { GardenPlantings } from './worlds/garden/GardenPlantings';
 import { PipArt } from './mascots/PipArt';
@@ -79,7 +80,7 @@ export function VillagePage({ learnerId }: { learnerId: string }) {
               {residents.map((c) => (
                 <li key={c.id} className="vil-home">
                   <div className="vil-home__scene">
-                    <img className="vil-home__house" src={c.house ?? '/characters/village/cottage.png'} alt="" aria-hidden="true" />
+                    <img className="vil-home__house" src={c.house ?? '/characters/village/cottage.png'} alt="" aria-hidden="true" onError={hideBrokenImg} />
                     <span className="vil-home__art">
                       <CharacterArt emoji={c.emoji} heal={1} size={78} art={c.art} label={c.name} />
                     </span>

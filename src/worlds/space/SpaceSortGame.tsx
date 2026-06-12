@@ -6,6 +6,7 @@ import type { SortRound, WordItem, SoundTarget } from '../../domain/types';
 import type { AudioPlayer } from '../../audio/audioPlayer';
 import { useSortGame } from '../../game/useSortGame';
 import { soundOf } from '../../domain/engine';
+import { hideBrokenImg } from '../../ui/imgFallback';
 import { recordItem, recordReplay, loadMastery } from '../../mastery/mastery';
 import { skillKeyForSound } from '../../mastery/skills';
 import { logSkillEvent } from '../../data/cloudSync';
@@ -72,7 +73,7 @@ function Planet({ vowel, hue, catching, hint, onReplay }: { vowel: string; hue: 
       onClick={onReplay}
       aria-label={`Planet for the ${vowel} sound — tap to hear it`}
     >
-      <img className="sg-planet__art" src="/characters/space/planet.png" alt="" aria-hidden="true" style={{ '--hue': `${hue}deg` } as CSSProperties} />
+      <img className="sg-planet__art" src="/characters/space/planet.png" alt="" aria-hidden="true" onError={hideBrokenImg} style={{ '--hue': `${hue}deg` } as CSSProperties} />
       <span className="lab">{vowel}</span>
       {catching && (
         <span className="sg-burst" aria-hidden="true">

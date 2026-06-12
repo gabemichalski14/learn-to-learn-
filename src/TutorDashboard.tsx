@@ -6,6 +6,7 @@ import { loadLearners, getCurrentLearnerId, getLearner, initials, renameLearner,
 import { useLearners, useDataVersion } from './data/store';
 import { useDialog } from './ui/dialogContext';
 import { loadProgress, formatTime } from './progress';
+import { hideBrokenImg } from './ui/imgFallback';
 import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
 import { getSessions, getMastery, getEnrichedEvents } from './data/dataSource';
@@ -179,10 +180,10 @@ export function TutorDashboard() {
                 <p className="dash-insight">{insightLine(learner.name, mastery)}</p>
 
                 <div className="kpi-grid" style={{ marginTop: '14px' }}>
-                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/star.png" alt="" aria-hidden="true" /><strong>{summary.mastered.length}</strong><span className="kpi__label">sounds mastered</span></div>
-                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/bullseye.png" alt="" aria-hidden="true" /><strong>{avgAccuracy}%</strong><span className="kpi__label">avg accuracy</span></div>
-                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/controller.png" alt="" aria-hidden="true" /><strong>{prog.sessions}</strong><span className="kpi__label">sessions</span></div>
-                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/calendar.png" alt="" aria-hidden="true" /><strong>{week}</strong><span className="kpi__label">this week</span></div>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/star.png" alt="" aria-hidden="true" onError={hideBrokenImg} /><strong>{summary.mastered.length}</strong><span className="kpi__label">sounds mastered</span></div>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/bullseye.png" alt="" aria-hidden="true" onError={hideBrokenImg} /><strong>{avgAccuracy}%</strong><span className="kpi__label">avg accuracy</span></div>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/controller.png" alt="" aria-hidden="true" onError={hideBrokenImg} /><strong>{prog.sessions}</strong><span className="kpi__label">sessions</span></div>
+                  <div className="kpi"><img className="kpi__icon kpi__icon--img" src="/images/ui/calendar.png" alt="" aria-hidden="true" onError={hideBrokenImg} /><strong>{week}</strong><span className="kpi__label">this week</span></div>
                 </div>
               </div>
 

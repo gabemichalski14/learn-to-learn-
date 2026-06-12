@@ -4,6 +4,7 @@ import { plantingsFor, unacknowledgedPlantings, plantingId, PLANTING_FALLBACK_IM
 import { useLore, acknowledge } from '../../world/lore/loreStore';
 import { plantingPraise } from '../../world/lore/characters';
 import { masteryScore } from '../../mastery/mastery';
+import { hideBrokenImg } from '../../ui/imgFallback';
 
 /**
  * The garden that REMEMBERS you. Every sound mastered (in Space, where per-sound
@@ -23,7 +24,7 @@ export function GardenPlantings({ learnerId }: { learnerId: string }) {
     <section className="gd-plantings" aria-label="Your sound flowers">
       {newest && (
         <div className="gd-bloombeat" role="status">
-          <img className="gd-bloombeat__art" src={newest.species.image ?? PLANTING_FALLBACK_IMAGE} alt="" aria-hidden="true" />
+          <img className="gd-bloombeat__art" src={newest.species.image ?? PLANTING_FALLBACK_IMAGE} alt="" aria-hidden="true" onError={hideBrokenImg} />
           <p className="gd-bloombeat__text">A new flower opened — <b>{newest.name}</b>. You grew that. 🌱</p>
           <button
             type="button"
@@ -56,7 +57,7 @@ export function GardenPlantings({ learnerId }: { learnerId: string }) {
                   onClick={() => setOpen(isOpen ? null : p.skillKey)}
                   aria-expanded={isOpen}
                 >
-                  <img className="gd-planting__img" src={p.species.image ?? PLANTING_FALLBACK_IMAGE} alt="" aria-hidden="true" />
+                  <img className="gd-planting__img" src={p.species.image ?? PLANTING_FALLBACK_IMAGE} alt="" aria-hidden="true" onError={hideBrokenImg} />
                   <span className="gd-planting__name">{p.name}</span>
                 </button>
                 {isOpen && (

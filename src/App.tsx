@@ -38,6 +38,7 @@ import { ChopShop } from './worlds/workshop/ChopShop';
 import { PatchesDictation } from './worlds/workshop/PatchesDictation';
 import { ToolTime } from './worlds/workshop/ToolTime';
 import { SayItAgain } from './worlds/workshop/SayItAgain';
+import { GardenTending } from './worlds/garden/GardenTending';
 import { WorkshopLevelHub } from './worlds/workshop/WorkshopLevelHub';
 import { GiantValleyLevelHub } from './worlds/giantvalley/GiantValleyLevelHub';
 import { NameChange } from './worlds/giantvalley/NameChange';
@@ -180,6 +181,9 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'say-it-again') {
     return <SayItAgain learnerId={learnerId} />;
+  }
+  if (route.name === 'tending') {
+    return <GardenTending learnerId={learnerId} />;
   }
   if (route.name === 'play' && route.game === 'name-change') {
     return <NameChange learnerId={learnerId} />;

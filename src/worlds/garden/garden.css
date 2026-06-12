@@ -415,3 +415,21 @@ img.gd-wordpic.wpic { width: clamp(96px, min(30vw, 14vh), 196px); height: auto; 
 .gd-listen-sounds:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .gd-listen-sounds__dots { display: inline-flex; gap: 5px; }
 .gd-listen-sounds__dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.65); }
+
+/* Garden tending — the spaced-review warm-up (memory engine surfaced) */
+.gd-tend-done { flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.gd-tend-prompt { margin: 0; font-weight: 700; font-size: 16px; color: #173d2a; }
+.gd-tend-hear { margin-top: 4px; min-height: 44px; padding: 8px 16px; border-radius: 999px; cursor: pointer; font: inherit; font-weight: 700; font-size: 13px; background: rgba(255,255,255,0.82); border: 1px solid rgba(23,61,42,0.25); color: #2f6b43; transition: transform .1s ease, background .1s ease; }
+.gd-tend-hear:hover { transform: translateY(-1px); background: #fff; }
+.gd-tend-opts { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(10px, 4vw, 18px); margin-top: 6px; }
+.gd-tend-opt { width: clamp(64px, 18vw, 92px); height: clamp(64px, 18vw, 92px); border-radius: 18px; cursor: pointer; font: inherit; font-weight: 800; font-size: clamp(28px, 8vw, 40px); text-transform: lowercase; color: #173d2a; background: rgba(255,255,255,0.92); border: 2px solid #5aa06f; box-shadow: 0 6px 16px rgba(23,61,42,0.12); transition: transform .12s ease, background .12s ease; }
+.gd-tend-opt:hover { transform: translateY(-3px); background: #fff; }
+.gd-tend-opt:focus-visible { outline: 2px solid #173d2a; outline-offset: 2px; }
+.gd-tend-opt.is-right { background: #e7f4ea; border-color: #6bae7f; }
+.gd-tend-opt.is-wrong { background: #f6d4d4; border-color: #e0a3a3; animation: gd-tend-wobble .42s ease; }
+@keyframes gd-tend-wobble { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+.gd-tend-progress { display: flex; gap: 6px; margin-top: 10px; }
+.gd-tend-progress i { width: 9px; height: 9px; border-radius: 50%; background: rgba(23,61,42,0.18); }
+.gd-tend-progress i.on { background: #5aa06f; }
+.gd-tend-progress i.done { background: #6bae7f; }
+@media (prefers-reduced-motion: reduce) { .gd-tend-opt.is-wrong { animation: none; } }

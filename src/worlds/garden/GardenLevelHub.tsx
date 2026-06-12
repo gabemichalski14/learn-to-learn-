@@ -3,6 +3,7 @@ import { goBack, navigate } from '../../router';
 import { findLevel } from '../../games';
 import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
+import { hasPendingReview } from '../../world/memory/reviewStore';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
 import { sfx } from '../../audio/sfx';
 import { loadMastery } from '../../mastery/mastery';
@@ -125,6 +126,12 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
             ✨ Take the Checkpoint — show what you learned!
           </button>
         ) : null}
+
+        {hasPendingReview(learnerId) && (
+          <button type="button" className="gd-hub__village" onClick={() => navigate('#/tending')}>
+            🌱 Tend the garden — check a few sounds
+          </button>
+        )}
 
         <button type="button" className="gd-hub__village" onClick={() => navigate('#/village')}>
           <Icon name="ico-village" emoji="🏡" /> Visit your Village

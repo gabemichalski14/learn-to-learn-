@@ -138,6 +138,12 @@ export function syncReviewOnSessionEnd(learnerId: string): void {
   syncConfusionPairsFromMastery(learnerId);
 }
 
+/** Is there any active review item? (A cheap peek for the "tend the garden" CTA —
+ *  does NOT advance the session clock.) */
+export function hasPendingReview(learnerId: string): boolean {
+  return Object.values(loadReview(learnerId).items).some((it) => it.status === 'active');
+}
+
 /** Begin a tending session — advances the session clock so due items surface. */
 export function startReviewSession(learnerId: string): void {
   const state = loadReview(learnerId);

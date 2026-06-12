@@ -42,9 +42,11 @@ export function WarpSpeed({ learnerId = 'guest' }: { learnerId?: string }) {
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
   const advRef = useRef(false);
+  const shownRef = useRef(0);
   const round = rounds[i];
 
   useEffect(() => { startRef.current = Date.now(); }, []);
+  useEffect(() => { shownRef.current = Date.now(); }, [i]); // when this word is shown (for latency)
 
   function choose(opt: CvcWord) {
     if (picked !== null || !round || finish || advRef.current) return;
@@ -53,9 +55,15 @@ export function WarpSpeed({ learnerId = 'guest' }: { learnerId?: string }) {
     advRef.current = true;
     if (correct) { correctRef.current += 1; sfx.correct(); setMood('cheer'); }
     else { wrongRef.current += 1; sfx.wrong(); setMood('wobble'); if (character) setLine(reactionLine(character, 'wrong')); }
+    // log latency in a deferred callback (Date.now in a callback is render-safe; the
+    // ~0ms delay keeps it at tap time) — read:cvc is a fluency skill, so speed is the signal
+    const shown = shownRef.current;
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : opt.word);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'warp-speed', level: 2, firstTry: true, chosen: correct ? undefined : opt.word });
+      const latencyMs = Date.now() - shown;
+      recordItem(learnerId, SKILL, correct, latencyMs, correct ? undefined : opt.word);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'warp-speed', level: 2, firstTry: true, latencyMs, chosen: correct ? undefined : opt.word });
+    }, 0);
+    window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;
       if (i + 1 >= ROUNDS) finishSession(Date.now()); else setI((n) => n + 1);
     }, 650);

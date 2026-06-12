@@ -22,12 +22,14 @@ Signals gated on an enrichment field:
 
 ## Current gaps (the finding)
 
-1. **`latencyMs` is logged by only 2 games** (`tap-it-out`, `say-it-again`). The
-   other ~18 — **including the fluency/speed games `warp-speed`, `giant-steps`,
-   `tool-time`, `word-giants`** whose entire point is reading *speed* — don't log
-   it. So **automaticity, fatigue, and rapid-guess are blind for almost the whole
-   app.** Highest-value gap; the speed games are the most glaring (they measure the
-   thing and throw it away). → task #126.
+1. **`latencyMs`** — the **four fluency/speed games now log it** (`warp-speed`,
+   `giant-steps`, `tool-time`, `word-giants`), so automaticity/fatigue/rapid-guess
+   are derivable where speed is the whole point. **14 non-speed games still don't**
+   (blend-buddies, blend-it, chop-shop, great-divide, l4-dictation, long-or-short,
+   name-change, patches-dictation, rhyme-time, same-or-different, star-station,
+   switch-it, word-beam, + the `dynamic` bucket) — lower priority, but tracked. →
+   task #126 (fluency games ✅; rest pending). A guard now ratchets the fluency
+   games (they can never silently stop logging latency).
 2. **`replays` reaches no cloud event (0 of 20).** Re-hears are tracked locally
    (`recordReplay` → mastery store) but never make it into `SkillEvent`, so
    **replay-reliance can't be derived from the cloud stream.** → task #126.

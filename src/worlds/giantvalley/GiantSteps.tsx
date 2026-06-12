@@ -36,9 +36,11 @@ export function GiantSteps({ learnerId = 'guest' }: { learnerId?: string }) {
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
   const advRef = useRef(false);
+  const shownRef = useRef(0);
   const round = rounds[i];
 
   useEffect(() => { startRef.current = Date.now(); }, []);
+  useEffect(() => { shownRef.current = Date.now(); }, [i]); // when this word is shown (for latency)
 
   function choose(word: string) {
     if (picked !== null || !round || finish || advRef.current) return;
@@ -46,9 +48,15 @@ export function GiantSteps({ learnerId = 'guest' }: { learnerId?: string }) {
     setPicked(word); advRef.current = true;
     if (correct) { correctRef.current += 1; sfx.correct(); setMood('cheer'); }
     else { wrongRef.current += 1; sfx.wrong(); setMood('wobble'); if (character) setLine(reactionLine(character, 'wrong')); }
+    // log latency in a deferred callback (render-safe; ~0ms delay ≈ tap time) —
+    // read:multi is a fluency skill, so speed is the signal
+    const shown = shownRef.current;
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : word);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'giant-steps', level: 4, firstTry: true, chosen: correct ? undefined : word });
+      const latencyMs = Date.now() - shown;
+      recordItem(learnerId, SKILL, correct, latencyMs, correct ? undefined : word);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'giant-steps', level: 4, firstTry: true, latencyMs, chosen: correct ? undefined : word });
+    }, 0);
+    window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;
       if (i + 1 >= ROUNDS) finishSession(Date.now()); else setI((n) => n + 1);
     }, 600);

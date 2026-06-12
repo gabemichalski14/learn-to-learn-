@@ -6,6 +6,7 @@ import {
   parseLogSkillEventCalls,
   coverageReport,
   gamesMissing,
+  FLUENCY_GAMES,
   type LoggedCall,
 } from './coverage';
 
@@ -67,6 +68,12 @@ describe('signal coverage over the real game tree (the "positions lacking" repor
   it('regression guard: the games that DO log latency keep doing so', () => {
     for (const g of ['tap-it-out', 'say-it-again']) {
       expect(report.find((r) => r.game === g)?.has).toContain('latencyMs');
+    }
+  });
+
+  it('the fluency/speed games log latencyMs (the signal their whole point produces)', () => {
+    for (const g of FLUENCY_GAMES) {
+      expect(report.find((r) => r.game === g)?.has, `${g} must log latencyMs`).toContain('latencyMs');
     }
   });
 

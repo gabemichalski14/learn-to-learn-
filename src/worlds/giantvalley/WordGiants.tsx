@@ -37,6 +37,7 @@ export function WordGiants({ learnerId = 'guest' }: { learnerId?: string }) {
   const handledRef = useRef(false);
   const advRef = useRef(false);
   const timersRef = useRef<number[]>([]);
+  const shownRef = useRef(0);
   const round = rounds[i];
 
   const sayParts = (syl: string[]) => {
@@ -46,6 +47,7 @@ export function WordGiants({ learnerId = 'guest' }: { learnerId?: string }) {
 
   useEffect(() => { startRef.current = Date.now(); return () => timersRef.current.forEach((t) => window.clearTimeout(t)); }, []);
   useEffect(() => {
+    shownRef.current = Date.now(); // when this word is shown (for latency)
     if (round && !finish) sayParts(round.syllables);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i]);
@@ -56,9 +58,15 @@ export function WordGiants({ learnerId = 'guest' }: { learnerId?: string }) {
     setPicked(word); advRef.current = true;
     if (correct) { correctRef.current += 1; sfx.correct(); setMood('cheer'); if (character) setLine(reactionLine(character, 'correct')); }
     else { wrongRef.current += 1; sfx.wrong(); setMood('wobble'); if (character) setLine(reactionLine(character, 'wrong')); }
+    // log latency in a deferred callback (render-safe; ~0ms delay ≈ tap time) —
+    // Word Giants is a fluency game, so speed is the signal
+    const shown = shownRef.current;
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : word);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'word-giants', level: 4, firstTry: true, chosen: correct ? undefined : word });
+      const latencyMs = Date.now() - shown;
+      recordItem(learnerId, SKILL, correct, latencyMs, correct ? undefined : word);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'word-giants', level: 4, firstTry: true, latencyMs, chosen: correct ? undefined : word });
+    }, 0);
+    window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;
       if (i + 1 >= ROUNDS) finishSession(Date.now()); else setI((n) => n + 1);
     }, 1000);

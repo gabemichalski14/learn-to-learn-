@@ -35,9 +35,11 @@ export function ToolTime({ learnerId = 'guest' }: { learnerId?: string }) {
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
   const advRef = useRef(false);
+  const shownRef = useRef(0);
   const round = rounds[i];
 
   useEffect(() => { startRef.current = Date.now(); }, []);
+  useEffect(() => { shownRef.current = Date.now(); }, [i]); // when this word is shown (for latency)
 
   function choose(opt: { word: string; emoji: string }) {
     if (picked !== null || !round || finish || advRef.current) return;
@@ -46,9 +48,16 @@ export function ToolTime({ learnerId = 'guest' }: { learnerId?: string }) {
     advRef.current = true;
     if (correct) { correctRef.current += 1; sfx.correct(); setMood('cheer'); }
     else { wrongRef.current += 1; sfx.wrong(); setMood('wobble'); if (character) setLine(reactionLine(character, 'wrong')); }
+    // log latency in a deferred callback (render-safe; ~0ms delay ≈ tap time) —
+    // Tool Time is a fluency game, so speed is the signal
+    const shown = shownRef.current;
+    const sk = round.skillKey;
     window.setTimeout(() => {
-      recordItem(learnerId, round.skillKey, correct, undefined, correct ? undefined : opt.word);
-      logSkillEvent(learnerId, { skillKey: round.skillKey, correct, at: Date.now(), game: 'tool-time', level: 3, firstTry: true, chosen: correct ? undefined : opt.word });
+      const latencyMs = Date.now() - shown;
+      recordItem(learnerId, sk, correct, latencyMs, correct ? undefined : opt.word);
+      logSkillEvent(learnerId, { skillKey: sk, correct, at: Date.now(), game: 'tool-time', level: 3, firstTry: true, latencyMs, chosen: correct ? undefined : opt.word });
+    }, 0);
+    window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;
       if (i + 1 >= ROUNDS) finishSession(Date.now()); else setI((n) => n + 1);
     }, 650);

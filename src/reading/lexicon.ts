@@ -3,9 +3,10 @@ import { segmentGraphemes, VOWEL_GRAPHEMES, type TaughtInventory } from './inven
 /**
  * The decodability-tagged lexicon — original words the text engine draws from,
  * each tagged with the GPCs it requires (so admissibility is *checkable*, not
- * estimated), its structure, whether it's picturable (meaning-known), and whether
- * it's a heart (irregular) word. Nouns reuse the existing pack words + emoji so
- * audio clips and pictures already resolve by label. ORIGINAL content.
+ * estimated), its structure, and light SEMANTIC tags (animacy, "place", feeling)
+ * so the composer produces meaningful, natural text — not grammatical word-salad.
+ * Nouns reuse the existing pack words + emoji so audio clips and pictures already
+ * resolve by label. ORIGINAL content.
  *
  * A word is admissible at a level iff every grapheme it needs is in the taught
  * inventory (or it's a taught heart word). This is the load-bearing invariant the
@@ -25,12 +26,26 @@ export interface LexEntry {
   imageable: boolean;
   /** Irregular high-frequency: admit ONLY when explicitly taught (not by GPCs). */
   heart?: boolean;
+  /** A living thing — can be the subject of an action verb / a feeling. */
+  animate?: boolean;
+  /** A surface/large object something can plausibly be "on". */
+  place?: boolean;
+  /** A feeling adjective (sad, fun) — only sensible for an animate subject. */
+  feeling?: boolean;
   emoji?: string;
   /** The GPC graphemes that spell the word (greedy-segmented; correct for this set). */
   graphemes: string[];
 }
 
-function make(word: string, pos: Pos, opts: { emoji?: string; heart?: boolean } = {}): LexEntry {
+interface MakeOpts {
+  emoji?: string;
+  heart?: boolean;
+  animate?: boolean;
+  place?: boolean;
+  feeling?: boolean;
+}
+
+function make(word: string, pos: Pos, opts: MakeOpts = {}): LexEntry {
   const graphemes = segmentGraphemes(word);
   const vowel = graphemes.find((g) => VOWEL_GRAPHEMES.has(g));
   const structure = graphemes.map((g) => (VOWEL_GRAPHEMES.has(g) ? 'V' : 'C')).join('');
@@ -41,34 +56,40 @@ function make(word: string, pos: Pos, opts: { emoji?: string; heart?: boolean } 
     vowel,
     imageable: pos === 'noun' && !!opts.emoji,
     heart: opts.heart,
+    animate: opts.animate,
+    place: opts.place,
+    feeling: opts.feeling,
     emoji: opts.emoji,
     graphemes,
   };
 }
 
 export const LEXICON: LexEntry[] = [
-  // ── CVC nouns (imageable; emoji placeholders reuse the existing pack art) ──
-  make('cat', 'noun', { emoji: '🐱' }), make('hat', 'noun', { emoji: '🎩' }),
-  make('bag', 'noun', { emoji: '🎒' }), make('map', 'noun', { emoji: '🗺️' }),
-  make('van', 'noun', { emoji: '🚐' }), make('jam', 'noun', { emoji: '🍓' }),
-  make('hen', 'noun', { emoji: '🐔' }), make('bed', 'noun', { emoji: '🛏️' }),
-  make('net', 'noun', { emoji: '🥅' }), make('pen', 'noun', { emoji: '🖊️' }),
-  make('web', 'noun', { emoji: '🕸️' }), make('jet', 'noun', { emoji: '🛩️' }),
-  make('pig', 'noun', { emoji: '🐷' }), make('pin', 'noun', { emoji: '📌' }),
-  make('dog', 'noun', { emoji: '🐶' }), make('pot', 'noun', { emoji: '🍲' }),
-  make('top', 'noun', { emoji: '🔝' }), make('sun', 'noun', { emoji: '☀️' }),
-  make('bug', 'noun', { emoji: '🐛' }), make('cup', 'noun', { emoji: '☕' }),
-  make('bus', 'noun', { emoji: '🚌' }), make('nut', 'noun', { emoji: '🌰' }),
-  make('log', 'noun', { emoji: '🪵' }), make('mug', 'noun', { emoji: '🍵' }),
+  // ── animals (CVC nouns, animate) ──
+  make('cat', 'noun', { emoji: '🐱', animate: true }), make('dog', 'noun', { emoji: '🐶', animate: true }),
+  make('pig', 'noun', { emoji: '🐷', animate: true }), make('hen', 'noun', { emoji: '🐔', animate: true }),
+  make('bug', 'noun', { emoji: '🐛', animate: true }),
 
-  // ── CVC verbs ──
+  // ── object nouns (CVC; some tagged as "places" you can be on) ──
+  make('hat', 'noun', { emoji: '🎩' }), make('bag', 'noun', { emoji: '🎒' }),
+  make('map', 'noun', { emoji: '🗺️', place: true }), make('van', 'noun', { emoji: '🚐', place: true }),
+  make('jam', 'noun', { emoji: '🍓' }), make('bed', 'noun', { emoji: '🛏️', place: true }),
+  make('net', 'noun', { emoji: '🥅', place: true }), make('pen', 'noun', { emoji: '🖊️' }),
+  make('web', 'noun', { emoji: '🕸️', place: true }), make('jet', 'noun', { emoji: '🛩️', place: true }),
+  make('pin', 'noun', { emoji: '📌' }), make('pot', 'noun', { emoji: '🍲' }),
+  make('top', 'noun', { emoji: '🔝', place: true }), make('sun', 'noun', { emoji: '☀️' }),
+  make('cup', 'noun', { emoji: '☕' }), make('bus', 'noun', { emoji: '🚌', place: true }),
+  make('nut', 'noun', { emoji: '🌰' }), make('log', 'noun', { emoji: '🪵', place: true }),
+  make('mug', 'noun', { emoji: '🍵' }),
+
+  // ── CVC verbs (actions — need an animate subject) ──
   make('run', 'verb'), make('sit', 'verb'), make('hop', 'verb'), make('dig', 'verb'),
   make('nap', 'verb'), make('hug', 'verb'), make('tap', 'verb'), make('jog', 'verb'),
   make('win', 'verb'), make('pat', 'verb'),
 
-  // ── CVC adjectives ──
+  // ── CVC adjectives (physical vs feeling) ──
   make('big', 'adj'), make('hot', 'adj'), make('wet', 'adj'), make('red', 'adj'),
-  make('sad', 'adj'), make('fun', 'adj'),
+  make('sad', 'adj', { feeling: true }), make('fun', 'adj', { feeling: true }),
 
   // ── decodable function words (closed/VC; not heart) ──
   make('on', 'function'), make('in', 'function'), make('it', 'function'),
@@ -81,10 +102,18 @@ export const LEXICON: LexEntry[] = [
   make('to', 'function', { heart: true }), make('was', 'function', { heart: true }),
 
   // ── Level-3 words (a digraph; prove the L2→L3 inventory boundary) ──
-  make('fish', 'noun', { emoji: '🐟' }), make('duck', 'noun', { emoji: '🦆' }),
-  make('sock', 'noun', { emoji: '🧦' }), make('ship', 'noun', { emoji: '🚢' }),
-  make('shed', 'noun'), make('chin', 'noun'), make('chop', 'verb'), make('rich', 'adj'),
+  make('fish', 'noun', { emoji: '🐟', animate: true }), make('duck', 'noun', { emoji: '🦆', animate: true }),
+  make('sock', 'noun', { emoji: '🧦' }), make('ship', 'noun', { emoji: '🚢', place: true }),
+  make('shed', 'noun', { place: true }), make('chin', 'noun'), make('chop', 'verb'),
 ];
+
+const WORD_INDEX = new Map<string, LexEntry>(LEXICON.map((e) => [e.word.toLowerCase(), e]));
+
+/** Case-insensitive lexicon lookup (used by the validator to verify rendered text
+ *  independently of the composer). Returns undefined for words we can't vouch for. */
+export function lookupWord(token: string): LexEntry | undefined {
+  return WORD_INDEX.get(token.toLowerCase());
+}
 
 /** Is this word decodable/known at the given inventory? Heart words admit only
  *  when explicitly taught; everything else iff all its graphemes are taught. */

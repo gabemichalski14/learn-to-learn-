@@ -44,10 +44,11 @@ export function NameChangeDictation({ learnerId = 'guest' }: { learnerId?: strin
   const word = round?.word ?? '';
 
   const shownRef = useRef(0); // when the current word appeared → time-to-spell latency
+  const replaysRef = useRef(0); // audio replays for the current item (uncertainty signal)
   useEffect(() => { startRef.current = Date.now(); }, []);
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
   useEffect(() => {
-    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
+    if (round && !finish) { shownRef.current = Date.now(); replaysRef.current = 0; say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -64,7 +65,7 @@ export function NameChangeDictation({ learnerId = 'guest' }: { learnerId?: strin
         window.setTimeout(() => {
           const latencyMs = Date.now() - shownRef.current;
           recordItem(learnerId, SKILL, correct, latencyMs, correct ? undefined : chosen);
-          logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'l4-dictation', level: 4, firstTry: true, latencyMs, chosen: correct ? undefined : chosen });
+          logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'l4-dictation', level: 4, firstTry: true, latencyMs, replays: replaysRef.current, chosen: correct ? undefined : chosen });
         }, 0);
         setMood('cheer'); if (character) setLine(reactionLine(character, 'correct')); say(word);
         window.setTimeout(() => {
@@ -124,7 +125,7 @@ export function NameChangeDictation({ learnerId = 'guest' }: { learnerId?: strin
             <p className="wk-hero__line" role="status">{line}</p>
           </div>
 
-          <button type="button" className="nc-hear" onClick={() => say(word)} aria-label="Hear the word again">🔊 hear the word</button>
+          <button type="button" className="nc-hear" onClick={() => { replaysRef.current += 1; say(word); }} aria-label="Hear the word again">🔊 hear the word</button>
           {round.emoji && <div className="nc-pic" aria-hidden="true">{round.emoji}</div>}
 
           <div className="wk-slots" aria-label="word being spelled">

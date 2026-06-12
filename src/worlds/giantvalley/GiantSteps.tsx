@@ -54,7 +54,7 @@ export function GiantSteps({ learnerId = 'guest' }: { learnerId?: string }) {
     window.setTimeout(() => {
       const latencyMs = Date.now() - shown;
       recordItem(learnerId, SKILL, correct, latencyMs, correct ? undefined : word);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'giant-steps', level: 4, firstTry: true, latencyMs, chosen: correct ? undefined : word });
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'giant-steps', level: 4, firstTry: true, latencyMs, replays: 0, chosen: correct ? undefined : word }); // replays 0 — read-fast fluency, no re-hear by design
     }, 0);
     window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;

@@ -42,9 +42,10 @@ export function ChopShop({ learnerId = 'guest' }: { learnerId?: string }) {
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
   const shownRef = useRef(0); // when the current word appeared → time-to-answer latency
+  const replaysRef = useRef(0); // audio replays for the current item (uncertainty signal)
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
+    if (round && !finish) { shownRef.current = Date.now(); replaysRef.current = 0; say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -56,7 +57,7 @@ export function ChopShop({ learnerId = 'guest' }: { learnerId?: string }) {
     window.setTimeout(() => {
       const latencyMs = Date.now() - shownRef.current;
       recordItem(learnerId, SKILL, correct, latencyMs, correct ? undefined : String(pos), firstTry);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'chop-shop', level: 3, firstTry, latencyMs, chosen: correct ? undefined : String(pos) });
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'chop-shop', level: 3, firstTry, latencyMs, replays: replaysRef.current, chosen: correct ? undefined : String(pos) });
     }, 0);
     if (correct) {
       sfx.correct(); setCut(pos); setMood('cheer');
@@ -126,7 +127,7 @@ export function ChopShop({ learnerId = 'guest' }: { learnerId?: string }) {
             <p className="wk-hero__line" role="status">{line}</p>
           </div>
 
-          <button type="button" className="wk-pic" onClick={() => say(word)} aria-label="Hear the word again">
+          <button type="button" className="wk-pic" onClick={() => { replaysRef.current += 1; say(word); }} aria-label="Hear the word again">
             <span className="wk-pic__emoji">{round.emoji ?? '🔧'}</span>
             <span className="wk-pic__hear">🔊 hear it</span>
           </button>

@@ -45,13 +45,14 @@ export function SayItAgain({ learnerId = 'guest' }: { learnerId?: string }) {
   const compFirstWrongRef = useRef<string | undefined>(undefined);
   const advancingRef = useRef(false);
   const handledRef = useRef(false);
+  const replaysRef = useRef(0); // sentence replays for the current item (uncertainty signal)
 
   const round = rounds[ri];
   const words = useMemo(() => (round ? round.unit.text.replace(/\.$/, '').split(' ') : []), [round]);
 
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) { roundStartRef.current = Date.now(); void audio.narrate(round.unit.text); }
+    if (round && !finish) { roundStartRef.current = Date.now(); replaysRef.current = 0; void audio.narrate(round.unit.text); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -80,7 +81,7 @@ export function SayItAgain({ learnerId = 'guest' }: { learnerId?: string }) {
         const at = Date.now();
         const latencyMs = Math.max(0, at - roundStartRef.current);
         recordItem(learnerId, 'read:sentence', correct, latencyMs, correct ? undefined : chosen, true);
-        logSkillEvent(learnerId, { skillKey: 'read:sentence', correct, at, game: 'say-it-again', level: 3, firstTry: true, latencyMs, chosen: correct ? undefined : chosen });
+        logSkillEvent(learnerId, { skillKey: 'read:sentence', correct, at, game: 'say-it-again', level: 3, firstTry: true, latencyMs, replays: replaysRef.current, chosen: correct ? undefined : chosen });
       }, 0);
       if (character) setLine(reactionLine(character, 'correct'));
       window.setTimeout(() => {
@@ -165,7 +166,7 @@ export function SayItAgain({ learnerId = 'guest' }: { learnerId?: string }) {
               >{w}</button>
             ))}
           </div>
-          <button type="button" className="wk-hear" onClick={() => { void audio.narrate(round.unit.text); sfx.tap(); }}>🔊 hear it</button>
+          <button type="button" className="wk-hear" onClick={() => { replaysRef.current += 1; void audio.narrate(round.unit.text); sfx.tap(); }}>🔊 hear it</button>
 
           {phase === 'check' && (
             <>

@@ -61,7 +61,7 @@ export function WarpSpeed({ learnerId = 'guest' }: { learnerId?: string }) {
     window.setTimeout(() => {
       const latencyMs = Date.now() - shown;
       recordItem(learnerId, SKILL, correct, latencyMs, correct ? undefined : opt.word);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'warp-speed', level: 2, firstTry: true, latencyMs, chosen: correct ? undefined : opt.word });
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'warp-speed', level: 2, firstTry: true, latencyMs, replays: 0, chosen: correct ? undefined : opt.word }); // replays 0 — read-fast fluency, no re-hear by design
     }, 0);
     window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;

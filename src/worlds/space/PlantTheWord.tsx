@@ -81,7 +81,8 @@ export function PlantTheWord({ learnerId = 'guest' }: { learnerId?: string }) {
         window.setTimeout(() => {
           const latencyMs = Date.now() - shownRef.current;
           recordItem(learnerId, `heart:${word}`, correct, latencyMs, correct ? undefined : chosen, true);
-          logSkillEvent(learnerId, { skillKey: `heart:${word}`, correct, at: Date.now(), game: 'plant-the-word', level: 2, firstTry: true, latencyMs, chosen: correct ? undefined : chosen });
+          // replays: 0 by design — spell-from-memory has no re-hear button (re-hearing would defeat the orthographic-recall point).
+          logSkillEvent(learnerId, { skillKey: `heart:${word}`, correct, at: Date.now(), game: 'plant-the-word', level: 2, firstTry: true, latencyMs, replays: 0, chosen: correct ? undefined : chosen });
           if (character) setHeal(healFor(character, loadMastery(learnerId)));
         }, 0);
         window.setTimeout(() => {

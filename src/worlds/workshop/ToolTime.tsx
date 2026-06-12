@@ -58,7 +58,7 @@ export function ToolTime({ learnerId = 'guest' }: { learnerId?: string }) {
     window.setTimeout(() => {
       const latencyMs = Date.now() - shown;
       recordItem(learnerId, sk, correct, latencyMs, correct ? undefined : opt.word);
-      logSkillEvent(learnerId, { skillKey: sk, correct, at: Date.now(), game: 'tool-time', level: 3, firstTry: true, latencyMs, chosen: correct ? undefined : opt.word });
+      logSkillEvent(learnerId, { skillKey: sk, correct, at: Date.now(), game: 'tool-time', level: 3, firstTry: true, latencyMs, replays: 0, chosen: correct ? undefined : opt.word }); // replays 0 — read-fast fluency, no re-hear by design
     }, 0);
     window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;

@@ -46,10 +46,11 @@ export function PatchesDictation({ learnerId = 'guest' }: { learnerId?: string }
   const word = round?.word ?? '';
 
   const shownRef = useRef(0); // when the current word appeared → time-to-spell latency
+  const replaysRef = useRef(0); // audio replays for the current item (uncertainty signal)
   useEffect(() => { startRef.current = Date.now(); }, []);
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
   useEffect(() => {
-    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
+    if (round && !finish) { shownRef.current = Date.now(); replaysRef.current = 0; say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -68,7 +69,7 @@ export function PatchesDictation({ learnerId = 'guest' }: { learnerId?: string }
         window.setTimeout(() => {
           const latencyMs = Date.now() - shownRef.current;
           recordItem(learnerId, sk, correct, latencyMs, correct ? undefined : chosen);
-          logSkillEvent(learnerId, { skillKey: sk, correct, at: Date.now(), game: 'patches-dictation', level: 3, firstTry: true, latencyMs, chosen: correct ? undefined : chosen });
+          logSkillEvent(learnerId, { skillKey: sk, correct, at: Date.now(), game: 'patches-dictation', level: 3, firstTry: true, latencyMs, replays: replaysRef.current, chosen: correct ? undefined : chosen });
         }, 0);
         setMood('cheer');
         if (character) setLine(reactionLine(character, 'correct'));
@@ -144,7 +145,7 @@ export function PatchesDictation({ learnerId = 'guest' }: { learnerId?: string }
             <p className="wk-hero__line" role="status">{line}</p>
           </div>
 
-          <button type="button" className="wk-pic" onClick={() => say(word)} aria-label="Hear the word again">
+          <button type="button" className="wk-pic" onClick={() => { replaysRef.current += 1; say(word); }} aria-label="Hear the word again">
             <span className="wk-pic__emoji">{round.emoji}</span>
             <span className="wk-pic__hear">🔊 hear it</span>
           </button>

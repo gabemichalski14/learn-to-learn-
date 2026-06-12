@@ -43,13 +43,14 @@ export function WorkshopPick({ learnerId = 'guest', gameId, badge, intro, finish
   const handledRef = useRef(false);
   const attemptedRef = useRef<Set<number>>(new Set());
   const shownRef = useRef(0); // when the current item appeared → per-item response latency
+  const replaysRef = useRef(0); // audio replays for the current item (uncertainty signal)
 
   const round = rounds[ri];
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
+    if (round && !finish) { shownRef.current = Date.now(); replaysRef.current = 0; say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -63,7 +64,7 @@ export function WorkshopPick({ learnerId = 'guest', gameId, badge, intro, finish
     window.setTimeout(() => {
       const latencyMs = Date.now() - shown;
       recordItem(learnerId, round.skillKey, correct, latencyMs, correct ? undefined : opt, firstTry);
-      logSkillEvent(learnerId, { skillKey: round.skillKey, correct, at: Date.now(), game: gameId, level: 3, firstTry, latencyMs, chosen: correct ? undefined : opt });
+      logSkillEvent(learnerId, { skillKey: round.skillKey, correct, at: Date.now(), game: gameId, level: 3, firstTry, latencyMs, replays: replaysRef.current, chosen: correct ? undefined : opt });
     }, 0);
     if (correct) {
       sfx.correct(); setMood('cheer'); setLine('Yes! That one. 🤝'); advancingRef.current = true;
@@ -131,7 +132,7 @@ export function WorkshopPick({ learnerId = 'guest', gameId, badge, intro, finish
             <p className="wk-hero__line" role="status">{line}</p>
           </div>
 
-          <button type="button" className="wk-pic" onClick={() => say(round.word)} aria-label="Hear the word again">
+          <button type="button" className="wk-pic" onClick={() => { replaysRef.current += 1; say(round.word); }} aria-label="Hear the word again">
             <span className="wk-pic__emoji">{round.emoji ?? '🔧'}</span>
             <span className="wk-pic__hear">🔊 hear it</span>
           </button>

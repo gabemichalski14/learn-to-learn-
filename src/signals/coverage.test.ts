@@ -82,12 +82,10 @@ describe('signal coverage over the real game tree (the "positions lacking" repor
     const missingReplays = gamesMissing(report, 'replays');
     console.log('[signal-coverage] games missing latencyMs:', missingLatency.join(', ') || 'none');
     console.log('[signal-coverage] games missing replays:', missingReplays.join(', ') || 'none');
-    // #126: latency is now logged by EVERY game — this is the regression guard that
-    // it stays that way (automaticity-slope / rapid-guess / fatigue stay derivable).
-    expect(missingLatency.length, `latency regressed in: ${missingLatency.join(', ')}`).toBe(0);
-    // replays: the foundational L1 PA games feed the cloud event; the L2–L4 tail is
-    // still pending (mechanical — same pattern). Honest partial-coverage finding.
-    expect(missingReplays.length).toBeGreaterThan(0);
-    expect(missingReplays.length).toBeLessThan(report.length);
+    // #126 CLOSED: latency + replays are now logged by EVERY game — this is the
+    // regression guard that both stay at zero missing, so automaticity-slope /
+    // rapid-guess / fatigue / replay-reliance stay derivable across the whole suite.
+    expect(missingLatency, `latency regressed in: ${missingLatency.join(', ')}`).toEqual([]);
+    expect(missingReplays, `replays regressed in: ${missingReplays.join(', ')}`).toEqual([]);
   });
 });

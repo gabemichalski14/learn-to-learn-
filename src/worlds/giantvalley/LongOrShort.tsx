@@ -37,12 +37,13 @@ export function LongOrShort({ learnerId = 'guest' }: { learnerId?: string }) {
   const handledRef = useRef(false);
   const advRef = useRef(false);
   const shownRef = useRef(0); // when the current item appeared → per-item response latency
+  const replaysRef = useRef(0); // audio replays for the current item (uncertainty signal)
   const round = rounds[i];
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
+    if (round && !finish) { shownRef.current = Date.now(); replaysRef.current = 0; say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i]);
 
@@ -57,7 +58,7 @@ export function LongOrShort({ learnerId = 'guest' }: { learnerId?: string }) {
     window.setTimeout(() => {
       const latencyMs = Date.now() - shown;
       recordItem(learnerId, SKILL, correct, latencyMs, chosen);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'long-or-short', level: 4, firstTry: true, latencyMs, chosen });
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'long-or-short', level: 4, firstTry: true, latencyMs, replays: replaysRef.current, chosen });
     }, 0);
     window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;
@@ -109,7 +110,7 @@ export function LongOrShort({ learnerId = 'guest' }: { learnerId?: string }) {
             <p className="wk-hero__line" role="status">{line}</p>
           </div>
 
-          <button type="button" className="nc-hear" onClick={() => say(round.word)} aria-label="Hear the word again">🔊 hear the word</button>
+          <button type="button" className="nc-hear" onClick={() => { replaysRef.current += 1; say(round.word); }} aria-label="Hear the word again">🔊 hear the word</button>
 
           <div className="nc-row">
             <button type="button" className={`ls-choice ls-choice--long${picked === true ? (round.long ? ' is-right' : ' is-wrong') : ''}`} disabled={picked !== null} onClick={() => choose(true)}>

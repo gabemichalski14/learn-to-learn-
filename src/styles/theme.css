@@ -391,6 +391,7 @@ img.kpi__icon--img { width: 32px; height: 32px; object-fit: contain;
   animation:le-float 3.6s ease-in-out infinite alternate; }
 @keyframes le-float{ from{ transform:translateY(0) } to{ transform:translateY(-5px) } }
 .level-card:hover .level-emblem{ transform:scale(1.08); }
+.level-emblem__png{ width:34px; height:34px; object-fit:contain; }
 .level-emblem--space{ background:radial-gradient(circle at 36% 30%, #16455a 0%, #0a2230 70%); border:1px solid rgba(120,220,230,.4); overflow:visible; }
 .level-emblem--space svg{ overflow:visible; }
 .le-rocket{ animation:le-rocketbob 2.6s ease-in-out infinite alternate; transform-origin:center; }

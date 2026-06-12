@@ -122,7 +122,7 @@ export function WordBeam({ learnerId = 'guest' }: { learnerId?: string }) {
       rootClass="sg ss"
       backdrop={<SpaceBackdrop />}
       back={{ label: '← Space', onClick: () => goBack('#/level/2') }}
-      badge={<>📡 Word Beam · Level 2</>}
+      badge={<><Icon name="ico-word-beam" emoji="📡" /> Word Beam · Level 2</>}
       current={ri}
       total={ROUNDS}
       muted={muted}

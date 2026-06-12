@@ -137,7 +137,7 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
       rootClass="sg ss"
       backdrop={<SpaceBackdrop />}
       back={{ label: '← Space', onClick: () => goBack('#/level/2') }}
-      badge={<>🛰️ Star Station · Level 2</>}
+      badge={<><Icon name="ico-star-station" emoji="🛰️" /> Star Station · Level 2</>}
       current={ri}
       total={ROUNDS}
       muted={muted}

@@ -1,5 +1,8 @@
-/** Themed, animated emblem for a level card. Level 2 = bespoke space scene;
- *  other levels = a curriculum-themed glyph. Decorative (aria-hidden). */
+import { useState } from 'react';
+
+/** Themed emblem for a level card: the painted PNG at /images/ui/level-<N>.png
+ *  when present, else a curriculum-themed glyph (Level 2 = bespoke space scene).
+ *  Decorative (aria-hidden). */
 // One distinct, on-theme glyph per level (no repeats, none generic):
 //  1 hearing sounds · 2 space (SVG) · 3 Patch's spool/blends · 4 Bram/big words ·
 //  5 word-parts · 6 silent-e magic · 7 bossy-R crown · 8 vowel-team duo ·
@@ -9,6 +12,17 @@ const LEVEL_EMOJI: Record<number, string> = {
 };
 
 export function LevelEmblem({ level }: { level: number }) {
+  const [errored, setErrored] = useState(false);
+
+  // Painted level icon (drops in per the manifest; emoji/SVG until each file lands).
+  if (!errored) {
+    return (
+      <span className="level-emblem" aria-hidden="true">
+        <img className="level-emblem__png" src={`/images/ui/level-${level}.png`} alt="" draggable={false} onError={() => setErrored(true)} />
+      </span>
+    );
+  }
+
   if (level === 2) {
     return (
       <span className="level-emblem level-emblem--space" aria-hidden="true">

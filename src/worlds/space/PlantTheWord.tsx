@@ -50,6 +50,7 @@ export function PlantTheWord({ learnerId = 'guest' }: { learnerId?: string }) {
 
   const round = rounds[ri];
   const word = round?.word ?? '';
+  const shownRef = useRef(0); // when spelling began → time-to-spell latency
 
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
@@ -59,6 +60,7 @@ export function PlantTheWord({ learnerId = 'guest' }: { learnerId?: string }) {
 
   function startSpelling() {
     if (!round) return;
+    shownRef.current = Date.now(); // clock the spell-from-memory attempt
     setPhase('spell');
     setLine('Now spell it from memory — tap each letter in order.');
     void audio.playWord({ id: word, label: word, emoji: '🔈' });
@@ -77,8 +79,9 @@ export function PlantTheWord({ learnerId = 'guest' }: { learnerId?: string }) {
         setMood('cheer');
         if (character) setLine(reactionLine(character, 'correct'));
         window.setTimeout(() => {
-          recordItem(learnerId, `heart:${word}`, correct, undefined, correct ? undefined : chosen, true);
-          logSkillEvent(learnerId, { skillKey: `heart:${word}`, correct, at: Date.now(), game: 'plant-the-word', level: 2, firstTry: true, chosen: correct ? undefined : chosen });
+          const latencyMs = Date.now() - shownRef.current;
+          recordItem(learnerId, `heart:${word}`, correct, latencyMs, correct ? undefined : chosen, true);
+          logSkillEvent(learnerId, { skillKey: `heart:${word}`, correct, at: Date.now(), game: 'plant-the-word', level: 2, firstTry: true, latencyMs, chosen: correct ? undefined : chosen });
           if (character) setHeal(healFor(character, loadMastery(learnerId)));
         }, 0);
         window.setTimeout(() => {

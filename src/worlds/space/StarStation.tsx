@@ -54,8 +54,10 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
 
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
+  const shownRef = useRef(0); // last keystroke / word-shown time → inter-keystroke latency
   useEffect(() => {
     if (!round || finish) return;
+    shownRef.current = Date.now();
     say(round.word);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
@@ -66,9 +68,10 @@ export function StarStation({ learnerId = 'guest' }: { learnerId?: string }) {
     const firstTry = !attemptedRef.current.has(fkey); // first tap at this slot
     attemptedRef.current.add(fkey);
     window.setTimeout(() => {
-      recordItem(learnerId, key, correct, undefined, correct ? undefined : chosen, firstTry);
+      const latencyMs = Date.now() - shownRef.current; shownRef.current = Date.now(); // inter-keystroke interval
+      recordItem(learnerId, key, correct, latencyMs, correct ? undefined : chosen, firstTry);
       logSkillEvent(learnerId, {
-        skillKey: key, correct, at: Date.now(), game: 'star-station', level: 2, firstTry,
+        skillKey: key, correct, at: Date.now(), game: 'star-station', level: 2, firstTry, latencyMs,
         chosen: correct ? undefined : chosen, // the letter they tapped instead (confusion)
       });
       if (character) setHeal(healFor(character, loadMastery(learnerId))); // Moss heals live

@@ -51,8 +51,9 @@ export function WordBeam({ learnerId = 'guest' }: { learnerId?: string }) {
 
   useEffect(() => { startRef.current = Date.now(); }, []);
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
+  const shownRef = useRef(0); // last keystroke / word-shown time → inter-keystroke latency
   useEffect(() => {
-    if (round && !finish) say(round.word);
+    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -62,8 +63,9 @@ export function WordBeam({ learnerId = 'guest' }: { learnerId?: string }) {
     const firstTry = !attemptedRef.current.has(fkey);
     attemptedRef.current.add(fkey);
     window.setTimeout(() => {
-      recordItem(learnerId, key, correct, undefined, correct ? undefined : chosen, firstTry);
-      logSkillEvent(learnerId, { skillKey: key, correct, at: Date.now(), game: 'word-beam', level: 2, firstTry, chosen: correct ? undefined : chosen });
+      const latencyMs = Date.now() - shownRef.current; shownRef.current = Date.now(); // inter-keystroke interval
+      recordItem(learnerId, key, correct, latencyMs, correct ? undefined : chosen, firstTry);
+      logSkillEvent(learnerId, { skillKey: key, correct, at: Date.now(), game: 'word-beam', level: 2, firstTry, latencyMs, chosen: correct ? undefined : chosen });
       if (character) setHeal(healFor(character, loadMastery(learnerId))); // Moss heals live
     }, 0);
   }

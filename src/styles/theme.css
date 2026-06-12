@@ -23,6 +23,11 @@
   font-family: 'Poppins', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
+/* notch / rounded-corner safety on the immersive game + hub frames (every world —
+   .tt/.gv reuse .wk). Side insets matter most in landscape; the background still
+   bleeds edge-to-edge (border-box), only the content insets. env() resolves to 0
+   unless viewport-fit=cover (set in index.html), so non-notched devices are unchanged. */
+.gd, .sg, .wk { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
 
 /* Display headings use the brand serif (Playfair); everything else is Poppins. */
 .site__title, .book__title, .report__name { font-family: var(--font-display); font-weight: 700; }

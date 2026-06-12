@@ -37,6 +37,7 @@ import { RuleBreakers } from './worlds/workshop/RuleBreakers';
 import { ChopShop } from './worlds/workshop/ChopShop';
 import { PatchesDictation } from './worlds/workshop/PatchesDictation';
 import { ToolTime } from './worlds/workshop/ToolTime';
+import { SayItAgain } from './worlds/workshop/SayItAgain';
 import { WorkshopLevelHub } from './worlds/workshop/WorkshopLevelHub';
 import { GiantValleyLevelHub } from './worlds/giantvalley/GiantValleyLevelHub';
 import { NameChange } from './worlds/giantvalley/NameChange';
@@ -176,6 +177,9 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'tool-time') {
     return <ToolTime learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'say-it-again') {
+    return <SayItAgain learnerId={learnerId} />;
   }
   if (route.name === 'play' && route.game === 'name-change') {
     return <NameChange learnerId={learnerId} />;

@@ -66,6 +66,7 @@ export const LEVELS: LevelInfo[] = [
       { id: 'chop-shop', title: 'Chop Shop', emoji: '🪚', tagline: 'Chop two-syllable words in two.', status: 'available', route: '#/play/chop-shop' },
       { id: 'patches-dictation', title: "Patch's Dictation", emoji: '✏️', tagline: 'Hear a word — spell it from the whole alphabet.', status: 'available', route: '#/play/patches-dictation' },
       { id: 'tool-time', title: 'Tool Time', emoji: '🔧', tagline: 'Read each word fast and grab its picture.', status: 'available', route: '#/play/tool-time' },
+      { id: 'say-it-again', title: 'Say It Again', emoji: '🗣️', tagline: 'Read a sentence back to Patch — then show what it means.', status: 'available', route: '#/play/say-it-again' },
     ],
   },
   {

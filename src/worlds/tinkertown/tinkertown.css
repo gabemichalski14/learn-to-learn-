@@ -4,6 +4,8 @@
 .tt .wk-badge { color: #2c5d3f; }
 .tt .wk-hub__title { color: #234c34; }
 
+/* the meaning picture that flips on a correct prefix (Front Loaders) */
+.tt-pic { font-size: clamp(44px, 12vw, 72px); line-height: 1; margin: 2px 0 0; }
 /* a base word shown big (Happy Endings / Front Loaders) */
 .tt-base { font-family: var(--font-display, inherit); font-weight: 800; letter-spacing: 0.02em;
   font-size: clamp(40px, 11vw, 64px); color: #2c5d3f; margin: 4px 0 0; }

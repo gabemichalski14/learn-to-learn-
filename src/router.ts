@@ -14,6 +14,7 @@ export type RouteName =
   | 'games'
   | 'village'
   | 'tending'
+  | 'welcome'
   | 'leaderboard'
   | 'tutor'
   | 'admin'
@@ -40,6 +41,7 @@ export function parseHash(hash: string): Route {
   }
   if (h.startsWith('village')) return { name: 'village' };
   if (h.startsWith('tending')) return { name: 'tending' };
+  if (h.startsWith('welcome')) return { name: 'welcome' };
   if (h.startsWith('leaderboard')) return { name: 'leaderboard' };
   if (h.startsWith('tutor')) return { name: 'tutor' };
   if (h.startsWith('admin/student/')) {

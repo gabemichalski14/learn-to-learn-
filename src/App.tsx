@@ -39,6 +39,7 @@ import { PatchesDictation } from './worlds/workshop/PatchesDictation';
 import { ToolTime } from './worlds/workshop/ToolTime';
 import { SayItAgain } from './worlds/workshop/SayItAgain';
 import { GardenTending } from './worlds/garden/GardenTending';
+import { SoundGardenWelcome } from './worlds/garden/SoundGardenWelcome';
 import { PlantTheWord } from './worlds/space/PlantTheWord';
 import { WorkshopLevelHub } from './worlds/workshop/WorkshopLevelHub';
 import { GiantValleyLevelHub } from './worlds/giantvalley/GiantValleyLevelHub';
@@ -188,6 +189,9 @@ export default function App() {
   }
   if (route.name === 'tending') {
     return <GardenTending learnerId={learnerId} />;
+  }
+  if (route.name === 'welcome') {
+    return <SoundGardenWelcome learnerId={learnerId} />;
   }
   if (route.name === 'play' && route.game === 'name-change') {
     return <NameChange learnerId={learnerId} />;

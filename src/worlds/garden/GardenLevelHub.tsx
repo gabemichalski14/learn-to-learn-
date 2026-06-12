@@ -4,6 +4,7 @@ import { findLevel } from '../../games';
 import { useDataVersion } from '../../data/store';
 import { isLevelReady, isLevelPassed } from '../../mastery/levelGate';
 import { hasPendingReview } from '../../world/memory/reviewStore';
+import { hasScreened } from '../../mastery/screener';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
 import { sfx } from '../../audio/sfx';
 import { loadMastery } from '../../mastery/mastery';
@@ -91,6 +92,12 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
         {character && stage === 'healed' && (
           <button type="button" className="gd-hub__home" onClick={walkHome}>
             🏡 Walk {character.name} home — his whole song is back!
+          </button>
+        )}
+
+        {!hasScreened(learnerId) && (
+          <button type="button" className="gd-hub__check" onClick={() => navigate('#/welcome')}>
+            🌱 Meet {character?.name ?? 'Chip'} — a quick garden warm-up
           </button>
         )}
 

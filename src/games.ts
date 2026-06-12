@@ -89,8 +89,12 @@ export const LEVELS: LevelInfo[] = [
     title: 'Prefixes & Suffixes',
     focus: 'Plurals, suffixes (-s, -ed, -ing), spelling rules, and prefixes',
     games: [
-      soon('l5-suffix', 'Happy Endings', '➕', 'Add the right ending: -s, -ed, -ing.'),
-      soon('l5-prefix', 'Front Loaders', '🚜', 'Match the prefix to its meaning.'),
+      { id: 'l5-suffix', title: 'Happy Endings', emoji: '➕', tagline: 'Snap on the ending that does the job: -ing, -ed, -er, -est.', status: 'available', route: '#/play/l5-suffix' },
+      soon('l5-prefix', 'Front Loaders', '🔧', 'Add the prefix that makes the meaning: un-, re-.'),
+      soon('l5-build', 'Word Workbench', '🧩', 'Build a word from its parts: un + lock → unlock.'),
+      soon('l5-peel', 'Take It Apart', '🍃', 'Peel the parts off a big word to find its base.'),
+      soon('l5-ed', "Ed's Three Voices", '🎵', 'Hear -ed: is it /t/, /d/, or /uh-d/?'),
+      soon('l5-sort', 'Block Sort', '🗂️', 'Sort the word parts — and spot the fakes.'),
     ],
   },
   // Levels 6–10: titles and games fill in as each book is captured.

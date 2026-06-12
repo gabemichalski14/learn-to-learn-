@@ -50,6 +50,8 @@ import { GreatDivide } from './worlds/giantvalley/GreatDivide';
 import { WordGiants } from './worlds/giantvalley/WordGiants';
 import { NameChangeDictation } from './worlds/giantvalley/NameChangeDictation';
 import { GiantSteps } from './worlds/giantvalley/GiantSteps';
+import { TinkerTownLevelHub } from './worlds/tinkertown/TinkerTownLevelHub';
+import { HappyEndings } from './worlds/tinkertown/HappyEndings';
 import { CheckpointGame } from './CheckpointGame';
 import { currentLearner, setCurrentLearnerId, getCurrentLearnerId } from './profiles';
 import { reconcileRoster } from './data/identity';
@@ -218,10 +220,16 @@ export default function App() {
   if (route.name === 'play' && route.game === 'giant-steps') {
     return <GiantSteps learnerId={learnerId} />;
   }
+  if (route.name === 'play' && route.game === 'l5-suffix') {
+    return <HappyEndings learnerId={learnerId} />;
+  }
   if (route.name === 'play') {
     return <GameScreen learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} focus={route.focus} />;
   }
 
+  if (route.name === 'level' && (route.level ?? 1) === 5) {
+    return <TinkerTownLevelHub level={5} learnerId={learnerId} />;
+  }
   if (route.name === 'level' && (route.level ?? 1) === 4) {
     return <GiantValleyLevelHub level={4} learnerId={learnerId} />;
   }

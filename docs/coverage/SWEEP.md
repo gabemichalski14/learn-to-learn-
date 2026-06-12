@@ -62,6 +62,9 @@ a flagged pattern needs an owner decision:
 - **P1 (done):** manifest + maps + guard tests #1,2,3,4,5,9,10 — *the cadence is now enforced.*
 - **P2 (done):** ethics-as-tests source scan (#6) + walk-the-line tracking (#7) +
   the ask-before-removal consent ledger (`ethicsReview.ts`).
-- **P3:** this playbook → a `/coverage-sweep` command + the scheduled quarterly
-  background task + owner-approval report flow.
+- **P3 (done):** this playbook is now an executable **`/coverage-sweep`** command
+  (`.claude/commands/coverage-sweep.md`, guarded by a test) that runs the roster and
+  produces an owner-approval report — report-first, ask-before-removal. The
+  build-time staleness tripwire (test #1) is the schedule guarantee; an optional
+  CronCreate routine can add a proactive quarterly reminder.
 - **P4:** decodability invariant (#8) when the connected-text engine ships broadly.

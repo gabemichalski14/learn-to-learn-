@@ -141,3 +141,13 @@ describe('Freshness Engine — manifest↔prose sync (#10)', () => {
     });
   }
 });
+
+describe('Freshness Engine — quarterly sweep command (P3)', () => {
+  it('the /coverage-sweep command exists and enforces report-first + ask-before-removal', () => {
+    const cmd = readFileSync(join(process.cwd(), '.claude/commands/coverage-sweep.md'), 'utf8');
+    expect(cmd).toMatch(/report first|never auto-apply/i);     // owner-approval gate
+    expect(cmd).toMatch(/ask before removal|walk the line/i);  // ethics consent
+    expect(cmd).toMatch(/red-team gap-hunter/i);               // the completeness roster
+    expect(cmd).toMatch(/lastReviewed/);                       // bumps the tripwire on approval
+  });
+});

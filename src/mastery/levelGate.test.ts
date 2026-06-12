@@ -3,6 +3,7 @@ import { recordItem } from './mastery';
 import { levelGate, isLevelReady, isLevelPassed, isLevelUnlocked, isGameUnlocked, PASS_BAR } from './levelGate';
 import { setLevelOverride, setGameOverride } from './tutorOverrides';
 import { markCheckpointPassed } from './levelProgress';
+import { LEVELS, availableCount } from '../games';
 
 const L = 'gate-learner';
 beforeEach(() => { localStorage.clear(); });
@@ -20,6 +21,32 @@ describe('level gate', () => {
     drill('digraph:sh', 6, 0);
     drill('rule:floss', 6, 0);
     expect(levelGate(L, 3).ready).toBe(true);             // 3 L3 skills mastered → checkpoint offered
+  });
+
+  it('Level 5 (Tinker Town) counts its affix:* skills — the gate is wired', () => {
+    expect(levelGate(L, 5).ready).toBe(false);            // no L5 data yet
+    drill('affix:suffix', 6, 0);
+    drill('affix:prefix', 6, 0);
+    drill('affix:build', 6, 0);
+    expect(levelGate(L, 5).rated).toBe(3);
+    expect(levelGate(L, 5).ready).toBe(true);             // 3 affix skills mastered → checkpoint offered
+  });
+
+  it('no level with available games has an always-empty gate (regression guard)', () => {
+    // a level shipping playable games must have a gate that recognizes their skill —
+    // L5 silently returned [] for months. A sample mastered skill per level must
+    // register as rated; an unmapped level with available games fails this.
+    const SAMPLE: Record<number, string> = {
+      1: 'pa:segment', 2: 'sound:first:m', 3: 'digraph:sh', 4: 'vce', 5: 'affix:suffix',
+    };
+    for (const lvl of LEVELS) {
+      if (availableCount(lvl) === 0) continue;
+      const skill = SAMPLE[lvl.num];
+      expect(skill, `level ${lvl.num} ships games but has no sample skill in this guard`).toBeDefined();
+      localStorage.clear();
+      drill(skill, 6, 0);
+      expect(levelGate(L, lvl.num).rated, `level ${lvl.num}'s gate ignores ${skill}`).toBeGreaterThan(0);
+    }
   });
 
   it('Level 1 is always unlocked; Level 2 starts locked', () => {

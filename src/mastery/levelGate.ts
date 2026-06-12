@@ -45,7 +45,14 @@ function levelSkillStats(map: MasteryMap, level: number): SkillStat[] {
       .filter(([k]) => k.startsWith('vce') || k.startsWith('vowel:') || k.startsWith('div:'))
       .map(([, s]) => s);
   }
-  return []; // Levels 5+ have no live games yet
+  if (level === 5) {
+    // Level 5 = Tinker Town: prefixes & suffixes (morphology) — the affix:* skills
+    // its games log (suffix / prefix / build / peel / ed / sort).
+    return Object.entries(map)
+      .filter(([k]) => k.startsWith('affix:'))
+      .map(([, s]) => s);
+  }
+  return []; // Levels 6+ have no live games yet
 }
 
 export interface LevelGate {

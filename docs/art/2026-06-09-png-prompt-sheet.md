@@ -64,7 +64,7 @@ Small round "world" emblems for the chapter cards (Levels 1–2 already themed).
 | `level-3.png` | Closed Syllables | a cozy wooden cabin with a closed round door, warm window glow |
 | `level-4.png` | Syllable Division & Vowel Teams | a friendly winding path splitting around a little hill with two trees |
 | `level-5.png` | Prefixes & Suffixes | a cheerful train engine with one car in front and one behind |
-| `level-6.png` | Six Reasons for Silent-E | a calm lantern glowing softly in twilight, one firefly |
+| `level-6.png` | Silent-E & Consonant-LE | a calm lantern glowing softly in twilight, one firefly |
 | `level-7.png` | Vowel-R Syllables | a friendly crowned letter-R on a soft hill at golden hour |
 | `level-8.png` | Advanced Vowel Teams | two cute jigsaw pieces joined, glowing, on a soft cloud |
 | `level-9.png` | Foreign Languages | a little hot-air balloon drifting over tiny rooftops, cozy |

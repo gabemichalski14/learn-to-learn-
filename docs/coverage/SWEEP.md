@@ -1,0 +1,56 @@
+# Quarterly Coverage Sweep — Playbook
+
+**You are here because the coverage gate went RED** (`coverage.test.ts` #1), or 90
+days have passed since `COVERAGE_META.lastReviewed`. That is the forcing function
+working as designed — **run the sweep; do not delete the test.**
+
+> Cadence: **quarterly (90 days)**. The sweep runs autonomously in the background
+> and produces a **findings report for the owner**. Nothing is merged, applied, or
+> deployed until the owner reviews and approves. The assistant never deploys.
+
+## Procedure
+
+1. **Spawn the research roster** (each tasked: *what's new since `lastReviewed`?*,
+   diff against `src/coverage/coverage.ts`, emit added/changed components + sources):
+   - **Reading (4):** frameworks/science-of-reading · dyslexia/Orton-Gillingham ·
+     fluency-vocabulary-comprehension · neurodivergence/psychology.
+   - **Gaming (4):** fun/flow/game-feel · design-frameworks/player-psychology ·
+     mobile/social/online-vs-local · child-vs-adult ethics/exemplars. The ethics
+     agent also delivers a **standing human ethics audit** of the *current* design
+     (does any mechanic read as a dark pattern now?) — the safety net the keyword
+     scan can't be.
+   - **Compliance (1):** COPPA / Children's Code / GDPR-K / FERPA + state laws —
+     what changed, does our posture still satisfy it (flag time-bound items, e.g.
+     the COPPA **2026-04-22** deadline).
+   - **Meta (1):** the **red-team gap-hunter** — find structural blind spots /
+     unknown-unknowns ("what category is entirely absent?"); horizon-scan adjacent
+     fields and under-served populations (**ELL/multilingual/biliteracy**,
+     co-occurring conditions, AI tutoring); re-audit the meta-domain list + framework
+     registry; critique the thoroughness of this sweep's own prompts.
+
+2. **Diff & draft.** For each finding: add/update a `CoverageComponent`, attach ≥2
+   sources for any `covered` claim (triangulation), append new authorities to
+   `FRAMEWORKS`. Single-source rows downgrade to `partial`.
+
+3. **Owner report → approval.** Produce a ranked findings report. On approval:
+   - update the three narrative maps + `coverage.ts`;
+   - bump `COVERAGE_META.lastReviewed` (and `coverageVersion` on material change);
+   - append `docs/coverage/CHANGELOG.md` (provenance);
+   - gate goes green; new gaps become tracked build tasks if warranted;
+   - append findings to the memory KB for cross-session provenance.
+
+## Emergency valve (bounded, never silent)
+
+If a sweep genuinely can't run in time (hotfix in flight, slow review), add a
+`sweep` entry to `COVERAGE_META.acknowledgedDefers` with a `reason`, `by`, `at`,
+and an `until` within `maxDeferDays` (30). The gate prints the deferral and passes
+until `until`; a malformed or over-cap defer still fails. The override is recorded
+and expires — it is visible, not a silent skip.
+
+## Status
+
+- **P1 (done):** manifest + maps + guard tests #1,2,3,4,5,9,10 — *the cadence is now enforced.*
+- **P2:** ethics-as-tests source scan (#6) + walk-the-line tracking (#7).
+- **P3:** this playbook → a `/coverage-sweep` command + the scheduled quarterly
+  background task + owner-approval report flow.
+- **P4:** decodability invariant (#8) when the connected-text engine ships broadly.

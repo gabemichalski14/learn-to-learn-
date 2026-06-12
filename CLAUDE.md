@@ -71,8 +71,14 @@ risks — never round up to please.
 Reading, gaming, and compliance science go stale. The coverage maps in
 `docs/coverage/` + the quarterly sweep (`docs/coverage/SWEEP.md`) keep us current,
 enforced by guard tests (a red coverage gate means the quarterly review is overdue —
-run the sweep, don't delete the test). These deep research dives are a STANDING
-cadence, not a one-off. See `docs/superpowers/specs/2026-06-11-freshness-engine-design.md`.
+run the sweep per `docs/coverage/SWEEP.md`, don't delete the test). The typed
+manifest `src/coverage/coverage.ts` is the single source of truth; the `.md` maps
+are checked against it. These deep research dives are a STANDING cadence, not a
+one-off. See `docs/superpowers/specs/2026-06-11-freshness-engine-design.md`.
+- **Definition of done — new level/game:** add or update its row(s) in
+  `src/coverage/coverage.ts` (reading scope, engagement `kind`, any compliance
+  impact). Test #2 (no-level-left-behind) fails the gate if a `LEVELS` entry has no
+  reading coverage row, so this can't be skipped.
 
 ## Age-appropriate content (ages ~5–10) — guarded, always
 All child-facing content must be age-appropriate. Machine-GENERATED content is the

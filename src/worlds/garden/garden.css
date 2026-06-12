@@ -171,16 +171,7 @@ img.gd-wordpic.wpic { width: clamp(96px, min(30vw, 14vh), 196px); height: auto; 
 /* the level companion greeting you on the hub (reuses the in-game hero card) */
 .gd-hub__greeter { margin: 4px auto 18px; }
 
-/* walk-home CTA — appears once the companion's whole song is back (every game
-   mastered), so the homecoming has a home on the hub, not just one game's finish */
-.gd-hub__home { margin: 0 auto 18px; display: block; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer;
-  min-height: 48px; color: #fff; background: linear-gradient(135deg, #f5b13c, #ef962a); border: none;
-  padding: 12px 22px; border-radius: 999px; box-shadow: 0 10px 22px rgba(239, 150, 42, 0.4);
-  animation: gd-check-pulse 2.4s ease-in-out infinite; }
-.gd-hub__home:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
-@media (prefers-reduced-motion: reduce) { .gd-hub__home { animation: none; } }
-
-/* end-of-level checkpoint CTA — appears once mastery hits 95% */
+/* checkpoint / warm-up CTA — still used by the Sound Garden welcome screen */
 .gd-hub__check { margin: 24px auto 0; display: block; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer;
   min-height: 48px; color: #fff; background: linear-gradient(135deg, #f5b13c, #ef962a); border: none;
   padding: 13px 24px; border-radius: 999px; box-shadow: 0 10px 22px rgba(239, 150, 42, 0.4);
@@ -191,13 +182,6 @@ img.gd-wordpic.wpic { width: clamp(96px, min(30vw, 14vh), 196px); height: auto; 
 @keyframes gd-check-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
 @media (prefers-reduced-motion: reduce) { .gd-hub__check { animation: none; } }
 
-/* gentle link from the level launcher into the cozy Village home */
-.gd-hub__village { margin: 22px auto 0; font: inherit; font-weight: 800; font-size: 14px; cursor: pointer;
-  min-height: 44px; color: #2f7d56; background: rgba(255, 255, 255, 0.82); border: 1.5px solid #8ecf9f;
-  padding: 11px 22px; border-radius: 999px; box-shadow: 0 6px 14px rgba(78, 149, 104, 0.2); }
-.gd-hub__village:active { transform: scale(0.98); }
-.gd-hub__village:focus-visible { outline: 3px solid #173d2a; outline-offset: 3px; }
-@media (prefers-reduced-motion: reduce) { .gd-hub__village:active { transform: none; } }
 
 /* the living garden — a FULL-SCREEN layer of hand-made SVG flora that fills in
    as you play. Motion is restrained: only ~a quarter sway, slowly + staggered. */

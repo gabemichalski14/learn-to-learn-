@@ -239,19 +239,6 @@ body::before {
   color: var(--lvl-accent, var(--teal-deep)); margin: -1px 0 1px; }
 .lvl-card__focus { font-size: 12.5px; color: var(--muted); flex: 1; line-height: 1.45; }
 .lvl-card__foot { font-size: 12px; font-weight: 800; color: var(--teal-deep); }
-.lvl-card--std:not(.is-ready) .lvl-card__foot { color: var(--muted); }
-.lvl-card--std .level-emblem { margin-bottom: 8px; }
-
-/* Per-world THEMING for the plain (std) cards — accent the icon badge, a soft
-   wash, and an accent edge, so every level reads as its own world even before a
-   full painted background lands (see docs/art/LEVEL-ICONS-MANIFEST.md → card-N). */
-.lvl-card--std { border-top: 3px solid color-mix(in srgb, var(--lvl-accent, #5aa06f) 70%, transparent);
-  background:
-    radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--lvl-accent, #5aa06f) 10%, transparent) 0%, transparent 60%),
-    var(--surface, #fff); }
-.lvl-card--std .level-emblem { background: color-mix(in srgb, var(--lvl-accent, #5aa06f) 15%, #fff); }
-.lvl-card--std .lvl-card__foot { color: var(--lvl-accent, var(--teal-deep)); }
-
 /* ---- Themed level cards (CONGRUENT): every level wears its painted world
    (card-N.png) the SAME way, so the PNG alone supplies the per-level look while
    the structure is identical across all ten. Text rides a soft cream scrim over
@@ -308,26 +295,10 @@ body::before {
 @keyframes lvl-knock-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .lvl-card--knock .lvl-veil__badge { animation: none; } .lvl-knock { animation: none; } }
 
-/* themed Level 2 (Space Patrol) full card */
-.lvl-card--space { color: #eafcff; border-color: rgba(120, 220, 230, 0.4);
-  background: radial-gradient(135% 130% at 78% -12%, #16455a 0%, #0c2a39 46%, #071821 82%); box-shadow: 0 16px 36px rgba(8, 30, 40, 0.42); }
-.lvl-card--space:hover { box-shadow: 0 24px 50px rgba(8, 30, 40, 0.6), 0 0 28px rgba(94, 240, 200, 0.25); }
-.lvl-card--space .lvl-card__num { color: #9fe9f0; }
-.lvl-card--space .lvl-card__title { color: #ffffff; }
-.lvl-card--space .lvl-card__focus { color: #bcd3dd; }
-.lvl-card--space .lvl-card__foot { color: #5ef0c8; }
-.lvl-space { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-.lvl-space i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #dffaff; box-shadow: 0 0 6px #bdefff; animation: lvl-tw 4s infinite ease-in-out; }
+/* lvl-tw twinkle is kept — the Games-tab space tiles (.tile-space i) still use it */
 @keyframes lvl-tw { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
-.lvl-space__planet { position: absolute; right: -24px; top: -22px; width: 96px; height: 96px; border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, #6f8ad6, #1d2a5a); opacity: 0.65; box-shadow: inset 0 0 0 6px rgba(191, 233, 240, 0.12); }
-.lvl-space__rocket { position: absolute; right: 16px; bottom: 14px; animation: lvl-bob 3s ease-in-out infinite alternate; }
-@keyframes lvl-bob { from { transform: translateY(2px) rotate(-4deg); } to { transform: translateY(-4px) rotate(4deg); } }
-.lvl-space__flame { transform-origin: 25px 26px; animation: lvl-flame 0.2s ease-in-out infinite alternate; }
-@keyframes lvl-flame { from { transform: scaleY(0.7); } to { transform: scaleY(1.15); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .lvl-space i, .lvl-space__rocket, .lvl-space__flame { animation: none; }
   .lvl-card:hover { transform: none; }
 }
 
@@ -348,22 +319,7 @@ body::before {
 .tile-space { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 .tile-space i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #dffaff; box-shadow: 0 0 6px #bdefff; animation: lvl-tw 4s infinite ease-in-out; }
 
-/* ---- Garden-themed cards + tiles (Level 1 = Sound Garden) ---- */
-.lvl-card--garden { overflow: hidden; color: #173d2a; border-color: rgba(110, 174, 127, 0.5);
-  background: linear-gradient(180deg, #cdeffb 0%, #dff5ec 52%, #cdeecb 100%); box-shadow: 0 14px 32px rgba(78, 149, 104, 0.28); }
-.lvl-card--garden:hover { box-shadow: 0 22px 46px rgba(78, 149, 104, 0.4); }
-.lvl-card--garden .lvl-card__num { color: #2f7d56; }
-.lvl-card--garden .lvl-card__title { color: #173d2a; }
-.lvl-card--garden .lvl-card__focus { color: #3f6b51; }
-.lvl-card--garden .lvl-card__foot { color: #2f7d56; }
-.lvl-garden { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-.lvl-garden__sun { position: absolute; top: 12px; right: 14px; width: 40px; height: 40px; border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, #ffe07a, #f5c84c); box-shadow: 0 0 28px 8px rgba(245, 200, 76, 0.4); }
-.lvl-garden__hill { position: absolute; left: -10%; right: -10%; bottom: -16px; height: 48px; border-radius: 50% 50% 0 0; background: linear-gradient(180deg, #8ecf9f, #6bae7f); }
-.lvl-garden__sprout { position: absolute; bottom: 8px; left: 16px; font-size: 18px; }
-.lvl-garden__sprout--2 { left: 44px; bottom: 6px; }
-.lvl-garden__sprout--3 { left: auto; right: 22px; bottom: 7px; }
-
+/* ---- Garden-themed tiles (Level 1 = Sound Garden) ---- */
 .tile--garden { overflow: hidden; color: #173d2a; border-color: rgba(110, 174, 127, 0.5);
   background: linear-gradient(180deg, #d6f1fb 0%, #e2f6ec 55%, #d2eecf 100%); box-shadow: 0 14px 32px rgba(78, 149, 104, 0.24); }
 .tile--garden:hover { box-shadow: 0 22px 46px rgba(78, 149, 104, 0.38); }

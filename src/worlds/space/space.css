@@ -292,13 +292,6 @@
 .sg-hub__lesson{ display:flex; gap:10px; align-items:baseline; padding:8px 2px; border-bottom:1px solid rgba(120,220,230,.16); color:#eaf7fb; font-size:13.5px; font-weight:600; }
 .sg-hub__lesson:last-child{ border-bottom:none; }
 .sg-hub__lesson b{ color:#5ef0c8; min-width:18px; font-weight:900; }
-/* Visit-the-Village link — congruent with Level 1's hub (themed for space) */
-.sg-hub__village{ display:inline-flex; align-items:center; gap:8px; margin:22px auto 0; min-height:44px;
-  font:inherit; font-weight:800; font-size:14px; cursor:pointer; color:#eafcff;
-  background:rgba(8,26,36,.6); border:1px solid rgba(150,230,235,.4); border-radius:999px;
-  padding:11px 22px; backdrop-filter:blur(3px); box-shadow:0 6px 16px rgba(0,0,0,.3); }
-.sg-hub__village:hover{ background:rgba(12,38,52,.72); }
-.sg-hub__village:focus-visible{ outline:3px solid #eafcff; outline-offset:3px; }
 
 /* ============================================================
    Game juice — catch squash/stretch, sparkle burst, combo,

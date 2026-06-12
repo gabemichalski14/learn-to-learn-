@@ -221,10 +221,23 @@ body::before {
 .lvl-card__body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 6px; }
 .lvl-card__num { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--teal-deep); }
 .lvl-card__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(17px, 2.6vw, 20px); line-height: 1.08; color: var(--ink); }
+/* the academic skill rides under the themed world name as a small accent label */
+.lvl-card__skill { font-size: 12px; font-weight: 800; letter-spacing: 0.01em;
+  color: var(--lvl-accent, var(--teal-deep)); margin: -1px 0 1px; }
 .lvl-card__focus { font-size: 12.5px; color: var(--muted); flex: 1; line-height: 1.45; }
 .lvl-card__foot { font-size: 12px; font-weight: 800; color: var(--teal-deep); }
 .lvl-card--std:not(.is-ready) .lvl-card__foot { color: var(--muted); }
 .lvl-card--std .level-emblem { margin-bottom: 8px; }
+
+/* Per-world THEMING for the plain (std) cards — accent the icon badge, a soft
+   wash, and an accent edge, so every level reads as its own world even before a
+   full painted background lands (see docs/art/LEVEL-ICONS-MANIFEST.md → card-N). */
+.lvl-card--std { border-top: 3px solid color-mix(in srgb, var(--lvl-accent, #5aa06f) 70%, transparent);
+  background:
+    radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--lvl-accent, #5aa06f) 10%, transparent) 0%, transparent 60%),
+    var(--surface, #fff); }
+.lvl-card--std .level-emblem { background: color-mix(in srgb, var(--lvl-accent, #5aa06f) 15%, #fff); }
+.lvl-card--std .lvl-card__foot { color: var(--lvl-accent, var(--teal-deep)); }
 
 /* locked level — keeps its OWN themed world, shown "asleep" under a soft mist
    so it stays inviting (curiosity) rather than a dull greyed box. */

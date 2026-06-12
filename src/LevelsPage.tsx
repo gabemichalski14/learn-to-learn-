@@ -9,6 +9,21 @@ import { LevelEmblem } from './LevelEmblem';
 /** Which levels have an immersive themed "world" (full-card treatment). */
 const WORLD: Record<number, 'space' | 'garden'> = { 1: 'garden', 2: 'space' };
 
+/** Each level is its own themed WORLD — original names (no program's scope &
+ *  sequence titles), so the level NAME is creative expression, not a transcribed
+ *  curriculum heading. The academic skill rides along as a subtitle. */
+const WORLD_NAME: Record<number, string> = {
+  1: 'Sound Garden', 2: 'Space Patrol', 3: "Patch's Workshop", 4: "Giant's Valley",
+  5: 'Tinker Town', 6: 'Whisper Woods', 7: 'Pirate Cove', 8: 'Tidepool Bay',
+  9: 'Globe Harbor', 10: 'Root Ruins',
+};
+/** Per-world accent — themes each card (icon badge, skill label, glow) until its
+ *  full painted background lands (see docs/art/LEVEL-ICONS-MANIFEST.md). */
+const WORLD_ACCENT: Record<number, string> = {
+  1: '#5aa06f', 2: '#22c1d6', 3: '#c8893e', 4: '#7a9e6b', 5: '#d98a3d',
+  6: '#8a7bc0', 7: '#2f8aa8', 8: '#3fb5a0', 9: '#5b86c4', 10: '#b87a55',
+};
+
 /** Fixed star field for the themed Level 2 card (top%, left%). */
 const SPACE_STARS: Array<[number, number]> = [
   [14, 10], [22, 78], [34, 30], [12, 52], [60, 16], [72, 64], [48, 86], [82, 38], [28, 92], [66, 44], [88, 12], [40, 60],
@@ -96,7 +111,8 @@ export function LevelsPage({ learnerId }: { learnerId: string }) {
           const prereq = num - 1;
           const prereqReady = isLevelReady(learnerId, prereq);
           const world = WORLD[num];
-          const style = { '--i': idx + 1 } as CSSProperties;
+          const worldName = WORLD_NAME[num] ?? lvl.title;
+          const style = { '--i': idx + 1, '--lvl-accent': WORLD_ACCENT[num] ?? '#5aa06f' } as CSSProperties;
 
           const themeClass = world === 'space' ? 'lvl-card--space'
             : world === 'garden' ? 'lvl-card--garden'
@@ -105,9 +121,7 @@ export function LevelsPage({ learnerId }: { learnerId: string }) {
             : world === 'garden' ? <GardenVisual />
             : <LevelEmblem level={num} />;
           const bodyWrap = world === 'space' || world === 'garden';
-          const numLabel = world === 'space' ? `Level ${num} · Space Patrol`
-            : world === 'garden' ? `Level ${num} · Sound Garden`
-            : `Level ${num}`;
+          const numLabel = `Level ${num}`;
 
           const foot = unlocked
             ? footText(num, games)
@@ -118,7 +132,8 @@ export function LevelsPage({ learnerId }: { learnerId: string }) {
           const bodyKids = (
             <>
               <span className="lvl-card__num">{numLabel}</span>
-              <span className="lvl-card__title">{lvl.title}</span>
+              <span className="lvl-card__title">{worldName}</span>
+              <span className="lvl-card__skill">{lvl.title}</span>
               <span className="lvl-card__focus">{unlocked ? lvl.focus : (LEVEL_TEASER[num] ?? lvl.focus)}</span>
               <span className="lvl-card__foot">{foot}</span>
             </>

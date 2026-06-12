@@ -11,6 +11,7 @@ import {
   pairId,
   reviewAfterAnswer,
   selectDueItems,
+  type ConfusionMatrix,
   type ReviewState,
   type ReviewItem,
 } from './review';
@@ -95,12 +96,10 @@ export function siblingSkillKey(target: SkillKey, confusedWith: string): SkillKe
   return null;
 }
 
-/** Turn systematic confusions (from the append-only skill-events) into interleaved
- *  PairItems. Idempotent; returns how many new pairs were minted. The pair won't
- *  actually interleave until BOTH members are acquired (block-first, enforced at
- *  selection time). */
-export function syncConfusionPairs(learnerId: string, events: SkillEvent[]): number {
-  const matrix = confusionMatrixFromEvents(events);
+/** Mint interleave PairItems from a confusion matrix. Idempotent; returns how many
+ *  new pairs were minted. A pair won't actually interleave until BOTH members are
+ *  acquired (block-first, enforced at selection time). */
+function mintPairs(learnerId: string, matrix: ConfusionMatrix): number {
   const state = loadReview(learnerId);
   let added = 0;
   for (const pp of promotablePairs(matrix)) {
@@ -113,6 +112,30 @@ export function syncConfusionPairs(learnerId: string, events: SkillEvent[]): num
   }
   if (added) save(learnerId, state);
   return added;
+}
+
+/** Mint pairs from cloud events (the signed-in path; full history). */
+export function syncConfusionPairs(learnerId: string, events: SkillEvent[]): number {
+  return mintPairs(learnerId, confusionMatrixFromEvents(events));
+}
+
+/** Mint pairs from the LOCAL mastery store's accumulated confusions — local-first,
+ *  offline, no event fetch (each SkillStat.confusions IS a ConfusionMatrix row). */
+export function syncConfusionPairsFromMastery(learnerId: string): number {
+  const map = loadMastery(learnerId);
+  const matrix: ConfusionMatrix = {};
+  for (const [skill, stat] of Object.entries(map)) {
+    if (stat.confusions && Object.keys(stat.confusions).length > 0) matrix[skill] = stat.confusions;
+  }
+  return mintPairs(learnerId, matrix);
+}
+
+/** Call at session end: enroll newly-mastered skills into spaced review + mint
+ *  interleave pairs from captured confusions. Local-first, idempotent, cheap. The
+ *  kid-facing warm-up that SURFACES these (startReviewSession + selectReview) is B3. */
+export function syncReviewOnSessionEnd(learnerId: string): void {
+  enrollMasteredSkills(learnerId);
+  syncConfusionPairsFromMastery(learnerId);
 }
 
 /** Begin a tending session — advances the session clock so due items surface. */

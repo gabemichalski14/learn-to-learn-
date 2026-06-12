@@ -6,6 +6,7 @@
 
 import { stableRead } from './data/stableRead';
 import { notifyDataChanged } from './data/dataBus';
+import { syncReviewOnSessionEnd } from './world/memory/reviewStore';
 
 const k = (learnerId: string, suffix: string) => `ll:${learnerId}:${suffix}`;
 
@@ -99,6 +100,12 @@ export function recordFinish(learnerId: string, elapsedMs: number): FinishResult
     /* ignore */
   }
   notifyDataChanged();
+
+  // Memory engine: a session just ended — enroll newly-mastered skills into spaced
+  // review and mint interleave pairs from captured confusions (local-first,
+  // idempotent). Surfacing them to the learner is the deferred "garden tending"
+  // warm-up (B3); this only populates the review store.
+  syncReviewOnSessionEnd(learnerId);
 
   return { bestMs, isBest, sessions };
 }

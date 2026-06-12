@@ -6,6 +6,8 @@ import {
   enrollMasteredSkills,
   siblingSkillKey,
   syncConfusionPairs,
+  syncConfusionPairsFromMastery,
+  syncReviewOnSessionEnd,
   startReviewSession,
   selectReview,
   recordReview,
@@ -104,5 +106,28 @@ describe('recordReview', () => {
 
   it('does nothing for an unknown item id', () => {
     expect(recordReview(L, 'nope', true)).toBe(false);
+  });
+});
+
+describe('syncConfusionPairsFromMastery (local-first, no events)', () => {
+  it('mints a pair from the local mastery confusions', () => {
+    recordItem(L, 'sound:first:b', false, undefined, 'd');
+    recordItem(L, 'sound:first:b', false, undefined, 'd');
+    recordItem(L, 'sound:first:b', false, undefined, 'd'); // systematic b→d confusion
+    expect(syncConfusionPairsFromMastery(L)).toBe(1);
+    expect(loadReview(L).items[pairId('sound:first:b', 'sound:first:d')]).toBeDefined();
+  });
+});
+
+describe('syncReviewOnSessionEnd (the #122 hook)', () => {
+  it('enrolls mastered skills AND mints confusion pairs in one call', () => {
+    master('sound:first:m'); // → enrollable
+    recordItem(L, 'sound:first:b', false, undefined, 'd');
+    recordItem(L, 'sound:first:b', false, undefined, 'd');
+    recordItem(L, 'sound:first:b', false, undefined, 'd');
+    syncReviewOnSessionEnd(L);
+    const items = loadReview(L).items;
+    expect(items['sound:first:m']).toBeDefined(); // enrolled
+    expect(items[pairId('sound:first:b', 'sound:first:d')]).toBeDefined(); // pair minted
   });
 });

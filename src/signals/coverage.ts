@@ -49,7 +49,9 @@ export function parseLogSkillEventCalls(source: string): LoggedCall[] {
     }
     const body = source.slice(open, end + 1);
     const literal = body.match(/game:\s*'([^']+)'/);
-    const game = literal ? literal[1] : /game:\s*gameId\b/.test(body) ? 'dynamic' : 'unknown';
+    // a non-literal game value — a prop/identifier (gameId) or member access
+    // (config.gameId, from a shared game component) — is 'dynamic', not 'unknown'.
+    const game = literal ? literal[1] : /game:\s*[A-Za-z_$][\w.$]*/.test(body) ? 'dynamic' : 'unknown';
     const fields = new Set<EnrichmentField>();
     for (const f of ENRICHMENT_FIELDS) if (new RegExp(`\\b${f}\\b`).test(body)) fields.add(f);
     out.push({ game, fields });

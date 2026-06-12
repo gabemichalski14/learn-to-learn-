@@ -45,10 +45,28 @@ describe('trialFor', () => {
     expect(t.options).toContain('st');
   });
 
-  it('still skips the abstract families (no audio-recognition trial yet)', () => {
-    expect(trialFor(makeSkillItem('pa:segment', 0), rng)).toBeNull();
+  it('builds a segment-count trial for pa:segment (hear a word, tap how many sounds)', () => {
+    const t = trialFor(makeSkillItem('pa:segment', 0), rng)!;
+    expect(t).not.toBeNull();
+    expect(t.cueKind).toBe('word');
+    expect(t.prompt).toMatch(/how many sounds/i);
+    expect(t.options).toEqual(['2', '3', '4']);
+    expect(['2', '3', '4']).toContain(t.answer);
+  });
+
+  it('builds a read trial for read:* (SHOW a word, tap its picture — never speak it)', () => {
+    const t = trialFor(makeSkillItem('read:cvc', 0), rng)!;
+    expect(t).not.toBeNull();
+    expect(t.cueKind).toBe('read'); // the word is shown, not played (no answer leak)
+    expect(t.optionKind).toBe('emoji');
+    expect(t.options).toHaveLength(3);
+    expect(t.options).toContain(t.answer);
+    expect(t.optionAria).toHaveLength(3); // an a11y label per emoji option
+  });
+
+  it('still skips the families without a trial yet', () => {
     expect(trialFor(makeSkillItem('rule:floss', 0), rng)).toBeNull();
-    expect(trialFor(makeSkillItem('read:cvc', 0), rng)).toBeNull();
+    expect(trialFor(makeSkillItem('pa:rhyme', 0), rng)).toBeNull(); // pa, but not segment
   });
 });
 
@@ -56,12 +74,12 @@ describe('buildTrials', () => {
   it('keeps renderable items, skips the rest, and caps the set', () => {
     const items: ReviewItem[] = [
       makeSkillItem('sound:first:m', 0),
-      makeSkillItem('pa:segment', 0), // skipped
+      makeSkillItem('rule:floss', 0), // skipped (no trial yet)
       makeSkillItem('sound:last:t', 0),
       makePairItem('sound:first:b', 'sound:first:d', 0, 0.5),
     ];
     const trials = buildTrials(items, rng, 6);
-    expect(trials).toHaveLength(3); // pa:segment dropped
+    expect(trials).toHaveLength(3); // rule:floss dropped
     expect(buildTrials(items, rng, 2)).toHaveLength(2); // cap respected
   });
 });

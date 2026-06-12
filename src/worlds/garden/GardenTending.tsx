@@ -39,9 +39,12 @@ export function GardenTending({ learnerId = 'guest' }: { learnerId?: string }) {
   }, [learnerId]);
 
   const trial = trials ? trials[idx] : undefined;
-  const playCue = (t: TendingTrial) => (t.cueKind === 'word'
-    ? audio.playWord({ id: t.cue, label: t.cue, emoji: '🔈' })
-    : audio.playSound(t.cue));
+  const playCue = (t: TendingTrial) => {
+    if (t.cueKind === 'read') return; // a READ task — never speak the answer
+    return t.cueKind === 'word'
+      ? audio.playWord({ id: t.cue, label: t.cue, emoji: '🔈' })
+      : audio.playSound(t.cue);
+  };
 
   useEffect(() => {
     if (trial) void playCue(trial);
@@ -99,17 +102,19 @@ export function GardenTending({ learnerId = 'guest' }: { learnerId?: string }) {
             </div>
 
             <p className="gd-tend-prompt">{trial.prompt}</p>
-            <button type="button" className="gd-tend-hear" onClick={() => { void playCue(trial); sfx.tap(); }}>🔊 hear it again</button>
+            {trial.cueKind === 'read'
+              ? <p className="gd-tend-word" aria-label={`read the word ${trial.cue}`}>{trial.cue}</p>
+              : <button type="button" className="gd-tend-hear" onClick={() => { void playCue(trial); sfx.tap(); }}>🔊 hear it again</button>}
 
-            <div className="gd-tend-opts" role="group" aria-label={trial.prompt}>
-              {trial.options.map((opt) => (
+            <div className={`gd-tend-opts${trial.optionKind === 'emoji' ? ' gd-tend-opts--pic' : ''}`} role="group" aria-label={trial.prompt}>
+              {trial.options.map((opt, i) => (
                 <button
                   key={opt}
                   type="button"
-                  className={`gd-tend-opt${opt.length > 2 ? ' gd-tend-opt--word' : ''}${picked === opt ? (opt === trial.answer ? ' is-right' : ' is-wrong') : ''}`}
+                  className={`gd-tend-opt${trial.optionKind === 'emoji' ? ' gd-tend-opt--pic' : (opt.length > 2 ? ' gd-tend-opt--word' : '')}${picked === opt ? (opt === trial.answer ? ' is-right' : ' is-wrong') : ''}`}
                   disabled={picked !== null}
                   onClick={() => tapOption(opt)}
-                  aria-label={opt}
+                  aria-label={trial.optionAria ? trial.optionAria[i] : opt}
                 >{opt}</button>
               ))}
             </div>

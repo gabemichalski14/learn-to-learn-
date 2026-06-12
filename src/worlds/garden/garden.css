@@ -419,6 +419,8 @@ img.gd-wordpic.wpic { width: clamp(96px, min(30vw, 14vh), 196px); height: auto; 
 /* Garden tending — the spaced-review warm-up (memory engine surfaced) */
 .gd-tend-done { flex-direction: column; align-items: center; gap: 12px; text-align: center; }
 .gd-tend-prompt { margin: 0; font-weight: 700; font-size: 16px; color: #173d2a; }
+/* read-trial: the word to READ (shown big; its answer is never spoken) */
+.gd-tend-word { margin: 2px 0; font-family: var(--font-display, inherit); font-weight: 800; font-size: clamp(34px, 10vw, 54px); letter-spacing: 0.02em; color: #173d2a; }
 .gd-tend-hear { margin-top: 4px; min-height: 44px; padding: 8px 16px; border-radius: 999px; cursor: pointer; font: inherit; font-weight: 700; font-size: 13px; background: rgba(255,255,255,0.82); border: 1px solid rgba(23,61,42,0.25); color: #2f6b43; transition: transform .1s ease, background .1s ease; }
 .gd-tend-hear:hover { transform: translateY(-1px); background: #fff; }
 .gd-tend-opts { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(10px, 4vw, 18px); margin-top: 6px; }
@@ -434,6 +436,8 @@ img.gd-wordpic.wpic { width: clamp(96px, min(30vw, 14vh), 196px); height: auto; 
 .gd-tend-progress i.done { background: #6bae7f; }
 @media (prefers-reduced-motion: reduce) { .gd-tend-opt.is-wrong { animation: none; } }
 .gd-tend-opt--word { width: auto; min-width: clamp(82px, 26vw, 132px); padding: 0 16px; font-size: clamp(18px, 5vw, 26px); }
+/* emoji (picture) options for the read trial — not lowercase-transformed */
+.gd-tend-opt--pic { text-transform: none; font-size: clamp(34px, 9vw, 46px); }
 
 /* Sound Garden Welcome — the one-time serial naming-speed (RAN proxy) board. */
 .gd-ran-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: clamp(6px, 2.2vw, 14px); width: 100%; max-width: 460px; margin: 10px auto 0; }

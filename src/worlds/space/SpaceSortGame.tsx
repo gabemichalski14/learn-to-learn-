@@ -169,6 +169,8 @@ export function SpaceSortGame({
     return map;
   });
   const handledRef = useRef(false);
+  const lastPlaceRef = useRef(0); // last placement time → inter-placement latency
+  const roundSeenRef = useRef(-1); // which sector lastPlaceRef belongs to
   // distance constraint: a tap (<8px) fires the creature's onClick (replay the
   // word) instead of being swallowed as a zero-length drag; real drags still work.
   const sensors = useSensors(
@@ -183,10 +185,17 @@ export function SpaceSortGame({
     round,
     audio,
     onItemResult: ({ skillKey, correct, chosen }) => {
-      recordItem(learnerId, skillKey, correct, undefined, correct ? undefined : chosen);
+      // Inter-placement interval: a sort board shows all items at once, so there's
+      // no single shown→answer moment — we time between drops. The first placement
+      // of a sector has no baseline (latency undefined).
+      const now = Date.now();
+      const latencyMs = roundSeenRef.current === roundIndex && lastPlaceRef.current ? now - lastPlaceRef.current : undefined;
+      roundSeenRef.current = roundIndex;
+      lastPlaceRef.current = now;
+      recordItem(learnerId, skillKey, correct, latencyMs, correct ? undefined : chosen);
       logSkillEvent(learnerId, {
-        skillKey, correct, at: Date.now(), game: gameId, level,
-        firstTry: true,                          // hook reports the first (only) attempt at this item
+        skillKey, correct, at: now, game: gameId, level,
+        firstTry: true, latencyMs,               // hook reports the first (only) attempt at this item
         chosen: correct ? undefined : chosen,    // the confusion (which sound they picked)
       });
       // Recover the character from his OWN sounds' real mastery (recordItem just

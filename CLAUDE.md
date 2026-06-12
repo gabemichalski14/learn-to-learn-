@@ -73,3 +73,12 @@ Reading, gaming, and compliance science go stale. The coverage maps in
 enforced by guard tests (a red coverage gate means the quarterly review is overdue —
 run the sweep, don't delete the test). These deep research dives are a STANDING
 cadence, not a one-off. See `docs/superpowers/specs/2026-06-11-freshness-engine-design.md`.
+
+## Age-appropriate content (ages ~5–10) — guarded, always
+All child-facing content must be age-appropriate. Machine-GENERATED content is the
+highest risk, so it's guarded by construction: the reading engine emits a CLOSED
+vocabulary (curated lexicon + function words), and `src/reading/ageGuard.ts` + its
+test enforce that (a) no denylisted word can appear and (b) the composer never emits
+a word outside the curated lexicon — so every generated phrase/sentence/passage is
+provably safe. New content words pass the guard. This is a HARD gate, like the IP
+and dark-pattern guards: never weaken it to make content pass.

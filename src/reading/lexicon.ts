@@ -111,7 +111,7 @@ export const LEXICON: LexEntry[] = [
   // ── Level-3 words (a digraph; prove the L2→L3 inventory boundary) ──
   make('fish', 'noun', { emoji: '🐟', animate: true }), make('duck', 'noun', { emoji: '🦆', animate: true }),
   make('sock', 'noun', { emoji: '🧦' }), make('ship', 'noun', { emoji: '🚢', place: true }),
-  make('shed', 'noun', { place: true }), make('chin', 'noun'), make('chop', 'verb'),
+  make('shed', 'noun', { place: true }), make('chin', 'noun'),
 ];
 
 const WORD_INDEX = new Map<string, LexEntry>(LEXICON.map((e) => [e.word.toLowerCase(), e]));

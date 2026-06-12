@@ -23,9 +23,32 @@ describe('trialFor', () => {
     expect(['b', 'd']).toContain(t.answer);
   });
 
-  it('returns null for families without an audio trial yet (pa:, blend:, …)', () => {
+  it('builds a sight-word recognition trial for a heart word', () => {
+    const t = trialFor(makeSkillItem('heart:said', 0), rng)!;
+    expect(t.kind).toBe('skill');
+    expect(t.cueKind).toBe('word');
+    expect(t.answer).toBe('said');
+    expect(t.options).toContain('said');
+    expect(t.options).toHaveLength(3);
+  });
+
+  it('builds a digraph trial (hear the letter team, tap it)', () => {
+    const t = trialFor(makeSkillItem('digraph:sh', 0), rng)!;
+    expect(t.answer).toBe('sh');
+    expect(t.cueKind).toBe('sound');
+    expect(t.options).toContain('sh');
+  });
+
+  it('builds a blend trial', () => {
+    const t = trialFor(makeSkillItem('blend:init:st', 0), rng)!;
+    expect(t.answer).toBe('st');
+    expect(t.options).toContain('st');
+  });
+
+  it('still skips the abstract families (no audio-recognition trial yet)', () => {
     expect(trialFor(makeSkillItem('pa:segment', 0), rng)).toBeNull();
-    expect(trialFor(makeSkillItem('blend:init:st', 0), rng)).toBeNull();
+    expect(trialFor(makeSkillItem('rule:floss', 0), rng)).toBeNull();
+    expect(trialFor(makeSkillItem('read:cvc', 0), rng)).toBeNull();
   });
 });
 

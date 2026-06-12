@@ -1,29 +1,40 @@
 import { parseSkillKey } from '../../mastery/skills';
+import { HEART_WORDS } from '../../content/packs/heartWords';
 import type { ReviewItem } from './review';
 
 /**
  * Turns a due ReviewItem into a short RETRIEVAL trial for the "garden tending"
- * warm-up: hear a sound, tap the letter that makes it. Pure + deterministic.
+ * warm-up: hear a cue, tap the answer. Pure + deterministic.
  *
- * v1 covers the audio-recognition families — `sound:<pos>:<id>` skills and
- * confusable PAIRS of them (minimal-pair discrimination, the highest-value review
- * content). Other families (pa:/blend:/digraph:/read:…) have no audio-recognition
- * trial yet and are skipped (returns null) — a later iteration adds their shells.
+ * Covers the families that have a clean recognition trial:
+ *   sound:<pos>:<id>  → hear the sound, tap the letter (+ confusable PAIRS as
+ *                       minimal-pair discrimination)
+ *   heart:<word>      → hear the word, tap the word (sight-word recognition)
+ *   digraph:<x>       → hear it, tap the letter team
+ *   blend:<pos>:<x>   → hear it, tap the blend
+ * Abstract families (pa:* segment/blend/rhyme, rule:/syll:/vce/vowel:/div:, read:*)
+ * need bespoke mechanics and are skipped (return null) — a later iteration.
  */
 
 export interface TendingTrial {
   itemId: string;
-  /** the sound id to PLAY as the cue */
+  /** what to PLAY as the cue */
   cue: string;
-  /** grapheme options to show (includes the answer) */
+  /** how to play the cue: a phoneme/unit (playSound) or a whole word (playWord) */
+  cueKind: 'sound' | 'word';
+  /** the child-facing question */
+  prompt: string;
+  /** options to show (includes the answer) */
   options: string[];
-  /** the correct grapheme */
+  /** the correct option */
   answer: string;
-  /** 'pair' = minimal-pair discrimination; 'skill' = recognition among distractors */
   kind: 'skill' | 'pair';
 }
 
-const POOL = 'bcdfghjklmnprstvwzaeiou'.split('');
+const LETTERS = 'bcdfghjklmnprstvwzaeiou'.split('');
+const DIGRAPHS = ['sh', 'ch', 'th', 'wh', 'ck'];
+const BLENDS = ['st', 'bl', 'cr', 'sp', 'tr', 'fl', 'gr', 'sn', 'pl', 'dr', 'cl', 'br'];
+const HEART_LIST = HEART_WORDS.map((w) => w.word);
 
 function shuffle<T>(arr: readonly T[], rng: () => number): T[] {
   const a = [...arr];
@@ -34,20 +45,42 @@ function shuffle<T>(arr: readonly T[], rng: () => number): T[] {
   return a;
 }
 
+/** answer + 2 distractors drawn from a pool, all shuffled. */
+function withDistractors(answer: string, pool: readonly string[], rng: () => number): string[] {
+  const distractors = shuffle(pool.filter((p) => p !== answer), rng).slice(0, 2);
+  return shuffle([answer, ...distractors], rng);
+}
+
 /** A retrieval trial for one item, or null if its family has no trial yet. */
 export function trialFor(item: ReviewItem, rng: () => number = Math.random): TendingTrial | null {
+  // confusable PAIR (sound family) → minimal-pair discrimination
   if (item.kind === 'pair') {
     const parsed = item.members.map((m) => parseSkillKey(m));
-    if (parsed.some((p) => !p)) return null; // only sound-family pairs in v1
+    if (parsed.some((p) => !p)) return null;
     const sounds = parsed.map((p) => p!.soundId);
     const answer = sounds[Math.floor(rng() * sounds.length)];
-    return { itemId: item.id, cue: answer, options: shuffle(sounds, rng), answer, kind: 'pair' };
+    return { itemId: item.id, cue: answer, cueKind: 'sound', prompt: 'Which one says it?', options: shuffle(sounds, rng), answer, kind: 'pair' };
   }
-  const p = parseSkillKey(item.members[0]);
-  if (!p) return null;
-  const answer = p.soundId;
-  const distractors = shuffle(POOL.filter((d) => d !== answer), rng).slice(0, 2);
-  return { itemId: item.id, cue: answer, options: shuffle([answer, ...distractors], rng), answer, kind: 'skill' };
+
+  const key = item.members[0];
+
+  // sound:<pos>:<id> → hear the sound, tap the letter
+  const p = parseSkillKey(key);
+  if (p) {
+    return { itemId: item.id, cue: p.soundId, cueKind: 'sound', prompt: 'Tap the sound you hear.', options: withDistractors(p.soundId, LETTERS, rng), answer: p.soundId, kind: 'skill' };
+  }
+
+  const [family, a, b] = key.split(':');
+  if (family === 'heart' && a) {
+    return { itemId: item.id, cue: a, cueKind: 'word', prompt: 'Tap the word you hear.', options: withDistractors(a, HEART_LIST, rng), answer: a, kind: 'skill' };
+  }
+  if (family === 'digraph' && a) {
+    return { itemId: item.id, cue: a, cueKind: 'sound', prompt: 'Tap the letter team you hear.', options: withDistractors(a, DIGRAPHS, rng), answer: a, kind: 'skill' };
+  }
+  if (family === 'blend' && b) {
+    return { itemId: item.id, cue: b, cueKind: 'sound', prompt: 'Tap the blend you hear.', options: withDistractors(b, BLENDS, rng), answer: b, kind: 'skill' };
+  }
+  return null;
 }
 
 /** Build up to `cap` renderable trials from the due items (skips families without

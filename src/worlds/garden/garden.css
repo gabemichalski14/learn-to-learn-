@@ -433,3 +433,4 @@ img.gd-wordpic.wpic { width: clamp(96px, min(30vw, 14vh), 196px); height: auto; 
 .gd-tend-progress i.on { background: #5aa06f; }
 .gd-tend-progress i.done { background: #6bae7f; }
 @media (prefers-reduced-motion: reduce) { .gd-tend-opt.is-wrong { animation: none; } }
+.gd-tend-opt--word { width: auto; min-width: clamp(82px, 26vw, 132px); padding: 0 16px; font-size: clamp(18px, 5vw, 26px); }

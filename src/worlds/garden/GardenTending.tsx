@@ -39,9 +39,12 @@ export function GardenTending({ learnerId = 'guest' }: { learnerId?: string }) {
   }, [learnerId]);
 
   const trial = trials ? trials[idx] : undefined;
+  const playCue = (t: TendingTrial) => (t.cueKind === 'word'
+    ? audio.playWord({ id: t.cue, label: t.cue, emoji: '🔈' })
+    : audio.playSound(t.cue));
 
   useEffect(() => {
-    if (trial) void audio.playSound(trial.cue);
+    if (trial) void playCue(trial);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx, trials]);
 
@@ -89,20 +92,21 @@ export function GardenTending({ learnerId = 'guest' }: { learnerId?: string }) {
         ) : trial && (
           <>
             <div className="gd-hero gd-hub__greeter">
-              <button type="button" className="gd-hero__face" onClick={() => { void audio.playSound(trial.cue); sfx.tap(); }} aria-label="Hear the sound again">
+              <button type="button" className="gd-hero__face" onClick={() => { void playCue(trial); sfx.tap(); }} aria-label="Hear the sound again">
                 <CharacterArt emoji={character?.emoji ?? '🌱'} heal={1} mood={mood} size={84} art={character?.art} label={character?.name} />
               </button>
               <p className="gd-hero__line" role="status">{line}</p>
             </div>
 
-            <button type="button" className="gd-tend-hear" onClick={() => { void audio.playSound(trial.cue); sfx.tap(); }}>🔊 hear it again</button>
+            <p className="gd-tend-prompt">{trial.prompt}</p>
+            <button type="button" className="gd-tend-hear" onClick={() => { void playCue(trial); sfx.tap(); }}>🔊 hear it again</button>
 
-            <div className="gd-tend-opts" role="group" aria-label="tap the sound you hear">
+            <div className="gd-tend-opts" role="group" aria-label={trial.prompt}>
               {trial.options.map((opt) => (
                 <button
                   key={opt}
                   type="button"
-                  className={`gd-tend-opt${picked === opt ? (opt === trial.answer ? ' is-right' : ' is-wrong') : ''}`}
+                  className={`gd-tend-opt${opt.length > 2 ? ' gd-tend-opt--word' : ''}${picked === opt ? (opt === trial.answer ? ' is-right' : ' is-wrong') : ''}`}
                   disabled={picked !== null}
                   onClick={() => tapOption(opt)}
                   aria-label={opt}

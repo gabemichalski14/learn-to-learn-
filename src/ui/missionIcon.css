@@ -1,0 +1,19 @@
+/* Shared game-icon chip for level-hub mission cards. Bigger than a bare inline
+   icon, and a rounded clipped frame so an icon PNG with an opaque SQUARE
+   background reads as a clean rounded badge (the square is clipped away), while a
+   transparent PNG sits on a soft per-world accent badge. */
+.mission-ico {
+  width: clamp(48px, 12vw, 58px);
+  height: clamp(48px, 12vw, 58px);
+  border-radius: 15px;
+  overflow: hidden;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--mission-accent, #6bae7f) 14%, #ffffff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mission-accent, #6bae7f) 32%, transparent);
+}
+/* fill the chip — square art fills + gets rounded; transparent art sits on the badge */
+img.mission-ico__img.uicon { width: 100%; height: 100%; object-fit: contain; }
+.mission-ico .uicon--emoji { width: auto; height: auto; font-size: clamp(28px, 7vw, 34px); }

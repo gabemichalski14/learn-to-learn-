@@ -11,6 +11,7 @@ import { castFor, healFor, characterStage, beatFor } from '../../world/lore/cast
 import { CharacterArt } from '../../world/lore/CharacterArt';
 import { GardenBackdrop } from './GardenArt';
 import { Icon } from '../../ui/Icon';
+import { MissionIcon } from '../../ui/MissionIcon';
 import { HubHeader } from '../../ui/HubHeader';
 import './garden.css';
 
@@ -104,7 +105,7 @@ export function GardenLevelHub({ level, learnerId }: { level: number; learnerId:
                 disabled={!available}
                 aria-label={available ? `Play ${g.title}` : `${g.title} — coming soon`}
               >
-                <Icon name={GAME_ICON[g.id] ?? ''} emoji={g.emoji} className="gd-mission__emoji" />
+                <MissionIcon name={GAME_ICON[g.id] ?? ''} emoji={g.emoji} accent="#5aa06f" />
                 <span className="gd-mission__title">{g.title}</span>
                 <span className="gd-mission__tag">{g.tagline}</span>
                 <span className={`gd-mission__foot ${available ? 'gd-mission__go' : 'gd-mission__soon'}`}>

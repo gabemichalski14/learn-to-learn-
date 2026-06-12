@@ -25,16 +25,24 @@ records the working rule we follow so the boundary doesn't drift.
   `SpaceLevelHub`, and `LevelPage`. The `LevelsPage` card foot shows our **games
   count only**, not a lesson count.
 - ✅ **OK to keep internal**, not displayed: the `src/curriculum.ts` skeleton that
-  drives game generation, *provided* it only encodes unprotectable facts/method.
-  **TODO (follow-up):** re-derive that skeleton from first principles / public
-  Orton-Gillingham sources and strip any comments that reference transcribing a
-  specific program's books ("Book 2", "contents page", "Posttest"). Until then,
-  treat it as internal-only and do not surface it in the UI.
+  drives placement/sequence, *provided* it only encodes unprotectable facts/method.
+  **DONE:** `src/curriculum.ts` was re-derived from first principles — the book
+  titles, section lists, lesson-flow, per-lesson sound groupings, transcription
+  notes, and all branded mnemonic names were removed; lesson labels are now plain
+  skill descriptions ("final blends", "soft c and g"). Two displayed level titles
+  that matched a program's book titles ("Six Reasons for Silent-E", "Influence of
+  Foreign Languages") and a "Chameleon prefixes" focus were genericized in
+  `games.ts`.
 - ✅ **OK to display:** our own game names, taglines, the level's one-line focus,
   the child's own results, and original word/picture sets.
 
 ## Guardrail
 
 `src/curriculum.ts` must never be imported by a **component that renders its
-`lessons`/`lessonSounds` to the screen.** A lint guard enforces this (see
-`eslint.config.js` → `no-restricted-imports` for `./curriculum` in view files).
+`lessons` to the screen.** A lint guard enforces this (see `eslint.config.js` →
+`no-restricted-imports` for `./curriculum` in view files).
+
+A second guard, `src/ipGuard.test.ts`, scans the whole source tree and **fails the
+gate** if any named-program creative coinage (invented mnemonic names, exact book
+titles) reappears anywhere — even in a comment or an internal file. Add new banned
+phrases there if a program's distinctive expression slips in.

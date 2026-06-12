@@ -94,8 +94,8 @@ export const LEVELS: LevelInfo[] = [
   // (Earlier themed guesses were off — VCe lives in Level 4, suffixes in Level 5.)
   {
     num: 6,
-    title: 'Six Reasons for Silent-E',
-    focus: 'Why silent-E is there, suffix rules, and Consonant-LE',
+    title: 'Silent-E & Consonant-LE',
+    focus: 'The jobs of silent-E, suffix rules, and the Consonant-LE syllable',
     games: [
       soon('l6-silente', 'Silent Partners', '🤫', 'Spot the reason each word needs a silent-E.'),
       soon('l6-drop', 'Drop It!', '💧', 'Drop the silent-E before adding -ing or -ed.'),
@@ -121,7 +121,7 @@ export const LEVELS: LevelInfo[] = [
   },
   {
     num: 9,
-    title: 'Influence of Foreign Languages',
+    title: 'Foreign Word Patterns',
     focus: 'Greek and French spelling patterns in borrowed words',
     games: [
       soon('l9-borrowed', 'Word Detective', '🕵️', 'Spot the clues that a word is borrowed.'),
@@ -130,8 +130,8 @@ export const LEVELS: LevelInfo[] = [
   },
   {
     num: 10,
-    title: 'Greek Words & Latin Roots',
-    focus: 'Latin roots, Chameleon prefixes, and Greek combining forms',
+    title: 'Greek & Latin Roots',
+    focus: 'Latin roots, assimilating prefixes, and Greek combining forms',
     games: [
       soon('l10-roots', 'Root Lab', '🧬', 'Build big words from Latin roots + prefixes.'),
       soon('l10-greek', 'Word Architect', '🏛️', 'Combine Greek forms to spell huge words.'),

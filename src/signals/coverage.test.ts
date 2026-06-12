@@ -77,14 +77,17 @@ describe('signal coverage over the real game tree (the "positions lacking" repor
     }
   });
 
-  it('surfaces the current gaps (documented finding, not a silent pass)', () => {
+  it('surfaces the current gaps (latency fully closed; replays partial)', () => {
     const missingLatency = gamesMissing(report, 'latencyMs');
     const missingReplays = gamesMissing(report, 'replays');
     console.log('[signal-coverage] games missing latencyMs:', missingLatency.join(', ') || 'none');
-    console.log('[signal-coverage] games missing replays:', missingReplays.length, 'of', report.length);
-    // The known finding today: latency is logged by very few games (automaticity/
-    // fatigue blind for the rest); replays reach no cloud event. See task to close.
-    expect(missingLatency.length).toBeGreaterThan(0);
-    expect(missingReplays.length).toBe(report.length); // replays nowhere yet
+    console.log('[signal-coverage] games missing replays:', missingReplays.join(', ') || 'none');
+    // #126: latency is now logged by EVERY game — this is the regression guard that
+    // it stays that way (automaticity-slope / rapid-guess / fatigue stay derivable).
+    expect(missingLatency.length, `latency regressed in: ${missingLatency.join(', ')}`).toBe(0);
+    // replays: the foundational L1 PA games feed the cloud event; the L2–L4 tail is
+    // still pending (mechanical — same pattern). Honest partial-coverage finding.
+    expect(missingReplays.length).toBeGreaterThan(0);
+    expect(missingReplays.length).toBeLessThan(report.length);
   });
 });

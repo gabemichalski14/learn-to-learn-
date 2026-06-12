@@ -52,7 +52,7 @@ export function WordWorkbench({ learnerId = 'guest' }: { learnerId?: string }) {
 
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) { shownRef.current = Date.now(); setUsedIdx([]); }
+    if (round && !finish) shownRef.current = Date.now(); // usedIdx is reset on advance, not here
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -77,7 +77,7 @@ export function WordWorkbench({ learnerId = 'guest' }: { learnerId?: string }) {
         window.setTimeout(() => {
           setMood(null); roundWrongRef.current = 0;
           if (ri + 1 >= rounds.length) finishSession(Date.now());
-          else { setRi((n) => n + 1); setLine(HINT); advancingRef.current = false; }
+          else { setUsedIdx([]); setRi((n) => n + 1); setLine(HINT); advancingRef.current = false; }
         }, 1300);
       } else {
         sfx.tap();

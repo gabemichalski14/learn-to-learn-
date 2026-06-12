@@ -68,28 +68,35 @@ export const LEXICON: LexEntry[] = [
   // ── animals (CVC nouns, animate) ──
   make('cat', 'noun', { emoji: '🐱', animate: true }), make('dog', 'noun', { emoji: '🐶', animate: true }),
   make('pig', 'noun', { emoji: '🐷', animate: true }), make('hen', 'noun', { emoji: '🐔', animate: true }),
-  make('bug', 'noun', { emoji: '🐛', animate: true }),
+  make('bug', 'noun', { emoji: '🐛', animate: true }), make('bat', 'noun', { emoji: '🦇', animate: true }),
+  make('pup', 'noun', { emoji: '🐶', animate: true }), make('hog', 'noun', { emoji: '🐗', animate: true }),
+  make('ram', 'noun', { emoji: '🐏', animate: true }),
 
   // ── object nouns (CVC; some tagged as "places" you can be on) ──
   make('hat', 'noun', { emoji: '🎩' }), make('bag', 'noun', { emoji: '🎒' }),
   make('map', 'noun', { emoji: '🗺️', place: true }), make('van', 'noun', { emoji: '🚐', place: true }),
   make('jam', 'noun', { emoji: '🍓' }), make('bed', 'noun', { emoji: '🛏️', place: true }),
   make('net', 'noun', { emoji: '🥅', place: true }), make('pen', 'noun', { emoji: '🖊️' }),
-  make('web', 'noun', { emoji: '🕸️', place: true }), make('jet', 'noun', { emoji: '🛩️', place: true }),
+  make('web', 'noun', { emoji: '🕸️' }), make('jet', 'noun', { emoji: '🛩️', place: true }),
   make('pin', 'noun', { emoji: '📌' }), make('pot', 'noun', { emoji: '🍲' }),
   make('top', 'noun', { emoji: '🔝', place: true }), make('sun', 'noun', { emoji: '☀️' }),
   make('cup', 'noun', { emoji: '☕' }), make('bus', 'noun', { emoji: '🚌', place: true }),
   make('nut', 'noun', { emoji: '🌰' }), make('log', 'noun', { emoji: '🪵', place: true }),
-  make('mug', 'noun', { emoji: '🍵' }),
+  make('mug', 'noun', { emoji: '🍵' }), make('mat', 'noun', { emoji: '🟫', place: true }),
+  make('rug', 'noun', { emoji: '🧶', place: true }), make('tub', 'noun', { emoji: '🛁' }),
+  make('pan', 'noun', { emoji: '🍳' }), make('cap', 'noun', { emoji: '🧢' }),
+  make('fan', 'noun', { emoji: '🪭' }), make('bun', 'noun', { emoji: '🍞' }),
 
-  // ── CVC verbs (actions — need an animate subject) ──
+  // ── CVC verbs (actions — work intransitively with an animate subject) ──
   make('run', 'verb'), make('sit', 'verb'), make('hop', 'verb'), make('dig', 'verb'),
   make('nap', 'verb'), make('hug', 'verb'), make('tap', 'verb'), make('jog', 'verb'),
-  make('win', 'verb'), make('pat', 'verb'),
+  make('win', 'verb'), make('nod', 'verb'),
 
-  // ── CVC adjectives (physical vs feeling) ──
+  // ── CVC adjectives (physical = any noun; feeling/state = animate only) ──
   make('big', 'adj'), make('hot', 'adj'), make('wet', 'adj'), make('red', 'adj'),
+  make('tan', 'adj'),
   make('sad', 'adj', { feeling: true }), make('fun', 'adj', { feeling: true }),
+  make('fit', 'adj', { feeling: true }),
 
   // ── decodable function words (closed/VC; not heart) ──
   make('on', 'function'), make('in', 'function'), make('it', 'function'),
@@ -113,6 +120,12 @@ const WORD_INDEX = new Map<string, LexEntry>(LEXICON.map((e) => [e.word.toLowerC
  *  independently of the composer). Returns undefined for words we can't vouch for. */
 export function lookupWord(token: string): LexEntry | undefined {
   return WORD_INDEX.get(token.toLowerCase());
+}
+
+/** Does this word use any of the graphemes newly introduced at a level? Drives
+ *  new-skill density — foregrounding the level's new pattern in generated text. */
+export function usesNewSkill(e: LexEntry, newGraphemes: ReadonlySet<string>): boolean {
+  return e.graphemes.some((g) => newGraphemes.has(g));
 }
 
 /** Is this word decodable/known at the given inventory? Heart words admit only

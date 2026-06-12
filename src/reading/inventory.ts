@@ -90,6 +90,12 @@ export function segmentGraphemes(word: string): string[] {
   return out;
 }
 
+/** The graphemes NEWLY introduced exactly at `level` (drives new-skill density —
+ *  foregrounding the level's new pattern in generated text). */
+export function newGraphemesAt(level: number): ReadonlySet<string> {
+  return new Set(GPCS.filter((g) => g.introLevel === level).map((g) => g.grapheme));
+}
+
 /** The cumulative inventory of everything taught at/below `level`. */
 export function resolveInventory(level: number): TaughtInventory {
   const graphemes = new Set(GPCS.filter((g) => g.introLevel <= level).map((g) => g.grapheme));

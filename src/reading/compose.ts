@@ -1,5 +1,5 @@
-import { admissibleWords, type LexEntry } from './lexicon';
-import { type TaughtInventory } from './inventory';
+import { admissibleWords, usesNewSkill, type LexEntry } from './lexicon';
+import { newGraphemesAt, type TaughtInventory } from './inventory';
 
 /**
  * The text composer — builds original phrases / sentences / passages from ONLY
@@ -12,8 +12,9 @@ import { type TaughtInventory } from './inventory';
  *  - only ANIMATE subjects do action verbs ("The dog can hop", never "The sun can hop")
  *  - feeling adjectives only describe animate subjects ("The pig is sad")
  *  - "X is on the Y" requires an animate X and a PLACE Y ("The cat is on the bed")
- * Builders vary deliberately (no single repeated pattern) — decodable, NOT
- * predictable/leveled text (which trains guessing).
+ * New-skill density: noun choice is biased toward words that use the LEVEL'S NEW
+ * grapheme (foregrounds the pattern being taught), while keeping variety. Builders
+ * vary deliberately — decodable, NOT predictable/leveled text (which trains guessing).
  */
 
 export type ReadingUnitKind = 'phrase' | 'sentence' | 'passage';
@@ -32,6 +33,7 @@ interface Pools {
   verbs: LexEntry[];
   physAdj: LexEntry[];
   allAdj: LexEntry[];
+  newG: ReadonlySet<string>;
   has: (w: string) => boolean;
 }
 
@@ -44,6 +46,7 @@ function pools(inv: TaughtInventory): Pools {
     verbs: pool.filter((e) => e.pos === 'verb'),
     physAdj: pool.filter((e) => e.pos === 'adj' && !e.feeling),
     allAdj: pool.filter((e) => e.pos === 'adj'),
+    newG: newGraphemesAt(inv.level),
     has: (w: string) => pool.some((e) => e.word.toLowerCase() === w),
   };
 }
@@ -57,8 +60,24 @@ function shuffle<T>(arr: readonly T[], rng: () => number): T[] {
   return a;
 }
 
-const pick = <T>(arr: readonly T[], rng: () => number): T => arr[Math.floor(rng() * arr.length)];
 const capitalize = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** New-skill density: ~NEW_SKILL_BIAS of the time, restrict a candidate list to
+ *  words using a grapheme newly introduced at this level (foreground the new
+ *  pattern); keep variety otherwise. No-op at L2 (everything is new) and where no
+ *  new-skill word fits. Tunable. */
+const NEW_SKILL_BIAS = 0.7;
+
+function pickNoun(list: LexEntry[], P: Pools, rng: () => number): LexEntry {
+  let pool = list;
+  if (list.length > 0 && rng() < NEW_SKILL_BIAS) {
+    const withNew = list.filter((e) => usesNewSkill(e, P.newG));
+    if (withNew.length) pool = withNew;
+  }
+  return pool[Math.floor(rng() * pool.length)];
+}
+
+const pick = <T>(arr: readonly T[], rng: () => number): T => arr[Math.floor(rng() * arr.length)];
 
 function unit(kind: ReadingUnitKind, tokens: string[], words: LexEntry[]): ReadingUnit {
   const joined = tokens.join(' ');
@@ -71,12 +90,12 @@ function phraseBuilders(P: Pools, rng: () => number): Builder[] {
   return [
     () => {
       if (!P.has('a') || P.nouns.length === 0) return null;
-      const n = pick(P.nouns, rng);
+      const n = pickNoun(P.nouns, P, rng);
       return unit('phrase', ['a', n.word], [n]);
     },
     () => {
       if (!P.has('the') || P.nouns.length === 0) return null;
-      const n = pick(P.nouns, rng);
+      const n = pickNoun(P.nouns, P, rng);
       const adjs = n.animate ? P.allAdj : P.physAdj; // feeling adjectives only on animate nouns
       if (adjs.length === 0) return null;
       const a = pick(adjs, rng);
@@ -90,29 +109,29 @@ function sentenceBuilders(P: Pools, rng: () => number): Builder[] {
     // any noun + a physical adjective → always sensible ("The web is big.")
     () => {
       if (!P.has('is') || P.nouns.length === 0 || P.physAdj.length === 0) return null;
-      const n = pick(P.nouns, rng);
+      const n = pickNoun(P.nouns, P, rng);
       const a = pick(P.physAdj, rng);
       return unit('sentence', ['the', n.word, 'is', a.word], [n, a]);
     },
     // animate subject + any adjective incl. feeling ("The pig is sad.")
     () => {
       if (!P.has('is') || P.animals.length === 0 || P.allAdj.length === 0) return null;
-      const n = pick(P.animals, rng);
+      const n = pickNoun(P.animals, P, rng);
       const a = pick(P.allAdj, rng);
       return unit('sentence', ['the', n.word, 'is', a.word], [n, a]);
     },
     // animate subject + action verb ("The dog can hop.")
     () => {
       if (!P.has('can') || P.animals.length === 0 || P.verbs.length === 0) return null;
-      const n = pick(P.animals, rng);
+      const n = pickNoun(P.animals, P, rng);
       const v = pick(P.verbs, rng);
       return unit('sentence', ['the', n.word, 'can', v.word], [n, v]);
     },
     // animate subject on a place ("The cat is on the bed.")
     () => {
       if (!P.has('is') || !P.has('on') || P.animals.length === 0 || P.places.length === 0) return null;
-      const n = pick(P.animals, rng);
-      const p = pick(P.places, rng);
+      const n = pickNoun(P.animals, P, rng);
+      const p = pickNoun(P.places, P, rng);
       return unit('sentence', ['the', n.word, 'is', 'on', 'the', p.word], [n, p]);
     },
   ];
@@ -135,14 +154,14 @@ export function composePassage(inv: TaughtInventory, rng: () => number = Math.ra
   const P = pools(inv);
   if (!P.has('the') || P.animals.length === 0) return null;
 
-  const subject = pick(P.animals, rng);
+  const subject = pickNoun(P.animals, P, rng);
   const words: LexEntry[] = [subject];
 
   type Built = { text: string; words: LexEntry[] } | null;
   const predicates: Array<() => Built> = [
     () => (P.has('is') && P.allAdj.length ? ((a) => ({ text: `the ${subject.word} is ${a.word}`, words: [a] }))(pick(P.allAdj, rng)) : null),
     () => (P.has('can') && P.verbs.length ? ((v) => ({ text: `the ${subject.word} can ${v.word}`, words: [v] }))(pick(P.verbs, rng)) : null),
-    () => (P.has('is') && P.has('on') && P.places.length ? ((p) => ({ text: `the ${subject.word} is on the ${p.word}`, words: [p] }))(pick(P.places, rng)) : null),
+    () => (P.has('is') && P.has('on') && P.places.length ? ((p) => ({ text: `the ${subject.word} is on the ${p.word}`, words: [p] }))(pickNoun(P.places, P, rng)) : null),
   ];
 
   const lines: string[] = [];

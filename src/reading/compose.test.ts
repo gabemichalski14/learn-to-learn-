@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveInventory } from './inventory';
+import { resolveInventory, newGraphemesAt } from './inventory';
 import { compose, composeUnit, composePassage } from './compose';
 import { validateUnit, validateText } from './validate';
 
@@ -63,6 +63,33 @@ describe('passage cohesion', () => {
     const subject = sentences[0].split(' ')[1].toLowerCase(); // word after leading "The"
     for (const s of sentences) expect(s.toLowerCase()).toContain(subject);
     expect(validateUnit(p, resolveInventory(2)).ok).toBe(true);
+  });
+});
+
+describe('new-skill density', () => {
+  const hasDigraph = (text: string, dg: ReadonlySet<string>): boolean =>
+    [...dg].some((g) => text.includes(g));
+
+  it('foregrounds the new L3 digraph pattern, while keeping variety', () => {
+    const l3 = resolveInventory(3);
+    const dg = newGraphemesAt(3); // {sh, ch, th, wh, ck}
+    const N = 80;
+    let withNew = 0;
+    for (let s = 1; s <= N; s++) {
+      const u = compose(l3, 'sentence', rngFrom(s * 13 + 2))!;
+      if (u.words.some((w) => hasDigraph(w.word, dg))) withNew += 1;
+    }
+    expect(withNew / N).toBeGreaterThan(0.4); // density: foregrounds the new skill
+    expect(withNew / N).toBeLessThan(1); // variety: not every line (not predictable text)
+  });
+
+  it('never emits a digraph word at L2 (none taught yet)', () => {
+    const l2 = resolveInventory(2);
+    const dg = newGraphemesAt(3);
+    for (let s = 1; s <= 40; s++) {
+      const u = compose(l2, 'sentence', rngFrom(s * 9))!;
+      expect(u.words.some((w) => hasDigraph(w.word, dg))).toBe(false);
+    }
   });
 });
 

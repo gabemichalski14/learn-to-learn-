@@ -557,7 +557,103 @@ export const BRAM: LevelCharacter = {
   },
 };
 
-export const CAST: LevelCharacter[] = [CHIP, MOSS, PATCH, BRAM];
+export const SPRIG: LevelCharacter = {
+  id: 'l5', // reuses the existing /art/char/l5-*.png frames
+  level: 5,
+  name: 'Sprig',
+  emoji: '🧚',
+  strength: 'whole-word building — Sprig sees the finished word and all its little parts at once; it is fitting the one small piece that slips',
+  lever: 'building competence — a big word is never bigger, just more parts you fit together one at a time; you add the piece yourself and it works every time',
+  persona: {
+    want: 'mend the worn-down words of Tinker Town so they can change and grow again',
+    need: 'to trust that adding one small part changes what a word means — and that a real part always leaves a real word behind',
+    flaw: 'grabs the whole word at once and jams, instead of fitting one little part at a time',
+    trait: 'a tiny green tinker-sprite; hums while sorting parts, taps a piece twice to be sure it fits, lights up when it clicks',
+  },
+  skillKey: 'affix:suffix',
+  soundId: 'suffix',
+  // One signature skill per Tinker Town game — mend them all to fully wake Sprig.
+  sounds: ['affix:suffix', 'affix:prefix', 'affix:build', 'affix:peel', 'affix:ed', 'affix:sort'],
+  fragments: {
+    suffix: ['…there — the ending clicks on and the word changes its job. jump… jumped. It already happened now. ⚙️'],
+    prefix: ['A little part on the FRONT flips the whole meaning — lock… unlock. I had that backwards. 🔧'],
+    build: ['A big word is just parts holding hands: un + lock, re + play. Build it, and it works. 🧩'],
+    peel: ['And to READ a giant word? Peel the parts off — front, back — and the little base is right there. 🍃'],
+    ed: ['That -ed has three voices — jumped, played, wanted. Same ending, three sounds. Who knew! 🎵'],
+    sort: ['A real part always leaves a real word behind. The "un" in under? Not a part — just letters. ✓'],
+  },
+  storytime: [
+    'Tinker Town hums again — every word can change and grow. Sit on my workbench a while? 🧚',
+    'I used to jam on a whole word. Now I just add one little part. The big word was never the problem. 💛',
+    'You taught me to build, piece by piece. Come fix a word with me any time. 🔧',
+  ],
+  revisit: [
+    'Back in the workshop? My words all work now — but I love building with you. Pick a part! 🧚',
+    'Just visiting from the Village! Snap a part onto a word with me again? 🍃',
+  ],
+  teaching: {
+    title: 'How a little part changes a whole word',
+    lines: [
+      'Words used to jam on me — I grabbed the whole thing at once. Here is how I build them now. 🧚',
+      'See the finished word first — that is your gift, big-picture friend.',
+      'Then add ONE little part. On the end, it changes the job: jump → jumped, already happened.',
+      'On the front, it flips the meaning: lock → unlock.',
+      'And always check: peel the part off — is a real word left behind? If yes, it is a real part. ✓',
+    ],
+  },
+  playRoute: '#/play/l5-suffix',
+  art: charArt('l5'),
+  house: '/characters/village/cottage.png',
+  motif: '🍃',
+  beats: {
+    arrived: [
+      'Oh — a helper! The words of Tinker Town wore out and stopped changing. Will you build them back with me? 🧚',
+      'Hello there! Every worn word holds one little part of how words grow. Fit them with me?',
+    ],
+    healing: [
+      'A part clicked — I felt a word come back to life. ⚙️',
+      'You fit that ending just right — the whole word changed its job! Keep building. 🔧',
+    ],
+    healed: [
+      'Every word works again — they change, they grow, they read themselves. You built that. 🧚',
+      'No word is too big now. We just add one part at a time. 💛',
+    ],
+    resident: ['Welcome back to the workshop! Want to build a word together? 🧚'],
+  },
+  reactions: {
+    intro: [
+      "I'm Sprig. I see the whole word in a blink — it's fitting the one little part I take slow. Build with me? 🧚",
+      'Hello! Every worn word here holds a piece of how words grow. Mend them with me, one part at a time.',
+      'You came! Big-picture friends like us — we just add the right part. Let me show you.',
+    ],
+    teach: [
+      'Watch. 🧚 See the whole word… then I add one little part… and its job changes. Your turn!',
+      'Here is my way: see the word, pick the part that does THIS job, click it on. I will start — then it is yours.',
+      'A part on the end changes the job; a part on the front flips the meaning. Let me show you — your turn next! ⚙️',
+    ],
+    correct: [
+      'Yes — one part, and the whole word changes! 🧚',
+      'You heard it click into its job. jump… jumped. ⚙️',
+      'That part fit just right. Tinker Town hums. 💛',
+    ],
+    wrong: [
+      'A tricky fit, that — and words jammed on me too, once. Which part does THIS job?',
+      'Ooh, close. Say it with the part on… does it mean the right thing? Try again? 💛',
+      '"Not yet" just means we keep building. I\'m right here at the bench.',
+    ],
+    clear: [
+      'A whole word, mended. The town hums a little louder…',
+      'Look what you built. Tinker Town feels more alive. 💛',
+    ],
+    win: [
+      'You mended every word! 🧚 They change, they grow, they read themselves — one part at a time.',
+      'A big word was never too big. You taught me that. 💛',
+      'We did it. Come build a word at my bench any time. 🔧',
+    ],
+  },
+};
+
+export const CAST: LevelCharacter[] = [CHIP, MOSS, PATCH, BRAM, SPRIG];
 
 export function castFor(level: number): LevelCharacter | undefined {
   return CAST.find((c) => c.level === level);

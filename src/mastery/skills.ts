@@ -57,6 +57,7 @@ export function skillTag(key: SkillKey): string {
   if (kind === 'vowel') return 'long / short';
   if (kind === 'div') return 'splitting words';
   if (kind === 'read') return a === 'sentence' ? 'reading sentences' : a === 'multi' ? 'long-word speed' : a === 'comprehension' ? 'understanding text' : 'reading speed';
+  if (kind === 'affix') return a === 'suffix' ? 'suffixes' : a === 'prefix' ? 'prefixes' : a === 'build' ? 'building words' : a === 'peel' ? 'big-word reading' : a === 'ed' ? 'the -ed ending' : a === 'sort' ? 'real vs fake parts' : 'word parts';
   if (kind === 'heart') return `"${a}" by heart`;
   const p = parseSkillKey(key);
   if (!p) return key;
@@ -76,6 +77,7 @@ export function skillLabel(key: SkillKey): string {
   if (kind === 'vowel') return 'open vs closed syllables (long vs short vowel)';
   if (kind === 'div') return 'splitting big words into syllables';
   if (kind === 'read') return a === 'sentence' ? 'reading sentences out loud (fluency)' : a === 'multi' ? 'reading longer words quickly (fluency)' : a === 'comprehension' ? 'understanding what they read (comprehension)' : 'reading short words quickly (fluency)';
+  if (kind === 'affix') return a === 'suffix' ? 'adding suffixes (-ing, -ed, -s, -er, -est)' : a === 'prefix' ? 'adding prefixes (un-, re-, pre-, dis-)' : a === 'build' ? 'building words from parts (base + affixes)' : a === 'peel' ? 'reading long words by peeling their parts' : a === 'ed' ? 'the three sounds of -ed (/t/, /d/, /əd/)' : a === 'sort' ? 'sorting word parts (and spotting fake ones)' : 'prefixes and suffixes';
   if (kind === 'heart') return `the heart word “${a}” (irregular high-frequency word)`;
   const p = parseSkillKey(key);
   if (!p) return key;

@@ -94,6 +94,13 @@ extend) its guard here — that IS the prevention plan. Current standing guards:
   shared-component rule below.
 - **Broken-image icons** → `src/ui/assetSafety.test.ts` (every `<img>` must carry an
   onError fallback — `hideBrokenImg` or a fallback component's emoji-swap).
+- **Level-hub drift** → `src/ui/hubCongruence.test.ts` (AUTO-DISCOVERS every `*LevelHub`
+  and fails if it hand-rolls a HUD / missions grid / checkpoint instead of wearing the
+  shared `LevelHubShell`).
+- **Unreadable card text / missing card art** → `src/LevelsPage.test.ts` (every level
+  has its `card-N.png`, one congruent treatment, and text on a readability plate).
+- **Unreachable games** → `src/routeParity.test.ts` (every `available` game routes
+  somewhere — an explicit branch or the GameScreen catch-all).
 - **Stale science/compliance** → `src/coverage/coverage.test.ts` (90-day staleness
   tripwire + domain/framework/triangulation completeness).
 - **Undecodable generated text** → the reading decodability CI invariant.

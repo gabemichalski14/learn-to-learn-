@@ -35,6 +35,13 @@ records the working rule we follow so the boundary doesn't drift.
   `games.ts`.
 - ✅ **OK to display:** our own game names, taglines, the level's one-line focus,
   the child's own results, and original word/picture sets.
+- ✅ **Level NAMES are our own themed worlds**, NOT academic/program scope &
+  sequence headings. Each level headlines an original world name (Sound Garden,
+  Space Patrol, Patch's Workshop, Giant's Valley, Tinker Town, Whisper Woods,
+  Pirate Cove, Tidepool Bay, Globe Harbor, Root Ruins) — creative expression with
+  zero overlap with any program's book/lesson titles. The academic skill (e.g.
+  "Closed Syllables") rides along only as a small factual descriptor. Rule: **the
+  level NAME is a world we invented; never name a level after a program's book.**
 
 ## Guardrail
 

@@ -171,6 +171,12 @@ body::before {
 @media (max-width: 640px) { .home-hero__pip { display: none; } }
 .home-hero__content { position: relative; z-index: 1; }
 .home-hero__cta { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+/* No-student empty state (signed-in tutor): make it obvious + actionable. */
+.home-empty { text-align: center; padding: clamp(28px, 6vw, 48px) clamp(20px, 5vw, 40px); margin-top: 16px; }
+.home-empty__icon { font-size: clamp(44px, 10vw, 64px); line-height: 1; }
+.home-empty__title { margin: 12px 0 6px; font-size: clamp(20px, 4vw, 26px); }
+.home-empty__lead { margin: 0 auto; max-width: 46ch; color: #5a6b66; line-height: 1.5; }
+.home-empty .home-hero__cta { justify-content: center; margin-top: 20px; }
 .home-hero__avatar { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center;
   width: clamp(76px, 18vw, 116px); height: clamp(76px, 18vw, 116px); border-radius: 50%; color: #fff;
   font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 7vw, 46px);

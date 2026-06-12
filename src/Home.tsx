@@ -7,6 +7,7 @@ import { NowPlaying } from './NowPlaying';
 import { AreasToImprove } from './AreasToImprove';
 import { getMastery, getSessions } from './data/dataSource';
 import { useDataVersion } from './data/store';
+import { useTutorSignedIn } from './useAuth';
 import { rankAreas, type FocusArea } from './mastery/mastery';
 import type { SessionRecord } from './sessionLog';
 import { useNarrative, homeLead } from './world/narrative';
@@ -21,6 +22,7 @@ interface Props {
  *  curriculum lives on the Levels page (in the menu). */
 export function Home({ learnerId, onChooseLearner }: Props) {
   const version = useDataVersion(); // re-render + refetch when local data changes
+  const signedIn = useTutorSignedIn();
   const learner = getLearner(learnerId);
   const name = learner?.name ?? 'Explorer';
   const prog = loadProgress(learnerId);
@@ -61,6 +63,25 @@ export function Home({ learnerId, onChooseLearner }: Props) {
     .slice(0, 5);
 
   const greeting = sessions.length ? 'Welcome back' : 'Welcome';
+
+  // Obvious empty state for a signed-in tutor with no student selected. No student
+  // is ever auto-created — the tutor adds them in the admin. (Brief on first load
+  // until the cloud roster reconciles in.)
+  if (signedIn && !learner) {
+    return (
+      <main className="l2l-page home">
+        <NowPlaying onChange={onChooseLearner} />
+        <div className="l2l-card home-empty l2l-reveal" role="status">
+          <div className="home-empty__icon" aria-hidden="true">🧑‍🏫</div>
+          <h1 className="home-empty__title">No student selected</h1>
+          <p className="home-empty__lead">Pick a student from <strong>Explorer</strong> above, or add one to start tracking progress. Students are created in the admin — none are added automatically.</p>
+          <div className="home-hero__cta">
+            <button type="button" className="l2l-btn" onClick={() => navigate('#/admin')}>Add a student</button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="l2l-page home">

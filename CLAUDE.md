@@ -80,6 +80,21 @@ one-off. See `docs/superpowers/specs/2026-06-11-freshness-engine-design.md`.
   impact). Test #2 (no-level-left-behind) fails the gate if a `LEVELS` entry has no
   reading coverage row, so this can't be skipped.
 
+## Regression guards (the plan: a fixed bug never comes back)
+Every recurring bug class earns a GUARD TEST in the gate, so it's caught
+automatically next time instead of by memory. When you fix a class of bug, add (or
+extend) its guard here — that IS the prevention plan. Current standing guards:
+- **No auto-created students** → `src/profiles.guard.test.ts` (only admin/guest may
+  call `addLearner`); `src/profiles.test.ts` (`currentLearner` never fabricates).
+- **No dark patterns** → `src/coverage/ethics.test.ts` (surveillance APIs + child-surface
+  engagement tells; surfaces, never auto-removes).
+- **Level/world chrome drift** → `src/worlds/workshop/congruence.test.ts` (games use
+  GameShell + no-scroll), plus the shared-component rule below.
+- **Stale science/compliance** → `src/coverage/coverage.test.ts` (90-day staleness
+  tripwire + domain/framework/triangulation completeness).
+- **Undecodable generated text** → the reading decodability CI invariant.
+Definition of done for a bug fix: the fix + a guard that fails if it regresses.
+
 ## Ethics findings — ask before removal (walk the line)
 The ethics-as-tests guard (`src/coverage/ethics.test.ts`) flags dark-pattern tells.
 When it flags something, **SURFACE it to the owner and get explicit permission before

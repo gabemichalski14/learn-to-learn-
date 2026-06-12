@@ -39,6 +39,7 @@ import { PatchesDictation } from './worlds/workshop/PatchesDictation';
 import { ToolTime } from './worlds/workshop/ToolTime';
 import { SayItAgain } from './worlds/workshop/SayItAgain';
 import { GardenTending } from './worlds/garden/GardenTending';
+import { PlantTheWord } from './worlds/space/PlantTheWord';
 import { WorkshopLevelHub } from './worlds/workshop/WorkshopLevelHub';
 import { GiantValleyLevelHub } from './worlds/giantvalley/GiantValleyLevelHub';
 import { NameChange } from './worlds/giantvalley/NameChange';
@@ -160,6 +161,9 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'warp-speed') {
     return <WarpSpeed learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'plant-the-word') {
+    return <PlantTheWord learnerId={learnerId} />;
   }
   if (route.name === 'play' && route.game === 'blend-buddies') {
     return <BlendBuddies learnerId={learnerId} />;

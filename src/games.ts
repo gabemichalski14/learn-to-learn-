@@ -53,6 +53,7 @@ export const LEVELS: LevelInfo[] = [
       { id: 'star-station', title: 'Star Station', emoji: '🛰️', tagline: 'Build the word you hear, letter by letter.', status: 'available', route: '#/play/star-station' },
       { id: 'word-beam', title: 'Word Beam', emoji: '📡', tagline: 'Hear a word — spell it from the whole alphabet.', status: 'available', route: '#/play/word-beam' },
       { id: 'warp-speed', title: 'Warp Speed', emoji: '☄️', tagline: 'Read each word fast and tap its picture.', status: 'available', route: '#/play/warp-speed' },
+      { id: 'plant-the-word', title: 'Plant the Word', emoji: '💛', tagline: 'Learn a tricky word by heart — then spell it.', status: 'available', route: '#/play/plant-the-word' },
     ],
   },
   {

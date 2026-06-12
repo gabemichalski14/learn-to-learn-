@@ -57,6 +57,7 @@ export function skillTag(key: SkillKey): string {
   if (kind === 'vowel') return 'long / short';
   if (kind === 'div') return 'splitting words';
   if (kind === 'read') return a === 'sentence' ? 'reading sentences' : a === 'multi' ? 'long-word speed' : 'reading speed';
+  if (kind === 'heart') return `"${a}" by heart`;
   const p = parseSkillKey(key);
   if (!p) return key;
   const where = p.target === 'ending' ? 'end' : p.target === 'medial' ? 'middle' : 'start';
@@ -75,6 +76,7 @@ export function skillLabel(key: SkillKey): string {
   if (kind === 'vowel') return 'open vs closed syllables (long vs short vowel)';
   if (kind === 'div') return 'splitting big words into syllables';
   if (kind === 'read') return a === 'sentence' ? 'reading sentences out loud (fluency)' : a === 'multi' ? 'reading longer words quickly (fluency)' : 'reading short words quickly (fluency)';
+  if (kind === 'heart') return `the heart word “${a}” (irregular high-frequency word)`;
   const p = parseSkillKey(key);
   if (!p) return key;
   const where = p.target === 'ending' ? 'at the end' : p.target === 'medial' ? 'in the middle' : 'at the start';

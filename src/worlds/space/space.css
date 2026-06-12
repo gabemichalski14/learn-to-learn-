@@ -473,3 +473,12 @@
 
 /* Photo starfield is the scene now — hide the old CSS cosmos sprites that floated over it. */
 .sg-cosmos, .sg-far, .sg-shoot, .sg-rocket, .sg-stars { display: none; }
+
+/* Plant the Word — heart-word learn phase (orthographic mapping) */
+.hw-word { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 8px 0 2px; }
+.hw-letter { font-weight: 900; font-size: clamp(40px, 12vw, 64px); line-height: 1.15; color: #eafcff; text-transform: lowercase; }
+.hw-letter--heart { color: #ffd24a; position: relative; }
+.hw-letter--heart::after { content: '💛'; position: absolute; top: -0.45em; left: 50%; transform: translateX(-50%); font-size: 0.38em; }
+.hw-caption { margin: 4px auto 0; max-width: 460px; font-size: 14px; line-height: 1.45; color: #cfe9f2; }
+.hw-plant { margin-top: 10px; }
+.ss-slot.is-heart { border-color: #ffd24a; box-shadow: 0 0 0 2px rgba(255, 210, 74, 0.25); }

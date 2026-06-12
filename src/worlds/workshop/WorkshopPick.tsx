@@ -42,13 +42,14 @@ export function WorkshopPick({ learnerId = 'guest', gameId, badge, intro, finish
   const advancingRef = useRef(false);
   const handledRef = useRef(false);
   const attemptedRef = useRef<Set<number>>(new Set());
+  const shownRef = useRef(0); // when the current item appeared → per-item response latency
 
   const round = rounds[ri];
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) say(round.word);
+    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -58,9 +59,11 @@ export function WorkshopPick({ learnerId = 'guest', gameId, badge, intro, finish
     const firstTry = !attemptedRef.current.has(ri);
     attemptedRef.current.add(ri);
     setPicked(opt);
+    const shown = shownRef.current;
     window.setTimeout(() => {
-      recordItem(learnerId, round.skillKey, correct, undefined, correct ? undefined : opt, firstTry);
-      logSkillEvent(learnerId, { skillKey: round.skillKey, correct, at: Date.now(), game: gameId, level: 3, firstTry, chosen: correct ? undefined : opt });
+      const latencyMs = Date.now() - shown;
+      recordItem(learnerId, round.skillKey, correct, latencyMs, correct ? undefined : opt, firstTry);
+      logSkillEvent(learnerId, { skillKey: round.skillKey, correct, at: Date.now(), game: gameId, level: 3, firstTry, latencyMs, chosen: correct ? undefined : opt });
     }, 0);
     if (correct) {
       sfx.correct(); setMood('cheer'); setLine('Yes! That one. 🤝'); advancingRef.current = true;

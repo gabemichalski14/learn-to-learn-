@@ -42,12 +42,13 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
   const advRef = useRef(false);
+  const shownRef = useRef(0); // when the current item appeared → per-item response latency
   const round = rounds[i];
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) say(round.target.word);
+    if (round && !finish) { shownRef.current = Date.now(); say(round.target.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i]);
 
@@ -58,9 +59,14 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
     advRef.current = true;
     if (correct) { correctRef.current += 1; sfx.correct(); setMood('cheer'); if (character) setLine(reactionLine(character, 'correct')); }
     else { wrongRef.current += 1; sfx.wrong(); setMood('wobble'); if (character) setLine(reactionLine(character, 'wrong')); }
+    const shown = shownRef.current;
+    const chosen = correct ? undefined : opt.word;
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : opt.word);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'rhyme-time', level: 1, firstTry: true, chosen: correct ? undefined : opt.word });
+      const latencyMs = Date.now() - shown;
+      recordItem(learnerId, SKILL, correct, latencyMs, chosen);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'rhyme-time', level: 1, firstTry: true, latencyMs, chosen });
+    }, 0);
+    window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;
       if (i + 1 >= ROUNDS) finishSession(Date.now()); else setI((n) => n + 1);
     }, 1100);

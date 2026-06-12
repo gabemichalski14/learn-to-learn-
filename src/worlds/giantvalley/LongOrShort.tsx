@@ -36,12 +36,13 @@ export function LongOrShort({ learnerId = 'guest' }: { learnerId?: string }) {
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
   const advRef = useRef(false);
+  const shownRef = useRef(0); // when the current item appeared → per-item response latency
   const round = rounds[i];
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) say(round.word);
+    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i]);
 
@@ -51,9 +52,14 @@ export function LongOrShort({ learnerId = 'guest' }: { learnerId?: string }) {
     setPicked(saidLong); advRef.current = true;
     if (correct) { correctRef.current += 1; sfx.correct(); setMood('cheer'); if (character) setLine(reactionLine(character, 'correct')); }
     else { wrongRef.current += 1; sfx.wrong(); setMood('wobble'); if (character) setLine(reactionLine(character, 'wrong')); }
+    const shown = shownRef.current;
+    const chosen = correct ? undefined : (saidLong ? 'long' : 'short');
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : (saidLong ? 'long' : 'short'));
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'long-or-short', level: 4, firstTry: true, chosen: correct ? undefined : (saidLong ? 'long' : 'short') });
+      const latencyMs = Date.now() - shown;
+      recordItem(learnerId, SKILL, correct, latencyMs, chosen);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'long-or-short', level: 4, firstTry: true, latencyMs, chosen });
+    }, 0);
+    window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;
       if (i + 1 >= ROUNDS) finishSession(Date.now()); else setI((n) => n + 1);
     }, 1000);

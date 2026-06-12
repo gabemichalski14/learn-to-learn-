@@ -47,6 +47,7 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
   const correctRef = useRef(0);
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
+  const shownRef = useRef(0); // when the current item appeared → per-item response latency
   const round = rounds[i];
 
   // Start the session clock on mount (kept out of render to stay pure).
@@ -57,6 +58,7 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
   // Play the pair when a new round appears: first word, then the second.
   useEffect(() => {
     if (!round || finish) return;
+    shownRef.current = Date.now();
     playWord(round.a);
     const id = window.setTimeout(() => playWord(round.b), 950);
     return () => window.clearTimeout(id);
@@ -78,9 +80,16 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
       setMood('wobble'); setPhase('wrong');
       if (character) setLine(reactionLine(character, 'wrong'));
     }
+    // Capture latency ≈ tap time in a 0-delay callback (the reveal delay below would
+    // otherwise inflate it); keep the UI advance on the reveal timeout.
+    const shown = shownRef.current;
+    const chosen = correct ? undefined : (saidSame ? 'same' : 'different');
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : (saidSame ? 'same' : 'different'));
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'same-or-different', level: 1, firstTry: true, chosen: correct ? undefined : (saidSame ? 'same' : 'different') });
+      const latencyMs = Date.now() - shown;
+      recordItem(learnerId, SKILL, correct, latencyMs, chosen);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'same-or-different', level: 1, firstTry: true, latencyMs, chosen });
+    }, 0);
+    window.setTimeout(() => {
       setMood(null); setPicked(null); setPhase('idle');
       if (i + 1 >= ROUNDS) finishSession();
       else setI((n) => n + 1);

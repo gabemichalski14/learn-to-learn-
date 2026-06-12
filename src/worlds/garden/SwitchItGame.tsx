@@ -57,6 +57,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const correctRef = useRef(0);
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
+  const shownRef = useRef(0); // when the current item appeared → per-item response latency
   const round = rounds[i];
 
   useEffect(() => { startRef.current = Date.now(); }, []);
@@ -66,6 +67,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
   // On a new round: hear the source word, then the target it should become.
   useEffect(() => {
     if (!round || finish) return;
+    shownRef.current = Date.now();
     say(round.source);
     const id = window.setTimeout(() => say(round.target), 1050);
     return () => window.clearTimeout(id);
@@ -84,10 +86,14 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
       wrongRef.current += 1; sfx.wrong(); setMood('wobble');
       if (character) setLine(reactionLine(character, 'wrong'));
     }
+    const shown = shownRef.current;
+    window.setTimeout(() => {
+      const latencyMs = Date.now() - shown;
+      recordItem(learnerId, SKILL, correct, latencyMs);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'switch-it', level: 1, firstTry: true, latencyMs });
+    }, 0);
     window.setTimeout(() => {
       const now = Date.now();
-      recordItem(learnerId, SKILL, correct);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: now, game: 'switch-it', level: 1, firstTry: true });
       setMood(null); setPicked(null); setShowLetters(false);
       if (i + 1 >= ROUNDS) finishSession(now);
       else setI((n) => n + 1);

@@ -22,9 +22,12 @@ describe('age-appropriateness guard (hard gate)', () => {
     }
   });
 
-  it('lexicon words are short and simple (1–6 letters)', () => {
+  it('lexicon words are plain letters only and a sane length (≤10 — longer at higher levels)', () => {
+    // The age guard is the denylist + closed vocabulary (above/below); length is just
+    // a sanity bound. Early words are short (cat); higher levels add longer but still
+    // age-appropriate words (transport), so the cap rises rather than blocking them.
     for (const e of LEXICON) {
-      expect(e.word, e.word).toMatch(/^[a-zA-Z]{1,6}$/);
+      expect(e.word, e.word).toMatch(/^[a-zA-Z]{1,10}$/);
     }
   });
 

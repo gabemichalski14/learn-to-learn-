@@ -15,8 +15,8 @@ function rngFrom(seed: number): () => number {
 }
 
 describe('composer guarantee: every generated unit passes the validator', () => {
-  it('holds across every taught level (phrase/sentence/passage × L2–L8 × 40 seeds)', () => {
-    for (const level of [2, 3, 4, 5, 6, 7, 8]) {
+  it('holds across every taught level (phrase/sentence/passage × L2–L10 × 40 seeds)', () => {
+    for (const level of [2, 3, 4, 5, 6, 7, 8, 9, 10]) {
       const inv = resolveInventory(level);
       for (const kind of ['phrase', 'sentence', 'passage'] as const) {
         for (let seed = 1; seed <= 40; seed++) {

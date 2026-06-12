@@ -182,6 +182,37 @@ export const LEXICON: LexEntry[] = [
   make('you', 'function', { heart: true }), make('they', 'function', { heart: true }),
   make('have', 'function', { heart: true }), make('are', 'function', { heart: true }),
   make('were', 'function', { heart: true }), make('one', 'function', { heart: true }),
+
+  // ── Level-5 morphology (prefix/suffix): all-known graphemes, gated by the L5
+  //    morpheme skill. Participles/adjectives keep the composer grammatical. ──
+  make('jumping', 'adj', { feeling: true, minLevel: 5 }), // "The dog is jumping" (animate predicate)
+  make('resting', 'adj', { feeling: true, minLevel: 5 }),
+  make('unfit', 'adj', { feeling: true, minLevel: 5 }),
+  make('helpful', 'adj', { feeling: true, minLevel: 5 }),
+  make('fastest', 'adj', { minLevel: 5 }),
+
+  // ── Level-6 consonant-le (final stable syllable; closed first syllable → short
+  //    vowel; EXPLICIT graphemes) ──
+  make('apple', 'noun', { emoji: '🍎', graphemes: ['a', 'p', 'ple'] }),
+  make('candle', 'noun', { emoji: '🕯️', graphemes: ['c', 'a', 'n', 'dle'] }),
+  make('bottle', 'noun', { emoji: '🍼', graphemes: ['b', 'o', 't', 'tle'] }),
+  make('bubble', 'noun', { emoji: '🫧', graphemes: ['b', 'u', 'b', 'ble'] }),
+  make('puzzle', 'noun', { emoji: '🧩', graphemes: ['p', 'u', 'z', 'zle'] }),
+  make('little', 'adj', { graphemes: ['l', 'i', 't', 'tle'] }),
+
+  // ── Level-9 advanced / "foreign" spellings (ph, silent-letter teams; EXPLICIT) ──
+  make('phone', 'noun', { emoji: '📱', graphemes: ['ph', 'o_e', 'n'] }),
+  make('photo', 'noun', { emoji: '📷', graphemes: ['ph', 'o', 't', 'o'] }),
+  make('lamb', 'noun', { emoji: '🐑', animate: true, graphemes: ['l', 'a', 'mb'] }),
+  make('thumb', 'noun', { emoji: '👍', graphemes: ['th', 'u', 'mb'] }),
+  make('knee', 'noun', { emoji: '🦵', graphemes: ['kn', 'ee'] }),
+  make('wrap', 'verb', { graphemes: ['wr', 'a', 'p'] }),
+
+  // ── Level-10 Greek/Latin roots (decodable vocabulary; the root MEANING is the
+  //    skill — see morphology.ts). Abstract → not picturable; gated by minLevel. ──
+  make('report', 'noun', { graphemes: ['r', 'e', 'p', 'or', 't'], minLevel: 10 }),
+  make('import', 'noun', { graphemes: ['i', 'm', 'p', 'or', 't'], minLevel: 10 }),
+  make('transport', 'noun', { graphemes: ['t', 'r', 'a', 'n', 's', 'p', 'or', 't'], minLevel: 10 }),
 ];
 
 const WORD_INDEX = new Map<string, LexEntry>(LEXICON.map((e) => [e.word.toLowerCase(), e]));

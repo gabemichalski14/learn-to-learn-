@@ -65,6 +65,17 @@ describe('isAdmissible', () => {
     expect(isAdmissible(find('napkin'), resolveInventory(2))).toBe(false);
     expect(isAdmissible(find('napkin'), resolveInventory(3))).toBe(true);
   });
+
+  it('gates morphology (L5), consonant-le (L6), foreign spellings (L9) and roots (L10)', () => {
+    expect(isAdmissible(find('jumping'), resolveInventory(4))).toBe(false); // L5 morpheme skill
+    expect(isAdmissible(find('jumping'), resolveInventory(5))).toBe(true);
+    expect(isAdmissible(find('apple'), resolveInventory(5))).toBe(false); // needs the L6 'ple' unit
+    expect(isAdmissible(find('apple'), resolveInventory(6))).toBe(true);
+    expect(isAdmissible(find('phone'), resolveInventory(8))).toBe(false); // needs L9 'ph'
+    expect(isAdmissible(find('phone'), resolveInventory(9))).toBe(true);
+    expect(isAdmissible(find('transport'), resolveInventory(9))).toBe(false); // L10 root skill (minLevel)
+    expect(isAdmissible(find('transport'), resolveInventory(10))).toBe(true);
+  });
 });
 
 describe('admissibleWords', () => {

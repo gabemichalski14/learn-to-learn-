@@ -143,8 +143,8 @@ export const READING_COVERAGE: CoverageComponent[] = [
   },
   {
     id: 'r-vocabulary', side: 'reading', domain: 'comprehension', title: 'Vocabulary & background knowledge',
-    status: 'missing', where: '', sources: ['NRP 2000'], frameworks: ['vocabulary', 'background-knowledge'],
-    note: 'No explicit vocabulary/morphology-for-meaning instruction yet (Phase C/D).',
+    status: 'partial', where: 'src/reading/morphology.ts (affixes + roots with child glosses) + glossWord', sources: ['NRP 2000', 'Bowers, Kirby & Deacon 2010'], frameworks: ['vocabulary', 'background-knowledge'],
+    note: 'Morphology-for-meaning engine (the biggest vocabulary lever) — prefixes/suffixes (L5) + Greek/Latin roots (L10) with child glosses + a glossWord decomposer. Explicit vocab-in-context teaching + a morphology game still to build.',
   },
   {
     id: 'r-language-structures', side: 'reading', domain: 'comprehension', title: 'Syntax / language structures / text structure',
@@ -181,27 +181,27 @@ export const READING_COVERAGE: CoverageComponent[] = [
   // Planned levels 5–10: reading SCOPE & science mapped; in-app games pending.
   {
     id: 'r-morphology', side: 'reading', domain: 'content', title: 'Morphology — prefixes, suffixes, roots',
-    status: 'partial', where: 'LEVELS 5 & 10 scope (games pending)', levels: [5, 10],
+    status: 'partial', where: 'src/reading/morphology.ts + lexicon (L5 affixes, L10 roots)', levels: [5, 10],
     sources: ['Bowers, Kirby & Deacon 2010', 'IDA KPS 2018'], frameworks: ['phonics', 'vocabulary'],
-    note: 'Scope & science mapped; games pending (#118 / Phase C–D).',
+    note: 'Engine done (#137): morpheme inventory + decodable affixed/root words + glossWord meaning decomposer, gated L5/L10. A dedicated morphology game still pending.',
   },
   {
     id: 'r-syllable-types', side: 'reading', domain: 'content', title: 'Syllable types — silent-e, C-LE, vowel-r',
-    status: 'partial', where: 'LEVELS 6 & 7 scope (games pending)', levels: [6, 7],
+    status: 'partial', where: 'src/reading/inventory.ts + lexicon (vce L4, C-LE L6, vowel-r L7)', levels: [6, 7],
     sources: ['Moats 2020 (LETRS)', 'IDA KPS 2018'], frameworks: ['phonics', 'full-alphabetic'],
-    note: 'Scope mapped; games pending (#118).',
+    note: 'Engine decodes all six syllable types (#118/#137); composer guarantee holds through L10. Syllable-division game still pending.',
   },
   {
     id: 'r-advanced-vowel-teams', side: 'reading', domain: 'content', title: 'Advanced vowel teams & diphthongs',
-    status: 'partial', where: 'LEVEL 8 scope (games pending)', levels: [8],
+    status: 'partial', where: 'src/reading/inventory.ts (VOWEL_TEAMS L8) + lexicon', levels: [8],
     sources: ['Moats 2020', 'NRP 2000'], frameworks: ['phonics'],
-    note: 'Scope mapped; games pending (#118).',
+    note: 'Engine decodes vowel teams at L8 (#118); composer guarantee covers L8. A vowel-team game still pending.',
   },
   {
     id: 'r-foreign-greek-latin', side: 'reading', domain: 'content', title: 'Foreign patterns + Greek/Latin roots',
-    status: 'partial', where: 'LEVELS 9 & 10 scope (games pending)', levels: [9],
+    status: 'partial', where: 'src/reading/inventory.ts (FOREIGN L9) + morphology.ts (roots L10)', levels: [9],
     sources: ['Henry 2010', 'Bowers et al. 2010'], frameworks: ['vocabulary', 'literacy-knowledge'],
-    note: 'Scope mapped; games pending (#118).',
+    note: 'Engine decodes foreign spellings (ph/kn/wr/mb…) at L9 and Greek/Latin roots at L10 (#137). A roots game still pending.',
   },
 ];
 

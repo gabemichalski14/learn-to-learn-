@@ -45,6 +45,11 @@ const CONSONANT_DIGRAPHS = ['sh', 'ch', 'th', 'wh', 'ck'];
 const VCE = ['a_e', 'e_e', 'i_e', 'o_e', 'u_e']; // L4 magic-e (split digraph)
 const R_CONTROLLED = ['ar', 'or', 'er', 'ir', 'ur']; // L7 bossy-r
 const VOWEL_TEAMS = ['ai', 'ay', 'ee', 'ea', 'oa', 'ow', 'oo', 'igh']; // L8 vowel teams
+// Consonant-le is a final stable SYLLABLE (a syllabic /əl/), not a single phoneme —
+// words carry it as an explicit grapheme unit (little → l,i,t,tle). L6.
+const CONSONANT_LE = ['ble', 'cle', 'dle', 'fle', 'gle', 'kle', 'ple', 'tle', 'zle'];
+// Advanced / "foreign" spellings: ph=/f/, silent-letter teams kn/wr/mb/gn, gh. L9.
+const FOREIGN = ['ph', 'kn', 'wr', 'mb', 'gn', 'gh'];
 
 export const GPCS: Gpc[] = [
   ...SINGLE_CONSONANTS.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 2, kind: 'consonant' })),
@@ -53,6 +58,8 @@ export const GPCS: Gpc[] = [
   ...VCE.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 4, kind: 'vowel' })),
   ...R_CONTROLLED.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 7, kind: 'vowel' })),
   ...VOWEL_TEAMS.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 8, kind: 'vowel' })),
+  ...CONSONANT_LE.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 6, kind: 'consonant' })),
+  ...FOREIGN.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 9, kind: 'digraph' })),
 ];
 
 export const DIGRAPHS: string[] = GPCS.filter((g) => g.kind === 'digraph').map((g) => g.grapheme);
@@ -66,6 +73,8 @@ export const HEART_WORDS_BY_LEVEL: Record<number, string[]> = {
   3: ['said', 'of'],
   4: ['you', 'they', 'have'],
   5: ['are', 'were', 'one'],
+  6: ['come', 'some'],
+  8: ['there', 'their'],
 };
 
 /** Syllable types unlocked by level, per our curriculum focuses. */

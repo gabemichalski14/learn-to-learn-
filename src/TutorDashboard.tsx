@@ -10,6 +10,7 @@ import { loadSessionLog } from './sessionLog';
 import type { SessionRecord } from './sessionLog';
 import { getSessions, getMastery, getEnrichedEvents } from './data/dataSource';
 import type { EnrichedSkillEvent } from './data/cloud';
+import type { SkillEvent } from './mastery/events';
 import { confusions, confusionPhrase, fluency, spellingSlips, spellingSlipPhrase, readingPace } from './world/tutor/personalization';
 import { loadMastery } from './mastery/mastery';
 import type { MasteryMap } from './mastery/mastery';
@@ -17,6 +18,7 @@ import { skillLabel } from './mastery/skills';
 import { TutorPip } from './world/tutor/TutorPip';
 import { LevelControls } from './world/tutor/LevelControls';
 import { SoundMap } from './world/tutor/SoundMap';
+import { SignalsPanel } from './world/tutor/SignalsPanel';
 import { summarize, insightLine, whyNote, retention } from './world/tutor/dashboardData';
 
 /** Full-page tutor view: mastery-first — what each student has learned, what to
@@ -82,6 +84,14 @@ export function TutorDashboard() {
     return () => { live = false; };
   }, [sel, version]);
   const events = cloudEvents && cloudEvents.id === sel ? cloudEvents.rows : [];
+  // Adapt cloud rows (snake_case, ISO `at`) → SkillEvent (camelCase, epoch ms) for
+  // the signal-derivation layer — same mapping getMastery uses.
+  const sigEvents: SkillEvent[] = events.map((r) => ({
+    skillKey: r.skill_key, correct: r.correct, at: Date.parse(r.at),
+    chosen: r.chosen ?? undefined, firstTry: r.first_try ?? undefined,
+    latencyMs: r.latency_ms ?? undefined, replays: r.replays ?? undefined,
+    level: r.level ?? undefined, lesson: r.lesson ?? undefined,
+  }));
   const mixUps = confusions(events);
   const automatic = new Set([...fluency(events)].filter(([, v]) => v === 'automatic').map(([k]) => k));
   const slips = spellingSlips(events);   // dictation misspellings (cloud events)
@@ -240,6 +250,9 @@ export function TutorDashboard() {
                   </ul>
                 </div>
               )}
+
+              {/* Deeper signals — derived from gameplay (stuck / not-yet-fluent / coming along) */}
+              <SignalsPanel events={sigEvents} name={learner.name} />
 
               {/* Sound map — replaces the noisy accuracy line */}
               <div className="l2l-card" style={{ marginTop: '16px' }}>

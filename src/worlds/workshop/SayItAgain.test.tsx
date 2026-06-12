@@ -10,7 +10,7 @@ vi.mock('../../audio/recordedAudioPlayer', () => ({
     narrate: () => Promise.resolve(),
   }),
 }));
-vi.mock('../../audio/sfx', () => ({ sfx: { tap() {}, correct() {}, wrong() {}, win() {} } }));
+vi.mock('../../audio/sfx', () => ({ sfx: { tap() {}, correct() {}, wrong() {}, win() {} }, isMuted: () => false, setMuted: () => {} }));
 
 beforeEach(() => localStorage.clear());
 afterEach(() => vi.useRealTimers());

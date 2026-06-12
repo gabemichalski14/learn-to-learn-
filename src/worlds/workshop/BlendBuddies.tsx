@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { goBack, navigate } from '../../router';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
-import { sfx } from '../../audio/sfx';
+import { sfx, isMuted, setMuted } from '../../audio/sfx';
+import { GameShell } from '../../ui/GameShell';
 import { buildBlendRounds } from '../../content/packs/level3';
 import { recordItem } from '../../mastery/mastery';
 import { blendKey } from '../../mastery/skills';
@@ -32,6 +33,8 @@ export function BlendBuddies({ learnerId = 'guest' }: { learnerId?: string }) {
   const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
   const [line, setLine] = useState('Hear the word, then build it — keep BOTH buddies together! 🤝');
   const [finish, setFinish] = useState<{ stars: number } | null>(null);
+  const [muted, setMutedState] = useState(isMuted());
+  const toggleMute = () => { const next = !muted; setMuted(next); setMutedState(next); };
 
   const startRef = useRef(0);
   const wrongRef = useRef(0);              // total wrong taps (for the star score)
@@ -116,12 +119,16 @@ export function BlendBuddies({ learnerId = 'guest' }: { learnerId?: string }) {
   }
 
   return (
-    <main className="wk">
-      <div className="wk-hud">
-        <button type="button" className="wk-back" onClick={() => goBack('#/level/3')}>← Workshop</button>
-        <span className="wk-badge">🧵 Blend Buddies · Level 3</span>
-      </div>
-
+    <GameShell
+      prefix="wk"
+      rootClass="wk wk-game"
+      back={{ label: '← Workshop', onClick: () => goBack('#/level/3') }}
+      badge={<>🧵 Blend Buddies · Level 3</>}
+      current={ri}
+      total={ROUNDS}
+      muted={muted}
+      onToggleMute={toggleMute}
+    >
       {finish ? (
         <div className="wk-stage">
           <div className="wk-finish">
@@ -161,11 +168,8 @@ export function BlendBuddies({ learnerId = 'guest' }: { learnerId?: string }) {
             ))}
           </div>
 
-          <span className="wk-progress" aria-hidden="true">
-            {rounds.map((_, n) => <i key={n} className={n < ri ? 'done' : n === ri ? 'on' : ''} />)}
-          </span>
         </div>
       )}
-    </main>
+    </GameShell>
   );
 }

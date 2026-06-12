@@ -7,6 +7,22 @@
   border: 1px solid rgba(122,90,34,0.25); border-radius: 999px; padding: 8px 14px; cursor: pointer; min-height: 40px; }
 .wk-back:hover { background: rgba(255,255,255,0.85); }
 .wk-badge { font-size: 13px; font-weight: 800; color: #8a6a1f; }
+/* Shared GameShell chrome (themed wk-): right group + segment bar + mute, mirroring gd-/sg-. */
+.wk-hud__right { display: flex; align-items: center; gap: 10px; }
+.wk-seg { display: flex; gap: 4px; }
+.wk-seg i { width: 14px; height: 6px; border-radius: 3px; background: rgba(122, 90, 34, 0.22); }
+.wk-seg i.on { background: linear-gradient(90deg, #e0922a, #d98a2b); }
+.wk-mute { width: 40px; height: 40px; border-radius: 999px; cursor: pointer; font-size: 16px; line-height: 1;
+  background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(122, 90, 34, 0.25); color: #7a5a22; }
+.wk-mute:focus-visible { outline: 2px solid #4a3a22; outline-offset: 2px; }
+
+/* Games never scroll: fixed viewport height + the stage flexes to fill (the hub
+   keeps the scrollable .wk base). Mirrors the gd-/sg- worlds. */
+.wk-game { height: 100vh; height: 100dvh; overflow: hidden; }
+/* The HUD stays pinned (root overflow:hidden); the stage fills the rest and only
+   scrolls INTERNALLY if a dense board (e.g. the A–Z dictation tray) can't fit a
+   short viewport — so the page never scrolls and content is never clipped. */
+.wk-game .wk-stage { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
 
 .wk-stage { width: 100%; max-width: 560px; display: flex; flex-direction: column; align-items: center; gap: 18px; margin-top: 14px; }
 

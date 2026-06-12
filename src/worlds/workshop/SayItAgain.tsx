@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { goBack, navigate } from '../../router';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
-import { sfx } from '../../audio/sfx';
+import { sfx, isMuted, setMuted } from '../../audio/sfx';
+import { GameShell } from '../../ui/GameShell';
 import { buildReadingRounds, type ReadingRound } from './readingRounds';
 import { recordItem } from '../../mastery/mastery';
 import { logSkillEvent } from '../../data/cloudSync';
@@ -34,6 +35,8 @@ export function SayItAgain({ learnerId = 'guest' }: { learnerId?: string }) {
   const [line, setLine] = useState(READ_HINT);
   const [wrongOpt, setWrongOpt] = useState<string | null>(null);
   const [finish, setFinish] = useState<{ stars: number } | null>(null);
+  const [muted, setMutedState] = useState(isMuted());
+  const toggleMute = () => { const next = !muted; setMuted(next); setMutedState(next); };
 
   const startRef = useRef(0);
   const wrongRef = useRef(0);
@@ -120,12 +123,16 @@ export function SayItAgain({ learnerId = 'guest' }: { learnerId?: string }) {
   }
 
   return (
-    <main className="wk">
-      <div className="wk-hud">
-        <button type="button" className="wk-back" onClick={() => goBack('#/level/3')}>← Workshop</button>
-        <span className="wk-badge">🗣️ Say It Again · Level 3</span>
-      </div>
-
+    <GameShell
+      prefix="wk"
+      rootClass="wk wk-game"
+      back={{ label: '← Workshop', onClick: () => goBack('#/level/3') }}
+      badge={<>🗣️ Say It Again · Level 3</>}
+      current={ri}
+      total={ROUNDS}
+      muted={muted}
+      onToggleMute={toggleMute}
+    >
       {finish ? (
         <div className="wk-stage">
           <div className="wk-finish">
@@ -173,11 +180,8 @@ export function SayItAgain({ learnerId = 'guest' }: { learnerId?: string }) {
             </>
           )}
 
-          <span className="wk-progress" aria-hidden="true">
-            {rounds.map((_, n) => <i key={n} className={n < ri ? 'done' : n === ri ? 'on' : ''} />)}
-          </span>
         </div>
       )}
-    </main>
+    </GameShell>
   );
 }

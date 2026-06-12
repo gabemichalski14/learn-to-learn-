@@ -23,6 +23,9 @@
    scrolls INTERNALLY if a dense board (e.g. the A–Z dictation tray) can't fit a
    short viewport — so the page never scrolls and content is never clipped. */
 .wk-game .wk-stage { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+/* Comprehension: the decodable sentence the child reads before answering. */
+.wk-read-sentence { margin: 8px 0 2px; max-width: 22ch; text-align: center; font-weight: 800;
+  font-size: clamp(20px, 5.5vw, 30px); line-height: 1.35; color: #4a3a22; }
 
 .wk-stage { width: 100%; max-width: 560px; display: flex; flex-direction: column; align-items: center; gap: 18px; margin-top: 14px; }
 

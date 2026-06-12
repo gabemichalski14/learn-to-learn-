@@ -137,9 +137,9 @@ export const READING_COVERAGE: CoverageComponent[] = [
   },
   {
     id: 'r-comprehension', side: 'reading', domain: 'comprehension', title: 'Sentence/passage comprehension',
-    status: 'partial', where: 'Say It Again meaning-check (L3)', levels: [3],
+    status: 'partial', where: 'comprehension engine (src/reading/comprehend.ts) + What\'s It About? & Say It Again (L3)', levels: [3],
     sources: ['Active View 2021', 'NRP 2000'], frameworks: ['comprehension', 'verbal-reasoning', 'language-comprehension'],
-    note: 'Single meaning-check mechanic; explicit comprehension strategy instruction not built.',
+    note: 'Literal who/what/where comprehension with same-category distractors (a meaning engine + game). Inference + explicit comprehension-strategy instruction not yet built.',
   },
   {
     id: 'r-vocabulary', side: 'reading', domain: 'comprehension', title: 'Vocabulary & background knowledge',

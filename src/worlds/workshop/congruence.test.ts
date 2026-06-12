@@ -8,7 +8,7 @@ import { join } from 'node:path';
  * the no-scroll game frame (`wk wk-game`). The hub (WorkshopLevelHub) is exempt: it
  * uses HubHeader semantics and is allowed to grow.
  */
-const GAME_FILES = ['WorkshopPick', 'BlendBuddies', 'ChopShop', 'PatchesDictation', 'ToolTime', 'SayItAgain'];
+const GAME_FILES = ['WorkshopPick', 'BlendBuddies', 'ChopShop', 'PatchesDictation', 'ToolTime', 'SayItAgain', 'WhatsItAbout'];
 const read = (rel: string) => readFileSync(join(process.cwd(), 'src/worlds/workshop', rel), 'utf8');
 
 describe('workshop chrome congruence', () => {

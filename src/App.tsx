@@ -38,6 +38,7 @@ import { ChopShop } from './worlds/workshop/ChopShop';
 import { PatchesDictation } from './worlds/workshop/PatchesDictation';
 import { ToolTime } from './worlds/workshop/ToolTime';
 import { SayItAgain } from './worlds/workshop/SayItAgain';
+import { WhatsItAbout } from './worlds/workshop/WhatsItAbout';
 import { GardenTending } from './worlds/garden/GardenTending';
 import { SoundGardenWelcome } from './worlds/garden/SoundGardenWelcome';
 import { PlantTheWord } from './worlds/space/PlantTheWord';
@@ -189,6 +190,9 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'say-it-again') {
     return <SayItAgain learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'whats-it-about') {
+    return <WhatsItAbout learnerId={learnerId} />;
   }
   if (route.name === 'tending') {
     return <GardenTending learnerId={learnerId} />;

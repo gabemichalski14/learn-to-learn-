@@ -56,7 +56,7 @@ export function skillTag(key: SkillKey): string {
   if (kind === 'vce') return 'silent-e';
   if (kind === 'vowel') return 'long / short';
   if (kind === 'div') return 'splitting words';
-  if (kind === 'read') return a === 'sentence' ? 'reading sentences' : a === 'multi' ? 'long-word speed' : 'reading speed';
+  if (kind === 'read') return a === 'sentence' ? 'reading sentences' : a === 'multi' ? 'long-word speed' : a === 'comprehension' ? 'understanding text' : 'reading speed';
   if (kind === 'heart') return `"${a}" by heart`;
   const p = parseSkillKey(key);
   if (!p) return key;
@@ -75,7 +75,7 @@ export function skillLabel(key: SkillKey): string {
   if (kind === 'vce') return 'silent-e (the magic e makes the vowel say its name)';
   if (kind === 'vowel') return 'open vs closed syllables (long vs short vowel)';
   if (kind === 'div') return 'splitting big words into syllables';
-  if (kind === 'read') return a === 'sentence' ? 'reading sentences out loud (fluency)' : a === 'multi' ? 'reading longer words quickly (fluency)' : 'reading short words quickly (fluency)';
+  if (kind === 'read') return a === 'sentence' ? 'reading sentences out loud (fluency)' : a === 'multi' ? 'reading longer words quickly (fluency)' : a === 'comprehension' ? 'understanding what they read (comprehension)' : 'reading short words quickly (fluency)';
   if (kind === 'heart') return `the heart word “${a}” (irregular high-frequency word)`;
   const p = parseSkillKey(key);
   if (!p) return key;

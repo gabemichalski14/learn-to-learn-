@@ -68,6 +68,7 @@ export const LEVELS: LevelInfo[] = [
       { id: 'patches-dictation', title: "Patch's Dictation", emoji: '✏️', tagline: 'Hear a word — spell it from the whole alphabet.', status: 'available', route: '#/play/patches-dictation' },
       { id: 'tool-time', title: 'Tool Time', emoji: '🔧', tagline: 'Read each word fast and grab its picture.', status: 'available', route: '#/play/tool-time' },
       { id: 'say-it-again', title: 'Say It Again', emoji: '🗣️', tagline: 'Read a sentence back to Patch — then show what it means.', status: 'available', route: '#/play/say-it-again' },
+      { id: 'whats-it-about', title: "What's It About?", emoji: '📖', tagline: 'Read a sentence, then tap the picture it means.', status: 'available', route: '#/play/whats-it-about' },
     ],
   },
   {

@@ -245,6 +245,18 @@ body::before {
 .lvl-card--std .level-emblem { background: color-mix(in srgb, var(--lvl-accent, #5aa06f) 15%, #fff); }
 .lvl-card--std .lvl-card__foot { color: var(--lvl-accent, var(--teal-deep)); }
 
+/* ---- Themed level cards (CONGRUENT): every level wears its painted world
+   (card-N.png) the SAME way, so the PNG alone supplies the per-level look while
+   the structure is identical across all ten. Text rides a soft cream scrim over
+   the calm-sky (left) side → legible over light AND darker art. A missing PNG
+   hides via onError, leaving the cream card + dark text fully readable. ---- */
+.lvl-card--world { color: var(--ink); background: var(--surface); }
+.lvl-card__art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.lvl-card__scrim { position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(100deg, rgba(255, 251, 244, 0.95) 0%, rgba(255, 251, 244, 0.82) 30%, rgba(255, 251, 244, 0.34) 56%, rgba(255, 251, 244, 0) 80%); }
+.lvl-card--world .lvl-card__title { text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); }
+.lvl-card--world .lvl-card__foot { color: var(--lvl-accent, var(--teal-deep)); }
+
 /* locked level — keeps its OWN themed world, shown "asleep" under a soft mist
    so it stays inviting (curiosity) rather than a dull greyed box. */
 .lvl-card--veiled { position: relative; cursor: default; }

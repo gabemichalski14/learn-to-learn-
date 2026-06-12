@@ -4,10 +4,7 @@ import { LEVELS, availableCount } from './games';
 import { isLevelUnlocked, isLevelReady } from './mastery/levelGate';
 import { useRole } from './useAuth';
 import { useDataVersion } from './data/store';
-import { LevelEmblem } from './LevelEmblem';
-
-/** Which levels have an immersive themed "world" (full-card treatment). */
-const WORLD: Record<number, 'space' | 'garden'> = { 1: 'garden', 2: 'space' };
+import { hideBrokenImg } from './ui/imgFallback';
 
 /** Each level is its own themed WORLD — original names (no program's scope &
  *  sequence titles), so the level NAME is creative expression, not a transcribed
@@ -23,11 +20,6 @@ const WORLD_ACCENT: Record<number, string> = {
   1: '#5aa06f', 2: '#22c1d6', 3: '#c8893e', 4: '#7a9e6b', 5: '#d98a3d',
   6: '#8a7bc0', 7: '#2f8aa8', 8: '#3fb5a0', 9: '#5b86c4', 10: '#b87a55',
 };
-
-/** Fixed star field for the themed Level 2 card (top%, left%). */
-const SPACE_STARS: Array<[number, number]> = [
-  [14, 10], [22, 78], [34, 30], [12, 52], [60, 16], [72, 64], [48, 86], [82, 38], [28, 92], [66, 44], [88, 12], [40, 60],
-];
 
 /** A teasing one-liner for a still-locked level — enough to spark curiosity (the
  *  "what's in there?" pull) without giving the lesson away. Original flavor text. */
@@ -45,38 +37,6 @@ const LEVEL_TEASER: Record<number, string> = {
 function footText(_num: number, games: number): string {
   // We surface our OWN games count only — not a transcribed lesson breakdown.
   return games > 0 ? `${games} game${games === 1 ? '' : 's'} ▸` : 'Coming soon';
-}
-
-function SpaceVisual() {
-  return (
-    <span className="lvl-space" aria-hidden="true">
-      {SPACE_STARS.map(([t, l], i) => (
-        <i key={i} style={{ top: `${t}%`, left: `${l}%`, animationDelay: `${(i % 5) * 0.5}s` } as CSSProperties} />
-      ))}
-      <span className="lvl-space__planet" />
-      <span className="lvl-space__rocket">
-        <svg viewBox="0 0 36 36" width="34" height="34">
-          <path d="M25 6 q3 0 3 6 v8 h-6 v-8 q0-6 3-6z" fill="#eaf6f8" />
-          <circle cx="25" cy="13" r="1.8" fill="#2b6f8a" />
-          <path d="M22 20 l-3 5 3 -1 z" fill="#22c1d6" />
-          <path d="M28 20 l3 5 -3 -1 z" fill="#22c1d6" />
-          <path d="M23 20 h4 l-2 6 z" className="lvl-space__flame" fill="#ffb24a" />
-        </svg>
-      </span>
-    </span>
-  );
-}
-
-function GardenVisual() {
-  return (
-    <span className="lvl-garden" aria-hidden="true">
-      <span className="lvl-garden__sun" />
-      <span className="lvl-garden__hill" />
-      <span className="lvl-garden__sprout">🌱</span>
-      <span className="lvl-garden__sprout lvl-garden__sprout--2">🌿</span>
-      <span className="lvl-garden__sprout lvl-garden__sprout--3">🌸</span>
-    </span>
-  );
 }
 
 /** Index of all 10 levels. Each keeps its own themed world even when locked — a
@@ -110,17 +70,21 @@ export function LevelsPage({ learnerId }: { learnerId: string }) {
           const nextUp = !unlocked && num === firstLocked; // the immediate goal
           const prereq = num - 1;
           const prereqReady = isLevelReady(learnerId, prereq);
-          const world = WORLD[num];
           const worldName = WORLD_NAME[num] ?? lvl.title;
           const style = { '--i': idx + 1, '--lvl-accent': WORLD_ACCENT[num] ?? '#5aa06f' } as CSSProperties;
 
-          const themeClass = world === 'space' ? 'lvl-card--space'
-            : world === 'garden' ? 'lvl-card--garden'
-            : `lvl-card--std${ready ? ' is-ready' : ''}`;
-          const visual: ReactNode = world === 'space' ? <SpaceVisual />
-            : world === 'garden' ? <GardenVisual />
-            : <LevelEmblem level={num} />;
-          const bodyWrap = world === 'space' || world === 'garden';
+          // Congruent treatment: EVERY level wears its painted world (card-N.png) the
+          // SAME way — the PNG alone supplies the per-level look (independent theme).
+          // onError hides a missing PNG so the cream card + scrim stays readable
+          // (asset-safety rule); the guard test keeps every level's art present.
+          const themeClass = `lvl-card--world${ready ? ' is-ready' : ''}`;
+          const visual: ReactNode = (
+            <>
+              <img className="lvl-card__art" src={`/images/card-${num}.png`} alt="" aria-hidden="true" onError={hideBrokenImg} />
+              <span className="lvl-card__scrim" aria-hidden="true" />
+            </>
+          );
+          const bodyWrap = true;
           const numLabel = `Level ${num}`;
 
           const foot = unlocked

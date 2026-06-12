@@ -192,12 +192,18 @@ export function restoreGuestLearners(): void {
   try { localStorage.removeItem(GUEST_KEY); } catch { /* ignore */ }
 }
 
-/** Ensure at least one learner exists; returns the current learner. */
-export function ensureLearner(): Learner {
+/**
+ * The current learner, or null if none exists yet. NEVER auto-creates a learner —
+ * students are made only by an admin (cloud `createLearner`) or, in on-device guest
+ * mode, the "+ Add" chip. (Previously this fabricated a "Player 1" on any empty
+ * cold start, which piled up phantom guests in the stash and violated "no students
+ * without the admin making them".)
+ */
+export function currentLearner(): Learner | null {
   const list = loadLearners();
-  if (list.length === 0) return addLearner('Player 1');
+  if (list.length === 0) return null;
   const id = getCurrentLearnerId();
-  return list.find((l) => l.id === id) ?? list[0];
+  return list.find((l) => l.id === id) ?? list[0] ?? null;
 }
 
 /** Initials for a compact avatar, e.g. "Ava B" → "AB". */

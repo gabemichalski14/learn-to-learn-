@@ -50,7 +50,7 @@ import { WordGiants } from './worlds/giantvalley/WordGiants';
 import { NameChangeDictation } from './worlds/giantvalley/NameChangeDictation';
 import { GiantSteps } from './worlds/giantvalley/GiantSteps';
 import { CheckpointGame } from './CheckpointGame';
-import { ensureLearner, setCurrentLearnerId, getCurrentLearnerId } from './profiles';
+import { currentLearner, setCurrentLearnerId, getCurrentLearnerId } from './profiles';
 import { reconcileRoster } from './data/identity';
 import { flushOutbox } from './data/cloudSync';
 import { touchTutorPresence } from './data/cloud';
@@ -64,7 +64,10 @@ import { markActive } from './presence';
 
 export default function App() {
   const route = useRoute();
-  const [learnerId, setLearnerId] = useState<string>(() => ensureLearner().id);
+  // 'guest' when no student exists yet — we never fabricate one (students are made
+  // only by an admin, or the guest-mode "+ Add"). Guest play saves under 'guest'
+  // and isn't added to the roster.
+  const [learnerId, setLearnerId] = useState<string>(() => currentLearner()?.id ?? 'guest');
   const isTutor = useTutorSignedIn();
   const role = useRole();
 
@@ -77,7 +80,7 @@ export default function App() {
       void reconcileRoster().then(() => {
         void flushOutbox();
         // reconcile may have stashed/added profiles → re-point to a valid one
-        setLearnerId(getCurrentLearnerId() ?? ensureLearner().id);
+        setLearnerId(getCurrentLearnerId() ?? 'guest');
       });
     }, 0);
     return () => clearTimeout(t);

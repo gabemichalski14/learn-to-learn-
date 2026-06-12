@@ -171,7 +171,12 @@ export const READING_COVERAGE: CoverageComponent[] = [
     id: 'r-learner-variation', side: 'reading', domain: 'learner-variation', title: 'Dyslexia-aware, difference-not-deficit framing',
     status: 'partial', where: 'src/world/lore/* (Pip as dyslexic-strength character); structured multisensory loop',
     sources: ['IDA KPS 2018', 'Shaywitz 2003'], frameworks: ['structured-literacy'],
-    note: 'Dyslexia lens strong; ELL/multilingual + co-occurring conditions NOT covered — red-team horizon item.',
+    note: 'Dyslexia lens strong (Pip). Co-occurring conditions (ADHD session governor) planned (Phase C). ELL/multilingual is a DELIBERATE scope boundary — see r-ell-multilingual.',
+  },
+  {
+    id: 'r-ell-multilingual', side: 'reading', domain: 'learner-variation', title: 'English-language-learner / multilingual support',
+    status: 'out-of-scope', where: '', sources: [], frameworks: [],
+    note: 'DELIBERATE scope boundary (owner decision 2026-06-12). The mission is teaching struggling readers to become PROFOUND readers OF ENGLISH — deep English structured literacy, not multilingual breadth. The quarterly red-team should NOT re-flag this as a gap; revisit only if the mission widens.',
   },
   // Planned levels 5–10: reading SCOPE & science mapped; in-app games pending.
   {

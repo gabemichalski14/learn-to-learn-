@@ -24,9 +24,12 @@ working as designed — **run the sweep; do not delete the test.**
      the COPPA **2026-04-22** deadline).
    - **Meta (1):** the **red-team gap-hunter** — find structural blind spots /
      unknown-unknowns ("what category is entirely absent?"); horizon-scan adjacent
-     fields and under-served populations (**ELL/multilingual/biliteracy**,
-     co-occurring conditions, AI tutoring); re-audit the meta-domain list + framework
-     registry; critique the thoroughness of this sweep's own prompts.
+     fields and under-served populations (co-occurring conditions, AI tutoring) +
+     the in-scope frontier of **English reading depth** (comprehension: vocabulary +
+     language structures). **Respect recorded scope boundaries** — ELL/multilingual
+     is a deliberate `out-of-scope` decision (`r-ell-multilingual`); do NOT re-flag
+     it. Re-audit the meta-domain list + framework registry; critique the
+     thoroughness of this sweep's own prompts.
 
 2. **Diff & draft.** For each finding: add/update a `CoverageComponent`, attach ≥2
    sources for any `covered` claim (triangulation), append new authorities to

@@ -27,7 +27,8 @@ Ehri (orthographic-mapping phases).
 | `r-self-regulation` | learner-variation | ⚠️ | No-shame retry + gentle correction; explicit metacognition minimal |
 | `r-diagnostic-teaching` | measurement | ✅ | Per-skill mastery + learning-curve signals |
 | `r-screener` | measurement | ✅ | Early at-risk RAN-proxy screener → pacing (L1) |
-| `r-learner-variation` | learner-variation | ⚠️ | Dyslexia-aware (Pip); **ELL/multilingual + co-occurring NOT covered** |
+| `r-learner-variation` | learner-variation | ⚠️ | Dyslexia-aware (Pip); ADHD governor planned (Phase C) |
+| `r-ell-multilingual` | learner-variation | ⬜ | ELL/multilingual — **deliberate scope boundary** (mission = profound *English* readers) |
 | `r-morphology` | content | ⚠️ | Prefix/suffix/root scope mapped; games pending (L5, L10) |
 | `r-syllable-types` | content | ⚠️ | Silent-e / C-LE / vowel-r scope mapped; games pending (L6, L7) |
 | `r-advanced-vowel-teams` | content | ⚠️ | Advanced vowel teams scope mapped; games pending (L8) |
@@ -37,7 +38,11 @@ Ehri (orthographic-mapping phases).
 
 1. **`r-vocabulary` / `r-language-structures` (❌)** — the comprehension half of the
    Simple View is thin. The decoding strand is strong; the language strand needs work.
-2. **`r-learner-variation` (⚠️)** — strong dyslexia lens, but **no support for
-   English-language learners / multilingual / biliteracy** — explicitly flagged for
-   the red-team horizon scan.
-3. **Levels 5–10 (⚠️)** — reading *science & scope* mapped; in-app games pending (#118).
+2. **Levels 5–10 (⚠️)** — reading *science & scope* mapped; in-app games pending (#118).
+
+> **North Star (scope decision, 2026-06-12):** the mission is teaching struggling
+> readers to become **profound readers of English** — depth of English structured
+> literacy, not multilingual breadth. **ELL/multilingual is a deliberate scope
+> boundary** (`r-ell-multilingual` ⬜), not a gap; the quarterly red-team should not
+> re-flag it. The real in-scope frontier is the **comprehension half** (vocabulary,
+> language structures) — that's where "decode accurately" becomes "read profoundly".

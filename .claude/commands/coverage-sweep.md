@@ -31,9 +31,11 @@ science, and child-privacy regulation. Follow `docs/coverage/SWEEP.md` exactly.
    - Compliance ×1: COPPA / UK Children's Code / GDPR-K / FERPA + US state laws —
      what changed, does our posture still satisfy it, flag time-bound items.
    - Meta ×1 — **red-team gap-hunter:** what whole category is absent? Horizon-scan
-     adjacent fields + under-served populations (ELL/multilingual/biliteracy,
-     co-occurring conditions, AI tutoring); re-audit the meta-domain list + framework
-     registry; critique the thoroughness of these very prompts.
+     adjacent fields + under-served populations (co-occurring conditions, AI tutoring)
+     and the in-scope frontier of English reading depth (comprehension: vocabulary +
+     language structures). RESPECT recorded scope boundaries — ELL/multilingual is a
+     deliberate `out-of-scope` decision (`r-ell-multilingual`); do NOT re-flag it.
+     Re-audit the meta-domain list + framework registry; critique these very prompts.
    (If sub-agents aren't available, do the dives sequentially yourself.)
 3. **Diff & draft** added/changed components, new sources, new authorities, and any
    ethics findings. Rank by impact + stakes (regulation deadlines first).

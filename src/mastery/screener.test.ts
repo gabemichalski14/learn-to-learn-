@@ -5,6 +5,8 @@ import {
   loadScreener,
   hasScreened,
   pacingOf,
+  reviewDose,
+  REVIEW_DOSE,
   RAN_FAST_MS,
   RAN_SLOW_MS,
   type ScreenerResult,
@@ -51,5 +53,17 @@ describe('screener persistence', () => {
     localStorage.setItem('ll:kid:screener', '{not json');
     expect(loadScreener('kid')).toBeNull();
     expect(hasScreened('kid')).toBe(false);
+  });
+});
+
+describe('reviewDose', () => {
+  it('maps pacing → dose; gentler = shorter set, springboard = fuller', () => {
+    expect(reviewDose('unscreened')).toBe(REVIEW_DOSE.standard); // default
+    saveScreener('g', { ranMsPerItem: 2000, takenAt: 'x', pacing: 'gentle' });
+    saveScreener('s', { ranMsPerItem: 300, takenAt: 'x', pacing: 'springboard' });
+    expect(reviewDose('g')).toBe(REVIEW_DOSE.gentle);
+    expect(reviewDose('s')).toBe(REVIEW_DOSE.springboard);
+    expect(REVIEW_DOSE.gentle).toBeLessThan(REVIEW_DOSE.standard);
+    expect(REVIEW_DOSE.springboard).toBeGreaterThan(REVIEW_DOSE.standard);
   });
 });

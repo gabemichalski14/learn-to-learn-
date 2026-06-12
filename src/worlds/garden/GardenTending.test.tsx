@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
 import { recordItem } from '../../mastery/mastery';
 import { enrollMasteredSkills } from '../../world/memory/reviewStore';
+import { saveScreener, type Pacing } from '../../mastery/screener';
 import { GardenTending } from './GardenTending';
 
 vi.mock('../../audio/recordedAudioPlayer', () => ({
@@ -45,5 +46,22 @@ describe('GardenTending', () => {
   it('shows the blooming state when nothing is due (no shame, no empty quiz)', () => {
     const { container } = render(<GardenTending learnerId={L} />);
     expect(container.textContent).toContain('blooming');
+  });
+
+  it('flexes the review dose to the learner pacing (gentle shorter than springboard)', () => {
+    const letters = ['m', 's', 't', 'p', 'n', 'b', 'f', 'r'];
+    function seed(id: string, pacing: Pacing) {
+      letters.forEach((c) => { for (let i = 0; i < 5; i++) recordItem(id, `sound:first:${c}`, true); });
+      enrollMasteredSkills(id);
+      saveScreener(id, { ranMsPerItem: 1000, takenAt: new Date().toISOString(), pacing });
+    }
+    seed('paceG', 'gentle');
+    seed('paceS', 'springboard');
+    const g = render(<GardenTending learnerId="paceG" />);
+    const s = render(<GardenTending learnerId="paceS" />);
+    const gentleDots = g.container.querySelectorAll('.gd-tend-progress i').length;
+    const springDots = s.container.querySelectorAll('.gd-tend-progress i').length;
+    expect(gentleDots).toBeLessThanOrEqual(4); // gentle = shorter set (below the standard 6)
+    expect(springDots).toBeGreaterThan(gentleDots); // springboard surfaces a fuller set
   });
 });

@@ -65,3 +65,21 @@ export function hasScreened(learnerId: string): boolean {
 export function pacingOf(learnerId: string): Pacing {
   return loadScreener(learnerId)?.pacing ?? 'standard';
 }
+
+/**
+ * Review DOSE = how many spaced-review items to surface in one warm-up sitting.
+ * Gentler pacing → shorter sets (vigilance/fatigue research: shorter is kinder
+ * for at-risk young readers); springboard → a slightly fuller set. This is the
+ * one knob pacing turns. Tunable — validate against real engagement/retention.
+ *
+ * Deliberately NOT modulated by pacing: curriculum PLACEMENT. This is a structured
+ * (Barton-aligned) sequence — pacing never skips scope or "starts ahead". What a
+ * learner is ready for is gated by real MASTERY, not by a one-time screener. So
+ * springboard means "a fuller review set", never "skip phonics steps". The child's
+ * core teaching loop is never shortened punitively either — only the review dose flexes.
+ */
+export const REVIEW_DOSE: Record<Pacing, number> = { gentle: 4, standard: 6, springboard: 8 };
+
+export function reviewDose(learnerId: string): number {
+  return REVIEW_DOSE[pacingOf(learnerId)];
+}

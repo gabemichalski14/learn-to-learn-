@@ -7,9 +7,8 @@ import { CharacterArt } from '../../world/lore/CharacterArt';
 import { GardenBackdrop } from './GardenArt';
 import { startReviewSession, selectReview, recordReview } from '../../world/memory/reviewStore';
 import { buildTrials, type TendingTrial } from '../../world/memory/tendingTrials';
+import { reviewDose } from '../../mastery/screener';
 import './garden.css';
-
-const CAP = 6;
 
 /**
  * Garden Tending — the spaced-review warm-up that SURFACES the memory engine.
@@ -35,7 +34,8 @@ export function GardenTending({ learnerId = 'guest' }: { learnerId?: string }) {
     if (startedRef.current) return; // run once (also dodges StrictMode double-invoke)
     startedRef.current = true;
     startReviewSession(learnerId);
-    setTrials(buildTrials(selectReview(learnerId), Math.random, CAP));
+    // Dose flexes with the learner's pacing (gentle = shorter set, springboard = fuller).
+    setTrials(buildTrials(selectReview(learnerId), Math.random, reviewDose(learnerId)));
   }, [learnerId]);
 
   const trial = trials ? trials[idx] : undefined;

@@ -76,6 +76,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
   const wordShownRef = useRef(Date.now()); // when the current word appeared → response time
+  const replaysRef = useRef(0); // audio replays for the current word (uncertainty signal)
 
   const word = words[round];
   const isLast = round >= ROUNDS - 1;
@@ -90,6 +91,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
   useEffect(() => {
     void audio.playWord(words[round]);
     wordShownRef.current = Date.now();
+    replaysRef.current = 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round, words]);
 
@@ -129,7 +131,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
     if (attempts === 0) {
       if (isCorrect) firstTryRef.current += 1;
       recordItem(learnerId, 'pa:segment', isCorrect, Date.now() - wordShownRef.current);
-      logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: isCorrect, at: Date.now(), game: 'tap-it-out', level: 1, firstTry: true, latencyMs: Date.now() - wordShownRef.current });
+      logSkillEvent(learnerId, { skillKey: 'pa:segment', correct: isCorrect, at: Date.now(), game: 'tap-it-out', level: 1, firstTry: true, latencyMs: Date.now() - wordShownRef.current, replays: replaysRef.current });
     }
     if (isCorrect) {
       // Bloom + climbing combo + a happy Sprout.
@@ -285,7 +287,7 @@ export function TapItOutGame({ learnerId = 'guest' }: { learnerId?: string }) {
         <div className="gd-word">
           <WordPicture label={word.label} emoji={word.emoji} className="gd-wordpic" />
           <span className="gd-word__label">{cap(word.label)}</span>
-          <button type="button" className="gd-hear" onClick={() => { sfx.tap(); pingEcho(); void audio.playWord(word); }}><Icon name="ico-hear" emoji="🔊" /> Hear it</button>
+          <button type="button" className="gd-hear" onClick={() => { replaysRef.current += 1; sfx.tap(); pingEcho(); void audio.playWord(word); }}><Icon name="ico-hear" emoji="🔊" /> Hear it</button>
         </div>
 
         <p className="gd-ask">How many sounds do you hear? <b>Tap a beat for each one.</b></p>

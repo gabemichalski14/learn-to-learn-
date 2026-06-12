@@ -48,6 +48,7 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
   const shownRef = useRef(0); // when the current item appeared → per-item response latency
+  const replaysRef = useRef(0); // audio replays for the current item (uncertainty signal)
   const round = rounds[i];
 
   // Start the session clock on mount (kept out of render to stay pure).
@@ -59,6 +60,7 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
   useEffect(() => {
     if (!round || finish) return;
     shownRef.current = Date.now();
+    replaysRef.current = 0;
     playWord(round.a);
     const id = window.setTimeout(() => playWord(round.b), 950);
     return () => window.clearTimeout(id);
@@ -87,7 +89,7 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
     window.setTimeout(() => {
       const latencyMs = Date.now() - shown;
       recordItem(learnerId, SKILL, correct, latencyMs, chosen);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'same-or-different', level: 1, firstTry: true, latencyMs, chosen });
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'same-or-different', level: 1, firstTry: true, latencyMs, replays: replaysRef.current, chosen });
     }, 0);
     window.setTimeout(() => {
       setMood(null); setPicked(null); setPhase('idle');
@@ -162,8 +164,8 @@ export function SameOrDifferent({ learnerId = 'guest' }: { learnerId?: string })
           <div className="gd-panel">
             <p className="sd-q">Are these two words the <b>same</b>?</p>
             <div className="sd-listen">
-              <button type="button" className="sd-listen__btn" onClick={() => round && playWord(round.a)}><Icon name="ico-hear" emoji="🔊" /> First word</button>
-              <button type="button" className="sd-listen__btn" onClick={() => round && playWord(round.b)}><Icon name="ico-hear" emoji="🔊" /> Second word</button>
+              <button type="button" className="sd-listen__btn" onClick={() => { if (round) { replaysRef.current += 1; playWord(round.a); } }}><Icon name="ico-hear" emoji="🔊" /> First word</button>
+              <button type="button" className="sd-listen__btn" onClick={() => { if (round) { replaysRef.current += 1; playWord(round.b); } }}><Icon name="ico-hear" emoji="🔊" /> Second word</button>
             </div>
 
             <div className="sd-choices">

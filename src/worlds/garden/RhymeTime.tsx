@@ -43,12 +43,13 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
   const handledRef = useRef(false);
   const advRef = useRef(false);
   const shownRef = useRef(0); // when the current item appeared → per-item response latency
+  const replaysRef = useRef(0); // audio replays for the current item (uncertainty signal)
   const round = rounds[i];
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) { shownRef.current = Date.now(); say(round.target.word); }
+    if (round && !finish) { shownRef.current = Date.now(); replaysRef.current = 0; say(round.target.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i]);
 
@@ -64,7 +65,7 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
     window.setTimeout(() => {
       const latencyMs = Date.now() - shown;
       recordItem(learnerId, SKILL, correct, latencyMs, chosen);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'rhyme-time', level: 1, firstTry: true, latencyMs, chosen });
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'rhyme-time', level: 1, firstTry: true, latencyMs, replays: replaysRef.current, chosen });
     }, 0);
     window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;
@@ -131,7 +132,7 @@ export function RhymeTime({ learnerId = 'guest' }: { learnerId?: string }) {
           )}
 
           <div className="gd-panel">
-            <button type="button" className="gd-pic gd-pic--target" onClick={() => say(round.target.word)} aria-label={`Hear ${round.target.word} again`}>
+            <button type="button" className="gd-pic gd-pic--target" onClick={() => { replaysRef.current += 1; say(round.target.word); }} aria-label={`Hear ${round.target.word} again`}>
               <WordPicture label={round.target.word} emoji={round.target.emoji} className="gd-picimg" />
               <span className="gd-pic__hear"><Icon name="ico-hear" emoji="🔊" /> hear it</span>
             </button>

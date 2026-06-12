@@ -58,6 +58,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
   const wrongRef = useRef(0);
   const handledRef = useRef(false);
   const shownRef = useRef(0); // when the current item appeared → per-item response latency
+  const replaysRef = useRef(0); // audio replays for the current item (uncertainty signal)
   const round = rounds[i];
 
   useEffect(() => { startRef.current = Date.now(); }, []);
@@ -68,6 +69,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
   useEffect(() => {
     if (!round || finish) return;
     shownRef.current = Date.now();
+    replaysRef.current = 0;
     say(round.source);
     const id = window.setTimeout(() => say(round.target), 1050);
     return () => window.clearTimeout(id);
@@ -90,7 +92,7 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
     window.setTimeout(() => {
       const latencyMs = Date.now() - shown;
       recordItem(learnerId, SKILL, correct, latencyMs);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'switch-it', level: 1, firstTry: true, latencyMs });
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'switch-it', level: 1, firstTry: true, latencyMs, replays: replaysRef.current });
     }, 0);
     window.setTimeout(() => {
       const now = Date.now();
@@ -191,8 +193,8 @@ export function SwitchItGame({ learnerId = 'guest' }: { learnerId?: string }) {
                 })}
               </div>
               <div className="sd-listen">
-                <button type="button" className="sd-listen__btn" onClick={() => round && say(round.source)}><Icon name="ico-hear" emoji="🔊" /> First word</button>
-                <button type="button" className="sd-listen__btn" onClick={() => round && say(round.target)}><Icon name="ico-hear" emoji="🔊" /> Second word</button>
+                <button type="button" className="sd-listen__btn" onClick={() => { if (round) { replaysRef.current += 1; say(round.source); } }}><Icon name="ico-hear" emoji="🔊" /> First word</button>
+                <button type="button" className="sd-listen__btn" onClick={() => { if (round) { replaysRef.current += 1; say(round.target); } }}><Icon name="ico-hear" emoji="🔊" /> Second word</button>
               </div>
               <button type="button" className="si-hint" onClick={() => { setShowLetters((v) => !v); sfx.tap(); }} aria-pressed={showLetters}>
                 {showLetters ? <><Icon name="ico-hide" emoji="🙈" /> Hide the words</> : <><Icon name="ico-show" emoji="👀" /> Show me the words</>}

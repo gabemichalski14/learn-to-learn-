@@ -1,0 +1,21 @@
+/* Shared level-hub CTAs (checkpoint + village). The LevelHubShell renders these
+   the SAME way on every level so the buttons + words sit in the same place; the
+   world only supplies its backdrop + accent (--lvl-accent). Cozy pill on a soft
+   surface so it reads over a light garden OR a dark space backdrop. */
+.lvlhub-check, .lvlhub-village {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  margin: 6px auto 0; min-height: 48px; padding: 12px 22px; width: min(100%, 440px);
+  border-radius: 999px; font: inherit; font-size: 14.5px; font-weight: 800; cursor: pointer;
+  border: 1.5px solid rgba(13, 27, 42, 0.12); background: rgba(255, 255, 255, 0.92);
+  color: var(--ink, #173d2a); box-shadow: 0 6px 16px rgba(13, 27, 42, 0.14);
+  transition: transform 0.16s ease, box-shadow 0.16s ease; }
+.lvlhub-check:hover, .lvlhub-village:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(13, 27, 42, 0.2); }
+.lvlhub-check:focus-visible, .lvlhub-village:focus-visible { outline: 3px solid var(--lvl-accent, #5aa06f); outline-offset: 2px; }
+/* the checkpoint is the goal — give it a warm accent edge so it stands out */
+.lvlhub-check { border-color: color-mix(in srgb, var(--lvl-accent, #f5b13c) 60%, transparent);
+  color: color-mix(in srgb, var(--lvl-accent, #b9791c) 70%, #5a3d12); }
+.lvlhub-check--done { border-color: rgba(13, 27, 42, 0.12); color: var(--muted, #5b6b62); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) {
+  .lvlhub-check, .lvlhub-village { transition: none; }
+  .lvlhub-check:hover, .lvlhub-village:hover { transform: none; }
+}

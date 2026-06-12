@@ -35,6 +35,10 @@ export interface LexEntry {
   emoji?: string;
   /** The GPC graphemes that spell the word (greedy-segmented; correct for this set). */
   graphemes: string[];
+  /** Floor on the level a word becomes admissible, independent of its graphemes —
+   *  e.g. a multisyllable CLOSED word ('napkin') is all-L2 graphemes but needs the
+   *  L3 syllable-division skill to read, so minLevel:3. Omit for single-syllable. */
+  minLevel?: number;
 }
 
 interface MakeOpts {
@@ -43,10 +47,16 @@ interface MakeOpts {
   animate?: boolean;
   place?: boolean;
   feeling?: boolean;
+  /** Explicit GPC graphemes — REQUIRED for split digraphs (vce: cake → c,a_e,k),
+   *  r-controlled (car → c,ar) and vowel teams (rain → r,ai,n), which greedy
+   *  left-to-right segmentation can't recover. */
+  graphemes?: string[];
+  /** Admissibility floor independent of graphemes (e.g. multisyllable → L3). */
+  minLevel?: number;
 }
 
 function make(word: string, pos: Pos, opts: MakeOpts = {}): LexEntry {
-  const graphemes = segmentGraphemes(word);
+  const graphemes = opts.graphemes ?? segmentGraphemes(word);
   const vowel = graphemes.find((g) => VOWEL_GRAPHEMES.has(g));
   const structure = graphemes.map((g) => (VOWEL_GRAPHEMES.has(g) ? 'V' : 'C')).join('');
   return {
@@ -61,6 +71,7 @@ function make(word: string, pos: Pos, opts: MakeOpts = {}): LexEntry {
     feeling: opts.feeling,
     emoji: opts.emoji,
     graphemes,
+    minLevel: opts.minLevel,
   };
 }
 
@@ -112,6 +123,65 @@ export const LEXICON: LexEntry[] = [
   make('fish', 'noun', { emoji: '🐟', animate: true }), make('duck', 'noun', { emoji: '🦆', animate: true }),
   make('sock', 'noun', { emoji: '🧦' }), make('ship', 'noun', { emoji: '🚢', place: true }),
   make('shed', 'noun', { place: true }), make('chin', 'noun'),
+
+  // ── multisyllable CLOSED words: all-L2 graphemes, but need the L3 syllable-division
+  //    skill to read (Chop Shop) → gated by minLevel, not graphemes. ──
+  make('rabbit', 'noun', { emoji: '🐰', animate: true, minLevel: 3 }),
+  make('kitten', 'noun', { emoji: '🐱', animate: true, minLevel: 3 }),
+  make('napkin', 'noun', { emoji: '🧻', minLevel: 3 }),
+  make('basket', 'noun', { emoji: '🧺', place: true, minLevel: 3 }),
+  make('sunset', 'noun', { emoji: '🌇', minLevel: 3 }),
+  make('muffin', 'noun', { emoji: '🧁', minLevel: 3 }),
+  make('magnet', 'noun', { emoji: '🧲', minLevel: 3 }),
+
+  // ── Level-4 vce / magic-e (split digraph — EXPLICIT graphemes) ──
+  make('snake', 'noun', { emoji: '🐍', animate: true, graphemes: ['s', 'n', 'a_e', 'k'] }),
+  make('whale', 'noun', { emoji: '🐋', animate: true, graphemes: ['wh', 'a_e', 'l'] }),
+  make('mole', 'noun', { emoji: '🦫', animate: true, graphemes: ['m', 'o_e', 'l'] }),
+  make('cake', 'noun', { emoji: '🎂', graphemes: ['c', 'a_e', 'k'] }),
+  make('bike', 'noun', { emoji: '🚲', graphemes: ['b', 'i_e', 'k'] }),
+  make('kite', 'noun', { emoji: '🪁', graphemes: ['k', 'i_e', 't'] }),
+  make('rose', 'noun', { emoji: '🌹', graphemes: ['r', 'o_e', 's'] }),
+  make('bone', 'noun', { emoji: '🦴', graphemes: ['b', 'o_e', 'n'] }),
+  make('game', 'noun', { emoji: '🎮', graphemes: ['g', 'a_e', 'm'] }),
+  make('cube', 'noun', { emoji: '🧊', graphemes: ['c', 'u_e', 'b'] }),
+  make('lake', 'noun', { emoji: '🏞️', place: true, graphemes: ['l', 'a_e', 'k'] }),
+  make('cave', 'noun', { emoji: '🕳️', place: true, graphemes: ['c', 'a_e', 'v'] }),
+  make('gate', 'noun', { emoji: '🚪', place: true, graphemes: ['g', 'a_e', 't'] }),
+  make('bake', 'verb', { graphemes: ['b', 'a_e', 'k'] }), make('hide', 'verb', { graphemes: ['h', 'i_e', 'd'] }),
+  make('ride', 'verb', { graphemes: ['r', 'i_e', 'd'] }), make('wave', 'verb', { graphemes: ['w', 'a_e', 'v'] }),
+  make('hope', 'verb', { graphemes: ['h', 'o_e', 'p'] }),
+  make('safe', 'adj', { graphemes: ['s', 'a_e', 'f'] }), make('late', 'adj', { graphemes: ['l', 'a_e', 't'] }),
+  make('cute', 'adj', { feeling: true, graphemes: ['c', 'u_e', 't'] }), make('ripe', 'adj', { graphemes: ['r', 'i_e', 'p'] }),
+
+  // ── Level-7 r-controlled / bossy-r (EXPLICIT graphemes) ──
+  make('car', 'noun', { emoji: '🚗', place: true, graphemes: ['c', 'ar'] }),
+  make('star', 'noun', { emoji: '⭐', graphemes: ['s', 't', 'ar'] }),
+  make('shark', 'noun', { emoji: '🦈', animate: true, graphemes: ['sh', 'ar', 'k'] }),
+  make('barn', 'noun', { emoji: '🏚️', place: true, graphemes: ['b', 'ar', 'n'] }),
+  make('corn', 'noun', { emoji: '🌽', graphemes: ['c', 'or', 'n'] }),
+  make('fork', 'noun', { emoji: '🍴', graphemes: ['f', 'or', 'k'] }),
+  make('bird', 'noun', { emoji: '🐦', animate: true, graphemes: ['b', 'ir', 'd'] }),
+  make('girl', 'noun', { emoji: '👧', animate: true, graphemes: ['g', 'ir', 'l'] }),
+  make('hard', 'adj', { graphemes: ['h', 'ar', 'd'] }), make('dark', 'adj', { graphemes: ['d', 'ar', 'k'] }),
+
+  // ── Level-8 vowel teams (EXPLICIT graphemes) ──
+  make('rain', 'noun', { emoji: '🌧️', graphemes: ['r', 'ai', 'n'] }),
+  make('train', 'noun', { emoji: '🚂', place: true, graphemes: ['t', 'r', 'ai', 'n'] }),
+  make('boat', 'noun', { emoji: '⛵', place: true, graphemes: ['b', 'oa', 't'] }),
+  make('goat', 'noun', { emoji: '🐐', animate: true, graphemes: ['g', 'oa', 't'] }),
+  make('bee', 'noun', { emoji: '🐝', animate: true, graphemes: ['b', 'ee'] }),
+  make('tree', 'noun', { emoji: '🌳', place: true, graphemes: ['t', 'r', 'ee'] }),
+  make('leaf', 'noun', { emoji: '🍃', graphemes: ['l', 'ea', 'f'] }),
+  make('seed', 'noun', { emoji: '🌱', graphemes: ['s', 'ee', 'd'] }),
+  make('road', 'noun', { emoji: '🛣️', place: true, graphemes: ['r', 'oa', 'd'] }),
+  make('soap', 'noun', { emoji: '🧼', graphemes: ['s', 'oa', 'p'] }),
+
+  // ── heart words for L3–L5 (irregular HF; admit ONLY when taught) ──
+  make('said', 'function', { heart: true }), make('of', 'function', { heart: true }),
+  make('you', 'function', { heart: true }), make('they', 'function', { heart: true }),
+  make('have', 'function', { heart: true }), make('are', 'function', { heart: true }),
+  make('were', 'function', { heart: true }), make('one', 'function', { heart: true }),
 ];
 
 const WORD_INDEX = new Map<string, LexEntry>(LEXICON.map((e) => [e.word.toLowerCase(), e]));
@@ -131,6 +201,7 @@ export function usesNewSkill(e: LexEntry, newGraphemes: ReadonlySet<string>): bo
 /** Is this word decodable/known at the given inventory? Heart words admit only
  *  when explicitly taught; everything else iff all its graphemes are taught. */
 export function isAdmissible(e: LexEntry, inv: TaughtInventory): boolean {
+  if (e.minLevel && inv.level < e.minLevel) return false; // gate (e.g. multisyllable → L3)
   if (e.heart) return inv.heartWords.has(e.word.toLowerCase());
   return e.graphemes.every((g) => inv.graphemes.has(g));
 }

@@ -38,11 +38,21 @@ const SHORT_VOWELS = ['a', 'e', 'i', 'o', 'u'];
 // our sequence, which keeps Level-2 text pure CVC (matches the fluency mode ladder:
 // L2 = CVC accuracy, L3 = blends/digraphs).
 const CONSONANT_DIGRAPHS = ['sh', 'ch', 'th', 'wh', 'ck'];
+// Higher-level VOWEL-spelling patterns. vce is a SPLIT digraph (a…e wraps a
+// consonant) so it can't be greedy-segmented — words using vce / vowel-teams carry
+// EXPLICIT graphemes in the lexicon; these tokens register the pattern as "taught
+// at level N" so admissibility (and the new-skill foregrounding) can see it.
+const VCE = ['a_e', 'e_e', 'i_e', 'o_e', 'u_e']; // L4 magic-e (split digraph)
+const R_CONTROLLED = ['ar', 'or', 'er', 'ir', 'ur']; // L7 bossy-r
+const VOWEL_TEAMS = ['ai', 'ay', 'ee', 'ea', 'oa', 'ow', 'oo', 'igh']; // L8 vowel teams
 
 export const GPCS: Gpc[] = [
   ...SINGLE_CONSONANTS.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 2, kind: 'consonant' })),
   ...SHORT_VOWELS.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 2, kind: 'vowel' })),
   ...CONSONANT_DIGRAPHS.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 3, kind: 'digraph' })),
+  ...VCE.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 4, kind: 'vowel' })),
+  ...R_CONTROLLED.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 7, kind: 'vowel' })),
+  ...VOWEL_TEAMS.map((g): Gpc => ({ grapheme: g, phoneme: g, introLevel: 8, kind: 'vowel' })),
 ];
 
 export const DIGRAPHS: string[] = GPCS.filter((g) => g.kind === 'digraph').map((g) => g.grapheme);
@@ -53,6 +63,9 @@ export const VOWEL_GRAPHEMES: ReadonlySet<string> = new Set(GPCS.filter((g) => g
  *  arrive at later levels (heart-word brick + the quarterly sweep). Tunable. */
 export const HEART_WORDS_BY_LEVEL: Record<number, string[]> = {
   2: ['the', 'a', 'I', 'is', 'to', 'was'],
+  3: ['said', 'of'],
+  4: ['you', 'they', 'have'],
+  5: ['are', 'were', 'one'],
 };
 
 /** Syllable types unlocked by level, per our curriculum focuses. */

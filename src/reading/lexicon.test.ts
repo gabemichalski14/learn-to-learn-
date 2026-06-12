@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { GPCS, resolveInventory, segmentGraphemes } from './inventory';
+import { GPCS, resolveInventory } from './inventory';
 import { LEXICON, isAdmissible, admissibleWords } from './lexicon';
 
 const ALL_GRAPHEMES = new Set(GPCS.map((g) => g.grapheme));
@@ -14,10 +14,14 @@ describe('lexicon integrity (correctness guards)', () => {
     }
   });
 
-  it('every word round-trips through the segmenter (graphemes join back to the word)', () => {
+  it('every word reconciles with its spelling (graphemes cover the letters; split digraphs allowed)', () => {
+    // Greedy-segmented words join back exactly; vce/vowel-team words carry explicit
+    // graphemes (split digraph a_e, vowel teams), so we verify by LETTER-COVERAGE —
+    // the graphemes (underscores stripped) must use exactly the word's letters. This
+    // still catches typos (a wrong/missing letter), the original guard's purpose.
+    const letters = (s: string) => s.toLowerCase().replace(/_/g, '').split('').sort().join('');
     for (const e of LEXICON) {
-      expect(e.graphemes.join('')).toBe(e.word.toLowerCase());
-      expect(e.graphemes).toEqual(segmentGraphemes(e.word));
+      expect(letters(e.graphemes.join('')), `${e.word} = ${e.graphemes.join('+')}`).toBe(letters(e.word));
     }
   });
 
@@ -41,6 +45,25 @@ describe('isAdmissible', () => {
   it('admits a heart word only when explicitly taught, never by graphemes', () => {
     expect(isAdmissible(find('the'), resolveInventory(1))).toBe(false);
     expect(isAdmissible(find('the'), resolveInventory(2))).toBe(true);
+  });
+
+  it('holds a vce / magic-e word (split digraph) back until L4', () => {
+    expect(isAdmissible(find('cake'), resolveInventory(3))).toBe(false);
+    expect(isAdmissible(find('cake'), resolveInventory(4))).toBe(true);
+  });
+
+  it('holds r-controlled to L7 and vowel-teams to L8', () => {
+    expect(isAdmissible(find('car'), resolveInventory(6))).toBe(false);
+    expect(isAdmissible(find('car'), resolveInventory(7))).toBe(true);
+    expect(isAdmissible(find('rain'), resolveInventory(7))).toBe(false);
+    expect(isAdmissible(find('rain'), resolveInventory(8))).toBe(true);
+  });
+
+  it('gates a multisyllable closed word (all-L2 graphemes) to L3 syllable division', () => {
+    // 'napkin' is fully spelled by L2 graphemes, but needs the L3 syllable-division
+    // skill to read — minLevel enforces that independent of graphemes.
+    expect(isAdmissible(find('napkin'), resolveInventory(2))).toBe(false);
+    expect(isAdmissible(find('napkin'), resolveInventory(3))).toBe(true);
   });
 });
 

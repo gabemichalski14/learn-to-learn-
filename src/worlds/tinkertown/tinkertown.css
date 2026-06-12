@@ -28,6 +28,7 @@
 .tt-part:focus-visible { outline: 3px solid #2c5d3f; outline-offset: 2px; }
 .tt-part.is-right { background: #e7f4ea; border-color: #54a86f; }
 .tt-part.is-wrong { background: #f6dcdc; border-color: #e0a3a3; animation: tt-wob 0.4s ease; }
+.tt-part.is-used { opacity: 0.38; pointer-events: none; } /* a part already bolted on (Word Workbench) */
 @keyframes tt-wob { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 @media (prefers-reduced-motion: reduce) { .tt-part.is-wrong { animation: none; } .tt-part:hover { transform: none; } }
 

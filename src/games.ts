@@ -91,7 +91,7 @@ export const LEVELS: LevelInfo[] = [
     games: [
       { id: 'l5-suffix', title: 'Happy Endings', emoji: '➕', tagline: 'Snap on the ending that does the job: -ing, -ed, -er, -est.', status: 'available', route: '#/play/l5-suffix' },
       { id: 'l5-prefix', title: 'Front Loaders', emoji: '🔧', tagline: 'Add the prefix that makes the meaning: un-, re-.', status: 'available', route: '#/play/l5-prefix' },
-      soon('l5-build', 'Word Workbench', '🧩', 'Build a word from its parts: un + lock → unlock.'),
+      { id: 'l5-build', title: 'Word Workbench', emoji: '🧩', tagline: 'Build a word from its parts: un + lock → unlock.', status: 'available', route: '#/play/l5-build' },
       soon('l5-peel', 'Take It Apart', '🍃', 'Peel the parts off a big word to find its base.'),
       soon('l5-ed', "Ed's Three Voices", '🎵', 'Hear -ed: is it /t/, /d/, or /uh-d/?'),
       soon('l5-sort', 'Block Sort', '🗂️', 'Sort the word parts — and spot the fakes.'),

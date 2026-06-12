@@ -52,9 +52,10 @@ export function BlendIt({ learnerId = 'guest' }: { learnerId?: string }) {
     timersRef.current = sounds.map((s, idx) => window.setTimeout(() => { void audio.playSound(s); }, idx * STEP_MS));
   };
 
+  const shownRef = useRef(0); // when the current item appeared → per-item response latency
   useEffect(() => { startRef.current = Date.now(); return () => timersRef.current.forEach((t) => window.clearTimeout(t)); }, []);
   useEffect(() => {
-    if (round && !finish) playSounds(round.sounds);
+    if (round && !finish) { shownRef.current = Date.now(); playSounds(round.sounds); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i]);
 
@@ -65,9 +66,14 @@ export function BlendIt({ learnerId = 'guest' }: { learnerId?: string }) {
     advRef.current = true;
     if (correct) { correctRef.current += 1; sfx.correct(); setMood('cheer'); if (character) setLine(reactionLine(character, 'correct')); }
     else { wrongRef.current += 1; sfx.wrong(); setMood('wobble'); if (character) setLine(reactionLine(character, 'wrong')); }
+    const shown = shownRef.current;
+    const chosen = correct ? undefined : opt.word;
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : opt.word);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'blend-it', level: 1, firstTry: true, chosen: correct ? undefined : opt.word });
+      const latencyMs = Date.now() - shown;
+      recordItem(learnerId, SKILL, correct, latencyMs, chosen);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'blend-it', level: 1, firstTry: true, latencyMs, chosen });
+    }, 0);
+    window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;
       if (i + 1 >= ROUNDS) finishSession(Date.now()); else setI((n) => n + 1);
     }, 1100);

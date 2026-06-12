@@ -28,4 +28,13 @@ describe('themed level cards (congruent: every level wears its painted world)', 
       expect(src, `LevelsPage must not re-introduce ${dead}`).not.toContain(dead);
     }
   });
+
+  it('card text sits on a readability plate — always legible over the art', () => {
+    // The system that guarantees readable text over ANY card art: the text block
+    // (.lvl-card__body) carries a plate background. Without it, sub-text gets lost
+    // in the picture (the regression this guards). The PNG/card size are unaffected.
+    const css = readFileSync(join(process.cwd(), 'src/styles/brand.css'), 'utf8');
+    const body = css.match(/\.lvl-card__body\s*\{[^}]*\}/)?.[0] ?? '';
+    expect(body, '.lvl-card__body must carry a background plate (readability system)').toMatch(/background:/);
+  });
 });

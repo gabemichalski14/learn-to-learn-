@@ -48,3 +48,23 @@ markup, so they drifted. The fix is STRUCTURAL congruence, not manual review:
   a class of bug recurs, add a guard so the gate catches it next time.
 - **Definition of done for any screen:** uses the shared shell/header; no bespoke
   chrome; fits one viewport (games never scroll); ≥40px targets; gate green.
+
+## Confidence floor (≥95%) — for this agent and every sub-agent
+Before building a brick or marking it done, confidence in THAT brick must be ≥95%,
+and it must never knowingly drop below 95%. Confidence is calibrated and EVIDENCED,
+never asserted: a brick earns "95%" only when its risky assumptions have a concrete
+validation — a passing test, a reviewed sample output, a cited source, or types read
+from the real code — not a vibe. Below the floor, run the de-risking loop: name the
+specific uncertainty, resolve it the cheapest sufficient way (a spike/prototype, a
+targeted test, more research, or a clarifying question), then re-assess. Risky
+parameters are named constants with a "tunable / validate against real data" note,
+never buried magic numbers. Sub-agents inherit this rule via their prompt. When asked
+"how confident are you?", answer with a calibrated number and the specific residual
+risks — never round up to please.
+
+## Freshness Engine (stay current — standing practice)
+Reading, gaming, and compliance science go stale. The coverage maps in
+`docs/coverage/` + the quarterly sweep (`docs/coverage/SWEEP.md`) keep us current,
+enforced by guard tests (a red coverage gate means the quarterly review is overdue —
+run the sweep, don't delete the test). These deep research dives are a STANDING
+cadence, not a one-off. See `docs/superpowers/specs/2026-06-11-freshness-engine-design.md`.

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { goBack, navigate } from '../../router';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
-import { sfx } from '../../audio/sfx';
+import { sfx, isMuted, setMuted } from '../../audio/sfx';
+import { GameShell } from '../../ui/GameShell';
 import { buildVceDictationRounds } from '../../content/packs/level4';
 import { ALPHABET } from '../../content/packs/level2';
 import { recordItem } from '../../mastery/mastery';
@@ -31,6 +32,8 @@ export function NameChangeDictation({ learnerId = 'guest' }: { learnerId?: strin
   const [wrongKey, setWrongKey] = useState<string | null>(null);
   const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
   const [line, setLine] = useState("Hear a magic-e word, then spell it — don't forget the silent e! ✨");
+  const [muted, setMutedState] = useState(isMuted());
+  const toggleMute = () => { const next = !muted; setMuted(next); setMutedState(next); };
   const [finish, setFinish] = useState<{ stars: number } | null>(null);
 
   const startRef = useRef(0);
@@ -98,11 +101,16 @@ export function NameChangeDictation({ learnerId = 'guest' }: { learnerId?: strin
   }
 
   return (
-    <main className="wk gv">
-      <div className="wk-hud">
-        <button type="button" className="wk-back" onClick={() => goBack('#/level/4')}>← Valley</button>
-        <span className="wk-badge">✏️ Name Change Dictation · Level 4</span>
-      </div>
+    <GameShell
+      prefix="wk"
+      rootClass="wk wk-game gv"
+      back={{ label: '← Valley', onClick: () => goBack('#/level/4') }}
+      badge={<>✏️ Name Change Dictation · Level 4</>}
+      current={ri}
+      total={rounds.length}
+      muted={muted}
+      onToggleMute={toggleMute}
+    >
 
       {finish ? (
         <div className="wk-stage">
@@ -139,11 +147,8 @@ export function NameChangeDictation({ learnerId = 'guest' }: { learnerId?: strin
               <button key={ch} type="button" className={`wk-key${wrongKey === ch ? ' is-wrong' : ''}`} onClick={() => onLetter(ch)}>{ch}</button>
             ))}
           </div>
-          <span className="wk-progress" aria-hidden="true">
-            {rounds.map((_, n) => <i key={n} className={n < ri ? 'done' : n === ri ? 'on' : ''} />)}
-          </span>
         </div>
       )}
-    </main>
+    </GameShell>
   );
 }

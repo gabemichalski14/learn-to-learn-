@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { goBack, navigate } from '../../router';
 import { createRecordedAudioPlayer } from '../../audio/recordedAudioPlayer';
-import { sfx } from '../../audio/sfx';
+import { sfx, isMuted, setMuted } from '../../audio/sfx';
+import { GameShell } from '../../ui/GameShell';
 import { buildNameChangeRounds } from '../../content/packs/level4';
 import { recordItem } from '../../mastery/mastery';
 import { logSkillEvent } from '../../data/cloudSync';
@@ -30,6 +31,8 @@ export function NameChange({ learnerId = 'guest' }: { learnerId?: string }) {
   const [confirmed, setConfirmed] = useState(false);
   const [mood, setMood] = useState<'cheer' | 'wobble' | null>(null);
   const [line, setLine] = useState('Listen — then build the word you hear with me! ✨');
+  const [muted, setMutedState] = useState(isMuted());
+  const toggleMute = () => { const next = !muted; setMuted(next); setMutedState(next); };
   const [finish, setFinish] = useState<{ score: number; stars: number } | null>(null);
 
   const startRef = useRef(0);
@@ -104,12 +107,16 @@ export function NameChange({ learnerId = 'guest' }: { learnerId?: string }) {
   }
 
   return (
-    <main className="wk gv">
-      <div className="wk-hud">
-        <button type="button" className="wk-back" onClick={() => goBack('#/level/4')}>← Valley</button>
-        <span className="wk-badge">✨ Name Change · Level 4</span>
-      </div>
-
+    <GameShell
+      prefix="wk"
+      rootClass="wk wk-game gv"
+      back={{ label: '← Valley', onClick: () => goBack('#/level/4') }}
+      badge={<>✨ Name Change · Level 4</>}
+      current={ri}
+      total={ROUNDS}
+      muted={muted}
+      onToggleMute={toggleMute}
+    >
       {finish ? (
         <div className="wk-stage">
           <div className="wk-finish">
@@ -152,12 +159,8 @@ export function NameChange({ learnerId = 'guest' }: { learnerId?: string }) {
           </div>
 
           <p className="nc-help">✨ The magic <b>e</b> is silent — but it makes the vowel say its <b>name</b> (cap → cape).</p>
-
-          <span className="wk-progress" aria-hidden="true">
-            {rounds.map((_, n) => <i key={n} className={n < ri ? 'done' : n === ri ? 'on' : ''} />)}
-          </span>
         </div>
       )}
-    </main>
+    </GameShell>
   );
 }

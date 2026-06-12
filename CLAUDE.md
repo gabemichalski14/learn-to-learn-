@@ -88,8 +88,12 @@ extend) its guard here — that IS the prevention plan. Current standing guards:
   call `addLearner`); `src/profiles.test.ts` (`currentLearner` never fabricates).
 - **No dark patterns** → `src/coverage/ethics.test.ts` (surveillance APIs + child-surface
   engagement tells; surfaces, never auto-removes).
-- **Level/world chrome drift** → `src/worlds/workshop/congruence.test.ts` (games use
-  GameShell + no-scroll), plus the shared-component rule below.
+- **Level/world chrome drift** → `src/worlds/congruence.test.ts` (AUTO-DISCOVERS every
+  game screen — any worlds file that logs skill events — and fails if it hand-rolls a
+  `<main>`/HUD instead of GameShell; no hand-typed list to forget), plus the
+  shared-component rule below.
+- **Broken-image icons** → `src/ui/assetSafety.test.ts` (every `<img>` must carry an
+  onError fallback — `hideBrokenImg` or a fallback component's emoji-swap).
 - **Stale science/compliance** → `src/coverage/coverage.test.ts` (90-day staleness
   tripwire + domain/framework/triangulation completeness).
 - **Undecodable generated text** → the reading decodability CI invariant.

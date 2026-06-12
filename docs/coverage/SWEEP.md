@@ -47,10 +47,21 @@ and an `until` within `maxDeferDays` (30). The gate prints the deferral and pass
 until `until`; a malformed or over-cap defer still fails. The override is recorded
 and expires — it is visible, not a silent skip.
 
+## Ask before removal (walk the line)
+
+The ethics scan never auto-removes a finding — it **asks**. A red ethics gate means
+a flagged pattern needs an owner decision:
+- **Hard lines** (mic/camera capture, push notifications) always fail — no consent path.
+- **Engagement greys** (streak/decay/loot/countdown/FOMO): the owner either records a
+  KEEP decision in `src/coverage/ethicsReview.ts` (a legit white-hat lever, with a
+  reason) or approves a removal that a human makes. Maximize evidence-based engagement
+  right up to — never across — the ethical line.
+
 ## Status
 
 - **P1 (done):** manifest + maps + guard tests #1,2,3,4,5,9,10 — *the cadence is now enforced.*
-- **P2:** ethics-as-tests source scan (#6) + walk-the-line tracking (#7).
+- **P2 (done):** ethics-as-tests source scan (#6) + walk-the-line tracking (#7) +
+  the ask-before-removal consent ledger (`ethicsReview.ts`).
 - **P3:** this playbook → a `/coverage-sweep` command + the scheduled quarterly
   background task + owner-approval report flow.
 - **P4:** decodability invariant (#8) when the connected-text engine ships broadly.

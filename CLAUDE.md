@@ -80,6 +80,19 @@ one-off. See `docs/superpowers/specs/2026-06-11-freshness-engine-design.md`.
   impact). Test #2 (no-level-left-behind) fails the gate if a `LEVELS` entry has no
   reading coverage row, so this can't be skipped.
 
+## Ethics findings — ask before removal (walk the line)
+The ethics-as-tests guard (`src/coverage/ethics.test.ts`) flags dark-pattern tells.
+When it flags something, **SURFACE it to the owner and get explicit permission before
+removing or altering the mechanic — never auto-strip a finding.** Some flagged
+patterns are legitimate science-/fact-based (white-hat) levers worth KEEPING; that
+is the owner's call, not the agent's. The flow:
+- **Hard lines** (mic/camera capture = COPPA biometric; push notifications =
+  re-engagement) are non-negotiable — always fail, no consent path.
+- **Engagement greys** (streak/decay/loot/countdown/FOMO…): the red build IS the
+  engine asking. A human then either records a KEEP decision in
+  `src/coverage/ethicsReview.ts` (with a reason — walking the line) or approves a
+  removal that a human makes. The agent does neither unilaterally.
+
 ## Age-appropriate content (ages ~5–10) — guarded, always
 All child-facing content must be age-appropriate. Machine-GENERATED content is the
 highest risk, so it's guarded by construction: the reading engine emits a CLOSED

@@ -46,9 +46,10 @@ export function NameChange({ learnerId = 'guest' }: { learnerId?: string }) {
 
   const playWord = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
+  const shownRef = useRef(0); // when the current word appeared → time-to-answer latency
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) playWord(round.targetIsE ? round.withE : round.base); // hasE is reset on advance/restart
+    if (round && !finish) { shownRef.current = Date.now(); playWord(round.targetIsE ? round.withE : round.base); } // hasE is reset on advance/restart
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -69,9 +70,13 @@ export function NameChange({ learnerId = 'guest' }: { learnerId?: string }) {
     advRef.current = true;
     if (correct) { correctRef.current += 1; sfx.correct(); setMood('cheer'); if (character) setLine(reactionLine(character, 'correct')); }
     else { wrongRef.current += 1; sfx.wrong(); setMood('wobble'); if (character) setLine(reactionLine(character, 'wrong')); }
+    const chosen = correct ? undefined : (hasE ? '+e' : '-e');
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : (hasE ? '+e' : '-e'));
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'name-change', level: 4, firstTry: true, chosen: correct ? undefined : (hasE ? '+e' : '-e') });
+      const latencyMs = Date.now() - shownRef.current;
+      recordItem(learnerId, SKILL, correct, latencyMs, chosen);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'name-change', level: 4, firstTry: true, latencyMs, chosen });
+    }, 0);
+    window.setTimeout(() => {
       setMood(null); setConfirmed(false); advRef.current = false;
       if (ri + 1 >= ROUNDS) finishSession(Date.now()); else { setRi((n) => n + 1); setHasE(false); }
     }, 1100);

@@ -45,10 +45,11 @@ export function PatchesDictation({ learnerId = 'guest' }: { learnerId?: string }
   const round = rounds[ri];
   const word = round?.word ?? '';
 
+  const shownRef = useRef(0); // when the current word appeared → time-to-spell latency
   useEffect(() => { startRef.current = Date.now(); }, []);
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
   useEffect(() => {
-    if (round && !finish) say(round.word);
+    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -65,8 +66,9 @@ export function PatchesDictation({ learnerId = 'guest' }: { learnerId?: string }
         const chosen = wordFirstWrongRef.current;
         const sk = round.skillKey;
         window.setTimeout(() => {
-          recordItem(learnerId, sk, correct, undefined, correct ? undefined : chosen);
-          logSkillEvent(learnerId, { skillKey: sk, correct, at: Date.now(), game: 'patches-dictation', level: 3, firstTry: true, chosen: correct ? undefined : chosen });
+          const latencyMs = Date.now() - shownRef.current;
+          recordItem(learnerId, sk, correct, latencyMs, correct ? undefined : chosen);
+          logSkillEvent(learnerId, { skillKey: sk, correct, at: Date.now(), game: 'patches-dictation', level: 3, firstTry: true, latencyMs, chosen: correct ? undefined : chosen });
         }, 0);
         setMood('cheer');
         if (character) setLine(reactionLine(character, 'correct'));

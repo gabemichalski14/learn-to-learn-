@@ -40,9 +40,10 @@ export function GreatDivide({ learnerId = 'guest' }: { learnerId?: string }) {
   const round = rounds[i];
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
+  const shownRef = useRef(0); // when the current word appeared → time-to-answer latency
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) say(round.word);
+    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i]);
 
@@ -55,9 +56,13 @@ export function GreatDivide({ learnerId = 'guest' }: { learnerId?: string }) {
       window.setTimeout(() => say(round.word.slice(0, round.split)), 250);
       window.setTimeout(() => say(round.word.slice(round.split)), 950);
     } else { wrongRef.current += 1; sfx.wrong(); setMood('wobble'); if (character) setLine(reactionLine(character, 'wrong')); }
+    const chosen = correct ? undefined : String(at);
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : String(at));
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'great-divide', level: 4, firstTry: true, chosen: correct ? undefined : String(at) });
+      const latencyMs = Date.now() - shownRef.current;
+      recordItem(learnerId, SKILL, correct, latencyMs, chosen);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'great-divide', level: 4, firstTry: true, latencyMs, chosen });
+    }, 0);
+    window.setTimeout(() => {
       setMood(null); setPicked(null); advRef.current = false;
       if (i + 1 >= ROUNDS) finishSession(Date.now()); else setI((n) => n + 1);
     }, 1500);

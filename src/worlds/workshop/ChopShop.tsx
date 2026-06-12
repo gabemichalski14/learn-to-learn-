@@ -41,9 +41,10 @@ export function ChopShop({ learnerId = 'guest' }: { learnerId?: string }) {
   const word = round?.word ?? '';
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
+  const shownRef = useRef(0); // when the current word appeared → time-to-answer latency
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) say(round.word);
+    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -53,8 +54,9 @@ export function ChopShop({ learnerId = 'guest' }: { learnerId?: string }) {
     const firstTry = !attemptedRef.current.has(ri);
     attemptedRef.current.add(ri);
     window.setTimeout(() => {
-      recordItem(learnerId, SKILL, correct, undefined, correct ? undefined : String(pos), firstTry);
-      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'chop-shop', level: 3, firstTry, chosen: correct ? undefined : String(pos) });
+      const latencyMs = Date.now() - shownRef.current;
+      recordItem(learnerId, SKILL, correct, latencyMs, correct ? undefined : String(pos), firstTry);
+      logSkillEvent(learnerId, { skillKey: SKILL, correct, at: Date.now(), game: 'chop-shop', level: 3, firstTry, latencyMs, chosen: correct ? undefined : String(pos) });
     }, 0);
     if (correct) {
       sfx.correct(); setCut(pos); setMood('cheer');

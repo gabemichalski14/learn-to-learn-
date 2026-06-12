@@ -47,9 +47,10 @@ export function BlendBuddies({ learnerId = 'guest' }: { learnerId?: string }) {
   const word = round?.word ?? '';
   const say = (w: string) => { void audio.playWord({ id: w, label: w, emoji: '🔈' }); };
 
+  const shownRef = useRef(0); // when the current word appeared → time-to-spell latency
   useEffect(() => { startRef.current = Date.now(); }, []);
   useEffect(() => {
-    if (round && !finish) say(round.word);
+    if (round && !finish) { shownRef.current = Date.now(); say(round.word); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ri]);
 
@@ -59,8 +60,9 @@ export function BlendBuddies({ learnerId = 'guest' }: { learnerId?: string }) {
     const correct = !wrongWordRef.current;
     const chosen = correct ? undefined : (reducedRef.current ?? undefined);
     window.setTimeout(() => {
-      recordItem(learnerId, k, correct, undefined, chosen, true);
-      logSkillEvent(learnerId, { skillKey: k, correct, at: Date.now(), game: 'blend-buddies', level: 3, firstTry: true, chosen });
+      const latencyMs = Date.now() - shownRef.current;
+      recordItem(learnerId, k, correct, latencyMs, chosen, true);
+      logSkillEvent(learnerId, { skillKey: k, correct, at: Date.now(), game: 'blend-buddies', level: 3, firstTry: true, latencyMs, chosen });
     }, 0);
   }
 

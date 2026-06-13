@@ -144,7 +144,7 @@ export const READING_COVERAGE: CoverageComponent[] = [
   {
     id: 'r-vocabulary', side: 'reading', domain: 'comprehension', title: 'Vocabulary & background knowledge',
     status: 'partial', where: 'src/reading/morphology.ts (affixes + roots with child glosses) + glossWord', sources: ['NRP 2000', 'Bowers, Kirby & Deacon 2010'], frameworks: ['vocabulary', 'background-knowledge'],
-    note: 'Morphology-for-meaning engine (the biggest vocabulary lever) — prefixes/suffixes (L5) + Greek/Latin roots (L10) with child glosses + a glossWord decomposer. Explicit vocab-in-context teaching + a morphology game still to build.',
+    note: 'Morphology-for-meaning engine (the biggest vocabulary lever) — prefixes/suffixes (L5, SHIPPED as the 6 Tinker Town games) + Greek/Latin roots (L10) with child glosses + a glossWord decomposer. Explicit vocab-in-context teaching still to build.',
   },
   {
     id: 'r-language-structures', side: 'reading', domain: 'comprehension', title: 'Syntax / language structures / text structure',
@@ -183,7 +183,7 @@ export const READING_COVERAGE: CoverageComponent[] = [
     id: 'r-morphology', side: 'reading', domain: 'content', title: 'Morphology — prefixes, suffixes, roots',
     status: 'partial', where: 'src/reading/morphology.ts + lexicon (L5 affixes, L10 roots)', levels: [5, 10],
     sources: ['Bowers, Kirby & Deacon 2010', 'IDA KPS 2018'], frameworks: ['phonics', 'vocabulary'],
-    note: 'Engine done (#137): morpheme inventory + decodable affixed/root words + glossWord meaning decomposer, gated L5/L10. A dedicated morphology game still pending.',
+    note: 'Engine done (#137) + L5 SHIPPED: 6 Tinker Town games (Happy Endings/Front Loaders/Word Workbench/Take It Apart/Ed\'s Three Voices/Block Sort) teach prefixes & suffixes via add-the-affix, peel-off, word-sums, the three -ed sounds, and the false-affix check. L10 Greek/Latin-root games still pending.',
   },
   {
     id: 'r-syllable-types', side: 'reading', domain: 'content', title: 'Syllable types — silent-e, C-LE, vowel-r',

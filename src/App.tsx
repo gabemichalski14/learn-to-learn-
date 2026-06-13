@@ -54,6 +54,7 @@ import { TinkerTownLevelHub } from './worlds/tinkertown/TinkerTownLevelHub';
 import { HappyEndings } from './worlds/tinkertown/HappyEndings';
 import { FrontLoaders } from './worlds/tinkertown/FrontLoaders';
 import { WordWorkbench } from './worlds/tinkertown/WordWorkbench';
+import { TakeItApart } from './worlds/tinkertown/TakeItApart';
 import { CheckpointGame } from './CheckpointGame';
 import { currentLearner, setCurrentLearnerId, getCurrentLearnerId } from './profiles';
 import { reconcileRoster } from './data/identity';
@@ -230,6 +231,9 @@ export default function App() {
   }
   if (route.name === 'play' && route.game === 'l5-build') {
     return <WordWorkbench learnerId={learnerId} />;
+  }
+  if (route.name === 'play' && route.game === 'l5-peel') {
+    return <TakeItApart learnerId={learnerId} />;
   }
   if (route.name === 'play') {
     return <GameScreen learnerId={learnerId} gameId={route.game ?? 'beginning-sounds'} focus={route.focus} />;

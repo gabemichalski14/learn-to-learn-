@@ -42,6 +42,21 @@
   border: 1px solid rgba(44, 93, 63, 0.25); }
 .tt-help { font-size: 12.5px; color: #5b6b62; margin: 8px auto 0; max-width: 34ch; line-height: 1.4; }
 
+/* Take It Apart — peel-off: the word shown as part-chips; affixes peel away, base glows */
+.tt-peel { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 5px; margin: 6px 0; }
+.tt-peel-chip { font: inherit; font-weight: 800; font-size: clamp(24px, 7vw, 38px); padding: 6px 12px; min-height: 56px; border-radius: 12px; cursor: pointer; transition: opacity 0.2s ease, transform 0.2s ease, background 0.15s ease; }
+.tt-peel-chip--base { color: #234c34; background: rgba(255, 255, 255, 0.55); border: 2px dashed transparent; }
+.tt-peel-chip--affix { color: #b3651f; background: #fdeede; border: 2px dashed #e3a86a; }
+.tt-peel-chip--affix:hover { transform: translateY(-2px); background: #fff4e6; }
+.tt-peel-chip.is-peeled { opacity: 0.22; transform: scale(0.82); text-decoration: line-through; pointer-events: none; }
+.tt-peel-chip.is-base-glow { background: #e7f4ea; border: 2px solid #54a86f; box-shadow: 0 0 0 4px rgba(84, 168, 111, 0.18); color: #1d7a45; }
+.tt-peel-chip.is-wrong { animation: tt-wob 0.4s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .tt-peel-chip { transition: opacity 0.2s ease; }
+  .tt-peel-chip--affix:hover { transform: none; }
+  .tt-peel-chip.is-peeled { transform: none; }
+}
+
 /* short / landscape phones — shrink the big elements (vh-aware) so the stage fits the
    100dvh frame without internal scroll (the no-scroll guarantee on small viewports). */
 @media (max-height: 600px) {

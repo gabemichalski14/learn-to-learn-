@@ -94,7 +94,7 @@ export const LEVELS: LevelInfo[] = [
       { id: 'l5-build', title: 'Word Workbench', emoji: '🧩', tagline: 'Build a word from its parts: un + lock → unlock.', status: 'available', route: '#/play/l5-build' },
       { id: 'l5-peel', title: 'Take It Apart', emoji: '🍃', tagline: 'Peel the parts off a big word to find its base.', status: 'available', route: '#/play/l5-peel' },
       { id: 'l5-ed', title: "Ed's Three Voices", emoji: '🎵', tagline: 'Hear -ed: is it /t/, /d/, or /uh-d/?', status: 'available', route: '#/play/l5-ed' },
-      soon('l5-sort', 'Block Sort', '🗂️', 'Sort the word parts — and spot the fakes.'),
+      { id: 'l5-sort', title: 'Block Sort', emoji: '🗂️', tagline: 'Sort the word parts — and spot the fakes.', status: 'available', route: '#/play/l5-sort' },
     ],
   },
   // Levels 6–10: titles and games fill in as each book is captured.

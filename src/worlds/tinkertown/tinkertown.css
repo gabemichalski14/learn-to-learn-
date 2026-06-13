@@ -40,6 +40,19 @@
 .tt-hear { margin-top: 2px; min-height: 44px; padding: 8px 16px; border-radius: 999px; cursor: pointer;
   font: inherit; font-weight: 700; font-size: 13px; color: #2f6b43; background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(44, 93, 63, 0.25); }
+
+/* Ed's Three Voices — the three -ed sound buckets (/t/ /d/ /uh-d/) */
+.tt-voices { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(8px, 3vw, 14px); margin: 6px 0; }
+.tt-voice { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 92px; min-height: 64px;
+  padding: 8px 14px; border-radius: 16px; cursor: pointer; color: #2c5d3f; background: rgba(255, 255, 255, 0.94);
+  border: 2px solid #7bb98e; box-shadow: 0 6px 14px rgba(44, 93, 63, 0.16); transition: transform 0.12s ease, background 0.12s ease; }
+.tt-voice:hover { transform: translateY(-3px); background: #fff; }
+.tt-voice:focus-visible { outline: 3px solid #2c5d3f; outline-offset: 2px; }
+.tt-voice__label { font: inherit; font-weight: 800; font-size: clamp(20px, 5.5vw, 28px); }
+.tt-voice__eg { font-size: 11px; color: #5b6b62; }
+.tt-voice.is-right { background: #e7f4ea; border-color: #54a86f; }
+.tt-voice.is-wrong { background: #f6dcdc; border-color: #e0a3a3; animation: tt-wob 0.4s ease; }
+@media (prefers-reduced-motion: reduce) { .tt-voice:hover { transform: none; } .tt-voice.is-wrong { animation: none; } }
 .tt-help { font-size: 12.5px; color: #5b6b62; margin: 8px auto 0; max-width: 34ch; line-height: 1.4; }
 
 /* Take It Apart — peel-off: the word shown as part-chips; affixes peel away, base glows */
